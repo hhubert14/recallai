@@ -11,20 +11,18 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { getBrowserClient } from "@/lib/supabase";
 import { LogOut, Settings, User } from "lucide-react";
+import { useAuth } from "@/lib/auth-provider";
 
 export function UserButton() {
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
-    const supabase = getBrowserClient();
+    const { user, signOut } = useAuth();
 
     const handleSignOut = async () => {
         setIsLoading(true);
         try {
-            await supabase.auth.signOut();
-            router.push("/");
-            router.refresh();
+            await signOut();
         } catch (error) {
             console.error("Error signing out:", error);
         } finally {
@@ -46,7 +44,7 @@ export function UserButton() {
                 <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
                         <p className="text-sm font-medium leading-none">
-                            My Account
+                            {user?.email || 'My Account'}
                         </p>
                         <p className="text-xs leading-none text-muted-foreground">
                             Manage your account

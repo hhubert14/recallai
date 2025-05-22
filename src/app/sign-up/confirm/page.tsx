@@ -1,14 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { SignInForm } from "@/app/sign-in/SignInForm";
 import { Brain } from "lucide-react";
 
 export const metadata: Metadata = {
-    title: "Sign In | LearnSync",
-    description: "Sign in to your LearnSync account",
+    title: "Confirm Email | LearnSync",
+    description: "Confirm your email address for LearnSync",
 };
 
-export default function SignInPage() {
+export default function ConfirmEmailPage() {
     return (
         <div className="flex min-h-screen flex-col">
             <div className="flex min-h-screen flex-col items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
@@ -21,32 +20,31 @@ export default function SignInPage() {
                             </span>
                         </Link>
                         <h1 className="text-3xl font-bold tracking-tight text-blue-900">
-                            Sign in to your account
+                            Check Your Email
                         </h1>
-                        <p className="text-center text-gray-500">
-                            Enter your email and password to access your
-                            LearnSync dashboard
-                        </p>
+                        <div className="text-center text-gray-500">
+                            <p>We&apos;ve sent a confirmation email to your address.</p>
+                            <p className="mt-2">Please click the link in that email to activate your account.</p>
+                        </div>
                     </div>
 
-                    <SignInForm />
-
-                    <div className="text-center text-sm text-gray-500">
+                    <div className="text-center text-sm text-gray-500 mt-8">
                         <p>
-                            Don't have an account?{" "}
+                            Didn&apos;t receive an email?{" "}
                             <Link
                                 href="/sign-up"
                                 className="font-medium text-blue-600 hover:text-blue-500"
                             >
-                                Sign up
+                                Try signing up again
                             </Link>
                         </p>
                         <p className="mt-2">
+                            Already confirmed?{" "}
                             <Link
-                                href="/forgot-password"
+                                href="/sign-in"
                                 className="font-medium text-blue-600 hover:text-blue-500"
                             >
-                                Forgot your password?
+                                Sign in
                             </Link>
                         </p>
                     </div>

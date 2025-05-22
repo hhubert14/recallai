@@ -11,21 +11,19 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { getBrowserClient } from "@/lib/supabase";
 import { AlertCircle, Loader2 } from "lucide-react";
 
-export function SignInForm() {
+export function SignUpForm() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
-    const supabase = getBrowserClient()!;
-
-    const handleSubmit = async (e: React.FormEvent) => {
+    const supabase = getBrowserClient()!;    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
         setError(null);
 
         try {
-            const { data, error } = await supabase.auth.signInWithPassword({
+            const { data, error } = await supabase.auth.signUp({
                 email,
                 password,
             });
@@ -35,13 +33,13 @@ export function SignInForm() {
             }
 
             if (data.user) {
-                // Refresh the page to update the auth state
-                router.push("/dashboard");
+                // Email confirmation might be required
+                router.push("/sign-up/confirm");
                 router.refresh();
             }
         } catch (error: any) {
-            console.error("Sign in error:", error);
-            setError(error.message || "Failed to sign in. Please try again.");
+            console.error("Sign up error:", error);
+            setError(error.message || "Failed to create account. Please try again.");
         } finally {
             setIsLoading(false);
         }
@@ -83,7 +81,7 @@ export function SignInForm() {
                         value={password}
                         onChange={e => setPassword(e.target.value)}
                         className="mt-1"
-                        placeholder="••••••••"
+                        placeholder="Password (8+ characters)"
                     />
                 </div>
             </div>
@@ -93,14 +91,13 @@ export function SignInForm() {
                     type="submit"
                     className="w-full bg-blue-600 hover:bg-blue-700"
                     disabled={isLoading}
-                >
-                    {isLoading ? (
+                >                    {isLoading ? (
                         <>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Signing in...
+                            Creating account...
                         </>
                     ) : (
-                        "Sign in"
+                        "Create account"
                     )}
                 </Button>
             </div>
