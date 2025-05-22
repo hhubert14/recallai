@@ -26,7 +26,7 @@ export default function Home() {
         <div className="flex min-h-[100dvh] flex-col">
             {/* Header */}
             <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-                <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex h-16 items-center justify-between">
+                <div className="container flex h-16 items-center justify-between">
                     <div className="flex items-center gap-2">
                         <Brain className="h-6 w-6 text-blue-600" />
                         <span className="text-xl font-bold">LearnSync</span>
@@ -59,7 +59,7 @@ export default function Home() {
                     </nav>
                     <div className="flex items-center gap-4">
                         <Link
-                            href="#"
+                            href="/sign-in"
                             className="text-sm font-medium hover:underline underline-offset-4 hidden sm:inline-block"
                         >
                             Sign In
@@ -74,7 +74,7 @@ export default function Home() {
             <main className="flex-1">
                 {/* Hero Section */}
                 <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-b from-blue-50 to-white">
-                    <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <div className="container px-4 md:px-6">
                         <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
                             <div className="flex flex-col justify-center space-y-4">
                                 <div className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-sm text-blue-600">
@@ -141,13 +141,13 @@ export default function Home() {
                                     The Problem with Video Learning
                                 </h2>
                                 <p className="max-w-[900px] text-gray-500 md:text-xl/relaxed">
-                                    In today&apos;s information-rich world,
-                                    people consume massive amounts of
-                                    educational video content but struggle with
-                                    poor retention rates. Most learners watch
-                                    videos passively without taking notes or
-                                    reviewing key concepts, leading to forgotten
-                                    information within days.
+                                    In today's information-rich world, people
+                                    consume massive amounts of educational video
+                                    content but struggle with poor retention
+                                    rates. Most learners watch videos passively
+                                    without taking notes or reviewing key
+                                    concepts, leading to forgotten information
+                                    within days.
                                 </p>
                             </div>
                             <div className="w-full max-w-3xl py-12">
@@ -250,7 +250,7 @@ export default function Home() {
                     id="how-it-works"
                     className="w-full py-12 md:py-24 lg:py-32 bg-blue-50"
                 >
-                    <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <div className="container px-4 md:px-6">
                         <div className="flex flex-col items-center justify-center space-y-4 text-center">
                             <div className="space-y-2">
                                 <div className="inline-block rounded-lg bg-blue-100 px-3 py-1 text-sm text-blue-600">
@@ -515,7 +515,7 @@ export default function Home() {
                         <div className="flex flex-col items-center justify-center space-y-4 text-center">
                             <div className="space-y-2">
                                 <div className="inline-block rounded-lg bg-blue-100 px-3 py-1 text-sm text-blue-600">
-                                    Who It&apos;s For
+                                    Who It's For
                                 </div>
                                 <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight text-blue-900">
                                     Perfect for All Types of Learners
@@ -579,7 +579,7 @@ export default function Home() {
                     </div>
                 </section>
 
-                {/* Social Proof Section */}
+                {/* Social Proof Section
                 <section className="w-full py-12 md:py-24 lg:py-32 bg-blue-50">
                     <div className="container px-4 md:px-6">
                         <div className="flex flex-col items-center justify-center space-y-4 text-center">
@@ -618,10 +618,9 @@ export default function Home() {
                                         ))}
                                     </div>
                                     <blockquote className="text-lg font-semibold text-blue-900">
-                                        &quot;LearnSync has completely changed
-                                        how I study. I retain so much more
-                                        information now and save hours of
-                                        time.&quot;
+                                        "LearnSync has completely changed how I
+                                        study. I retain so much more information
+                                        now and save hours of time."
                                     </blockquote>
                                 </div>
                                 <div className="mt-6 flex items-center gap-4">
@@ -660,10 +659,9 @@ export default function Home() {
                                         ))}
                                     </div>
                                     <blockquote className="text-lg font-semibold text-blue-900">
-                                        &quot;As a teacher, I recommend
-                                        LearnSync to all my students. It&apos;s
-                                        like having a personal note-taker and
-                                        tutor in one.&quot;
+                                        "As a teacher, I recommend LearnSync to
+                                        all my students. It's like having a
+                                        personal note-taker and tutor in one."
                                     </blockquote>
                                 </div>
                                 <div className="mt-6 flex items-center gap-4">
@@ -704,10 +702,10 @@ export default function Home() {
                                         ))}
                                     </div>
                                     <blockquote className="text-lg font-semibold text-blue-900">
-                                        &quot;I&apos;m preparing for my medical
-                                        board exams, and LearnSync has been a
+                                        "I'm preparing for my medical board
+                                        exams, and LearnSync has been a
                                         game-changer for organizing all my study
-                                        materials.&quot;
+                                        materials."
                                     </blockquote>
                                 </div>
                                 <div className="mt-6 flex items-center gap-4">
@@ -778,7 +776,7 @@ export default function Home() {
                             </div>
                         </div>
                     </div>
-                </section>
+                </section> */}
 
                 {/* Pricing Section */}
                 <section
@@ -795,9 +793,9 @@ export default function Home() {
                                     Simple, Transparent Pricing
                                 </h2>
                                 <p className="max-w-[900px] text-gray-500 md:text-xl/relaxed">
-                                    Choose the plan that&apos;s right for you
-                                    and start transforming your learning
-                                    experience today.
+                                    Choose the plan that's right for you and
+                                    start transforming your learning experience
+                                    today.
                                 </p>
                             </div>
                         </div>
@@ -991,7 +989,7 @@ export default function Home() {
                                 </h3>
                                 <p className="mt-2 text-gray-500">
                                     Currently, LearnSync works best with
-                                    English-language videos. We&apos;re actively
+                                    English-language videos. We're actively
                                     working on adding support for additional
                                     languages in the near future.
                                 </p>
@@ -1004,7 +1002,7 @@ export default function Home() {
                                 <p className="mt-2 text-gray-500">
                                     Yes, Premium users can share summaries and
                                     questions with others through a secure link.
-                                    The recipient doesn&apos;t need a LearnSync
+                                    The recipient doesn't need a LearnSync
                                     account to view shared content.
                                 </p>
                             </div>
