@@ -15,31 +15,7 @@ export async function GET(request: NextRequest) {
 
     try {
         const supabase = createClient();
-
-        // For email confirmation via token_hash
-        if (type === "email") {
-            // Verify the token_hash
-            const { error } = await (
-                await supabase
-            ).auth.verifyOtp({
-                token_hash: tokenHash,
-                type: "email",
-            });
-
-            if (error) {
-                console.error("Error verifying email:", error);
-                return NextResponse.redirect(
-                    new URL(
-                        "/auth/error?message=Failed to confirm email",
-                        request.url
-                    )
-                );
-            }
-
-            // Email confirmed successfully
-            return NextResponse.redirect(new URL("/auth/success", request.url));
-        }
-
+        
         if (type === "recovery") {
             // For password recovery via token_hash
             const { error } = await (
@@ -58,7 +34,8 @@ export async function GET(request: NextRequest) {
                 );
             }
             // Recovery confirmed successfully
-            return NextResponse.redirect(new URL("/auth/recovery-success", request.url));
+            // Redirect to the update password page
+            return NextResponse.redirect(new URL("/auth/update-password", request.url));
         }
 
         // For other verification types

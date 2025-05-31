@@ -64,8 +64,13 @@ export default function Home() {
                         >
                             Login
                         </Link>
-                        <Button className="bg-blue-600 hover:bg-blue-700">
-                            Get Started Free
+                        <Button
+                            asChild
+                            className="bg-blue-600 hover:bg-blue-700"
+                        >
+                            <Link href="/auth/sign-up">
+                                Get Started Free
+                            </Link>
                         </Button>
                     </div>
                 </div>
@@ -96,18 +101,25 @@ export default function Home() {
                                 </div>
                                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
                                     <Button
+                                        asChild
                                         size="lg"
                                         className="bg-blue-600 hover:bg-blue-700 gap-1"
                                     >
-                                        Get Started Free{" "}
-                                        <ArrowRight className="h-4 w-4" />
+                                        <Link href="/auth/sign-up">
+                                            Get Started Free{" "}
+                                            <ArrowRight className="h-4 w-4" />
+                                        </Link>
+
                                     </Button>
                                     <Button
                                         size="lg"
                                         variant="outline"
                                         className="border-blue-200 text-blue-600 hover:bg-blue-50"
+                                        asChild
                                     >
-                                        Download Extension
+                                        <Link href="https://chrome.google.com/webstore" target="_blank" rel="noopener noreferrer">
+                                            Download Extension
+                                        </Link>
                                     </Button>
                                 </div>
                                 <div className="flex items-center gap-2 text-sm text-gray-500">
