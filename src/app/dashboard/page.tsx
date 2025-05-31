@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Brain } from "lucide-react";
-import { UserButton } from "@/components/user-button";
+import { UserButton } from "@/components/ui/user-button";
 
 export const metadata: Metadata = {
     title: "Dashboard | LearnSync",

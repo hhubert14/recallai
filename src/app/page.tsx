@@ -59,10 +59,10 @@ export default function Home() {
                     </nav>
                     <div className="flex items-center gap-4">
                         <Link
-                            href="/sign-in"
+                            href="/auth/login"
                             className="text-sm font-medium hover:underline underline-offset-4 hidden sm:inline-block"
                         >
-                            Sign In
+                            Login
                         </Link>
                         <Button className="bg-blue-600 hover:bg-blue-700">
                             Get Started Free

@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { SignInForm } from "@/app/sign-in/SignInForm";
+import { SignUpForm } from "@/app/auth/sign-up/SignUpForm";
+import { Button } from "@/components/ui/button";
 import { Brain } from "lucide-react";
 
 export const metadata: Metadata = {
-    title: "Sign In | LearnSync",
-    description: "Sign in to your LearnSync account",
+    title: "Sign Up | LearnSync",
+    description: "Sign up for your LearnSync account",
 };
 
-export default function SignInPage() {
+export default function SignUpPage() {
     return (
         <div className="flex min-h-screen flex-col">
             <div className="flex min-h-screen flex-col items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
@@ -21,29 +22,29 @@ export default function SignInPage() {
                             </span>
                         </Link>
                         <h1 className="text-3xl font-bold tracking-tight text-blue-900">
-                            Sign in to your account
+                            Sign Up
                         </h1>
                         <p className="text-center text-gray-500">
-                            Enter your email and password to access your
-                            LearnSync dashboard
+                            Enter your email and password to create your
+                            LearnSync account
                         </p>
                     </div>
 
-                    <SignInForm />
+                    <SignUpForm />
 
                     <div className="text-center text-sm text-gray-500">
                         <p>
-                            Don't have an account?{" "}
+                            Already have an account?{" "}
                             <Link
-                                href="/sign-up"
+                                href="/auth/login"
                                 className="font-medium text-blue-600 hover:text-blue-500"
                             >
-                                Sign up
+                                Login
                             </Link>
                         </p>
                         <p className="mt-2">
                             <Link
-                                href="/forgot-password"
+                                href="/auth/forgot-password"
                                 className="font-medium text-blue-600 hover:text-blue-500"
                             >
                                 Forgot your password?

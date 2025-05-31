@@ -1,15 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { SignUpForm } from "@/app/sign-up/SignUpForm";
-import { Button } from "@/components/ui/button";
 import { Brain } from "lucide-react";
 
 export const metadata: Metadata = {
-    title: "Sign Up | LearnSync",
-    description: "Sign up for your LearnSync account",
+    title: "Confirm Email | LearnSync",
+    description: "Confirm your email address for LearnSync",
 };
 
-export default function SignUpPage() {
+export default function ConfirmEmailPage() {
     return (
         <div className="flex min-h-screen flex-col">
             <div className="flex min-h-screen flex-col items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
@@ -22,32 +20,37 @@ export default function SignUpPage() {
                             </span>
                         </Link>
                         <h1 className="text-3xl font-bold tracking-tight text-blue-900">
-                            Sign Up
+                            Check Your Email
                         </h1>
-                        <p className="text-center text-gray-500">
-                            Enter your email and password to create your
-                            LearnSync account
-                        </p>
+                        <div className="text-center text-gray-500">
+                            <p>
+                                We&apos;ve sent a confirmation email to your
+                                address.
+                            </p>
+                            <p className="mt-2">
+                                Please click the link in that email to activate
+                                your account.
+                            </p>
+                        </div>
                     </div>
 
-                    <SignUpForm />
-
-                    <div className="text-center text-sm text-gray-500">
+                    <div className="text-center text-sm text-gray-500 mt-8">
                         <p>
-                            Already have an account?{" "}
+                            Didn&apos;t receive an email?{" "}
                             <Link
-                                href="/sign-in"
+                                href="/auth/sign-up"
                                 className="font-medium text-blue-600 hover:text-blue-500"
                             >
-                                Sign in
+                                Try signing up again
                             </Link>
                         </p>
                         <p className="mt-2">
+                            Already confirmed?{" "}
                             <Link
-                                href="/forgot-password"
+                                href="/auth/login"
                                 className="font-medium text-blue-600 hover:text-blue-500"
                             >
-                                Forgot your password?
+                                Login
                             </Link>
                         </p>
                     </div>

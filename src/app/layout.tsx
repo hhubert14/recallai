@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { AuthProvider } from "@/lib/auth-provider";
+import { AuthProviderWrapper } from "@/components/providers/auth-provider-wrapper";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -15,7 +15,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
     title: "LearnSync - AI-Powered Video Summaries",
-    description: "Transform video learning with AI-powered summaries and active recall questions, helping you retain knowledge better.",
+    description:
+        "Transform video learning with AI-powered summaries and active recall questions, helping you retain knowledge better.",
 };
 
 export default function RootLayout({
@@ -28,9 +29,7 @@ export default function RootLayout({
             <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
-                <AuthProvider>
-                    {children}
-                </AuthProvider>
+                <AuthProviderWrapper>{children}</AuthProviderWrapper>
             </body>
         </html>
     );
