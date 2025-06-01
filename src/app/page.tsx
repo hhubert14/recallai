@@ -20,6 +20,8 @@ import {
     Layers,
     Shield,
 } from "lucide-react";
+import { Sub } from "@radix-ui/react-dropdown-menu";
+import SubscribeButton from "@/components/subscription/SubscribeButton";
 
 export default function Home() {
     return (
@@ -68,9 +70,7 @@ export default function Home() {
                             asChild
                             className="bg-blue-600 hover:bg-blue-700"
                         >
-                            <Link href="/auth/sign-up">
-                                Get Started Free
-                            </Link>
+                            <Link href="/auth/sign-up">Get Started Free</Link>
                         </Button>
                     </div>
                 </div>
@@ -109,7 +109,6 @@ export default function Home() {
                                             Get Started Free{" "}
                                             <ArrowRight className="h-4 w-4" />
                                         </Link>
-
                                     </Button>
                                     <Button
                                         size="lg"
@@ -117,7 +116,11 @@ export default function Home() {
                                         className="border-blue-200 text-blue-600 hover:bg-blue-50"
                                         asChild
                                     >
-                                        <Link href="https://chrome.google.com/webstore" target="_blank" rel="noopener noreferrer">
+                                        <Link
+                                            href="https://chrome.google.com/webstore"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
                                             Download Extension
                                         </Link>
                                     </Button>
@@ -887,9 +890,10 @@ export default function Home() {
                                         </li>
                                     ))}
                                 </ul>
-                                <Button className="mt-8 bg-blue-600 hover:bg-blue-700">
+                                <SubscribeButton userId="your-user-id" />
+                                {/* <Button className="mt-8 bg-blue-600 hover:bg-blue-700">
                                     Get Started
-                                </Button>
+                                </Button> */}
                             </div>
                             <div className="flex flex-col rounded-lg border border-blue-100 bg-white p-6 shadow-sm">
                                 <div className="space-y-2">

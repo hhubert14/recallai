@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
 
     try {
         const supabase = createClient();
-        
+
         if (type === "recovery") {
             // For password recovery via token_hash
             const { error } = await (
@@ -35,7 +35,9 @@ export async function GET(request: NextRequest) {
             }
             // Recovery confirmed successfully
             // Redirect to the update password page
-            return NextResponse.redirect(new URL("/auth/update-password", request.url));
+            return NextResponse.redirect(
+                new URL("/auth/update-password", request.url)
+            );
         }
 
         // For other verification types

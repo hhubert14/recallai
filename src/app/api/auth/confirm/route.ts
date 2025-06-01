@@ -58,7 +58,9 @@ export async function GET(request: NextRequest) {
                 );
             }
             // Recovery confirmed successfully
-            return NextResponse.redirect(new URL("/auth/recovery-success", request.url));
+            return NextResponse.redirect(
+                new URL("/auth/recovery-success", request.url)
+            );
         }
 
         // For other verification types

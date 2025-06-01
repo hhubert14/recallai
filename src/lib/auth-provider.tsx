@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import { createClient } from "./supabase/client";
 import type { User } from "@supabase/supabase-js";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 
 // Create a Supabase client
 const supabase = createClient();
@@ -82,7 +82,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(null);
         setLoading(true);
         // Use Next.js router for client-side navigation
-        router.push('/');
+        router.push("/");
     };
 
     const resetPassword = async (email: string) => {
