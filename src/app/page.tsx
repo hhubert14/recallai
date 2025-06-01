@@ -1056,7 +1056,8 @@ export default function Home() {
                                 </Button>
                             </div>
                             <p className="text-sm text-blue-100">
-                                No credit card required. Start learning for free.
+                                No credit card required. Start learning for
+                                free.
                             </p>
                         </div>
                     </div>

@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { subscribeAction } from "@/lib/actions/stripe";
 import { useTransition } from "react";

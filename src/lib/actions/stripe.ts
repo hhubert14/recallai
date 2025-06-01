@@ -1,4 +1,4 @@
-'use server';
+"use server";
 
 import { stripe } from "@/lib/stripe/stripe";
 
@@ -30,4 +30,4 @@ export const subscribeAction = async ({ userId }: Props) => {
         console.error("Error during subscription action:", error);
         return null;
     }
-}
+};

@@ -1,4 +1,4 @@
-'use server'
+"use server";
 
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
@@ -20,7 +20,10 @@ export async function POST(request: NextRequest) {
             process.env.STRIPE_WEBHOOK_SECRET as string
         );
 
-        if (event.type === "checkout.session.completed" && event.data.object.payment_status === "paid") {
+        if (
+            event.type === "checkout.session.completed" &&
+            event.data.object.payment_status === "paid"
+        ) {
             // Revalidate the path to update any cached data
             revalidatePath(`/dashboard`);
         }
