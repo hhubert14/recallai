@@ -129,9 +129,9 @@ export default function Home() {
                                     <CheckCircle className="h-4 w-4 text-blue-600" />
                                     <span>No credit card required</span>
                                     <CheckCircle className="ml-2 h-4 w-4 text-blue-600" />
-                                    <span>14-day free trial</span>
+                                    <span>Start free today</span>
                                     <CheckCircle className="ml-2 h-4 w-4 text-blue-600" />
-                                    <span>Cancel anytime</span>
+                                    <span>Upgrade anytime</span>
                                 </div>
                             </div>
                             <div className="flex items-center justify-center">
@@ -835,8 +835,10 @@ export default function Home() {
                                 <ul className="mt-6 space-y-3">
                                     {[
                                         "5 videos per month",
-                                        "Basic summaries",
-                                        "3 questions per video",
+                                        "Auto-generated study questions (customizable)",
+                                        "Smart study notes",
+                                        "Progress tracking",
+                                        "Manual video categorization",
                                         "7-day storage",
                                     ].map(feature => (
                                         <li
@@ -875,11 +877,12 @@ export default function Home() {
                                 <ul className="mt-6 space-y-3">
                                     {[
                                         "Unlimited videos",
-                                        "Advanced AI summaries",
-                                        "5 questions per video",
+                                        "Auto-generated study questions (customizable)",
+                                        "Spaced repetition system",
+                                        "Smart study notes",
+                                        "Progress tracking",
+                                        "Automatic video categorization + search",
                                         "Unlimited storage",
-                                        "Cross-device access",
-                                        "Smart search",
                                     ].map(feature => (
                                         <li
                                             key={feature}
@@ -914,12 +917,8 @@ export default function Home() {
                                 </div>
                                 <ul className="mt-6 space-y-3">
                                     {[
-                                        "Unlimited videos",
-                                        "Advanced AI summaries",
-                                        "5 questions per video",
-                                        "Unlimited storage",
-                                        "Cross-device access",
-                                        "Valid student ID required",
+                                        "All Premium features included",
+                                        ".edu email verification required",
                                     ].map(feature => (
                                         <li
                                             key={feature}
@@ -1010,7 +1009,7 @@ export default function Home() {
                                     languages in the near future.
                                 </p>
                             </div>
-                            <div className="rounded-lg border border-blue-100 bg-white p-6 shadow-sm">
+                            {/* <div className="rounded-lg border border-blue-100 bg-white p-6 shadow-sm">
                                 <h3 className="text-lg font-bold text-blue-900">
                                     Can I share my summaries with friends or
                                     classmates?
@@ -1021,7 +1020,7 @@ export default function Home() {
                                     The recipient doesn't need a LearnSync
                                     account to view shared content.
                                 </p>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                 </section>
@@ -1057,8 +1056,7 @@ export default function Home() {
                                 </Button>
                             </div>
                             <p className="text-sm text-blue-100">
-                                No credit card required. 14-day free trial.
-                                Cancel anytime.
+                                No credit card required. Start learning for free.
                             </p>
                         </div>
                     </div>

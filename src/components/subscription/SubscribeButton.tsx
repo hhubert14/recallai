@@ -3,6 +3,7 @@
 import { subscribeAction } from "@/lib/actions/stripe";
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { Button } from "../ui/button";
 
 interface Props {
     userId: string; // Assuming userId is passed as a prop
@@ -28,13 +29,13 @@ const SubscribeButton = ({ userId }: Props) => {
     };
 
     return (
-        <button
+        <Button
+            className="mt-8 bg-blue-600 hover:bg-blue-700"
             onClick={handleSubscribe}
-            className="subscribe-button"
             disabled={isPending}
         >
             Subscribe
-        </button>
+        </Button>
     );
 };
 

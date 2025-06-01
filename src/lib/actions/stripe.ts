@@ -1,12 +1,15 @@
-import { stripe } from "../stripe/stripe";
+'use server';
+
+import { stripe } from "@/lib/stripe/stripe";
 
 interface Props {
-    userId: string;
+    userId: string; // Assuming userId is passed as a prop
 }
 
 export const subscribeAction = async ({ userId }: Props) => {
     try {
-        const { url } = await stripe.checkout.sessions.create({
+        const stripeInstance = await stripe();
+        const { url } = await stripeInstance.checkout.sessions.create({
             payment_method_types: ["card"],
             line_items: [
                 {
@@ -25,5 +28,6 @@ export const subscribeAction = async ({ userId }: Props) => {
         return url; // This would be the URL to redirect to for the checkout session
     } catch (error) {
         console.error("Error during subscription action:", error);
+        return null;
     }
-};
+}
