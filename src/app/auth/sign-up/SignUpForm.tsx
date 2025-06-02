@@ -24,16 +24,65 @@ export function SignUpForm() {
         setError(null);
 
         try {
+            // Check if email is valid
+            if (!email || !/\S+@\S+\.\S+/.test(email)) {
+                setError("Please enter a valid email address.");
+                setIsLoading(false);
+                return;
+            }
+            // Check if email is already registered
+            const response = await fetch(`/api/auth/check-email?email=${encodeURIComponent(email)}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+            console.log("Checking email:", email);
+            console.log("Response:", response);
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error("Error checking email:", errorData);
+                setError("Failed to check email. Please try again.");
+                setIsLoading(false);
+                return;
+            }
+
+            // Get the response data and check if email exists
+            const emailCheckResult = await response.json();
+            if (emailCheckResult.exists) {
+                setError("This email is already registered. Please use a different email or try to log in.");
+                setIsLoading(false);
+                return;
+            }
+
             const { data, error } = await supabase.auth.signUp({
                 email,
                 password,
             });
 
             if (error) {
+                console.error("Sign up error:", error);
                 throw error;
             }
 
             if (data.user) {
+                // Create a server-side API endpoint to handle user creation with service role
+                const response = await fetch('/api/create-user-profile', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        userId: data.user.id,
+                        email: data.user.email,
+                    }),
+                });
+                
+                if (!response.ok) {
+                    console.error('Profile creation failed:', await response.text());
+                    // Handle error, but don't block signup flow
+                }
+                        
                 // Email confirmation might be required
                 router.push("/auth/confirm");
                 router.refresh();
