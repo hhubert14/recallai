@@ -66,7 +66,7 @@ export function SignUpForm() {
 
             // Check if email is already registered
             const checkEmailResponse = await fetch(
-                `/api/auth/check-email?email=${encodeURIComponent(email)}`,
+                `/api/auth/check-email-exists?email=${encodeURIComponent(email)}`,
                 {
                     method: "GET",
                     headers: {
