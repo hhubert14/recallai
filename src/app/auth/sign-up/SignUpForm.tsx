@@ -30,8 +30,42 @@ export function SignUpForm() {
                 setIsLoading(false);
                 return;
             }
+            
+            // Validate email with server-side API endpoint
+            try {
+                const validationResponse = await fetch(
+                    `/api/validate-email?email=${encodeURIComponent(email)}`,
+                    {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                    }
+                );
+                
+                if (!validationResponse.ok) {
+                    console.error("Email validation request failed");
+                    // Continue with signup process despite validation error
+                } else {
+                    const data = await validationResponse.json();
+                    
+                    if (data.status === "invalid") {
+                        // Email is invalid according to ZeroBounce
+                        setError("This email address is not valid. Please use a different email.");
+                        setIsLoading(false);
+                        return;
+                    }
+                }
+            } catch (error) {
+                console.error("Error validating email:", error);
+                // Continue with signup process despite validation error
+                setError("Failed to validate email. Please proceed with caution.");
+                setIsLoading(false);
+                return;
+            }
+
             // Check if email is already registered
-            const response = await fetch(
+            const checkEmailResponse = await fetch(
                 `/api/auth/check-email?email=${encodeURIComponent(email)}`,
                 {
                     method: "GET",
@@ -41,9 +75,9 @@ export function SignUpForm() {
                 }
             );
             console.log("Checking email:", email);
-            console.log("Response:", response);
-            if (!response.ok) {
-                const errorData = await response.json();
+            console.log("Response:", checkEmailResponse);
+            if (!checkEmailResponse.ok) {
+                const errorData = await checkEmailResponse.json();
                 console.error("Error checking email:", errorData);
                 setError("Failed to check email. Please try again.");
                 setIsLoading(false);
@@ -51,7 +85,7 @@ export function SignUpForm() {
             }
 
             // Get the response data and check if email exists
-            const emailCheckResult = await response.json();
+            const emailCheckResult = await checkEmailResponse.json();
             if (emailCheckResult.exists) {
                 setError(
                     "This email is already registered. Please use a different email or try to log in."
@@ -60,17 +94,17 @@ export function SignUpForm() {
                 return;
             }
 
-            const { data, error } = await supabase.auth.signUp({
+            const { data: authData, error: authError } = await supabase.auth.signUp({
                 email,
                 password,
             });
 
-            if (error) {
-                console.error("Sign up error:", error);
-                throw error;
+            if (authError) {
+                console.error("Sign up error:", authError);
+                throw authError;
             }
 
-            if (data.user) {
+            if (authData.user) {
                 // Create a server-side API endpoint to handle user creation with service role
                 const response = await fetch("/api/create-user-profile", {
                     method: "POST",
@@ -78,8 +112,8 @@ export function SignUpForm() {
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
-                        userId: data.user.id,
-                        email: data.user.email,
+                        userId: authData.user.id,
+                        email: authData.user.email,
                     }),
                 });
 
