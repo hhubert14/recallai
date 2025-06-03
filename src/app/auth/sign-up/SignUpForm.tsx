@@ -31,12 +31,15 @@ export function SignUpForm() {
                 return;
             }
             // Check if email is already registered
-            const response = await fetch(`/api/auth/check-email?email=${encodeURIComponent(email)}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
+            const response = await fetch(
+                `/api/auth/check-email?email=${encodeURIComponent(email)}`,
+                {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
                 }
-            });
+            );
             console.log("Checking email:", email);
             console.log("Response:", response);
             if (!response.ok) {
@@ -50,7 +53,9 @@ export function SignUpForm() {
             // Get the response data and check if email exists
             const emailCheckResult = await response.json();
             if (emailCheckResult.exists) {
-                setError("This email is already registered. Please use a different email or try to log in.");
+                setError(
+                    "This email is already registered. Please use a different email or try to log in."
+                );
                 setIsLoading(false);
                 return;
             }
@@ -67,22 +72,25 @@ export function SignUpForm() {
 
             if (data.user) {
                 // Create a server-side API endpoint to handle user creation with service role
-                const response = await fetch('/api/create-user-profile', {
-                    method: 'POST',
+                const response = await fetch("/api/create-user-profile", {
+                    method: "POST",
                     headers: {
-                        'Content-Type': 'application/json',
+                        "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
                         userId: data.user.id,
                         email: data.user.email,
                     }),
                 });
-                
+
                 if (!response.ok) {
-                    console.error('Profile creation failed:', await response.text());
+                    console.error(
+                        "Profile creation failed:",
+                        await response.text()
+                    );
                     // Handle error, but don't block signup flow
                 }
-                        
+
                 // Email confirmation might be required
                 router.push("/auth/confirm");
                 router.refresh();
