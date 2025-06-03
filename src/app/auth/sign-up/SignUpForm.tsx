@@ -59,9 +59,9 @@ export function SignUpForm() {
             } catch (error) {
                 console.error("Error validating email:", error);
                 // Continue with signup process despite validation error
-                setError("Failed to validate email. Please proceed with caution.");
-                setIsLoading(false);
-                return;
+                // setError("Failed to validate email. Please proceed with caution.");
+                // setIsLoading(false);
+                // return;
             }
 
             // Check if email is already registered
