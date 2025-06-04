@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Brain } from "lucide-react";
 import { UserButton } from "@/components/ui/user-button";
+import { ExtensionConnectorButton } from "@/components/auth/extension-connector-button";
 
 export const metadata: Metadata = {
     title: "Dashboard | LearnSync",
@@ -62,9 +63,12 @@ export default function DashboardPage() {
                             Install the Chrome extension to start capturing
                             video summaries.
                         </p>
-                        <Button className="bg-blue-600 hover:bg-blue-700">
-                            Download Extension
-                        </Button>
+                        <div className="flex gap-3 flex-wrap">
+                            <Button className="bg-blue-600 hover:bg-blue-700">
+                                Download Extension
+                            </Button>
+                            <ExtensionConnectorButton />
+                        </div>
                     </div>
 
                     <div className="rounded-lg border p-6 shadow-sm">
