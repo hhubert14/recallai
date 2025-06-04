@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { SignInForm } from "@/app/auth/login/SignInForm";
+import { LoginForm } from "@/app/auth/login/LoginForm";
 import { Brain } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -29,7 +29,7 @@ export default function SignInPage() {
                         </p>
                     </div>
 
-                    <SignInForm />
+                    <LoginForm />
 
                     <div className="text-center text-sm text-gray-500">
                         <p>
