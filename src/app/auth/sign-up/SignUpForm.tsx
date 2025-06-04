@@ -30,7 +30,7 @@ export function SignUpForm() {
                 setIsLoading(false);
                 return;
             }
-            
+
             // Validate email with server-side API endpoint
             try {
                 const validationResponse = await fetch(
@@ -42,16 +42,18 @@ export function SignUpForm() {
                         },
                     }
                 );
-                
+
                 if (!validationResponse.ok) {
                     console.error("Email validation request failed");
                     // Continue with signup process despite validation error
                 } else {
                     const data = await validationResponse.json();
-                    
+
                     if (data.status === "invalid") {
                         // Email is invalid according to ZeroBounce
-                        setError("This email address is not valid. Please use a different email.");
+                        setError(
+                            "This email address is not valid. Please use a different email."
+                        );
                         setIsLoading(false);
                         return;
                     }
@@ -94,10 +96,11 @@ export function SignUpForm() {
                 return;
             }
 
-            const { data: authData, error: authError } = await supabase.auth.signUp({
-                email,
-                password,
-            });
+            const { data: authData, error: authError } =
+                await supabase.auth.signUp({
+                    email,
+                    password,
+                });
 
             if (authError) {
                 console.error("Sign up error:", authError);
