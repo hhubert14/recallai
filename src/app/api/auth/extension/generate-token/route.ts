@@ -1,19 +1,7 @@
-// src/app/api/auth/generate-extension-token/route.ts
+"use server";
+
 import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
-
-// Handle preflight requests
-export async function OPTIONS() {
-    return new NextResponse(null, {
-        status: 200,
-        headers: {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'POST, OPTIONS',
-            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-        },
-    });
-}
 
 export async function POST(request: NextRequest) {
     try {
@@ -22,16 +10,13 @@ export async function POST(request: NextRequest) {
         // Get the current user session
         const { data: { user }, error } = await supabase.auth.getUser();
         
+        console.log('User session:', user);
+        console.log('Auth error:', error);
         if (error || !user) {
             return NextResponse.json({ 
                 error: 'Not authenticated. Please sign in first.' 
             }, { 
                 status: 401,
-                headers: {
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-                    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-                }
             });
         }
         
@@ -50,28 +35,12 @@ export async function POST(request: NextRequest) {
             .single();
         
         if (!existingUser) {
-            // Create user in our users table if they don't exist
-            const { error: userCreateError } = await supabase
-                .from('users')
-                .insert({
-                    id: user.id,
-                    email: user.email || '',
-                    created_at: new Date().toISOString()
-                });
-            
-            if (userCreateError) {
-                console.error('Error creating user:', userCreateError);
-                return NextResponse.json({ 
-                    error: 'Failed to create user profile' 
-                }, { 
-                    status: 500,
-                    headers: {
-                        'Access-Control-Allow-Origin': '*',
-                        'Access-Control-Allow-Methods': 'POST, OPTIONS',
-                        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-                    }
-                });
-            }
+            console.error('User not found in users table:', user.id);
+            return NextResponse.json({
+                error: 'User not found in users table. Please create a profile first.' 
+            }, { 
+                status: 404
+            });
         }
         
         // Delete any existing extension tokens for this user
@@ -87,7 +56,6 @@ export async function POST(request: NextRequest) {
                 user_id: user.id,
                 token: extensionToken,
                 expires_at: expiresAt.toISOString(),
-                created_at: new Date().toISOString()
             })
             .select()
             .single();
@@ -98,11 +66,6 @@ export async function POST(request: NextRequest) {
                 error: 'Failed to create extension token' 
             }, { 
                 status: 500,
-                headers: {
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-                    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-                }
             });
         }
         
@@ -115,11 +78,7 @@ export async function POST(request: NextRequest) {
             },
             expiresAt: expiresAt.toISOString()
         }, {
-            headers: {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'POST, OPTIONS',
-                'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-            }
+            status: 200,
         });
         
     } catch (error) {
@@ -128,11 +87,6 @@ export async function POST(request: NextRequest) {
             error: 'Authentication failed' 
         }, { 
             status: 500,
-            headers: {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'POST, OPTIONS',
-                'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-            }
         });
     }
 }
@@ -140,9 +94,10 @@ export async function POST(request: NextRequest) {
 // Generate a random token for extension authentication
 function generateRandomToken(): string {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let token = '';
-    for (let i = 0; i < 64; i++) {
-        token += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return token;
+    const bytes = new Uint8Array(64);
+    crypto.getRandomValues(bytes);
+    return Array.from(bytes)
+        .map(b => b % chars.length)
+        .map(i => chars.charAt(i))
+        .join('');
 }
