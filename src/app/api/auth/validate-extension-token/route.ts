@@ -3,12 +3,30 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 
+export async function OPTIONS() {
+    return new NextResponse(null, {
+        status: 200,
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        },
+    });
+}
+
 export async function POST(request: NextRequest) {
     try {
         const authHeader = request.headers.get('Authorization');
         
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            return NextResponse.json({ error: 'Missing or invalid token' }, { status: 401 });
+            return NextResponse.json({ error: 'Missing or invalid token' }, { 
+                status: 401,
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+                    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+                }
+            });
         }
         
         const token = authHeader.substring(7); // Remove 'Bearer ' prefix
@@ -22,7 +40,14 @@ export async function POST(request: NextRequest) {
             .single();
         
         if (error || !tokenData) {
-            return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
+            return NextResponse.json({ error: 'Invalid token' }, { 
+                status: 401,
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+                    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+                }
+            });
         }
         
         // Check if token is expired
@@ -33,7 +58,14 @@ export async function POST(request: NextRequest) {
                 .delete()
                 .eq('token', token);
             
-            return NextResponse.json({ error: 'Token expired' }, { status: 401 });
+            return NextResponse.json({ error: 'Token expired' }, { 
+                status: 401,
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+                    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+                }
+            });
         }
         
         // Update last_used_at (or updated_at if you kept that column name)
@@ -50,7 +82,14 @@ export async function POST(request: NextRequest) {
             .single();
         
         if (userError || !user) {
-            return NextResponse.json({ error: 'User not found' }, { status: 404 });
+            return NextResponse.json({ error: 'User not found' }, { 
+                status: 404,
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+                    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+                }
+            });
         }
         
         return NextResponse.json({ 
@@ -59,10 +98,23 @@ export async function POST(request: NextRequest) {
                 id: user.id,
                 email: user.email
             }
+        }, {
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'POST, OPTIONS',
+                'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+            }
         });
         
     } catch (error) {
         console.error('Token validation error:', error);
-        return NextResponse.json({ error: 'Validation failed' }, { status: 500 });
+        return NextResponse.json({ error: 'Validation failed' }, { 
+            status: 500,
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'POST, OPTIONS',
+                'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+            }
+        });
     }
 }
