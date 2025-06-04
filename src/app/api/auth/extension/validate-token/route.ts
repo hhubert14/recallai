@@ -1,7 +1,5 @@
 "use server";
 
-// import { createClient } from "@/lib/supabase/server";
-// import { createAdminClient } from "@/lib/supabase/admin";
 import { createServiceRoleClient} from "@/lib/supabase/service-role";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -97,7 +95,6 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ 
             valid: true, 
             user: {
-                // id: user.id,
                 email: user.email
             }
         }, {
