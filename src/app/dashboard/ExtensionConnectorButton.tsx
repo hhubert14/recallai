@@ -30,7 +30,7 @@ export function ExtensionConnectorButton() {
         setIsLoading(true);
         setError(null);
         try {
-            const response = await fetch("/api/auth/extension/generate-token", {
+            const response = await fetch("/api/v1/auth/extension/generate-token", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

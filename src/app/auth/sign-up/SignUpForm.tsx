@@ -34,7 +34,7 @@ export function SignUpForm() {
             // Validate email with server-side API endpoint
             try {
                 const validationResponse = await fetch(
-                    `/api/validate-email?email=${encodeURIComponent(email)}`,
+                    `/api/v1/validate-email?email=${encodeURIComponent(email)}`,
                     {
                         method: "GET",
                         headers: {
@@ -68,7 +68,7 @@ export function SignUpForm() {
 
             // Check if email is already registered
             const checkEmailResponse = await fetch(
-                `/api/auth/check-email-exists?email=${encodeURIComponent(email)}`,
+                `/api/v1/auth/check-email-exists?email=${encodeURIComponent(email)}`,
                 {
                     method: "GET",
                     headers: {
