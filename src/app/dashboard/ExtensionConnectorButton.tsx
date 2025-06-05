@@ -48,16 +48,19 @@ export function ExtensionConnectorButton() {
                 chrome.runtime.sendMessage(
                     editorExtensionId,
                     {
-                        email: data.user.email,
-                        token: data.token,
+                        action: "authenticate_user",
+                        data: {
+                            email: data.user.email,
+                            token: data.token,
+                        },
                     },
                     (response) => {
                         if (!response.success) {
                             throw new Error(
-                                response.error || "Failed to open URL in editor"
+                                response.error || "Failed to authenticate user in extension"
                             );
                         }
-                        console.log("URL opened in editor successfully");
+                        console.log("User authenticated successfully in extension");
                     }
                 );
             }
