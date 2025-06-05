@@ -4,11 +4,11 @@ import { LoginForm } from "@/app/auth/login/LoginForm";
 import { Brain } from "lucide-react";
 
 export const metadata: Metadata = {
-    title: "Sign In | LearnSync",
-    description: "Sign in to your LearnSync account",
+    title: "Log In | LearnSync",
+    description: "Log in to your LearnSync account",
 };
 
-export default function SignInPage() {
+export default function LoginPage() {
     return (
         <div className="flex min-h-screen flex-col">
             <div className="flex min-h-screen flex-col items-center justify-center px-4 py-12 sm:px-6 lg:px-8">

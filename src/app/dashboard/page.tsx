@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Brain } from "lucide-react";
 import { UserButton } from "@/components/ui/user-button";
-import { ExtensionConnectorButton } from "@/app/dashboard/extension-connector-button";
+import { ExtensionConnectorButton } from "@/app/dashboard/ExtensionConnectorButton";
 
 export const metadata: Metadata = {
     title: "Dashboard | LearnSync",
