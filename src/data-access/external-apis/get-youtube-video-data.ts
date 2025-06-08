@@ -1,8 +1,10 @@
 import "server-only";
 import { YouTubeData } from "./types";
 
-export async function getYoutubeVideoData(videoId: string): Promise<YouTubeData | undefined> {
-    if (!videoId || typeof videoId !== 'string') {
+export async function getYoutubeVideoData(
+    videoId: string
+): Promise<YouTubeData | undefined> {
+    if (!videoId || typeof videoId !== "string") {
         return undefined;
     }
 
@@ -12,7 +14,9 @@ export async function getYoutubeVideoData(videoId: string): Promise<YouTubeData 
     }
 
     try {
-        const response = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoId}&key=${apiKey}`);
+        const response = await fetch(
+            `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoId}&key=${apiKey}`
+        );
         if (!response.ok) {
             throw new Error("Failed to fetch video data");
         }

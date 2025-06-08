@@ -7,7 +7,9 @@ export function extractTranscriptText(transcript: YoutubeTranscript): string {
 
     return transcript.transcript.map(item => item.text).join(" ");
 }
-export function extractTranscriptTimestamps(transcript: YoutubeTranscript): string[] {
+export function extractTranscriptTimestamps(
+    transcript: YoutubeTranscript
+): string[] {
     if (!transcript || !transcript.transcript) {
         return [];
     }

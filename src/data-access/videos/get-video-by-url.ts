@@ -4,7 +4,9 @@ import { createServiceRoleClient } from "@/lib/supabase/service-role";
 import { VideoDto } from "./types";
 import { toDtoMapper } from "./utils";
 
-export async function getVideoByUrl(videoUrl: string): Promise<VideoDto | undefined> {
+export async function getVideoByUrl(
+    videoUrl: string
+): Promise<VideoDto | undefined> {
     if (!videoUrl) {
         return undefined;
     }

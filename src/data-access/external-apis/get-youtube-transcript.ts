@@ -1,22 +1,28 @@
-import "server-only"
+import "server-only";
 
 // @ts-ignore
 import TranscriptAPI from "youtube-transcript-api";
 import { YoutubeTranscript } from "./types";
 
-export async function getYoutubeTranscript(videoId: string): Promise<YoutubeTranscript | null> {
-  try {
-    const transcript = await TranscriptAPI.getTranscript(videoId);
+export async function getYoutubeTranscript(
+    videoId: string
+): Promise<YoutubeTranscript | null> {
+    try {
+        const transcript = await TranscriptAPI.getTranscript(videoId);
 
-    if (!transcript || transcript.length === 0 || transcript.transcript === null) {
-      console.warn(`No transcript found for video ID: ${videoId}`);
-      return null;
+        if (
+            !transcript ||
+            transcript.length === 0 ||
+            transcript.transcript === null
+        ) {
+            console.warn(`No transcript found for video ID: ${videoId}`);
+            return null;
+        }
+        return transcript;
+    } catch (error) {
+        console.error("Error fetching transcript:", error);
+        return null;
     }
-    return transcript;
-  } catch (error) {
-    console.error('Error fetching transcript:', error);
-    return null;
-  }
 }
 
 /*

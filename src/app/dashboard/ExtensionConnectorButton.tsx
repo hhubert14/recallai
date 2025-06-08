@@ -17,7 +17,7 @@ export function ExtensionConnectorButton() {
 
         if (cooldown > 0) {
             timer = setTimeout(() => {
-                setCooldown((prevCooldown) => prevCooldown - 1);
+                setCooldown(prevCooldown => prevCooldown - 1);
             }, 1000);
         }
 
@@ -30,12 +30,15 @@ export function ExtensionConnectorButton() {
         setIsLoading(true);
         setError(null);
         try {
-            const response = await fetch("/api/v1/auth/extension/generate-token", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
+            const response = await fetch(
+                "/api/v1/auth/extension/generate-token",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
 
             const data = await response.json();
 
@@ -54,13 +57,16 @@ export function ExtensionConnectorButton() {
                             token: data.token,
                         },
                     },
-                    (response) => {
+                    response => {
                         if (!response.success) {
                             throw new Error(
-                                response.error || "Failed to authenticate user in extension"
+                                response.error ||
+                                    "Failed to authenticate user in extension"
                             );
                         }
-                        console.log("User authenticated successfully in extension");
+                        console.log(
+                            "User authenticated successfully in extension"
+                        );
                     }
                 );
             }

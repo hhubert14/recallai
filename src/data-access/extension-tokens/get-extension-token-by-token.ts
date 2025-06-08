@@ -4,7 +4,9 @@ import { createServiceRoleClient } from "@/lib/supabase/service-role";
 import { ExtensionTokenDto } from "./types";
 import { toDtoMapper } from "./utils";
 
-export async function getExtensionTokenByToken(token: string): Promise<ExtensionTokenDto | undefined> {
+export async function getExtensionTokenByToken(
+    token: string
+): Promise<ExtensionTokenDto | undefined> {
     if (!token) {
         return undefined;
     }

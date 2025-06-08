@@ -1,7 +1,6 @@
 // import { NextRequest, NextResponse } from "next/server";
 // import OpenAI from "openai";
 
-
 // const openaiKey = process.env.OPENAI_API_KEY;
 // const client = new OpenAI();
 
@@ -21,7 +20,7 @@
 //     { params }: { params: { url: string } }
 // ) {
 //     const videoUrl = params.url;
-    
+
 //     // Validate the video URL
 //     if (!videoUrl) {
 //         return NextResponse.json({ error: "Video URL is required" }, { status: 400 });
