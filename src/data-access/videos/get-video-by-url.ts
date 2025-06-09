@@ -5,9 +5,10 @@ import { VideoDto } from "./types";
 import { toDtoMapper } from "./utils";
 
 export async function getVideoByUrl(
-    videoUrl: string
+    videoUrl: string,
+    userId: string
 ): Promise<VideoDto | undefined> {
-    if (!videoUrl) {
+    if (!videoUrl || !userId) {
         return undefined;
     }
 
@@ -18,6 +19,7 @@ export async function getVideoByUrl(
             .from("videos")
             .select("*")
             .eq("url", videoUrl)
+            .eq("user_id", userId)
             .single();
 
         if (error) {
@@ -31,5 +33,6 @@ export async function getVideoByUrl(
         return toDtoMapper(data);
     } catch (error) {
         console.error("Error checking video existence:", error);
+        return undefined;
     }
 }

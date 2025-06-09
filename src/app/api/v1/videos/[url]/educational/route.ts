@@ -1,75 +1,129 @@
-// import { NextRequest, NextResponse } from "next/server";
-// import OpenAI from "openai";
+"use server";
 
-// const openaiKey = process.env.OPENAI_API_KEY;
-// const client = new OpenAI();
+import { NextRequest, NextResponse } from "next/server";
+import { getExtensionTokenByToken } from "@/data-access/extension-tokens/get-extension-token-by-token";
+import { getVideoByUrl } from "@/data-access/videos/get-video-by-url";
+import { getYoutubeVideoData } from "@/data-access/external-apis/get-youtube-video-data";
+import { getYoutubeTranscript } from "@/data-access/external-apis/get-youtube-transcript";
+import { checkVideoEducational } from "@/data-access/external-apis/check-video-educational";
+import { createClient } from "@/lib/supabase/server";
 
-// const completion = await client.chat.completions.create({
-//     model: "gpt-4.1",
-//     messages: [
-//         {
-//             role: "user",
-//             content: "Write a one-sentence bedtime story about a unicorn.",
-//         },
-//     ],
-// });
+export async function GET(
+    request: NextRequest,
+    { params }: { params: { url: string } }
+) {
+    const supabase = await createClient();
 
-// console.log(completion.choices[0].message.content);
-// export async function GET(
-//     request: NextRequest,
-//     { params }: { params: { url: string } }
-// ) {
-//     const videoUrl = params.url;
+    const searchParams = request.nextUrl.searchParams;
+    const videoUrl = params.url;
+    const videoId = searchParams.get('videoId');
+    const authToken = searchParams.get('authToken');
+    const processType = searchParams.get('processType');
 
-//     // Validate the video URL
-//     if (!videoUrl) {
-//         return NextResponse.json({ error: "Video URL is required" }, { status: 400 });
-//     }
+    if (!videoUrl || !videoId || !authToken || !processType) {
+        return NextResponse.json(
+            { error: "Missing required parameters" },
+            { status: 400 }
+        );
+    }
 
-//     // Here you would typically fetch educational content related to the video URL
-//     // For demonstration, we'll return a mock response
-//     const educationalContent = {
-//         videoUrl,
-//         title: "Sample Educational Video",
-//         description: "This is a sample description for the educational video.",
-//         resources: [
-//             { type: "article", title: "Related Article", url: "https://example.com/article" },
-//             { type: "book", title: "Related Book", url: "https://example.com/book" }
-//         ]
-//     };
+    if (processType !== "educational") {
+        return NextResponse.json(
+            { error: "Invalid process type" },
+            { status: 400 }
+        );
+    }
 
-//     return NextResponse.json(educationalContent);
-// }
+    try {
+        const tokenData = await getExtensionTokenByToken(authToken);
+        if (!tokenData) {
+            return NextResponse.json(
+                { error: "Invalid authentication token" },
+                { status: 401 }
+            );
+        }
 
-// const GetYoutubeTranscript = async (videoId: string) => {
-//     const response = await fetch(`https://www.youtube.com/api/timedtext?lang=en&v=${videoId}`);
-//     if (!response.ok) {
-//         throw new Error("Failed to fetch YouTube transcript");
-//     }
-//     const text = await response.text();
-//     // Parse the XML response to extract transcript text
-//     const parser = new DOMParser();
-//     const xmlDoc = parser.parseFromString(text, "application/xml");
-//     const transcripts = Array.from(xmlDoc.getElementsByTagName("body")[0].children);
-//     return transcripts.map(t => t.textContent).join(" ");
-// };
+        const {
+            data: { user },
+            error,
+        } = await supabase.auth.getUser();
 
-// const GetYoutubeTitle = async (videoId: string) => {
-//     const response = await fetch(`https://www.youtube.com/watch?v=${videoId}`);
-//     if (!response.ok) {
-//         throw new Error("Failed to fetch YouTube video title");
-//     }
-//     const text = await response.text();
-//     const titleMatch = text.match(/<title>(.*?)<\/title>/);
-//     return titleMatch ? titleMatch[1].replace(" - YouTube", "") : "Unknown Title";
-// };
+        if (!user || error) {
+            console.error("Authentication error:", error);
+            return NextResponse.json(
+                { error: "User not authenticated" },
+                { status: 401 }
+            );
+        }
 
-// const GetYoutubeDescription = async (videoId: string) => {
-//     const response = await fetch(`https://www.youtube.com/watch?v=${videoId}`);
-//     if (!response.ok) {
-//         throw new Error("Failed to fetch YouTube video description");
-//     }
-//     const text = await response.text();
-//     const descriptionMatch = text.match(/<meta name="description" content="(.*?)"/);
-//     return descriptionMatch ? descriptionMatch[1] : "No Description Available";
-// }
+        if (tokenData.user_id !== user.id) {
+            return NextResponse.json(
+                { error: "Authentication token does not match user" },
+                { status: 403 }
+            );
+        }
+
+        const video = await getVideoByUrl(videoUrl, user.id);
+        if (video) {
+            return NextResponse.json(
+                { error: "Video already exists" },
+                { status: 409 }
+            );
+        }
+
+        const youtubeData = await getYoutubeVideoData(videoId);
+        if (
+            !youtubeData ||
+            !youtubeData.items ||
+            youtubeData.items.length === 0
+        ) {
+            return NextResponse.json(
+                { error: "YouTube video not found" },
+                { status: 404 }
+            );
+        }
+
+        const transcript = await getYoutubeTranscript(videoId);
+        if (!transcript) {
+            return NextResponse.json(
+                { error: "YouTube transcript not found" },
+                { status: 404 }
+            );
+        }
+
+        const isEducational = await checkVideoEducational(
+            youtubeData.items[0].snippet.title,
+            youtubeData.items[0].snippet.description,
+            transcript
+        );
+
+        if (isEducational === undefined) {
+            return NextResponse.json(
+                { error: "Failed to determine if the video is educational" },
+                { status: 500 }
+            );
+        }
+
+        if (!isEducational) {
+            return NextResponse.json(
+                { error: "Video is not educational" },
+                { status: 400 }
+            );
+        }
+        return NextResponse.json(
+            {
+                videoData: youtubeData.items[0],
+                transcript: transcript.transcript,
+                isEducational: true,
+            },
+            { status: 200 }
+        );
+
+    } catch (error) {
+        const errorMessage =
+            error instanceof Error
+                ? error.message
+                : "An unknown error occurred";
+        return NextResponse.json({ error: errorMessage }, { status: 500 });
+    }
+}

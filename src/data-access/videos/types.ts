@@ -13,3 +13,16 @@ export type VideoDto = {
     expiry_date: string;
     video_id: string;
 };
+
+export type CreateVideoDto = {
+    user_id: string;
+    platform?: string;
+    title: string;
+    channel_name?: string;
+    duration?: number;
+    category?: string;
+    url: string;
+    description?: string;
+    video_id?: string;
+    expiry_date?: string | null;
+};
