@@ -1,3 +1,5 @@
+// Reference: https://strapi.io/blog/epic-next-js-14-tutorial-part-6-create-video-summary-with-next-js-and-open-ai?utm_campaign=DevRel%20Epic%20Next%20Course&utm_source=epic-next-6-post
+
 import "server-only";
 
 // @ts-ignore
