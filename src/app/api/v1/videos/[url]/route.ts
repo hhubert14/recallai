@@ -21,7 +21,7 @@ export async function POST(
         data: { user },
         error,
     } = await supabase.auth.getUser();
-    
+
     if (error || !user) {
         console.error("Authentication error:", error);
         return NextResponse.json(
@@ -33,42 +33,57 @@ export async function POST(
     try {
         const body = await request.json();
         console.log("Request body:", body);
-        
+
         // Remove user_id from the request body since we'll use the authenticated user's ID
-        const { platform, title, channel_name, duration, category, url, description, video_id } = body;
+        const {
+            platform,
+            title,
+            channel_name,
+            duration,
+            category,
+            url,
+            description,
+            video_id,
+        } = body;
 
         // Validate the incoming video data (user_id no longer required in body)
         if (!title || !url) {
             return NextResponse.json(
-                { error: "Missing required video data", missing: { 
-                    title: !title, 
-                    url: !url 
-                }},
+                {
+                    error: "Missing required video data",
+                    missing: {
+                        title: !title,
+                        url: !url,
+                    },
+                },
                 { status: 400 }
             );
         }
-        
+
         const videoExists = await getVideoByUrl(videoUrl, user.id);
         if (videoExists) {
             console.log("Video already exists for this user:", videoExists);
             return NextResponse.json(
-                { error: "Video already exists for this user", video: videoExists },
+                {
+                    error: "Video already exists for this user",
+                    video: videoExists,
+                },
                 { status: 409 }
             );
         }
 
         console.log("Creating video with data:", {
             user_id: user.id, // Use the authenticated user's ID
-            platform, 
-            title, 
-            channel_name, 
-            duration, 
-            category, 
-            url, 
-            description, 
-            video_id
+            platform,
+            title,
+            channel_name,
+            duration,
+            category,
+            url,
+            description,
+            video_id,
         });
-        
+
         // Create the video using the authenticated user's ID
         const createdVideo = await createVideo({
             user_id: user.id, // Always use the authenticated user's ID
@@ -79,18 +94,18 @@ export async function POST(
             category,
             url,
             description,
-            video_id
+            video_id,
         });
-        
+
         console.log("Video created successfully:", createdVideo);
         return NextResponse.json(createdVideo, { status: 201 });
     } catch (error) {
         console.error("Error creating video:", error);
         return NextResponse.json(
-            { 
-                error: "Failed to create video", 
+            {
+                error: "Failed to create video",
                 details: error instanceof Error ? error.message : String(error),
-                stack: error instanceof Error ? error.stack : undefined
+                stack: error instanceof Error ? error.stack : undefined,
             },
             { status: 500 }
         );

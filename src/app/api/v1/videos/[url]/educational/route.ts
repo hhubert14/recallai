@@ -16,9 +16,9 @@ export async function GET(
 
     const searchParams = request.nextUrl.searchParams;
     const { url: videoUrl } = await params;
-    const videoId = searchParams.get('videoId');
-    const authToken = searchParams.get('authToken');
-    const processType = searchParams.get('processType');
+    const videoId = searchParams.get("videoId");
+    const authToken = searchParams.get("authToken");
+    const processType = searchParams.get("processType");
 
     if (!videoUrl || !videoId || !authToken || !processType) {
         return NextResponse.json(
@@ -62,12 +62,14 @@ export async function GET(
         if (user && !error) {
             if (tokenData.user_id !== user.id) {
                 return NextResponse.json(
-                    { error: "Authentication token does not match current user session" },
+                    {
+                        error: "Authentication token does not match current user session",
+                    },
                     { status: 403 }
                 );
             }
         }
-        
+
         // Use the token's user_id as the authenticated user for this request
         const authenticatedUserId = tokenData.user_id;
 
@@ -98,7 +100,9 @@ export async function GET(
             //     { error: "YouTube transcript not found" },
             //     { status: 404 }
             // );
-            console.warn(`Transcript not found for video ID: ${videoId}. Proceeding without transcript.`);
+            console.warn(
+                `Transcript not found for video ID: ${videoId}. Proceeding without transcript.`
+            );
             // transcript = {
             //     transcript: [],
             // };
@@ -133,7 +137,6 @@ export async function GET(
             },
             { status: 200 }
         );
-
     } catch (error) {
         const errorMessage =
             error instanceof Error

@@ -8,10 +8,12 @@ import TranscriptAPI from "youtube-transcript-api";
 
 export async function getYoutubeTranscript(
     videoId: string
-)/*: Promise<YoutubeTranscript | null>*/ {
+) /*: Promise<YoutubeTranscript | null>*/ {
     try {
         // const transcript = await TranscriptAPI.getTranscript(videoId);
-        const transcript = await fetch(`https://deserving-harmony-9f5ca04daf.strapiapp.com/utilai/yt-transcript/${videoId}`);
+        const transcript = await fetch(
+            `https://deserving-harmony-9f5ca04daf.strapiapp.com/utilai/yt-transcript/${videoId}`
+        );
 
         // if (!transcript) {
         //     console.warn(`Transcript API returned null/undefined for video ID: ${videoId}`);
@@ -32,17 +34,28 @@ export async function getYoutubeTranscript(
         return transcript.text();
     } catch (error) {
         if (error instanceof Error) {
-            if (error.message.includes('unavailable')) {
-                console.error(`Video unavailable for transcript extraction - video ID: ${videoId}. Error: ${error.message}`);
-            } else if (error.message.includes('captions disabled')) {
-                console.error(`Captions are disabled for video ID: ${videoId}. Error: ${error.message}`);
-            } else if (error.message.includes('private')) {
-                console.error(`Video is private or restricted for video ID: ${videoId}. Error: ${error.message}`);
+            if (error.message.includes("unavailable")) {
+                console.error(
+                    `Video unavailable for transcript extraction - video ID: ${videoId}. Error: ${error.message}`
+                );
+            } else if (error.message.includes("captions disabled")) {
+                console.error(
+                    `Captions are disabled for video ID: ${videoId}. Error: ${error.message}`
+                );
+            } else if (error.message.includes("private")) {
+                console.error(
+                    `Video is private or restricted for video ID: ${videoId}. Error: ${error.message}`
+                );
             } else {
-                console.error(`Unexpected error fetching transcript for video ID: ${videoId}. Error: ${error.message}`);
+                console.error(
+                    `Unexpected error fetching transcript for video ID: ${videoId}. Error: ${error.message}`
+                );
             }
         } else {
-            console.error(`Unknown error type fetching transcript for video ID: ${videoId}:`, error);
+            console.error(
+                `Unknown error type fetching transcript for video ID: ${videoId}:`,
+                error
+            );
         }
         return null;
     }
