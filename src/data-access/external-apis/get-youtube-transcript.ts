@@ -4,7 +4,7 @@ import "server-only";
 
 // @ts-ignore
 import TranscriptAPI from "youtube-transcript-api";
-import { YoutubeTranscript } from "./types";
+// import { YoutubeTranscript } from "./types";
 
 export async function getYoutubeTranscript(
     videoId: string
