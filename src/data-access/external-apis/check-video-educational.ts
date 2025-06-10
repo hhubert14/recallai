@@ -7,13 +7,15 @@ import { extractTranscriptText } from "./utils";
 export async function checkVideoEducational(
     title: string,
     description: string,
-    transcript: YoutubeTranscript
+    // transcript: YoutubeTranscript
+    transcript: string
 ): Promise<boolean | undefined> {
     if (!title || !description || !transcript) {
         return undefined;
     }
 
-    const transcriptText = extractTranscriptText(transcript);
+    // const transcriptText = extractTranscriptText(transcript);
+    const transcriptText = transcript;
 
     const openai = new OpenAI();
     const response = await openai.chat.completions.create({

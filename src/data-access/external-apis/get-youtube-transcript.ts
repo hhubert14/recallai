@@ -6,21 +6,42 @@ import { YoutubeTranscript } from "./types";
 
 export async function getYoutubeTranscript(
     videoId: string
-): Promise<YoutubeTranscript | null> {
+)/*: Promise<YoutubeTranscript | null>*/ {
     try {
-        const transcript = await TranscriptAPI.getTranscript(videoId);
+        // const transcript = await TranscriptAPI.getTranscript(videoId);
+        const transcript = await fetch(`https://deserving-harmony-9f5ca04daf.strapiapp.com/utilai/yt-transcript/${videoId}`);
 
-        if (
-            !transcript ||
-            transcript.length === 0 ||
-            transcript.transcript === null
-        ) {
-            console.warn(`No transcript found for video ID: ${videoId}`);
-            return null;
-        }
-        return transcript;
+        // if (!transcript) {
+        //     console.warn(`Transcript API returned null/undefined for video ID: ${videoId}`);
+        //     return null;
+        // }
+
+        // if (transcript.length === 0) {
+        //     console.warn(`Empty transcript array returned for video ID: ${videoId}`);
+        //     return null;
+        // }
+
+        // if (transcript.transcript === null) {
+        //     console.warn(`Transcript property is null for video ID: ${videoId}`);
+        //     return null;
+        // }
+
+        // console.log(`Successfully fetched transcript for video ID: ${videoId} with ${transcript.length} segments`);
+        return transcript.text();
     } catch (error) {
-        console.error("Error fetching transcript:", error);
+        if (error instanceof Error) {
+            if (error.message.includes('unavailable')) {
+                console.error(`Video unavailable for transcript extraction - video ID: ${videoId}. Error: ${error.message}`);
+            } else if (error.message.includes('captions disabled')) {
+                console.error(`Captions are disabled for video ID: ${videoId}. Error: ${error.message}`);
+            } else if (error.message.includes('private')) {
+                console.error(`Video is private or restricted for video ID: ${videoId}. Error: ${error.message}`);
+            } else {
+                console.error(`Unexpected error fetching transcript for video ID: ${videoId}. Error: ${error.message}`);
+            }
+        } else {
+            console.error(`Unknown error type fetching transcript for video ID: ${videoId}:`, error);
+        }
         return null;
     }
 }
