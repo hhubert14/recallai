@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createVideo } from "@/data-access/videos/create-video";
 import { createClient } from "@/lib/supabase/server";
+import { getVideoByUrl } from "@/data-access/videos/get-video-by-url";
 
 export async function POST(
     request: NextRequest,
@@ -44,6 +45,15 @@ export async function POST(
                     url: !url 
                 }},
                 { status: 400 }
+            );
+        }
+        
+        const videoExists = await getVideoByUrl(videoUrl, user.id);
+        if (videoExists) {
+            console.log("Video already exists for this user:", videoExists);
+            return NextResponse.json(
+                { error: "Video already exists for this user", video: videoExists },
+                { status: 409 }
             );
         }
 

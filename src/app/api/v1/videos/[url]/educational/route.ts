@@ -72,6 +72,7 @@ export async function GET(
         const authenticatedUserId = tokenData.user_id;
 
         const video = await getVideoByUrl(videoUrl, authenticatedUserId);
+        console.log("Video data:", video);
         if (video) {
             return NextResponse.json(
                 { error: "Video already exists" },
