@@ -10,7 +10,7 @@ const VideoSummarySchema = z.object({
   topics: z.array(z.string()).describe("Primary topics covered in the video"),
 //   isWorthWatching: z.boolean().describe("Whether the video is worth watching based on content quality"),
 //   duration: z.string().optional().describe("Estimated watch time or content density"),
-  targetAudience: z.string().describe("Who would benefit most from watching this video")
+//   targetAudience: z.string().describe("Who would benefit most from watching this video")
 });
 
 type VideoSummary = z.infer<typeof VideoSummarySchema>;
@@ -38,7 +38,7 @@ export async function generateVideoSummary(
     console.log("🔧 Initializing ChatOpenAI...");
     const llm = new ChatOpenAI({
         model: "gpt-4.1-nano-2025-04-14", // Note: using a more standard model name
-        temperature: 0.1,
+        temperature: 0,
     });
 
     // Create structured output chain
@@ -61,7 +61,6 @@ Transcript: ${transcriptText}
 Please provide:
 1. A comprehensive summary of the video content
 2. Key points or main takeaways
-3. Target audience who would benefit most
 
 Be thorough but concise in your analysis.`,
             },
