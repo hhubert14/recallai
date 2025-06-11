@@ -1,7 +1,7 @@
 "use server";
 
 import { NextRequest, NextResponse } from "next/server";
-import { getExtensionTokenByToken } from "@/data-access/extension-tokens/get-extension-token-by-token";
+import { getExtensionTokenByToken } from "@/data-access/extension/get-extension-token-by-token";
 import { getVideoByUrl } from "@/data-access/videos/get-video-by-url";
 import { getYoutubeVideoData } from "@/data-access/external-apis/get-youtube-video-data";
 import { getYoutubeTranscript } from "@/data-access/external-apis/get-youtube-transcript";
