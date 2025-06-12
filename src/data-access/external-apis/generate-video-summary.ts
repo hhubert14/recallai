@@ -6,8 +6,8 @@ import { z } from "zod";
 // Define the schema for structured output
 const VideoSummarySchema = z.object({
   summary: z.string().describe("A comprehensive summary of the video content"),
-  keyPoints: z.array(z.string()).describe("Main key points or takeaways from the video"),
-  topics: z.array(z.string()).describe("Primary topics covered in the video"),
+//   keyPoints: z.array(z.string()).describe("Main key points or takeaways from the video"),
+//   topics: z.array(z.string()).describe("Primary topics covered in the video"),
 //   isWorthWatching: z.boolean().describe("Whether the video is worth watching based on content quality"),
 //   duration: z.string().optional().describe("Estimated watch time or content density"),
 //   targetAudience: z.string().describe("Who would benefit most from watching this video")
@@ -60,7 +60,6 @@ Transcript: ${transcriptText}
 
 Please provide:
 1. A comprehensive summary of the video content
-2. Key points or main takeaways
 
 Be thorough but concise in your analysis.`,
             },
