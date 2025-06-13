@@ -1,7 +1,9 @@
 import { CreateQuestionOptionsDto } from "./types";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
 
-export async function createQuestionOptions(questionOptionsData: CreateQuestionOptionsDto) {
+export async function createQuestionOptions(
+    questionOptionsData: CreateQuestionOptionsDto
+) {
     const supabase = createServiceRoleClient();
 
     try {
@@ -12,7 +14,9 @@ export async function createQuestionOptions(questionOptionsData: CreateQuestionO
             .single();
 
         if (error) {
-            throw new Error(`Error creating question options: ${error.message}`);
+            throw new Error(
+                `Error creating question options: ${error.message}`
+            );
         }
 
         if (!data) {

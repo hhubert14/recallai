@@ -180,7 +180,8 @@ export async function GET(request: NextRequest) {
         "https://www.youtube.com/watch?v=7XIv3Bko1aA"
     );
     const videoId = "7XIv3Bko1aA";
-    const authToken = "7wplB57D5v4lM2tQTDcrOLFuKTU1rdXkQUulEDplm3RTcTOh5hsmclpqBG3UvRYE";
+    const authToken =
+        "7wplB57D5v4lM2tQTDcrOLFuKTU1rdXkQUulEDplm3RTcTOh5hsmclpqBG3UvRYE";
     const processType = "automatic";
     console.log("TEST ROUTE CALLED", { youtubeUrl, videoId });
     const response = await fetch(
@@ -195,22 +196,27 @@ export async function GET(request: NextRequest) {
                 videoId,
                 authToken,
                 processType,
-            })
+            }),
         }
     );
 
     try {
         // Check if response is ok before parsing
         if (!response.ok) {
-            console.error(`Error response: ${response.status} ${response.statusText}`);
+            console.error(
+                `Error response: ${response.status} ${response.statusText}`
+            );
             // Read the response text for debugging
             const errorText = await response.text();
             console.error(`Response body: ${errorText}`);
-            return NextResponse.json({
-                status: response.status,
-                error: response.statusText,
-                details: errorText || "No response body"
-            }, { status: 500 });
+            return NextResponse.json(
+                {
+                    status: response.status,
+                    error: response.statusText,
+                    details: errorText || "No response body",
+                },
+                { status: 500 }
+            );
         }
 
         // Only try to parse JSON for successful responses
@@ -221,10 +227,13 @@ export async function GET(request: NextRequest) {
         });
     } catch (error) {
         console.error("Error parsing response:", error);
-        return NextResponse.json({
-            status: 500,
-            error: "Failed to parse response",
-            details: error instanceof Error ? error.message : String(error)
-        }, { status: 500 });
+        return NextResponse.json(
+            {
+                status: 500,
+                error: "Failed to parse response",
+                details: error instanceof Error ? error.message : String(error),
+            },
+            { status: 500 }
+        );
     }
 }

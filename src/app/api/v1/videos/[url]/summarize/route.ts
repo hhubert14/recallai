@@ -12,7 +12,7 @@ import { createSummary } from "@/data-access/summaries/create-summary";
 import { authenticateRequest } from "@/use-cases/extension/authenticate-request";
 
 export async function POST(
-    request: NextRequest,
+    request: NextRequest
     // { params }: { params: { url: string } }
 ) {
     const supabase = await createClient();
@@ -22,8 +22,15 @@ export async function POST(
     // const title = searchParams.get("title");
     // const description = searchParams.get("description");
     // const transcript = searchParams.get("transcript");
-    const { authToken, video_id, title, description, transcript } = await request.json();
-    console.log("Received data:", { authToken, video_id, title, description, transcript });
+    const { authToken, video_id, title, description, transcript } =
+        await request.json();
+    console.log("Received data:", {
+        authToken,
+        video_id,
+        title,
+        description,
+        transcript,
+    });
 
     if (!authToken || !video_id || !title || !description || !transcript) {
         return NextResponse.json(
@@ -51,10 +58,10 @@ export async function POST(
         if (tokenData.error) {
             return NextResponse.json(tokenData, { status: tokenData.status });
         }
-    
+
         // Use the token's user_id as the authenticated user for this request
         const authenticatedUserId = tokenData.userId;
-    
+
         if (!authenticatedUserId) {
             return NextResponse.json(
                 { error: "User not authenticated" },
@@ -62,7 +69,11 @@ export async function POST(
             );
         }
 
-        const summary = await generateVideoSummary(title, description, transcript);
+        const summary = await generateVideoSummary(
+            title,
+            description,
+            transcript
+        );
         if (!summary) {
             return NextResponse.json(
                 { error: "Failed to generate video summary" },

@@ -5,14 +5,28 @@ import { z } from "zod";
 
 // Define the schema for multiple choice questions only
 const MultipleChoiceQuestionsSchema = z.object({
-  questions: z.array(
-    z.object({
-      question: z.string().describe("The question text"),
-      options: z.array(z.string()).length(4).describe("Four possible answer options"),
-      correctAnswerIndex: z.number().min(0).max(3).describe("Index of the correct answer (0-3)"),
-      explanation: z.string().describe("Brief explanation of why the correct answer is right")
-    })
-  ).length(5).describe("Five multiple-choice questions based on the video content")
+    questions: z
+        .array(
+            z.object({
+                question: z.string().describe("The question text"),
+                options: z
+                    .array(z.string())
+                    .length(4)
+                    .describe("Four possible answer options"),
+                correctAnswerIndex: z
+                    .number()
+                    .min(0)
+                    .max(3)
+                    .describe("Index of the correct answer (0-3)"),
+                explanation: z
+                    .string()
+                    .describe(
+                        "Brief explanation of why the correct answer is right"
+                    ),
+            })
+        )
+        .length(5)
+        .describe("Five multiple-choice questions based on the video content"),
 });
 
 type MultipleChoiceQuestions = z.infer<typeof MultipleChoiceQuestionsSchema>;
@@ -24,7 +38,14 @@ export async function generateVideoQuestions(
 ): Promise<MultipleChoiceQuestions | undefined> {
     if (!title || !description || !transcript) {
         console.log("❌ Missing required parameters");
-        console.log("Missing - Title:", !title, "Description:", !description, "Transcript:", !transcript);
+        console.log(
+            "Missing - Title:",
+            !title,
+            "Description:",
+            !description,
+            "Transcript:",
+            !transcript
+        );
         return undefined;
     }
 
@@ -38,7 +59,9 @@ export async function generateVideoQuestions(
     });
 
     // Create structured output chain
-    const structuredLlm = llm.withStructuredOutput(MultipleChoiceQuestionsSchema);
+    const structuredLlm = llm.withStructuredOutput(
+        MultipleChoiceQuestionsSchema
+    );
 
     try {
         const result = await structuredLlm.invoke([
@@ -77,17 +100,23 @@ Make the questions challenging but fair, testing genuine understanding of import
         console.log("Result type:", typeof result);
         console.log("Result keys:", result ? Object.keys(result) : "NO RESULT");
         console.log("Number of questions:", result?.questions?.length || 0);
-        
+
         return result;
     } catch (error) {
         console.error("❌ Error generating multiple choice questions:", error);
-        console.error("Error type:", error instanceof Error ? error.constructor.name : typeof error);
-        console.error("Error message:", error instanceof Error ? error.message : String(error));
-        
+        console.error(
+            "Error type:",
+            error instanceof Error ? error.constructor.name : typeof error
+        );
+        console.error(
+            "Error message:",
+            error instanceof Error ? error.message : String(error)
+        );
+
         if (error instanceof Error && error.stack) {
             console.error("Error stack:", error.stack);
         }
-        
+
         return undefined;
     }
 }

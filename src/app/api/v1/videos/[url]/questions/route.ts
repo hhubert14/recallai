@@ -8,13 +8,19 @@ import { createQuestionOptions } from "@/data-access/question-options/create-que
 import { authenticateRequest } from "@/use-cases/extension/authenticate-request";
 
 export async function POST(
-    request: NextRequest,
+    request: NextRequest
     // { params }: { params: { url: string } }
 ) {
     const supabase = await createClient();
 
-    const { authToken, video_id, title, description, transcript } = await request.json();
-    console.log("Received data:", { authToken, title, description, transcript: transcript?.substring(0, 100) + "..." });
+    const { authToken, video_id, title, description, transcript } =
+        await request.json();
+    console.log("Received data:", {
+        authToken,
+        title,
+        description,
+        transcript: transcript?.substring(0, 100) + "...",
+    });
 
     if (!authToken || !video_id || !title || !description || !transcript) {
         return NextResponse.json(
@@ -42,10 +48,10 @@ export async function POST(
         if (tokenData.error) {
             return NextResponse.json(tokenData, { status: tokenData.status });
         }
-    
+
         // Use the token's user_id as the authenticated user for this request
         const authenticatedUserId = tokenData.userId;
-    
+
         if (!authenticatedUserId) {
             return NextResponse.json(
                 { error: "User not authenticated" },
@@ -53,16 +59,23 @@ export async function POST(
             );
         }
 
-        const questionData = await generateVideoQuestions(title, description, transcript);
+        const questionData = await generateVideoQuestions(
+            title,
+            description,
+            transcript
+        );
         if (!questionData) {
             return NextResponse.json(
                 { error: "Failed to generate video questions" },
                 { status: 500 }
             );
         }
-        
+
         // Return the questions directly without additional nesting
-        console.log("Generated Questions Count:", questionData.questions.length);
+        console.log(
+            "Generated Questions Count:",
+            questionData.questions.length
+        );
 
         // Create each question and its options in the database
         for (const question of questionData.questions) {
@@ -81,15 +94,15 @@ export async function POST(
                     question_id: createdQuestion.id,
                     option_text: question.options[i],
                     is_correct: i === question.correctAnswerIndex, // Assuming the correct answer is marked
-                    explanation: i === question.correctAnswerIndex ? question.explanation : undefined
+                    explanation:
+                        i === question.correctAnswerIndex
+                            ? question.explanation
+                            : undefined,
                 });
             }
         }
 
-        return NextResponse.json(
-            questionData,
-            { status: 200 }
-        );
+        return NextResponse.json(questionData, { status: 200 });
     } catch (error) {
         console.error("API route error:", error);
         const errorMessage =
