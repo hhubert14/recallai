@@ -1,16 +1,26 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Brain } from "lucide-react";
+import { Brain, Play } from "lucide-react";
 import { UserButton } from "@/components/ui/user-button";
 import { ExtensionConnectorButton } from "@/app/dashboard/ExtensionConnectorButton";
+import { createClient } from "@/lib/supabase/server";
+import { getVideosByUserId } from "@/data-access/videos/get-videos-by-user-id";
+import { VideoDto } from "@/data-access/videos/types";
 
 export const metadata: Metadata = {
     title: "Dashboard | LearnSync",
     description: "Your LearnSync dashboard",
 };
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    let recentVideos: VideoDto[] = [];
+    if (user) {
+        recentVideos = await getVideosByUserId(user.id, 5); // Get latest 5 videos
+    }
     return (
         <div className="flex min-h-screen flex-col">
             <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -73,13 +83,41 @@ export default function DashboardPage() {
 
                     <div className="rounded-lg border p-6 shadow-sm">
                         <h2 className="text-xl font-bold mb-4">
-                            Recent Summaries
+                            Recent Videos
                         </h2>
-                        <p className="text-gray-500">
-                            You don't have any summaries yet. Watch educational
-                            videos with the extension installed to create
-                            summaries.
-                        </p>
+                        {recentVideos.length > 0 ? (
+                            <div className="space-y-3">
+                                {recentVideos.map((video) => (
+                                    <Link 
+                                        key={video.id} 
+                                        href={`/dashboard/video/${video.id}`}
+                                        className="block p-3 rounded-lg border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-colors"
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <div className="flex-shrink-0">
+                                                <Play className="h-5 w-5 text-blue-600" />
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <h3 className="font-medium truncate text-gray-900">
+                                                    {video.title}
+                                                </h3>
+                                                {video.channel_name && (
+                                                    <p className="text-sm text-gray-500 truncate">
+                                                        {video.channel_name}
+                                                    </p>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </Link>
+                                ))}
+                            </div>
+                        ) : (
+                            <p className="text-gray-500">
+                                You don't have any videos yet. Watch educational
+                                videos with the extension installed to create
+                                summaries.
+                            </p>
+                        )}
                     </div>
 
                     <div className="rounded-lg border p-6 shadow-sm">

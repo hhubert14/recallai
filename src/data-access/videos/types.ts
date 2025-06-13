@@ -1,5 +1,5 @@
 export type VideoDto = {
-    id: string;
+    id: number;
     user_id: string;
     platform: string;
     title: string;
