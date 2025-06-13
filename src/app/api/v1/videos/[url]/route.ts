@@ -2,12 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { createVideo } from "@/data-access/videos/create-video";
 import { createClient } from "@/lib/supabase/server";
 import { getVideoByUrl } from "@/data-access/videos/get-video-by-url";
+import { authenticateRequest } from "@/use-cases/extension/authenticate-request";
 
 export async function POST(
     request: NextRequest,
     { params }: { params: { url: string } }
 ) {
     const { url: videoUrl } = await params;
+    const body = await request.json();
+    // const { authToken } = await request.json();
 
     if (!videoUrl) {
         return NextResponse.json(
@@ -16,14 +19,15 @@ export async function POST(
         );
     }
 
-    const supabase = await createClient();
-    const {
-        data: { user },
-        error,
-    } = await supabase.auth.getUser();
+    const tokenData = await authenticateRequest(body.authToken);
+    if (tokenData.error) {
+        return NextResponse.json(tokenData, { status: tokenData.status });
+    }
 
-    if (error || !user) {
-        console.error("Authentication error:", error);
+    // Use the token's user_id as the authenticated user for this request
+    const authenticatedUserId = tokenData.userId;
+
+    if (!authenticatedUserId) {
         return NextResponse.json(
             { error: "User not authenticated" },
             { status: 401 }
@@ -31,7 +35,6 @@ export async function POST(
     }
 
     try {
-        const body = await request.json();
         console.log("Request body:", body);
 
         // Remove user_id from the request body since we'll use the authenticated user's ID
@@ -60,7 +63,7 @@ export async function POST(
             );
         }
 
-        const videoExists = await getVideoByUrl(videoUrl, user.id);
+        const videoExists = await getVideoByUrl(videoUrl, authenticatedUserId);
         if (videoExists) {
             console.log("Video already exists for this user:", videoExists);
             return NextResponse.json(
@@ -73,7 +76,7 @@ export async function POST(
         }
 
         console.log("Creating video with data:", {
-            user_id: user.id, // Use the authenticated user's ID
+            user_id: authenticatedUserId, // Use the authenticated user's ID
             platform,
             title,
             channel_name,
@@ -86,7 +89,7 @@ export async function POST(
 
         // Create the video using the authenticated user's ID
         const createdVideo = await createVideo({
-            user_id: user.id, // Always use the authenticated user's ID
+            user_id: authenticatedUserId, // Always use the authenticated user's ID
             platform,
             title,
             channel_name,

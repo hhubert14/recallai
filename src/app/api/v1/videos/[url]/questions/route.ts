@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { generateVideoQuestions } from "@/data-access/external-apis/generate-video-questions";
 import { createQuestion } from "@/data-access/questions/create-question";
 import { createQuestionOptions } from "@/data-access/question-options/create-question-options";
+import { authenticateRequest } from "@/use-cases/extension/authenticate-request";
 
 export async function POST(
     request: NextRequest,
@@ -12,10 +13,10 @@ export async function POST(
 ) {
     const supabase = await createClient();
 
-    const { video_id, title, description, transcript } = await request.json();
-    console.log("Received data:", { title, description, transcript: transcript?.substring(0, 100) + "..." });
+    const { authToken, video_id, title, description, transcript } = await request.json();
+    console.log("Received data:", { authToken, title, description, transcript: transcript?.substring(0, 100) + "..." });
 
-    if (!video_id || !title || !description || !transcript) {
+    if (!authToken || !video_id || !title || !description || !transcript) {
         return NextResponse.json(
             { error: "Missing required parameters" },
             { status: 400 }
@@ -23,18 +24,32 @@ export async function POST(
     }
 
     try {
-        const {
-            data: { user },
-            error,
-        } = await supabase.auth.getUser();
+        // const {
+        //     data: { user },
+        //     error,
+        // } = await supabase.auth.getUser();
 
-        // If there's a valid user session, ensure it matches the token's user
-        if (!user || error) {
+        // // If there's a valid user session, ensure it matches the token's user
+        // if (!user || error) {
+        //     return NextResponse.json(
+        //         {
+        //             error: "Unauthorized: No valid user session found",
+        //         },
+        //         { status: 403 }
+        //     );
+        // }
+        const tokenData = await authenticateRequest(authToken);
+        if (tokenData.error) {
+            return NextResponse.json(tokenData, { status: tokenData.status });
+        }
+    
+        // Use the token's user_id as the authenticated user for this request
+        const authenticatedUserId = tokenData.userId;
+    
+        if (!authenticatedUserId) {
             return NextResponse.json(
-                {
-                    error: "Unauthorized: No valid user session found",
-                },
-                { status: 403 }
+                { error: "User not authenticated" },
+                { status: 401 }
             );
         }
 

@@ -21,6 +21,7 @@ export async function getExtensionTokenByToken(
             .single();
 
         if (error) {
+            console.log("Error fetching token:", error);
             return undefined;
         }
 

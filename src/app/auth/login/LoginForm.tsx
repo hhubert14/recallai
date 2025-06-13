@@ -25,6 +25,9 @@ export function LoginForm() {
         setError(null);
 
         try {
+            if (!supabase) {
+                throw new Error("Supabase client could not be initialized");
+            }
             const { data, error } = await supabase.auth.signInWithPassword({
                 email,
                 password,

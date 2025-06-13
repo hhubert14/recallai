@@ -7,6 +7,7 @@ import { getYoutubeVideoData } from "@/data-access/external-apis/get-youtube-vid
 import { getYoutubeTranscript } from "@/data-access/external-apis/get-youtube-transcript";
 import { checkVideoEducational } from "@/data-access/external-apis/check-video-educational";
 import { createClient } from "@/lib/supabase/server";
+import { authenticateRequest } from "@/use-cases/extension/authenticate-request";
 
 export async function GET(
     request: NextRequest,
@@ -35,43 +36,48 @@ export async function GET(
     }
 
     try {
-        const tokenData = await getExtensionTokenByToken(authToken);
-        if (!tokenData) {
-            return NextResponse.json(
-                { error: "Invalid authentication token" },
-                { status: 401 }
-            );
-        }
+        // const tokenData = authResult.tokenData;
 
-        // Check if token is expired
-        if (new Date(tokenData.expires_at) < new Date()) {
-            return NextResponse.json(
-                { error: "Authentication token expired" },
-                { status: 401 }
-            );
-        }
+        // // Check if token is expired
+        // if (new Date(tokenData.expires_at) < new Date()) {
+        //     return NextResponse.json(
+        //         { error: "Authentication token expired" },
+        //         { status: 401 }
+        //     );
+        // }
 
         // For extension requests, we can trust the token's user_id since it's validated
         // But we still want to verify the current session user matches (if session exists)
-        const {
-            data: { user },
-            error,
-        } = await supabase.auth.getUser();
+        // const {
+        //     data: { user },
+        //     error,
+        // } = await supabase.auth.getUser();
 
-        // If there's a valid user session, ensure it matches the token's user
-        if (user && !error) {
-            if (tokenData.user_id !== user.id) {
-                return NextResponse.json(
-                    {
-                        error: "Authentication token does not match current user session",
-                    },
-                    { status: 403 }
-                );
-            }
+        // // If there's a valid user session, ensure it matches the token's user
+        // if (user && !error) {
+        //     if (tokenData.user_id !== user.id) {
+        //         return NextResponse.json(
+        //             {
+        //                 error: "Authentication token does not match current user session",
+        //             },
+        //             { status: 403 }
+        //         );
+        //     }
+        // }
+        const tokenData = await authenticateRequest(authToken);
+        if (tokenData.error) {
+            return NextResponse.json(tokenData, { status: tokenData.status });
         }
 
         // Use the token's user_id as the authenticated user for this request
-        const authenticatedUserId = tokenData.user_id;
+        const authenticatedUserId = tokenData.userId;
+
+        if (!authenticatedUserId) {
+            return NextResponse.json(
+                { error: "User not authenticated" },
+                { status: 401 }
+            );
+        }
 
         const video = await getVideoByUrl(videoUrl, authenticatedUserId);
         console.log("Video data:", video);

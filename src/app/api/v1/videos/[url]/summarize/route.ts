@@ -8,6 +8,8 @@ import { NextRequest, NextResponse } from "next/server";
 // import { checkVideoEducational } from "@/data-access/external-apis/check-video-educational";
 import { createClient } from "@/lib/supabase/server";
 import { generateVideoSummary } from "@/data-access/external-apis/generate-video-summary";
+import { createSummary } from "@/data-access/summaries/create-summary";
+import { authenticateRequest } from "@/use-cases/extension/authenticate-request";
 
 export async function POST(
     request: NextRequest,
@@ -20,10 +22,10 @@ export async function POST(
     // const title = searchParams.get("title");
     // const description = searchParams.get("description");
     // const transcript = searchParams.get("transcript");
-    const { title, description, transcript } = await request.json();
-    console.log("Received data:", { title, description, transcript });
+    const { authToken, video_id, title, description, transcript } = await request.json();
+    console.log("Received data:", { authToken, video_id, title, description, transcript });
 
-    if (!title || !description || !transcript) {
+    if (!authToken || !video_id || !title || !description || !transcript) {
         return NextResponse.json(
             { error: "Missing required parameters" },
             { status: 400 }
@@ -31,18 +33,32 @@ export async function POST(
     }
 
     try {
-        const {
-            data: { user },
-            error,
-        } = await supabase.auth.getUser();
+        // const {
+        //     data: { user },
+        //     error,
+        // } = await supabase.auth.getUser();
 
-        // If there's a valid user session, ensure it matches the token's user
-        if (!user || error) {
+        // // If there's a valid user session, ensure it matches the token's user
+        // if (!user || error) {
+        //     return NextResponse.json(
+        //         {
+        //             error: "Unauthorized: No valid user session found",
+        //         },
+        //         { status: 403 }
+        //     );
+        // }
+        const tokenData = await authenticateRequest(authToken);
+        if (tokenData.error) {
+            return NextResponse.json(tokenData, { status: tokenData.status });
+        }
+    
+        // Use the token's user_id as the authenticated user for this request
+        const authenticatedUserId = tokenData.userId;
+    
+        if (!authenticatedUserId) {
             return NextResponse.json(
-                {
-                    error: "Unauthorized: No valid user session found",
-                },
-                { status: 403 }
+                { error: "User not authenticated" },
+                { status: 401 }
             );
         }
 
@@ -54,9 +70,15 @@ export async function POST(
             );
         }
         console.log("Generated Summary:", summary);
+
+        const createdSummary = await createSummary({
+            video_id,
+            content: summary.summary,
+        });
+
         return NextResponse.json(
             {
-                summary: summary,
+                summary: createdSummary,
             },
             { status: 200 }
         );
