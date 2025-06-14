@@ -39,6 +39,13 @@ export async function updateSession(request: NextRequest) {
         data: { user },
     } = await supabase.auth.getUser();
 
+    // If user is authenticated and on landing page, redirect to dashboard
+    if (user && request.nextUrl.pathname === "/") {
+        const url = request.nextUrl.clone();
+        url.pathname = "/dashboard";
+        return NextResponse.redirect(url);
+    }
+
     if (
         !user &&
         !request.nextUrl.pathname.startsWith("/auth/sign-up") &&
