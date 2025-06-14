@@ -12,6 +12,7 @@ export type VideoDto = {
     updated_at: string;
     expiry_date: string;
     video_id: string;
+    deleted_at: string | null;
 };
 
 export type CreateVideoDto = {
@@ -25,4 +26,5 @@ export type CreateVideoDto = {
     description?: string;
     video_id?: string;
     expiry_date?: string | null;
+    deleted_at?: string | null;
 };

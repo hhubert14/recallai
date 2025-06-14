@@ -3,11 +3,12 @@ import { createServiceRoleClient } from "@/lib/supabase/service-role";
 import { VideoDto } from "./types";
 import { toDtoMapper } from "./utils";
 
-export async function getVideosByUserId(
+export async function getAllVideosByUserId(
     userId: string,
-    limit?: number
+    limit?: number,
+    includeSoftDeleted: boolean = false
 ): Promise<VideoDto[]> {
-    console.log("getVideosByUserId called with:", { userId, limit });
+    console.log("getAllVideosByUserId called with:", { userId, limit, includeSoftDeleted });
     
     if (!userId) {
         console.log("Invalid parameters - userId is empty");
@@ -19,12 +20,17 @@ export async function getVideosByUserId(
 
     try {
         console.log("Querying database for videos with user ID:", userId);
-          let query = supabase
+        
+        let query = supabase
             .from("videos")
             .select("*")
             .eq("user_id", userId)
-            .is("deleted_at", null)
             .order("created_at", { ascending: false });
+
+        // Only exclude soft-deleted videos if includeSoftDeleted is false
+        if (!includeSoftDeleted) {
+            query = query.is("deleted_at", null);
+        }
 
         if (limit) {
             query = query.limit(limit);

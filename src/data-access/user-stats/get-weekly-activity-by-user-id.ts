@@ -20,13 +20,12 @@ export async function getWeeklyActivityByUserId(userId: string): Promise<{ video
         startOfWeek.setDate(now.getDate() - daysToSubtract);
         startOfWeek.setHours(0, 0, 0, 0);
 
-        console.log("Start of week (Monday):", startOfWeek.toISOString());
-
-        // Get videos added this week
+        console.log("Start of week (Monday):", startOfWeek.toISOString());        // Get videos added this week
         const { count: videosCount, error: videosError } = await supabase
             .from("videos")
             .select("*", { count: 'exact', head: true })
             .eq("user_id", userId)
+            .is("deleted_at", null)
             .gte("created_at", startOfWeek.toISOString());
 
         if (videosError) {

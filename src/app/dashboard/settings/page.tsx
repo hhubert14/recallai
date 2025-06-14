@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Brain, User, CreditCard, Chrome, Database, Trash2, RefreshCw } from "lucide-react";
+import { Brain, User, CreditCard, Chrome, Database, RefreshCw } from "lucide-react";
 import { UserButton } from "@/components/ui/user-button";
 import { createClient } from "@/lib/supabase/server";
 import { getUserSubscriptionStatus } from "@/data-access/subscriptions/get-user-subscription-status";
@@ -9,6 +9,7 @@ import { getUserStatsByUserId } from "@/data-access/user-stats/get-user-stats-by
 import { getVideosThisMonthByUserId } from "@/data-access/user-stats/get-videos-this-month-by-user-id";
 import { SubscriptionStatusBadge } from "@/components/subscription/SubscriptionStatusBadge";
 import { UpgradeButton } from "@/components/subscription/UpgradeButton";
+import { DeleteDataButton } from "./DeleteDataButton";
 
 export const metadata: Metadata = {
     title: "Settings | LearnSync",
@@ -219,17 +220,12 @@ export default async function SettingsPage() {
                                 </div>
                             </div>
                             <div className="pt-4 border-t">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="font-medium text-gray-900">Delete All Data</p>
-                                        <p className="text-sm text-gray-500">
-                                            Permanently delete all your videos, summaries, and progress data
+                                <div className="flex items-center justify-between">                                    <div>
+                                        <p className="font-medium text-gray-900">Delete All Data</p>                                        <p className="text-sm text-gray-500">
+                                            Soft delete all your videos, summaries, and progress data (usage limits preserved for billing)
                                         </p>
                                     </div>
-                                    <Button variant="outline" className="text-red-600 border-red-200 hover:bg-red-50 flex items-center gap-2">
-                                        <Trash2 className="h-4 w-4" />
-                                        Delete Data
-                                    </Button>
+                                    <DeleteDataButton />
                                 </div>
                             </div>
                         </div>

@@ -31,6 +31,7 @@ export async function getVideoByUrl(
             .select("*")
             .eq("url", videoUrl)
             .eq("user_id", userId)
+            .is("deleted_at", null)
             .limit(1)
             .single();
 

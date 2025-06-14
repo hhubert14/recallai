@@ -8,6 +8,8 @@ export async function getVideosThisMonthByUserId(userId: string): Promise<number
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     
     try {
+        // For billing purposes, count ALL videos (including soft-deleted)
+        // This prevents users from deleting data to reset their monthly usage limits
         const { count, error } = await supabase
             .from('videos')
             .select('*', { count: 'exact', head: true })
