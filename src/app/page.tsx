@@ -835,10 +835,10 @@ export default function Home() {
                                 <ul className="mt-6 space-y-3">
                                     {[
                                         "5 videos per month",
-                                        "Auto-generated study questions (customizable)",
+                                        "Auto-generated study questions",
                                         "Smart study notes",
                                         "Progress tracking",
-                                        "Manual video categorization",
+                                        // "Manual video categorization",
                                         "7-day storage",
                                     ].map(feature => (
                                         <li
@@ -877,11 +877,11 @@ export default function Home() {
                                 <ul className="mt-6 space-y-3">
                                     {[
                                         "Unlimited videos",
-                                        "Auto-generated study questions (customizable)",
+                                        "Auto-generated study questions",
                                         "Spaced repetition system",
                                         "Smart study notes",
                                         "Progress tracking",
-                                        "Automatic video categorization + search",
+                                        // "Automatic video categorization + search",
                                         "Unlimited storage",
                                     ].map(feature => (
                                         <li
