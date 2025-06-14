@@ -7,8 +7,11 @@ import { ExtensionConnectorButton } from "@/app/dashboard/ExtensionConnectorButt
 import { createClient } from "@/lib/supabase/server";
 import { getVideosByUserId } from "@/data-access/videos/get-videos-by-user-id";
 import { getUserStatsByUserId } from "@/data-access/user-stats/get-user-stats-by-user-id";
+import { getUserSubscriptionStatus } from "@/data-access/subscriptions/get-user-subscription-status";
+import { UserSubscriptionStatus } from "@/data-access/subscriptions/types";
 import { VideoDto } from "@/data-access/videos/types";
 import { StatsCard } from "@/components/ui/stats-card";
+import { SubscriptionStatusBadge } from "@/components/subscription/SubscriptionStatusBadge";
 
 export const metadata: Metadata = {
     title: "Dashboard | LearnSync",
@@ -27,14 +30,17 @@ export default async function DashboardPage() {
         videosThisWeek: 0,
         questionsThisWeek: 0
     };
+    let subscriptionStatus: UserSubscriptionStatus = { isSubscribed: false };
 
     if (user) {
-        const [videos, stats] = await Promise.all([
+        const [videos, stats, subscription] = await Promise.all([
             getVideosByUserId(user.id, 5), // Get latest 5 videos
-            getUserStatsByUserId(user.id)
+            getUserStatsByUserId(user.id),
+            getUserSubscriptionStatus(user.id)
         ]);
         recentVideos = videos;
         userStats = stats;
+        subscriptionStatus = subscription;
     }
     return (
         <div className="flex min-h-screen flex-col">
@@ -71,13 +77,23 @@ export default async function DashboardPage() {
             </header>
 
             <main className="flex-1 container py-12">
-                <h1 className="text-3xl font-bold tracking-tight text-blue-900 mb-6">
-                    Welcome to your Dashboard
-                </h1>
-                <p className="text-gray-500 mb-8">
-                    This is a placeholder dashboard. You've successfully signed
-                    in with Supabase authentication.
-                </p>
+                <div className="flex items-center justify-between mb-6">
+                    <div>
+                        <h1 className="text-3xl font-bold tracking-tight text-blue-900 mb-2">
+                            Welcome to your Dashboard
+                        </h1>
+                        <p className="text-gray-500">
+                            This is a placeholder dashboard. You've successfully signed
+                            in with Supabase authentication.
+                        </p>
+                    </div>
+                    <SubscriptionStatusBadge 
+                        isSubscribed={subscriptionStatus.isSubscribed}
+                        status={subscriptionStatus.status}
+                        planType={subscriptionStatus.planType}
+                        currentPeriodEnd={subscriptionStatus.currentPeriodEnd}
+                    />
+                </div>
 
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                     <div className="rounded-lg border p-6 shadow-sm">

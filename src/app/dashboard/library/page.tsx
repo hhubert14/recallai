@@ -4,7 +4,10 @@ import { Brain, ArrowLeft } from "lucide-react";
 import { UserButton } from "@/components/ui/user-button";
 import { createClient } from "@/lib/supabase/server";
 import { getVideosByUserId } from "@/data-access/videos/get-videos-by-user-id";
+import { getUserSubscriptionStatus } from "@/data-access/subscriptions/get-user-subscription-status";
+import { UserSubscriptionStatus } from "@/data-access/subscriptions/types";
 import { LibraryVideoList } from "@/app/dashboard/library/LibraryVideoList";
+import { SubscriptionStatusBadge } from "@/components/subscription/SubscriptionStatusBadge";
 
 export const metadata: Metadata = {
     title: "My Library | LearnSync",
@@ -13,14 +16,15 @@ export const metadata: Metadata = {
 
 export default async function LibraryPage() {
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) {
+    const { data: { user } } = await supabase.auth.getUser();    if (!user) {
         return null;
     }
 
-    // Get all user videos (no limit)
-    const allVideos = await getVideosByUserId(user.id);
+    // Get all user videos and subscription status
+    const [allVideos, subscriptionStatus] = await Promise.all([
+        getVideosByUserId(user.id),
+        getUserSubscriptionStatus(user.id)
+    ]);
 
     return (
         <div className="flex min-h-screen flex-col">
@@ -54,16 +58,22 @@ export default async function LibraryPage() {
                         <UserButton />
                     </div>
                 </div>
-            </header>
-
-            <main className="flex-1 container py-12">
-                <div className="mb-6">
-                    <h1 className="text-3xl font-bold tracking-tight text-blue-900 mb-2">
-                        My Library
-                    </h1>
-                    <p className="text-gray-500">
-                        Browse all your saved videos and track your learning progress.
-                    </p>
+            </header>            <main className="flex-1 container py-12">
+                <div className="flex items-center justify-between mb-6">
+                    <div>
+                        <h1 className="text-3xl font-bold tracking-tight text-blue-900 mb-2">
+                            My Library
+                        </h1>
+                        <p className="text-gray-500">
+                            Browse all your saved videos and track your learning progress.
+                        </p>
+                    </div>
+                    <SubscriptionStatusBadge 
+                        isSubscribed={subscriptionStatus.isSubscribed}
+                        status={subscriptionStatus.status}
+                        planType={subscriptionStatus.planType}
+                        currentPeriodEnd={subscriptionStatus.currentPeriodEnd}
+                    />
                 </div>
 
                 <LibraryVideoList videos={allVideos} userId={user.id} />
