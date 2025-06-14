@@ -12,6 +12,7 @@ import { UserSubscriptionStatus } from "@/data-access/subscriptions/types";
 import { VideoDto } from "@/data-access/videos/types";
 import { StatsCard } from "@/components/ui/stats-card";
 import { SubscriptionStatusBadge } from "@/components/subscription/SubscriptionStatusBadge";
+import { UpgradeButton } from "@/components/subscription/UpgradeButton";
 
 export const metadata: Metadata = {
     title: "Dashboard | LearnSync",
@@ -64,6 +65,12 @@ export default async function DashboardPage() {
                             My Library
                         </Link>
                         <Link
+                            href="/dashboard/pricing"
+                            className="text-sm font-medium hover:text-blue-600"
+                        >
+                            Pricing
+                        </Link>
+                        <Link
                             href="/dashboard/settings"
                             className="text-sm font-medium hover:text-blue-600"
                         >
@@ -87,12 +94,17 @@ export default async function DashboardPage() {
                             in with Supabase authentication.
                         </p>
                     </div>
-                    <SubscriptionStatusBadge 
-                        isSubscribed={subscriptionStatus.isSubscribed}
-                        status={subscriptionStatus.status}
-                        planType={subscriptionStatus.planType}
-                        currentPeriodEnd={subscriptionStatus.currentPeriodEnd}
-                    />
+                    <div className="flex flex-col items-end gap-3">
+                        <SubscriptionStatusBadge 
+                            isSubscribed={subscriptionStatus.isSubscribed}
+                            status={subscriptionStatus.status}
+                            planType={subscriptionStatus.planType}
+                            currentPeriodEnd={subscriptionStatus.currentPeriodEnd}
+                        />
+                        {!subscriptionStatus.isSubscribed && (
+                            <UpgradeButton size="sm" />
+                        )}
+                    </div>
                 </div>
 
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

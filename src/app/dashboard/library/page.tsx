@@ -8,6 +8,7 @@ import { getUserSubscriptionStatus } from "@/data-access/subscriptions/get-user-
 import { UserSubscriptionStatus } from "@/data-access/subscriptions/types";
 import { LibraryVideoList } from "@/app/dashboard/library/LibraryVideoList";
 import { SubscriptionStatusBadge } from "@/components/subscription/SubscriptionStatusBadge";
+import { UpgradeButton } from "@/components/subscription/UpgradeButton";
 
 export const metadata: Metadata = {
     title: "My Library | LearnSync",
@@ -33,8 +34,7 @@ export default async function LibraryPage() {
                     <div className="flex items-center gap-2">
                         <Brain className="h-6 w-6 text-blue-600" />
                         <span className="text-xl font-bold">LearnSync</span>
-                    </div>
-                    <nav className="hidden md:flex gap-6">
+                    </div>                    <nav className="hidden md:flex gap-6">
                         <Link
                             href="/dashboard"
                             className="text-sm font-medium hover:text-blue-600"
@@ -48,6 +48,12 @@ export default async function LibraryPage() {
                             My Library
                         </Link>
                         <Link
+                            href="/dashboard/pricing"
+                            className="text-sm font-medium hover:text-blue-600"
+                        >
+                            Pricing
+                        </Link>
+                        <Link
                             href="/dashboard/settings"
                             className="text-sm font-medium hover:text-blue-600"
                         >
@@ -58,8 +64,7 @@ export default async function LibraryPage() {
                         <UserButton />
                     </div>
                 </div>
-            </header>            <main className="flex-1 container py-12">
-                <div className="flex items-center justify-between mb-6">
+            </header>            <main className="flex-1 container py-12">                <div className="flex items-center justify-between mb-6">
                     <div>
                         <h1 className="text-3xl font-bold tracking-tight text-blue-900 mb-2">
                             My Library
@@ -68,12 +73,17 @@ export default async function LibraryPage() {
                             Browse all your saved videos and track your learning progress.
                         </p>
                     </div>
-                    <SubscriptionStatusBadge 
-                        isSubscribed={subscriptionStatus.isSubscribed}
-                        status={subscriptionStatus.status}
-                        planType={subscriptionStatus.planType}
-                        currentPeriodEnd={subscriptionStatus.currentPeriodEnd}
-                    />
+                    <div className="flex flex-col items-end gap-3">
+                        <SubscriptionStatusBadge 
+                            isSubscribed={subscriptionStatus.isSubscribed}
+                            status={subscriptionStatus.status}
+                            planType={subscriptionStatus.planType}
+                            currentPeriodEnd={subscriptionStatus.currentPeriodEnd}
+                        />
+                        {!subscriptionStatus.isSubscribed && (
+                            <UpgradeButton size="sm" />
+                        )}
+                    </div>
                 </div>
 
                 <LibraryVideoList videos={allVideos} userId={user.id} />
