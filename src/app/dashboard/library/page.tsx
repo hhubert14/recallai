@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Brain, ArrowLeft } from "lucide-react";
+import Link from "next/link";
 import { UserButton } from "@/components/ui/user-button";
 import { createClient } from "@/lib/supabase/server";
 import { getVideosByUserId } from "@/data-access/videos/get-videos-by-user-id";
