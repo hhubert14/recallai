@@ -93,6 +93,7 @@ CREATE TABLE public.videos (
   expiry_date timestamp with time zone DEFAULT (now() + '7 days'::interval),
   video_id text,
   description text,
+  deleted_at timestamp without time zone,
   CONSTRAINT videos_pkey PRIMARY KEY (id),
   CONSTRAINT videos_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id)
 );
