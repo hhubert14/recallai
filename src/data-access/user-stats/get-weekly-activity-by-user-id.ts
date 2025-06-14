@@ -31,18 +31,51 @@ export async function getWeeklyActivityByUserId(userId: string): Promise<{ video
         if (videosError) {
             console.error("Database query error for videos:", videosError);
             throw videosError;
+        }        // Get questions answered this week (only from non-deleted videos)
+        // First, get valid video IDs
+        const { data: validVideos, error: validVideosError } = await supabase
+            .from("videos")
+            .select("id")
+            .is("deleted_at", null);
+
+        if (validVideosError) {
+            console.error("Database query error for valid videos:", validVideosError);
+            throw validVideosError;
         }
 
-        // Get questions answered this week
-        const { count: questionsCount, error: questionsError } = await supabase
-            .from("user_answers")
-            .select("*", { count: 'exact', head: true })
-            .eq("user_id", userId)
-            .gte("created_at", startOfWeek.toISOString());
+        let questionsCount = 0;
+        if (validVideos && validVideos.length > 0) {
+            const validVideoIds = validVideos.map(v => v.id);
 
-        if (questionsError) {
-            console.error("Database query error for questions:", questionsError);
-            throw questionsError;
+            // Get valid question IDs
+            const { data: validQuestions, error: validQuestionsError } = await supabase
+                .from("questions")
+                .select("id")
+                .in("video_id", validVideoIds);
+
+            if (validQuestionsError) {
+                console.error("Database query error for valid questions:", validQuestionsError);
+                throw validQuestionsError;
+            }
+
+            if (validQuestions && validQuestions.length > 0) {
+                const validQuestionIds = validQuestions.map(q => q.id);
+
+                // Count answers to valid questions this week
+                const { count, error: questionsError } = await supabase
+                    .from("user_answers")
+                    .select("*", { count: 'exact', head: true })
+                    .eq("user_id", userId)
+                    .in("question_id", validQuestionIds)
+                    .gte("created_at", startOfWeek.toISOString());
+
+                if (questionsError) {
+                    console.error("Database query error for questions:", questionsError);
+                    throw questionsError;
+                }
+
+                questionsCount = count || 0;
+            }
         }
 
         const result = {
