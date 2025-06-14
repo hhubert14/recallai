@@ -6,7 +6,9 @@ import { UserButton } from "@/components/ui/user-button";
 import { ExtensionConnectorButton } from "@/app/dashboard/ExtensionConnectorButton";
 import { createClient } from "@/lib/supabase/server";
 import { getVideosByUserId } from "@/data-access/videos/get-videos-by-user-id";
+import { getUserStatsByUserId } from "@/data-access/user-stats/get-user-stats-by-user-id";
 import { VideoDto } from "@/data-access/videos/types";
+import { StatsCard } from "@/components/ui/stats-card";
 
 export const metadata: Metadata = {
     title: "Dashboard | LearnSync",
@@ -18,8 +20,21 @@ export default async function DashboardPage() {
     const { data: { user } } = await supabase.auth.getUser();
     
     let recentVideos: VideoDto[] = [];
+    let userStats = {
+        totalVideos: 0,
+        totalQuestionsAnswered: 0,
+        quizAccuracy: 0,
+        videosThisWeek: 0,
+        questionsThisWeek: 0
+    };
+
     if (user) {
-        recentVideos = await getVideosByUserId(user.id, 5); // Get latest 5 videos
+        const [videos, stats] = await Promise.all([
+            getVideosByUserId(user.id, 5), // Get latest 5 videos
+            getUserStatsByUserId(user.id)
+        ]);
+        recentVideos = videos;
+        userStats = stats;
     }
     return (
         <div className="flex min-h-screen flex-col">
@@ -122,10 +137,32 @@ export default async function DashboardPage() {
 
                     <div className="rounded-lg border p-6 shadow-sm">
                         <h2 className="text-xl font-bold mb-4">Your Stats</h2>
-                        <p className="text-gray-500">
-                            Track your learning progress and video consumption
-                            here.
-                        </p>
+                        <div className="grid grid-cols-2 gap-4">
+                            <StatsCard
+                                title="Total Videos"
+                                value={userStats.totalVideos}
+                                iconName="BookOpen"
+                                subtitle="In your library"
+                            />
+                            <StatsCard
+                                title="Questions Answered"
+                                value={userStats.totalQuestionsAnswered}
+                                iconName="HelpCircle"
+                                subtitle="Across all videos"
+                            />
+                            <StatsCard
+                                title="Quiz Accuracy"
+                                value={userStats.quizAccuracy > 0 ? `${userStats.quizAccuracy}%` : "No data"}
+                                iconName="Target"
+                                subtitle="Overall performance"
+                            />
+                            <StatsCard
+                                title="This Week"
+                                value={`${userStats.videosThisWeek + userStats.questionsThisWeek}`}
+                                iconName="Calendar"
+                                subtitle={`${userStats.videosThisWeek} videos, ${userStats.questionsThisWeek} questions`}
+                            />
+                        </div>
                     </div>
                 </div>
             </main>
