@@ -15,9 +15,7 @@ export function UpgradeButton({
     variant = "default",
     className 
 }: UpgradeButtonProps) {
-    const router = useRouter();
-
-    const handleUpgrade = () => {
+    const router = useRouter();    const handleUpgrade = () => {
         router.push("/dashboard/pricing");
     };
 

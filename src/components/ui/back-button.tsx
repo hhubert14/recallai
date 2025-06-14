@@ -12,7 +12,7 @@ interface BackButtonProps {
 export function BackButton({ 
     fallbackUrl = "/dashboard", 
     className = "",
-    children = "Back to Dashboard"
+    children
 }: BackButtonProps) {
     const router = useRouter();
 
@@ -32,7 +32,7 @@ export function BackButton({
             className={`inline-flex items-center gap-2 text-sm text-gray-500 hover:text-blue-600 transition-colors ${className}`}
         >
             <ArrowLeft className="h-4 w-4" />
-            {children}
+            {children || "Back"}
         </button>
     );
 }
