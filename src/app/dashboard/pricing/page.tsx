@@ -100,12 +100,12 @@ export default async function PricingPage() {
                         >
                             Pricing
                         </Link>
-                        <Link
+                        {/* <Link
                             href="/dashboard/settings"
                             className="text-sm font-medium hover:text-blue-600"
                         >
                             Settings
-                        </Link>
+                        </Link> */}
                     </nav>
                     <div className="flex items-center gap-4">
                         <UserButton />

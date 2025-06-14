@@ -64,12 +64,12 @@ export default async function SettingsPage() {
                         >
                             Pricing
                         </Link>
-                        <Link
+                        {/* <Link
                             href="/dashboard/settings"
                             className="text-sm font-medium text-blue-600"
                         >
                             Settings
-                        </Link>
+                        </Link> */}
                     </nav>
                     <div className="flex items-center gap-4">
                         <UserButton />
