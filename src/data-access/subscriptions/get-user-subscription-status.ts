@@ -26,14 +26,12 @@ export async function getUserSubscriptionStatus(userId: string): Promise<UserSub
         // If not subscribed according to users table, return early
         if (!userData?.is_subscribed) {
             return { isSubscribed: false };
-        }
-
-        // If subscribed, get detailed subscription info from subscriptions table
+        }        // If subscribed, get detailed subscription info from subscriptions table
         const { data: subscriptionData, error: subscriptionError } = await supabase
             .from('subscriptions')
             .select('status, plan, current_period_end')
             .eq('user_id', userId)
-            .eq('status', 'active')
+            .in('status', ['active', 'trialing', 'past_due']) // Include all statuses that should have access
             .single();
 
         if (subscriptionError || !subscriptionData) {

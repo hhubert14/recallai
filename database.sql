@@ -65,8 +65,8 @@ CREATE TABLE public.user_answers (
   created_at timestamp with time zone NOT NULL DEFAULT now(),
   CONSTRAINT user_answers_pkey PRIMARY KEY (id),
   CONSTRAINT user_answers_question_id_fkey FOREIGN KEY (question_id) REFERENCES public.questions(id),
-  CONSTRAINT user_answers_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id),
-  CONSTRAINT user_answers_selected_option_id_fkey FOREIGN KEY (selected_option_id) REFERENCES public.question_options(id)
+  CONSTRAINT user_answers_selected_option_id_fkey FOREIGN KEY (selected_option_id) REFERENCES public.question_options(id),
+  CONSTRAINT user_answers_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id)
 );
 CREATE TABLE public.users (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
@@ -76,6 +76,7 @@ CREATE TABLE public.users (
   monthly_video_count smallint NOT NULL DEFAULT '0'::smallint,
   last_reset_date timestamp with time zone NOT NULL DEFAULT now(),
   processsing_mode USER-DEFINED NOT NULL DEFAULT 'auto'::processing_mode,
+  stripe_customer_id text UNIQUE,
   CONSTRAINT users_pkey PRIMARY KEY (id),
   CONSTRAINT users_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id)
 );
