@@ -109,7 +109,7 @@ export function SignUpForm() {
 
             if (authData.user) {
                 // Create a server-side API endpoint to handle user creation with service role
-                const response = await fetch("/api/create-user-profile", {
+                const response = await fetch("/api/v1/create-user-profile", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
