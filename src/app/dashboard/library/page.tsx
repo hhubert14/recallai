@@ -51,7 +51,7 @@ export default async function LibraryPage() {
                             href="/dashboard/pricing"
                             className="text-sm font-medium hover:text-blue-600"
                         >
-                            Pricing
+                            Premium
                         </Link>
                         {/* <Link
                             href="/dashboard/settings"

@@ -62,7 +62,7 @@ export default async function SettingsPage() {
                             href="/dashboard/pricing"
                             className="text-sm font-medium hover:text-blue-600"
                         >
-                            Pricing
+                            Premium
                         </Link>
                         {/* <Link
                             href="/dashboard/settings"
