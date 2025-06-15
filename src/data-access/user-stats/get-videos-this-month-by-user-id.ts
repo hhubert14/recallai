@@ -1,12 +1,10 @@
-import { createClient } from "@/lib/supabase/server";
+import { createServiceRoleClient } from "@/lib/supabase/service-role";
 
 export async function getVideosThisMonthByUserId(userId: string): Promise<number> {
-    const supabase = await createClient();
-    
-    // Get the start of current month
+    const supabase = await createServiceRoleClient();
+      // Get the start of current month in UTC
     const now = new Date();
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    
+    const startOfMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));    
     try {
         // For billing purposes, count ALL videos (including soft-deleted)
         // This prevents users from deleting data to reset their monthly usage limits
