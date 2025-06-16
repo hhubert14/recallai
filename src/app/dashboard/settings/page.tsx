@@ -10,7 +10,6 @@ import { getVideosThisMonthByUserId } from "@/data-access/user-stats/get-videos-
 import { SubscriptionStatusBadge } from "@/components/subscription/SubscriptionStatusBadge";
 import { UpgradeButton } from "@/components/subscription/UpgradeButton";
 import { ManageBillingButton } from "@/components/subscription/ManageBillingButton";
-import { DeleteDataButton } from "./DeleteDataButton";
 
 export const metadata: Metadata = {
     title: "Settings | LearnSync",
@@ -215,17 +214,7 @@ export default async function SettingsPage() {
                                         {userStats.quizAccuracy > 0 ? `${userStats.quizAccuracy}%` : "—"}
                                     </p>
                                     <p className="text-sm text-gray-600">Quiz Accuracy</p>
-                                </div>
-                            </div>
-                            <div className="pt-4 border-t">
-                                <div className="flex items-center justify-between">                                    <div>
-                                        <p className="font-medium text-gray-900">Delete All Data</p>                                        <p className="text-sm text-gray-500">
-                                            Soft delete all your videos, summaries, and progress data (usage limits preserved for billing)
-                                        </p>
-                                    </div>
-                                    <DeleteDataButton />
-                                </div>
-                            </div>
+                                </div>                            </div>
                         </div>
                     </div>
                 </div>
