@@ -165,7 +165,10 @@ export default async function PricingPage() {
                                 ))}
                             </ul>                            <div className="mt-8">
                                 {plan.id === "premium" && !subscriptionStatus.isSubscribed ? (
-                                    <SubscribeButton userId={user.id} />
+                                    <SubscribeButton 
+                                        userId={user.id} 
+                                        className="w-full bg-blue-600 hover:bg-blue-700"
+                                    />
                                 ) : plan.id === "premium" && plan.isCurrent ? (
                                     <div className="space-y-3">
                                         <Button

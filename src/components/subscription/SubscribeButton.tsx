@@ -6,10 +6,11 @@ import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
 
 interface Props {
-    userId: string; // Assuming userId is passed as a prop
+    userId: string;
+    className?: string;
 }
 
-const SubscribeButton = ({ userId }: Props) => {
+const SubscribeButton = ({ userId, className }: Props) => {
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
 
@@ -30,7 +31,7 @@ const SubscribeButton = ({ userId }: Props) => {
 
     return (
         <Button
-            className="mt-8 bg-blue-600 hover:bg-blue-700"
+            className={className || "mt-8 bg-blue-600 hover:bg-blue-700"}
             onClick={handleSubscribe}
             disabled={isPending}
         >
