@@ -814,7 +814,7 @@ export default function Home() {
                                 </p>
                             </div>
                         </div>
-                        <div className="mx-auto grid max-w-5xl gap-6 py-12 md:grid-cols-3">
+                        <div className="mx-auto grid max-w-4xl gap-6 py-12 md:grid-cols-2">
                             <div className="flex flex-col rounded-lg border border-blue-100 bg-white p-6 shadow-sm">
                                 <div className="space-y-2">
                                     <h3 className="text-2xl font-bold text-blue-900">
@@ -897,41 +897,6 @@ export default function Home() {
                                 {/* <Button className="mt-8 bg-blue-600 hover:bg-blue-700">
                                     Get Started
                                 </Button> */}
-                            </div>
-                            <div className="flex flex-col rounded-lg border border-blue-100 bg-white p-6 shadow-sm">
-                                <div className="space-y-2">
-                                    <h3 className="text-2xl font-bold text-blue-900">
-                                        Student
-                                    </h3>
-                                    <p className="text-gray-500">
-                                        Special discount for students.
-                                    </p>
-                                </div>
-                                <div className="mt-4 flex items-baseline">
-                                    <span className="text-4xl font-bold text-blue-900">
-                                        $4.99
-                                    </span>
-                                    <span className="ml-1 text-gray-500">
-                                        /month
-                                    </span>
-                                </div>
-                                <ul className="mt-6 space-y-3">
-                                    {[
-                                        "All Premium features included",
-                                        ".edu email verification required",
-                                    ].map(feature => (
-                                        <li
-                                            key={feature}
-                                            className="flex items-center gap-2"
-                                        >
-                                            <CheckCircle className="h-4 w-4 text-blue-600" />
-                                            <span>{feature}</span>
-                                        </li>
-                                    ))}
-                                </ul>
-                                <Button className="mt-8 bg-blue-600 hover:bg-blue-700">
-                                    Verify Student Status
-                                </Button>
                             </div>
                         </div>
                     </div>

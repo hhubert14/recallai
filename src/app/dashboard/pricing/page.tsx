@@ -50,23 +50,9 @@ export default async function PricingPage() {
                 "Smart study notes",
                 "Progress tracking",
                 "Unlimited storage",
-            ],
-            isPopular: true,
+            ],            isPopular: true,
             isCurrent: subscriptionStatus.isSubscribed && subscriptionStatus.planType === "premium",
             buttonText: subscriptionStatus.isSubscribed && subscriptionStatus.planType === "premium" ? "Current Plan" : "Upgrade to Premium",
-            buttonDisabled: subscriptionStatus.isSubscribed, // Disable if user already has any subscription
-        },
-        {
-            id: "student",
-            name: "Student",
-            description: "Special discount for students.",
-            price: 4.99,
-            features: [
-                "All Premium features included",
-                ".edu email verification required",
-            ],
-            isCurrent: subscriptionStatus.isSubscribed && subscriptionStatus.planType === "student",
-            buttonText: subscriptionStatus.isSubscribed && subscriptionStatus.planType === "student" ? "Current Plan" : "Verify Student Status",
             buttonDisabled: subscriptionStatus.isSubscribed, // Disable if user already has any subscription
         },
     ];
@@ -125,7 +111,7 @@ export default async function PricingPage() {
                     </div>
                 </div>
 
-                <div className="grid gap-6 md:grid-cols-3 max-w-5xl mx-auto">
+                <div className="grid gap-6 md:grid-cols-2 max-w-4xl mx-auto">
                     {plans.map((plan) => (
                         <div
                             key={plan.id}

@@ -12,7 +12,7 @@ export type SubscriptionStatus =
   | 'trialing'    // In trial period (if you add trials later)
   | 'incomplete'; // Initial payment never succeeded
 
-export type SubscriptionPlan = 'free' | 'premium' | 'student';
+export type SubscriptionPlan = 'free' | 'premium';
 
 export interface SubscriptionData {
     id: number;
