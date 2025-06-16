@@ -851,7 +851,7 @@ export default function Home() {
                                     ))}
                                 </ul>
                                 <Button className="mt-8 bg-blue-600 hover:bg-blue-700">
-                                    Get Started
+                                    <Link href="/auth/sign-up">Get Started</Link>
                                 </Button>
                             </div>
                             <div className="flex flex-col rounded-lg border-2 border-blue-600 bg-white p-6 shadow-lg relative">
@@ -893,7 +893,10 @@ export default function Home() {
                                         </li>
                                     ))}
                                 </ul>
-                                <SubscribeButton userId="your-user-id" />
+                                <Button className="mt-8 bg-blue-600 hover:bg-blue-700">
+                                    <Link href="/auth/sign-up">Get Started</Link>
+                                </Button>
+                                {/* <SubscribeButton userId="your-user-id" /> */}
                                 {/* <Button className="mt-8 bg-blue-600 hover:bg-blue-700">
                                     Get Started
                                 </Button> */}
