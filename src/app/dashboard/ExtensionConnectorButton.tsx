@@ -51,7 +51,7 @@ export function ExtensionConnectorButton() {
                 chrome.runtime.sendMessage(
                     editorExtensionId,
                     {
-                        action: "authenticate_user",
+                        action: "authenticate",
                         data: {
                             email: data.user.email,
                             token: data.token,
