@@ -6,7 +6,7 @@ import { stripe } from "@/lib/stripe/stripe";
 import { extractUserIdFromStripeEvent, mapStripeStatusToDbStatus, shouldHaveSubscriptionAccess } from "@/data-access/subscriptions/webhook-utils";
 import { createSubscription } from "@/data-access/subscriptions/create-subscription";
 import { updateSubscriptionByStripeId } from "@/data-access/subscriptions/update-subscription";
-import { updateUserSubscriptionStatus, resetUserMonthlyUsage } from "@/data-access/users/update-user-subscription";
+import { updateUserSubscriptionStatus } from "@/data-access/users/update-user-subscription";
 
 // Simple in-memory cache to prevent duplicate processing
 const processedEvents = new Map<string, number>();
@@ -190,14 +190,9 @@ async function handleCheckoutSessionCompleted(event: any) {
             plan: 'premium',
             currentPeriodStart: new Date(), // Use current time as placeholder
             currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now as placeholder
-        });
-
-        if (success) {
+        });        if (success) {
             // Update user subscription status
             await updateUserSubscriptionStatus(userId, true);
-            
-            // Reset monthly usage for new subscription
-            await resetUserMonthlyUsage(userId);
             
             console.log("Checkout session processed successfully - subscription created");
         } else {
@@ -276,13 +271,8 @@ async function handleInvoicePaymentSucceeded(event: any) {
                 console.error("Failed to create subscription in database");
                 return;
             }
-        }
-
-        // Ensure user has subscription access
+        }        // Ensure user has subscription access
         await updateUserSubscriptionStatus(userId, true);
-        
-        // Reset monthly usage for new billing period
-        await resetUserMonthlyUsage(userId);
         
         // Revalidate the dashboard
         revalidatePath('/dashboard');
