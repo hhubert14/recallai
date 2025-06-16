@@ -1,4 +1,7 @@
 import { NextRequest } from "next/server";
+import { authenticateRequest } from "./authenticate-request";
+import { validateSubscriptionForExtension } from "./validate-subscription";
+import { getVideoByUrl } from "@/data-access/videos/get-video-by-url";
 
 export const processVideo = async (
     videoUrl: string,
@@ -15,12 +18,48 @@ export const processVideo = async (
         throw new Error("Missing required parameters");
     }
 
+    // EARLY CHECKS - Do these before any expensive API calls
+
+    // 1. Authenticate the request first
+    const tokenData = await authenticateRequest(authToken);
+    if (tokenData.error) {
+        throw new Error(`Authentication failed: ${tokenData.error}`);
+    }
+    const authenticatedUserId = tokenData.userId;
+
+    if (!authenticatedUserId) {
+        throw new Error("User not authenticated");
+    }
+
+    // 2. Check if video already exists for this user
+    console.log("Checking if video already exists...");
+    const existingVideo = await getVideoByUrl(videoUrl, authenticatedUserId);
+    if (existingVideo) {
+        console.log("Video already exists, returning existing data");
+        return {
+            video_id: existingVideo.id,
+            summary: "Video already processed",
+            questions: [],
+            message: "Video already exists in your library",
+            alreadyExists: true
+        };
+    }
+
+    // 3. Validate subscription limits before processing
+    console.log("Validating subscription limits...");
+    const subscriptionValidation = await validateSubscriptionForExtension(authenticatedUserId);
+    if (!subscriptionValidation.allowed && subscriptionValidation.error) {
+        const error = subscriptionValidation.error;
+        throw new Error(`${error.type}: ${error.message}`);
+    }
+
     if (processType === "automatic") {
         // Logic for automatic processing
         console.log(
             `Processing video ${videoId} from ${videoUrl} automatically...`
         );
-        // Call to a function that handles automatic processing
+        
+        // Now proceed with the expensive API calls since checks passed
         const queryParams = new URLSearchParams();
         queryParams.append("videoId", videoId);
         queryParams.append("authToken", authToken);
@@ -157,9 +196,7 @@ export const processVideo = async (
             throw new Error(
                 `Error generating questions: ${questionsData.error || "Unknown error"}`
             );
-        }
-
-        console.log("Questions generated successfully:", questionsData);
+        }        console.log("Questions generated successfully:", questionsData);
 
         return {
             video_id: video_id_num,
