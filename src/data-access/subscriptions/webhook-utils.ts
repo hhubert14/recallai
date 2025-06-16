@@ -65,6 +65,7 @@ export function mapStripeStatusToDbStatus(stripeStatus: string): 'active' | 'pas
 
 /**
  * Determines if user should have subscription access based on status
+ * Note: Users with cancel_at_period_end=true should keep access until period ends
  */
 export function shouldHaveSubscriptionAccess(status: string): boolean {
         return ['active', 'trialing', 'past_due'].includes(status);

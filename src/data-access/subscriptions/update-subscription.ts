@@ -7,6 +7,8 @@ export interface UpdateSubscriptionParams {
     status?: SubscriptionStatus;
     currentPeriodStart?: Date;
     currentPeriodEnd?: Date;
+    cancelAtPeriodEnd?: boolean;
+    canceledAt?: Date;
 }
 
 export async function updateSubscriptionByStripeId(params: UpdateSubscriptionParams): Promise<boolean> {
@@ -24,9 +26,14 @@ export async function updateSubscriptionByStripeId(params: UpdateSubscriptionPar
         }
         if (params.currentPeriodStart) {
             updateData.current_period_start = params.currentPeriodStart.toISOString();
-        }
-        if (params.currentPeriodEnd) {
+        }        if (params.currentPeriodEnd) {
             updateData.current_period_end = params.currentPeriodEnd.toISOString();
+        }
+        if (params.cancelAtPeriodEnd !== undefined) {
+            updateData.cancel_at_period_end = params.cancelAtPeriodEnd;
+        }
+        if (params.canceledAt) {
+            updateData.canceled_at = params.canceledAt.toISOString();
         }
 
         const { error } = await supabase

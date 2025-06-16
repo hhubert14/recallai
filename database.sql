@@ -43,6 +43,8 @@ CREATE TABLE public.subscriptions (
   current_period_end timestamp with time zone,
   created_at timestamp with time zone NOT NULL DEFAULT now(),
   updated_at timestamp with time zone NOT NULL DEFAULT now(),
+  cancel_at_period_end boolean NOT NULL DEFAULT false,
+  canceled_at timestamp with time zone,
   CONSTRAINT subscriptions_pkey PRIMARY KEY (id),
   CONSTRAINT subscriptions_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id)
 );
@@ -64,9 +66,9 @@ CREATE TABLE public.user_answers (
   is_correct boolean NOT NULL,
   created_at timestamp with time zone NOT NULL DEFAULT now(),
   CONSTRAINT user_answers_pkey PRIMARY KEY (id),
+  CONSTRAINT user_answers_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id),
   CONSTRAINT user_answers_question_id_fkey FOREIGN KEY (question_id) REFERENCES public.questions(id),
-  CONSTRAINT user_answers_selected_option_id_fkey FOREIGN KEY (selected_option_id) REFERENCES public.question_options(id),
-  CONSTRAINT user_answers_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id)
+  CONSTRAINT user_answers_selected_option_id_fkey FOREIGN KEY (selected_option_id) REFERENCES public.question_options(id)
 );
 CREATE TABLE public.users (
   id uuid NOT NULL DEFAULT gen_random_uuid(),

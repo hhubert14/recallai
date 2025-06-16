@@ -6,6 +6,7 @@ import { UserButton } from "@/components/ui/user-button";
 import { createClient } from "@/lib/supabase/server";
 import { getUserSubscriptionStatus } from "@/data-access/subscriptions/get-user-subscription-status";
 import SubscribeButton from "@/components/subscription/SubscribeButton";
+import { ManageBillingButton } from "@/components/subscription/ManageBillingButton";
 import { BackButton } from "@/components/ui/back-button";
 
 export const metadata: Metadata = {
@@ -180,10 +181,22 @@ export default async function PricingPage() {
                                     </li>
                                 ))}
                             </ul>
-                            
-                            <div className="mt-8">
+                              <div className="mt-8">
                                 {plan.id === "premium" && !plan.isCurrent ? (
                                     <SubscribeButton userId={user.id} />
+                                ) : plan.id === "premium" && plan.isCurrent ? (
+                                    <div className="space-y-3">
+                                        <Button
+                                            disabled={true}
+                                            className="w-full bg-green-600 hover:bg-green-600 cursor-default"
+                                        >
+                                            {plan.buttonText}
+                                        </Button>
+                                        <ManageBillingButton 
+                                            userId={user.id} 
+                                            className="w-full" 
+                                        />
+                                    </div>
                                 ) : (
                                     <Button
                                         disabled={plan.buttonDisabled}

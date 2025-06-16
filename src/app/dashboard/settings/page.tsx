@@ -9,6 +9,7 @@ import { getUserStatsByUserId } from "@/data-access/user-stats/get-user-stats-by
 import { getVideosThisMonthByUserId } from "@/data-access/user-stats/get-videos-this-month-by-user-id";
 import { SubscriptionStatusBadge } from "@/components/subscription/SubscriptionStatusBadge";
 import { UpgradeButton } from "@/components/subscription/UpgradeButton";
+import { ManageBillingButton } from "@/components/subscription/ManageBillingButton";
 import { DeleteDataButton } from "./DeleteDataButton";
 
 export const metadata: Metadata = {
@@ -157,11 +158,8 @@ export default async function SettingsPage() {
                                             <label className="text-sm font-medium text-gray-700">Total Videos</label>
                                             <p className="text-2xl font-bold text-blue-900">{userStats.totalVideos}</p>
                                             <p className="text-sm text-gray-500">All time</p>
-                                        </div>
-                                    </div>
-                                    <Button variant="outline" className="w-fit">
-                                        Manage Billing
-                                    </Button>
+                                        </div>                                    </div>
+                                    <ManageBillingButton userId={user.id} className="w-fit" />
                                 </div>
                             )}
                         </div>

@@ -5,6 +5,8 @@ export interface UserSubscriptionStatus {
     status?: string;
     planType?: string;
     currentPeriodEnd?: string;
+    cancelAtPeriodEnd?: boolean;
+    canceledAt?: string;
 }
 
 export async function getUserSubscriptionStatus(userId: string): Promise<UserSubscriptionStatus> {
@@ -29,7 +31,7 @@ export async function getUserSubscriptionStatus(userId: string): Promise<UserSub
         }        // If subscribed, get detailed subscription info from subscriptions table
         const { data: subscriptionData, error: subscriptionError } = await supabase
             .from('subscriptions')
-            .select('status, plan, current_period_end')
+            .select('status, plan, current_period_end, cancel_at_period_end, canceled_at')
             .eq('user_id', userId)
             .in('status', ['active', 'trialing', 'past_due']) // Include all statuses that should have access
             .single();
@@ -38,13 +40,13 @@ export async function getUserSubscriptionStatus(userId: string): Promise<UserSub
             // User might be marked as subscribed but no active subscription found
             // Return basic subscription status
             return { isSubscribed: userData.is_subscribed };
-        }
-
-        return {
+        }        return {
             isSubscribed: true,
             status: subscriptionData.status,
             planType: subscriptionData.plan,
-            currentPeriodEnd: subscriptionData.current_period_end
+            currentPeriodEnd: subscriptionData.current_period_end,
+            cancelAtPeriodEnd: subscriptionData.cancel_at_period_end,
+            canceledAt: subscriptionData.canceled_at
         };
 
     } catch (error) {

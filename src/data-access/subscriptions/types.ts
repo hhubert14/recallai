@@ -23,6 +23,8 @@ export interface SubscriptionData {
     plan: SubscriptionPlan;
     current_period_start: string;
     current_period_end: string;
+    cancel_at_period_end: boolean;
+    canceled_at?: string;
     created_at: string;
     updated_at: string;
 }

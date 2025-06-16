@@ -8,6 +8,30 @@ import { createSubscription } from "@/data-access/subscriptions/create-subscript
 import { updateSubscriptionByStripeId } from "@/data-access/subscriptions/update-subscription";
 import { updateUserSubscriptionStatus, resetUserMonthlyUsage } from "@/data-access/users/update-user-subscription";
 
+// Simple in-memory cache to prevent duplicate processing
+const processedEvents = new Map<string, number>();
+
+function isEventAlreadyProcessed(eventId: string): boolean {
+    const now = Date.now();
+    const lastProcessed = processedEvents.get(eventId);
+    
+    // If processed within the last 5 minutes, consider it a duplicate
+    if (lastProcessed && (now - lastProcessed) < 5 * 60 * 1000) {
+        return true;
+    }
+    
+    // Clean up old entries (older than 10 minutes)
+    for (const [id, timestamp] of processedEvents.entries()) {
+        if ((now - timestamp) > 10 * 60 * 1000) {
+            processedEvents.delete(id);
+        }
+    }
+    
+    // Mark as processed
+    processedEvents.set(eventId, now);
+    return false;
+}
+
 export async function POST(request: NextRequest) {
     // const stripe = (await import("@/lib/stripe/stripe")).stripe;
     const body = await request.text();
@@ -32,7 +56,16 @@ export async function POST(request: NextRequest) {
             revalidatePath(`/dashboard`);
         }
         // Log the event for debugging purposes
-        console.log(`Received event: ${event.type}`);
+        console.log(`Received event: ${event.type} (ID: ${event.id})`);
+        
+        // Check for duplicate events
+        if (isEventAlreadyProcessed(event.id)) {
+            console.log(`Event ${event.id} already processed, skipping`);
+            return new Response(JSON.stringify({ received: true, skipped: true }), {
+                status: 200,
+                headers: { "Content-Type": "application/json" },
+            });
+        }
         
         // Handle the event
         switch (event.type) {
@@ -53,6 +86,9 @@ export async function POST(request: NextRequest) {
                 break;
             case "customer.subscription.deleted":
                 await handleSubscriptionDeleted(event);
+                break;
+            case "billing_portal.session.created":
+                await handleBillingPortalSessionCreated(event);
                 break;
             default:
                 console.warn(`Unhandled event type: ${event.type}`);
@@ -88,12 +124,21 @@ async function handleSubscriptionCreated(event: any) {
         if (subscription.current_period_start && subscription.current_period_end) {
             console.log("Updating subscription with period data");
             
-            const updateSuccess = await updateSubscriptionByStripeId({
+            // Prepare update data with safe date conversion
+            const updateData: any = {
                 stripeSubscriptionId: subscription.id,
                 status: mapStripeStatusToDbStatus(subscription.status),
-                currentPeriodStart: new Date(subscription.current_period_start * 1000),
-                currentPeriodEnd: new Date(subscription.current_period_end * 1000),
-            });
+            };
+
+            // Only add dates if they exist and are valid numbers
+            if (typeof subscription.current_period_start === 'number') {
+                updateData.currentPeriodStart = new Date(subscription.current_period_start * 1000);
+            }
+            if (typeof subscription.current_period_end === 'number') {
+                updateData.currentPeriodEnd = new Date(subscription.current_period_end * 1000);
+            }
+
+            const updateSuccess = await updateSubscriptionByStripeId(updateData);
 
             if (updateSuccess) {
                 console.log("Subscription period data updated successfully");
@@ -294,13 +339,34 @@ async function handleSubscriptionUpdated(event: any) {
             return;
         }
 
-        // Update subscription in database
-        const success = await updateSubscriptionByStripeId({
+        // Prepare update data with safe date conversion
+        const updateData: any = {
             stripeSubscriptionId: subscription.id,
             status: mapStripeStatusToDbStatus(subscription.status),
-            currentPeriodStart: new Date((subscription as any).current_period_start * 1000),
-            currentPeriodEnd: new Date((subscription as any).current_period_end * 1000),
-        });
+        };
+
+        // Only add dates if they exist and are valid
+        if (subscription.current_period_start && typeof subscription.current_period_start === 'number') {
+            updateData.currentPeriodStart = new Date(subscription.current_period_start * 1000);
+        }
+        if (subscription.current_period_end && typeof subscription.current_period_end === 'number') {
+            updateData.currentPeriodEnd = new Date(subscription.current_period_end * 1000);
+        }
+
+        // Track cancellation state
+        if (subscription.cancel_at_period_end !== undefined) {
+            updateData.cancelAtPeriodEnd = subscription.cancel_at_period_end;
+            
+            // If this is a new cancellation request, record when it was canceled
+            if (subscription.cancel_at_period_end && subscription.canceled_at) {
+                updateData.canceledAt = new Date(subscription.canceled_at * 1000);
+            }
+        }
+
+        console.log("Updating subscription with data:", updateData);
+
+        // Update subscription in database
+        const success = await updateSubscriptionByStripeId(updateData);
 
         if (success) {
             // Update user access based on subscription status
@@ -351,5 +417,25 @@ async function handleSubscriptionDeleted(event: any) {
         }
     } catch (error) {
         console.error("Error handling subscription deleted:", error);
+    }
+}
+
+// Handle billing portal session creation
+async function handleBillingPortalSessionCreated(event: any) {
+    console.log("Processing billing portal session created");
+    
+    try {
+        const session = event.data.object;
+        console.log("Billing portal session created:", {
+            id: session.id,
+            customer: session.customer,
+            url: session.url
+        });
+        
+        // Log for analytics/tracking purposes
+        // Could also be used to track portal usage if needed
+        console.log("User accessed billing portal");
+    } catch (error) {
+        console.error("Error handling billing portal session created:", error);
     }
 }
