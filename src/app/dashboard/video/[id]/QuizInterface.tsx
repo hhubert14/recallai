@@ -4,18 +4,22 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { QuestionDto, QuestionOptionDto } from "@/data-access/questions/types";
 import { submitAnswer } from "./actions";
+import { useQuizCompletion } from "@/components/providers/QuizCompletionProvider";
 
 interface QuizInterfaceProps {
     questions: QuestionDto[];
     userId: string;
+    videoId: number;
 }
 
-export function QuizInterface({ questions, userId }: QuizInterfaceProps) {
+export function QuizInterface({ questions, userId, videoId }: QuizInterfaceProps) {
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [selectedOptionId, setSelectedOptionId] = useState<number | null>(null);
     const [showResult, setShowResult] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [correctAnswer, setCorrectAnswer] = useState<QuestionOptionDto | null>(null);
+    
+    const { markVideoAsCompleted } = useQuizCompletion();
 
     const currentQuestion = questions[currentQuestionIndex];
 
@@ -38,10 +42,13 @@ export function QuizInterface({ questions, userId }: QuizInterfaceProps) {
             question_id: currentQuestion.id,
             selected_option_id: selectedOptionId,
             is_correct: selectedOption.is_correct
-        });
-
-        setShowResult(true);
+        });        setShowResult(true);
         setIsSubmitting(false);
+        
+        // Mark video as completed if this is the last question
+        if (currentQuestionIndex === questions.length - 1) {
+            markVideoAsCompleted(videoId);
+        }
     };
 
     const handleNext = () => {

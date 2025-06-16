@@ -3,12 +3,17 @@
 import Link from "next/link";
 import { Play, Check, X } from "lucide-react";
 import { VideoDto } from "@/data-access/videos/types";
+import { useQuizCompletion } from "@/components/providers/QuizCompletionProvider";
 
 interface LibraryVideoCardProps {
     video: VideoDto & { quizCompleted: boolean };
 }
 
 export function LibraryVideoCard({ video }: LibraryVideoCardProps) {
+    const { isVideoCompleted } = useQuizCompletion();
+    
+    // Check both server-side data and client-side state
+    const isCompleted = video.quizCompleted || isVideoCompleted(video.id);
     // Format date as "June 13, 2025"
     const formatDate = (dateString: string): string => {
         const date = new Date(dateString);
@@ -47,9 +52,8 @@ export function LibraryVideoCard({ video }: LibraryVideoCardProps) {
                     <div className="text-right">
                         <p className="text-sm text-gray-600">
                             {formatDate(video.created_at)}
-                        </p>
-                        <div className="flex items-center justify-end gap-1 mt-1">
-                            {video.quizCompleted ? (
+                        </p>                        <div className="flex items-center justify-end gap-1 mt-1">
+                            {isCompleted ? (
                                 <>
                                     <Check className="h-4 w-4 text-green-600" />
                                     <span className="text-xs text-green-600">Completed</span>

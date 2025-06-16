@@ -10,9 +10,10 @@ interface ContentTabsProps {
     summary: SummaryDto | null;
     questions: QuestionDto[];
     userId: string;
+    videoId: number;
 }
 
-export function ContentTabs({ summary, questions, userId }: ContentTabsProps) {
+export function ContentTabs({ summary, questions, userId, videoId }: ContentTabsProps) {
     const [activeTab, setActiveTab] = useState<"summary" | "qa">("summary");
 
     return (
@@ -60,11 +61,11 @@ export function ContentTabs({ summary, questions, userId }: ContentTabsProps) {
                 )}
 
                 {activeTab === "qa" && (
-                    <div>
-                        {questions.length > 0 ? (
+                    <div>                        {questions.length > 0 ? (
                             <QuizInterface
                                 questions={questions}
                                 userId={userId}
+                                videoId={videoId}
                             />
                         ) : (
                             <div className="text-center py-8">

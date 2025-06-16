@@ -87,11 +87,11 @@ export default async function VideoDetailPage({ params }: VideoDetailPageProps) 
                     </div>
 
                     {/* Content Tabs - Right Side on Desktop, Bottom on Mobile */}
-                    <div className="flex flex-col min-h-[500px] lg:min-h-0">
-                        <ContentTabs
+                    <div className="flex flex-col min-h-[500px] lg:min-h-0">                        <ContentTabs
                             summary={summary}
                             questions={questions}
                             userId={user.id}
+                            videoId={video.id}
                         />
                     </div>
                 </div>

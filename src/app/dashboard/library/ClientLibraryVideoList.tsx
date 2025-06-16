@@ -1,13 +1,26 @@
+"use client";
+
+import { useEffect } from "react";
 import { VideoDto } from "@/data-access/videos/types";
 import { getQuizCompletionStatus } from "@/data-access/user-stats/get-quiz-completion-status";
-import { ClientLibraryVideoList } from "@/app/dashboard/library/ClientLibraryVideoList";
+import { LibraryVideoCard } from "./LibraryVideoCard";
+import { useQuizCompletion } from "@/components/providers/QuizCompletionProvider";
 
-interface LibraryVideoListProps {
-    videos: VideoDto[];
+interface ClientLibraryVideoListProps {
+    videos: (VideoDto & { quizCompleted: boolean })[];
     userId: string;
 }
 
-export async function LibraryVideoList({ videos, userId }: LibraryVideoListProps) {
+export function ClientLibraryVideoList({ videos, userId }: ClientLibraryVideoListProps) {
+    const { markVideoAsCompleted } = useQuizCompletion();    // Initialize completed videos from server data
+    useEffect(() => {
+        videos.forEach(video => {
+            if (video.quizCompleted) {
+                markVideoAsCompleted(video.id);
+            }
+        });
+    }, []); // Remove dependencies to run only once on mount
+
     if (videos.length === 0) {
         return (
             <div className="text-center py-12">
@@ -29,13 +42,16 @@ export async function LibraryVideoList({ videos, userId }: LibraryVideoListProps
                 </div>
             </div>
         );
-    }    // Get quiz completion status for all videos
-    const videosWithCompletion = await Promise.all(
-        videos.map(async (video) => ({
-            ...video,
-            quizCompleted: await getQuizCompletionStatus(userId, video.id)
-        }))
-    );    return (
-        <ClientLibraryVideoList videos={videosWithCompletion} userId={userId} />
+    }
+
+    return (
+        <div className="space-y-3">
+            {videos.map((video) => (
+                <LibraryVideoCard
+                    key={video.id}
+                    video={video}
+                />
+            ))}
+        </div>
     );
 }
