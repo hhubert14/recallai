@@ -22,10 +22,7 @@ export default async function PricingPage() {
         return null;
     }
 
-    const subscriptionStatus = await getUserSubscriptionStatus(user.id);
-
-    const plans = [
-        {
+    const subscriptionStatus = await getUserSubscriptionStatus(user.id);    const plans = [        {
             id: "free",
             name: "Free",
             description: "Perfect for trying out LearnSync.",
@@ -38,8 +35,8 @@ export default async function PricingPage() {
                 "7-day storage",
             ],
             isCurrent: !subscriptionStatus.isSubscribed,
-            buttonText: "Current Plan",
-            buttonDisabled: !subscriptionStatus.isSubscribed,
+            buttonText: !subscriptionStatus.isSubscribed ? "Current Plan" : "Manage Subscription",
+            buttonDisabled: !subscriptionStatus.isSubscribed, // Only disabled when it's current plan
         },
         {
             id: "premium",
@@ -57,7 +54,7 @@ export default async function PricingPage() {
             isPopular: true,
             isCurrent: subscriptionStatus.isSubscribed && subscriptionStatus.planType === "premium",
             buttonText: subscriptionStatus.isSubscribed && subscriptionStatus.planType === "premium" ? "Current Plan" : "Upgrade to Premium",
-            buttonDisabled: subscriptionStatus.isSubscribed && subscriptionStatus.planType === "premium",
+            buttonDisabled: subscriptionStatus.isSubscribed, // Disable if user already has any subscription
         },
         {
             id: "student",
@@ -70,7 +67,7 @@ export default async function PricingPage() {
             ],
             isCurrent: subscriptionStatus.isSubscribed && subscriptionStatus.planType === "student",
             buttonText: subscriptionStatus.isSubscribed && subscriptionStatus.planType === "student" ? "Current Plan" : "Verify Student Status",
-            buttonDisabled: subscriptionStatus.isSubscribed && subscriptionStatus.planType === "student",
+            buttonDisabled: subscriptionStatus.isSubscribed, // Disable if user already has any subscription
         },
     ];
 
@@ -180,9 +177,8 @@ export default async function PricingPage() {
                                         <span>{feature}</span>
                                     </li>
                                 ))}
-                            </ul>
-                              <div className="mt-8">
-                                {plan.id === "premium" && !plan.isCurrent ? (
+                            </ul>                            <div className="mt-8">
+                                {plan.id === "premium" && !subscriptionStatus.isSubscribed ? (
                                     <SubscribeButton userId={user.id} />
                                 ) : plan.id === "premium" && plan.isCurrent ? (
                                     <div className="space-y-3">
@@ -196,17 +192,25 @@ export default async function PricingPage() {
                                             userId={user.id} 
                                             className="w-full" 
                                         />
-                                    </div>
+                                    </div>                                ) : plan.id === "free" && subscriptionStatus.isSubscribed ? (
+                                    <ManageBillingButton 
+                                        userId={user.id} 
+                                        className="w-full bg-orange-600 hover:bg-orange-700 border-orange-600" 
+                                    />
                                 ) : (
                                     <Button
                                         disabled={plan.buttonDisabled}
                                         className={`w-full ${
                                             plan.isCurrent
                                                 ? "bg-green-600 hover:bg-green-600 cursor-default"
+                                                : plan.buttonDisabled
+                                                ? "bg-gray-400 hover:bg-gray-400 cursor-not-allowed text-gray-600"
                                                 : "bg-blue-600 hover:bg-blue-700"
                                         }`}
                                     >
-                                        {plan.buttonText}
+                                        {plan.buttonDisabled && !plan.isCurrent && subscriptionStatus.isSubscribed 
+                                            ? "Already Subscribed" 
+                                            : plan.buttonText}
                                     </Button>
                                 )}
                             </div>
