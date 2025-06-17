@@ -89,6 +89,8 @@ export async function GET(
         }
 
         const youtubeData = await getYoutubeVideoData(videoId);
+
+        console.log("YouTube video data:", youtubeData);
         if (
             !youtubeData ||
             !youtubeData.items ||
@@ -114,14 +116,14 @@ export async function GET(
             // };
             transcript = "";
         }
-        console.log("Transcript data:", transcript);
+        // console.log("Transcript data:", transcript);
 
         const isEducational = await checkVideoEducational(
             youtubeData.items[0].snippet.title,
             youtubeData.items[0].snippet.description,
             transcript
         );
-
+        console.log("Is educational:", isEducational);
         if (isEducational === undefined) {
             return NextResponse.json(
                 { error: "Failed to determine if the video is educational" },

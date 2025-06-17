@@ -10,6 +10,11 @@ export async function checkVideoEducational(
     // transcript: YoutubeTranscript
     transcript: string
 ): Promise<boolean | undefined> {
+    console.log("checkVideoEducational called with:", {
+        title,
+        description,
+        transcript: transcript.substring(0, 50), // Log first 50 chars of transcript
+    });
     if (!title || !description || !transcript) {
         return undefined;
     }
@@ -54,6 +59,8 @@ Respond with exactly "EDUCATIONAL" or "NOT_EDUCATIONAL" and nothing else.`,
     });
 
     const answer = response.choices[0].message.content?.trim();
+
+    console.log("OpenAI response:", answer);
 
     if (!answer || typeof answer !== "string") {
         return undefined;
