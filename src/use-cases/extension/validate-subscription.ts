@@ -1,6 +1,5 @@
 import "server-only";
 
-import { getUserSubscriptionStatus } from "@/data-access/subscriptions/get-user-subscription-status";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
 
 export interface SubscriptionValidationResult {
@@ -35,9 +34,28 @@ export async function validateSubscriptionForExtension(userId: string): Promise<
     try {
         const supabase = createServiceRoleClient();
         
-        // Get user's subscription status
-        const subscriptionStatus = await getUserSubscriptionStatus(userId);
-        console.log("User subscription status:", subscriptionStatus);
+        // Get user's subscription status directly from database using service role client
+        // This ensures we get the most up-to-date data, not cached session data
+        const { data: userData, error: userError } = await supabase
+            .from('users')
+            .select('is_subscribed')
+            .eq('id', userId)
+            .single();
+
+        if (userError || !userData) {
+            console.error("Error fetching user subscription data:", userError);
+            return {
+                allowed: false,
+                error: {
+                    type: 'SUBSCRIPTION_REQUIRED',
+                    message: 'Unable to verify user subscription status',
+                    requiresUpgrade: false
+                }
+            };
+        }
+
+        const isSubscribed = userData.is_subscribed;
+        console.log("User subscription status from database:", { userId, isSubscribed });
         
         // Calculate the start of current month to count videos
         const now = new Date();
@@ -65,7 +83,7 @@ export async function validateSubscriptionForExtension(userId: string): Promise<
         const currentUsage = currentMonthVideoCount || 0;
         
         // Determine user's plan and limits
-        const userPlan = subscriptionStatus.isSubscribed ? 'premium' : 'free';
+        const userPlan = isSubscribed ? 'premium' : 'free';
         const limits = SUBSCRIPTION_LIMITS[userPlan];
         
         console.log("User plan:", userPlan, "Current month usage:", currentUsage, "Limits:", limits);
@@ -76,12 +94,12 @@ export async function validateSubscriptionForExtension(userId: string): Promise<
                 allowed: false,
                 error: {
                     type: 'MONTHLY_LIMIT_EXCEEDED',
-                    message: subscriptionStatus.isSubscribed 
+                    message: isSubscribed 
                         ? 'You have reached your monthly video processing limit'
                         : 'You have reached your free monthly limit. Upgrade to Premium for unlimited access',
                     currentUsage,
                     limit: limits.monthlyVideoLimit,
-                    requiresUpgrade: !subscriptionStatus.isSubscribed
+                    requiresUpgrade: !isSubscribed
                 }
             };
         }

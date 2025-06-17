@@ -83,10 +83,10 @@ export async function POST(request: NextRequest) {
             .update({ updated_at: new Date().toISOString() })
             .eq("token", token);
 
-        // Get user info
+        // Get user info including subscription status
         const { data: user, error: userError } = await supabase
             .from("users")
-            .select("email")
+            .select("email, is_subscribed")
             .eq("id", tokenData.user_id)
             .single();
 
@@ -108,6 +108,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
             {
                 valid: true,
+                isSubscribed: user.is_subscribed,
                 user: {
                     email: user.email,
                 },
