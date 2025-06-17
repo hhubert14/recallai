@@ -22,17 +22,42 @@ export async function checkVideoEducational(
         model: "gpt-4.1-nano-2025-04-14",
         messages: [
             {
+                role: "system",
+                content: `You are an expert at classifying video content. Educational videos teach specific skills, explain concepts, provide tutorials, or present factual information with the primary purpose of learning. Entertainment videos are primarily for fun, gaming, reactions, vlogs, or casual content even if they mention some facts.
+
+Examples of educational content:
+- Tutorial videos (how to code, cook, etc.)
+- Academic lectures or lessons
+- Documentary-style content explaining topics
+- Skill-building or professional development
+- Science explanations and demonstrations
+
+Examples of non-educational content:
+- Gaming videos (playing games, reactions)
+- Entertainment/comedy content
+- Vlogs and personal stories
+- Reaction videos
+- Casual conversations about topics`
+            },
+            {
                 role: "user",
-                content: `Is the following video educational?\n\nTitle: ${title}\nDescription: ${description}\nTranscript: ${transcriptText}\n\nPlease answer with "yes" or "no". If you are unsure, respond with "no".`,
+                content: `Classify this video as educational or not educational based on its primary purpose.
+
+Title: ${title}
+Description: ${description}
+Transcript excerpt: ${transcriptText.substring(0, 2000)}...
+
+Respond with exactly "EDUCATIONAL" or "NOT_EDUCATIONAL" and nothing else.`,
             },
         ],
+        temperature: 0,
     });
 
-    const answer = response.choices[0].message.content;
+    const answer = response.choices[0].message.content?.trim();
 
     if (!answer || typeof answer !== "string") {
         return undefined;
     }
 
-    return answer.toLowerCase().includes("yes");
+    return answer === "EDUCATIONAL";
 }
