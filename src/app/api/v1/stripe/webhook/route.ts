@@ -7,6 +7,7 @@ import { extractUserIdFromStripeEvent, mapStripeStatusToDbStatus, shouldHaveSubs
 import { createSubscription } from "@/data-access/subscriptions/create-subscription";
 import { updateSubscriptionByStripeId } from "@/data-access/subscriptions/update-subscription";
 import { updateUserSubscriptionStatus } from "@/data-access/users/update-user-subscription";
+import { updateVideosOnSubscriptionUpgrade, handleSubscriptionDowngrade } from "@/data-access/videos/update-video-expiry-on-subscription-change";
 
 // Simple in-memory cache to prevent duplicate processing
 const processedEvents = new Map<string, number>();
@@ -194,6 +195,10 @@ async function handleCheckoutSessionCompleted(event: any) {
             // Update user subscription status
             await updateUserSubscriptionStatus(userId, true);
             
+            // User just subscribed - update all their videos to not expire
+            console.log("New subscription created, updating video expiry settings");
+            await updateVideosOnSubscriptionUpgrade(userId);
+            
             console.log("Checkout session processed successfully - subscription created");
         } else {
             console.error("Failed to create subscription in database");
@@ -356,12 +361,21 @@ async function handleSubscriptionUpdated(event: any) {
         console.log("Updating subscription with data:", updateData);
 
         // Update subscription in database
-        const success = await updateSubscriptionByStripeId(updateData);
-
-        if (success) {
+        const success = await updateSubscriptionByStripeId(updateData);        if (success) {
             // Update user access based on subscription status
             const hasAccess = shouldHaveSubscriptionAccess(subscription.status);
             await updateUserSubscriptionStatus(userId, hasAccess);
+            
+            // Handle video expiry changes based on subscription status
+            if (hasAccess) {
+                // User now has premium access - update all their videos to not expire
+                console.log("User upgraded to premium, updating video expiry settings");
+                await updateVideosOnSubscriptionUpgrade(userId);
+            } else {
+                // User lost premium access - handle with grace period
+                console.log("User lost premium access, applying grace period for existing videos");
+                await handleSubscriptionDowngrade(userId);
+            }
             
             // Revalidate the dashboard
             revalidatePath('/dashboard');
@@ -392,11 +406,13 @@ async function handleSubscriptionDeleted(event: any) {
         const success = await updateSubscriptionByStripeId({
             stripeSubscriptionId: subscription.id,
             status: 'canceled',
-        });
-
-        if (success) {
+        });        if (success) {
             // Remove user's subscription access
             await updateUserSubscriptionStatus(userId, false);
+            
+            // Handle video expiry changes - apply grace period for existing videos
+            console.log("Subscription deleted, applying grace period for existing videos");
+            await handleSubscriptionDowngrade(userId);
             
             // Revalidate the dashboard
             revalidatePath('/dashboard');

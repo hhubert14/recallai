@@ -2,12 +2,20 @@ import "server-only"; // Ensure this file is only used on the server side
 
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
 import { CreateVideoDto } from "./types";
+import { getUserSubscriptionStatus } from "@/data-access/subscriptions/get-user-subscription-status";
 // import { getVideoByUrl } from "./get-video-by-url";
 
 export async function createVideo(videoData: CreateVideoDto) {
     const supabase = createServiceRoleClient();
 
     try {
+        // Get user's subscription status to determine should_expire value
+        const subscriptionStatus = await getUserSubscriptionStatus(videoData.user_id);
+        
+        // Set should_expire based on subscription status
+        // Free users: should_expire = true, Premium users: should_expire = false
+        const should_expire = !subscriptionStatus.isSubscribed;
+
         // // Check if video already exists for this user
         // const existingVideo = await getVideoByUrl(videoData.url, videoData.user_id);
 
@@ -17,7 +25,10 @@ export async function createVideo(videoData: CreateVideoDto) {
 
         const { data, error } = await supabase
             .from("videos")
-            .insert([videoData])
+            .insert([{
+                ...videoData,
+                should_expire
+            }])
             .select()
             .single();
 

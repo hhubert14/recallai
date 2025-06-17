@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Brain, User, CreditCard, Chrome, Database, RefreshCw } from "lucide-react";
+import { Brain, User, CreditCard, Chrome, Database, RefreshCw, Clock } from "lucide-react";
 import { UserButton } from "@/components/ui/user-button";
 import { createClient } from "@/lib/supabase/server";
 import { getUserSubscriptionStatus } from "@/data-access/subscriptions/get-user-subscription-status";
@@ -10,6 +10,7 @@ import { getVideosThisMonthByUserId } from "@/data-access/user-stats/get-videos-
 import { SubscriptionStatusBadge } from "@/components/subscription/SubscriptionStatusBadge";
 import { UpgradeButton } from "@/components/subscription/UpgradeButton";
 import { ManageBillingButton } from "@/components/subscription/ManageBillingButton";
+import { getUserVideoExpiryStats } from "@/data-access/user-stats/get-user-video-expiry-stats";
 
 export const metadata: Metadata = {
     title: "Settings | LearnSync",
@@ -22,11 +23,12 @@ export default async function SettingsPage() {
 
     if (!user) {
         return null;
-    }    const [subscriptionStatus, userStats, videosThisMonth] = await Promise.all([
+    }    const [subscriptionStatus, userStats, videosThisMonth, videoExpiryStats] = await Promise.all([
         getUserSubscriptionStatus(user.id),
         getUserStatsByUserId(user.id),
-        getVideosThisMonthByUserId(user.id)
-    ]);    // Calculate usage percentage for free users
+        getVideosThisMonthByUserId(user.id),
+        getUserVideoExpiryStats(user.id)
+    ]);// Calculate usage percentage for free users
     const monthlyLimit = subscriptionStatus.isSubscribed ? null : 5;
     const usagePercentage = monthlyLimit ? Math.min(videosThisMonth / monthlyLimit * 100, 100) : 0;
 
@@ -215,6 +217,56 @@ export default async function SettingsPage() {
                                     </p>
                                     <p className="text-sm text-gray-600">Quiz Accuracy</p>
                                 </div>                            </div>
+                        </div>                    </div>
+
+                    {/* Video Expiry Section */}
+                    <div className="rounded-lg border p-6 shadow-sm">
+                        <div className="flex items-center gap-3 mb-4">
+                            <Clock className="h-5 w-5 text-blue-600" />
+                            <h2 className="text-xl font-semibold text-blue-900">Video Storage</h2>
+                        </div>
+                        <div className="space-y-4">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div className="text-center p-4 bg-green-50 rounded-lg">
+                                    <p className="text-2xl font-bold text-green-900">{videoExpiryStats.permanentVideos}</p>
+                                    <p className="text-sm text-gray-600">Permanent Videos</p>
+                                    <p className="text-xs text-green-600">Never expire</p>
+                                </div>
+                                <div className="text-center p-4 bg-orange-50 rounded-lg">
+                                    <p className="text-2xl font-bold text-orange-900">{videoExpiryStats.expiringVideos}</p>
+                                    <p className="text-sm text-gray-600">Expiring Videos</p>
+                                    <p className="text-xs text-orange-600">Will be deleted</p>
+                                </div>
+                                <div className="text-center p-4 bg-red-50 rounded-lg">
+                                    <p className="text-2xl font-bold text-red-900">{videoExpiryStats.expiringSoon}</p>
+                                    <p className="text-sm text-gray-600">Expiring Soon</p>
+                                    <p className="text-xs text-red-600">Within 3 days</p>
+                                </div>
+                            </div>
+                            
+                            {videoExpiryStats.nextExpiring && (
+                                <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                                    <h3 className="font-medium text-yellow-900 mb-2">Next Video Expiring</h3>
+                                    <p className="text-sm text-gray-700">
+                                        <strong>{videoExpiryStats.nextExpiring.title}</strong> will expire on{' '}
+                                        {new Date(videoExpiryStats.nextExpiring.expiry_date).toLocaleDateString('en-US', {
+                                            year: 'numeric',
+                                            month: 'long',
+                                            day: 'numeric'
+                                        })}
+                                    </p>
+                                </div>
+                            )}
+                            
+                            {!subscriptionStatus.isSubscribed && videoExpiryStats.expiringVideos > 0 && (
+                                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                                    <h3 className="font-medium text-blue-900 mb-2">Upgrade to Keep Your Videos</h3>
+                                    <p className="text-sm text-gray-700 mb-3">
+                                        Premium members keep their videos permanently. Upgrade now to prevent losing your content.
+                                    </p>
+                                    <UpgradeButton size="sm" />
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

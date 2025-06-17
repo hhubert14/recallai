@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Play, Check, X } from "lucide-react";
+import { Play, Check, X, Clock, AlertTriangle } from "lucide-react";
 import { VideoDto } from "@/data-access/videos/types";
 import { useQuizCompletion } from "@/components/providers/QuizCompletionProvider";
 
@@ -14,6 +14,7 @@ export function LibraryVideoCard({ video }: LibraryVideoCardProps) {
     
     // Check both server-side data and client-side state
     const isCompleted = video.quizCompleted || isVideoCompleted(video.id);
+    
     // Format date as "June 13, 2025"
     const formatDate = (dateString: string): string => {
         const date = new Date(dateString);
@@ -24,13 +25,36 @@ export function LibraryVideoCard({ video }: LibraryVideoCardProps) {
         });
     };
 
+    // Calculate expiry status
+    const getExpiryStatus = () => {
+        if (!video.should_expire) {
+            return { status: 'permanent', message: 'Permanent', color: 'text-green-600' };
+        }
+        
+        const expiryDate = new Date(video.expiry_date);
+        const now = new Date();
+        const daysUntilExpiry = Math.ceil((expiryDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+        
+        if (daysUntilExpiry < 0) {
+            return { status: 'expired', message: 'Expired', color: 'text-red-600' };
+        } else if (daysUntilExpiry <= 1) {
+            return { status: 'expires-soon', message: 'Expires today', color: 'text-orange-600' };
+        } else if (daysUntilExpiry <= 3) {
+            return { status: 'expires-soon', message: `Expires in ${daysUntilExpiry} days`, color: 'text-orange-600' };
+        } else {
+            return { status: 'active', message: `Expires ${formatDate(video.expiry_date)}`, color: 'text-gray-500' };
+        }
+    };
+
+    const expiryStatus = getExpiryStatus();
+
     return (
         <Link 
             href={`/dashboard/video/${video.id}`}
             className="block p-4 rounded-lg border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-colors"
         >
             <div className="flex items-center justify-between">
-                {/* Left side - Video info (same as dashboard) */}
+                {/* Left side - Video info */}
                 <div className="flex items-center gap-3 flex-1 min-w-0">
                     <div className="flex-shrink-0">
                         <Play className="h-5 w-5 text-blue-600" />
@@ -44,6 +68,21 @@ export function LibraryVideoCard({ video }: LibraryVideoCardProps) {
                                 {video.channel_name}
                             </p>
                         )}
+                        {/* Expiry status */}
+                        <div className="flex items-center gap-1 mt-1">
+                            {video.should_expire ? (
+                                expiryStatus.status === 'expires-soon' ? (
+                                    <AlertTriangle className="h-3 w-3 text-orange-500" />
+                                ) : (
+                                    <Clock className="h-3 w-3 text-gray-400" />
+                                )
+                            ) : (
+                                <Check className="h-3 w-3 text-green-500" />
+                            )}
+                            <span className={`text-xs ${expiryStatus.color}`}>
+                                {expiryStatus.message}
+                            </span>
+                        </div>
                     </div>
                 </div>
 
@@ -52,7 +91,8 @@ export function LibraryVideoCard({ video }: LibraryVideoCardProps) {
                     <div className="text-right">
                         <p className="text-sm text-gray-600">
                             {formatDate(video.created_at)}
-                        </p>                        <div className="flex items-center justify-end gap-1 mt-1">
+                        </p>
+                        <div className="flex items-center justify-end gap-1 mt-1">
                             {isCompleted ? (
                                 <>
                                     <Check className="h-4 w-4 text-green-600" />
