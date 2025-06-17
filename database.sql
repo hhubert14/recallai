@@ -97,6 +97,7 @@ CREATE TABLE public.videos (
   video_id text,
   description text,
   deleted_at timestamp without time zone,
+  should_expire boolean NOT NULL DEFAULT true,
   CONSTRAINT videos_pkey PRIMARY KEY (id),
   CONSTRAINT videos_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id)
 );
