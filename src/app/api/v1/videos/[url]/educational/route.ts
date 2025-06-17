@@ -114,6 +114,7 @@ export async function GET(
             // };
             transcript = "";
         }
+        console.log("Transcript data:", transcript);
 
         const isEducational = await checkVideoEducational(
             youtubeData.items[0].snippet.title,
