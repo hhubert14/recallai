@@ -59,13 +59,14 @@ export async function validateSubscriptionForExtension(userId: string): Promise<
         // Calculate the start of current month to count videos
         const now = new Date();
         const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-        
-        // Count videos created this month for this user
+          // Count videos created this month that count towards free plan limit
+        // Only videos processed under free plan (should_expire = true) count towards the limit
         const { count: currentMonthVideoCount, error: videoCountError } = await supabase
             .from('videos')
             .select('*', { count: 'exact', head: true })
             .eq('user_id', userId)
-            .gte('created_at', startOfMonth.toISOString());        if (videoCountError) {
+            .eq('should_expire', true)
+            .gte('created_at', startOfMonth.toISOString());if (videoCountError) {
             logger.subscription.error("Error counting user videos", videoCountError, { userId });
             return {
                 allowed: false,
