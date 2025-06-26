@@ -881,8 +881,8 @@ export default function Home() {
                                         "Spaced repetition system",
                                         "Smart study notes",
                                         "Progress tracking",
-                                        // "Automatic video categorization + search",
                                         "Unlimited storage",
+                                        "Keep all videos forever (no 7-day expiry)"
                                     ].map(feature => (
                                         <li
                                             key={feature}

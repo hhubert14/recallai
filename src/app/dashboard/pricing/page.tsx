@@ -50,6 +50,7 @@ export default async function PricingPage() {
                 "Smart study notes",
                 "Progress tracking",
                 "Unlimited storage",
+                "Keep all videos forever (no 7-day expiry)",
             ],            isPopular: true,
             isCurrent: subscriptionStatus.isSubscribed && subscriptionStatus.planType === "premium",
             buttonText: subscriptionStatus.isSubscribed && subscriptionStatus.planType === "premium" ? "Current Plan" : "Upgrade to Premium",
