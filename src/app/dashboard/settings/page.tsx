@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Brain, User, CreditCard, Chrome, Database, RefreshCw, Clock } from "lucide-react";
+import { Brain, User, CreditCard, Chrome, Database, Clock } from "lucide-react";
 import { UserButton } from "@/components/ui/user-button";
+import { RegenerateTokenButton } from "./RegenerateTokenButton";
 import { createClient } from "@/lib/supabase/server";
 import { getUserSubscriptionStatus } from "@/data-access/subscriptions/get-user-subscription-status";
 import { getUserStatsByUserId } from "@/data-access/user-stats/get-user-stats-by-user-id";
@@ -164,33 +165,18 @@ export default async function SettingsPage() {
                                 </div>
                             )}
                         </div>
-                    </div>
-
-                    {/* Chrome Extension Section */}
+                    </div>                    {/* Chrome Extension Section */}
                     <div className="rounded-lg border p-6 shadow-sm">
                         <div className="flex items-center gap-3 mb-4">
                             <Chrome className="h-5 w-5 text-blue-600" />
                             <h2 className="text-xl font-semibold text-blue-900">Chrome Extension</h2>
-                        </div>
-                        <div className="space-y-4">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="font-medium text-gray-900">Connection Status</p>
-                                    <p className="text-sm text-gray-500">
-                                        The extension connects to your account to process videos
-                                    </p>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <div className="h-2 w-2 bg-green-500 rounded-full"></div>
-                                    <span className="text-sm text-green-600">Connected</span>
-                                </div>
-                            </div>
-                            <Button variant="outline" className="w-fit flex items-center gap-2">
-                                <RefreshCw className="h-4 w-4" />
-                                Regenerate Token
-                            </Button>
+                        </div>                        <div className="space-y-4">
                             <p className="text-sm text-gray-500">
-                                If you're having connection issues, try regenerating your connection token.
+                                Generate a new connection token for your Chrome extension. This will allow the extension to securely communicate with your account.
+                            </p>
+                            <RegenerateTokenButton />
+                            <p className="text-sm text-gray-500">
+                                If you're having connection issues with the extension, generate a new token to refresh the connection.
                             </p>
                         </div>
                     </div>
