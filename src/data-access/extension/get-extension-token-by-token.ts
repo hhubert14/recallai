@@ -3,6 +3,7 @@ import "server-only";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
 import { ExtensionTokenDto } from "./types";
 import { toDtoMapper } from "./utils";
+import { logger } from "@/lib/logger";
 
 export async function getExtensionTokenByToken(
     token: string
@@ -21,13 +22,13 @@ export async function getExtensionTokenByToken(
             .single();
 
         if (error) {
-            console.log("Error fetching token:", error);
+            logger.db.error("Error fetching token", error);
             return undefined;
         }
 
         return toDtoMapper(data);
     } catch (error) {
-        console.error("Error validating token:", error);
+        logger.db.error("Error validating token", error);
         return undefined;
     }
 }

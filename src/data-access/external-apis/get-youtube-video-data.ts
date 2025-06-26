@@ -1,5 +1,6 @@
 import "server-only";
 import { YouTubeData } from "./types";
+import { logger } from "@/lib/logger";
 
 export async function getYoutubeVideoData(
     videoId: string
@@ -23,7 +24,7 @@ export async function getYoutubeVideoData(
         const data = await response.json();
         return data;
     } catch (error) {
-        console.error("Error fetching YouTube video data:", error);
+        logger.video.error("Error fetching YouTube video data", error, { videoId });
         throw error;
     }
 }

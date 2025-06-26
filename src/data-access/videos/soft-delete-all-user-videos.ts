@@ -1,11 +1,9 @@
 import "server-only";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
+import { logger } from "@/lib/logger";
 
 export async function softDeleteAllUserVideos(userId: string): Promise<boolean> {
-    console.log("softDeleteAllUserVideos called with userId:", userId);
-    
     if (!userId) {
-        console.log("Invalid parameters - userId is empty");
         return false;
     }
 
@@ -19,14 +17,14 @@ export async function softDeleteAllUserVideos(userId: string): Promise<boolean> 
             .is("deleted_at", null); // Only soft delete videos that aren't already deleted
 
         if (error) {
-            console.error("Database update error:", error);
+            logger.db.error("Database update error", error, { userId });
             throw error;
         }
 
-        console.log(`All videos soft deleted successfully for user ${userId}`);
+        logger.video.info("All videos soft deleted successfully", { userId });
         return true;
     } catch (error) {
-        console.error("Error soft deleting all user videos:", error);
+        logger.db.error("Error soft deleting all user videos", error, { userId });
         return false;
     }
 }

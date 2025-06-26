@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { logger } from "@/lib/logger";
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
@@ -14,7 +15,7 @@ export async function GET(request: Request) {
     const zeroBounceApiKey = process.env.ZEROBOUNCE_API_KEY;
 
     if (!zeroBounceApiKey) {
-        console.error("ZeroBounce API key not configured");
+        logger.extension.warn("ZeroBounce API key not configured");
         // Return a response that allows the signup to continue
         return NextResponse.json({
             status: "unknown",
@@ -36,13 +37,13 @@ export async function GET(request: Request) {
         const data = await response.json();
 
         if (data.error) {
-            console.error("ZeroBounce API error:", data.error);
+            logger.extension.error("ZeroBounce API error", data.error, { email });
             return NextResponse.json({ status: "unknown", reason: data.error });
         }
 
         return NextResponse.json(data);
     } catch (error) {
-        console.error("Error validating email with ZeroBounce:", error);
+        logger.extension.error("Error validating email with ZeroBounce", error, { email });
         return NextResponse.json(
             { status: "unknown", reason: "API error" },
             { status: 500 }

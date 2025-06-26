@@ -6,6 +6,7 @@ import { generateVideoQuestions } from "@/data-access/external-apis/generate-vid
 import { createQuestion } from "@/data-access/questions/create-question";
 import { createQuestionOptions } from "@/data-access/question-options/create-question-options";
 import { authenticateRequest } from "@/use-cases/extension/authenticate-request";
+import { logger } from "@/lib/logger";
 
 export async function POST(
     request: NextRequest
@@ -15,11 +16,12 @@ export async function POST(
 
     const { authToken, video_id, title, description, transcript } =
         await request.json();
-    console.log("Received data:", {
-        authToken,
+    
+    logger.video.debug("Received question generation request", {
+        video_id,
         title,
-        description,
-        transcript: transcript?.substring(0, 100) + "...",
+        hasDescription: !!description,
+        transcriptLength: transcript?.length || 0
     });
 
     if (!authToken || !video_id || !title || !description || !transcript) {
@@ -72,10 +74,10 @@ export async function POST(
         }
 
         // Return the questions directly without additional nesting
-        console.log(
-            "Generated Questions Count:",
-            questionData.questions.length
-        );
+        logger.video.info("Questions generated successfully", {
+            video_id,
+            questionCount: questionData.questions.length
+        });
 
         // Create each question and its options in the database
         for (const question of questionData.questions) {
@@ -104,7 +106,7 @@ export async function POST(
 
         return NextResponse.json(questionData, { status: 200 });
     } catch (error) {
-        console.error("API route error:", error);
+        logger.video.error("Failed to generate questions", error, { video_id });
         const errorMessage =
             error instanceof Error
                 ? error.message

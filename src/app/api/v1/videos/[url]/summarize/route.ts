@@ -10,6 +10,7 @@ import { createClient } from "@/lib/supabase/server";
 import { generateVideoSummary } from "@/data-access/external-apis/generate-video-summary";
 import { createSummary } from "@/data-access/summaries/create-summary";
 import { authenticateRequest } from "@/use-cases/extension/authenticate-request";
+import { logger } from "@/lib/logger";
 
 export async function POST(
     request: NextRequest
@@ -24,12 +25,12 @@ export async function POST(
     // const transcript = searchParams.get("transcript");
     const { authToken, video_id, title, description, transcript } =
         await request.json();
-    console.log("Received data:", {
-        authToken,
+    
+    logger.video.debug("Processing video summary request", { 
         video_id,
-        title,
-        description,
-        transcript,
+        hasTitle: !!title,
+        hasDescription: !!description,
+        hasTranscript: !!transcript
     });
 
     if (!authToken || !video_id || !title || !description || !transcript) {
@@ -80,7 +81,11 @@ export async function POST(
                 { status: 500 }
             );
         }
-        console.log("Generated Summary:", summary);
+        
+        logger.video.info("Summary generated successfully", { 
+            video_id, 
+            summaryLength: summary.summary?.length || 0 
+        });
 
         const createdSummary = await createSummary({
             video_id,

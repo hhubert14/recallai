@@ -1,5 +1,6 @@
 import { processVideo } from "@/use-cases/extension/process-video";
 import { NextRequest, NextResponse } from "next/server";
+import { logger } from "@/lib/logger";
 
 export async function OPTIONS() {
     return new NextResponse(null, {
@@ -16,7 +17,7 @@ export async function POST(
     request: NextRequest,
     { params }: { params: { url: string } }
 ) {
-    console.log("Processing video request...");
+    logger.extension.debug("Processing video request", { videoUrl: (await params).url });
     const { videoId, authToken, processType } = await request.json();
     const { url: videoUrl } = await params;
     try {
@@ -44,7 +45,7 @@ export async function POST(
     } catch (error) {
         const errorMessage =
             error instanceof Error ? error.message : "Unknown error occurred";
-        console.error("Error processing video:", errorMessage);
+        logger.extension.error("Error processing video", error, { videoUrl, videoId });
         return NextResponse.json(
             { error: `Failed to process video: ${errorMessage}` },
             { status: 500 }

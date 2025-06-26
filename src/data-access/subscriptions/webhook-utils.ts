@@ -1,4 +1,5 @@
 import { getUserIdByStripeCustomerId, getUserIdByStripeSubscriptionId } from "@/data-access/subscriptions/get-user-by-stripe-id";
+import { logger } from "@/lib/logger";
 
 /**
  * Extracts user ID from Stripe webhook events with fallback strategy
@@ -6,18 +7,18 @@ import { getUserIdByStripeCustomerId, getUserIdByStripeSubscriptionId } from "@/
  * 2. Fallback to database lookup by customer_id or subscription_id
  */
 export async function extractUserIdFromStripeEvent(event: any): Promise<string | null> {
-    console.log("Extracting user ID from Stripe event:", event.type);
+    logger.subscription.debug("Extracting user ID from Stripe event", { eventType: event.type });
     
     // Strategy 1: Try metadata first (from checkout session)
     if (event.data.object.metadata?.userId) {
-        console.log("Found user ID in metadata:", event.data.object.metadata.userId);
+        logger.subscription.debug("Found user ID in metadata", { userId: event.data.object.metadata.userId });
         return event.data.object.metadata.userId;
     }
 
     // Strategy 2: Try to get from customer ID
     const customerId = event.data.object.customer;
     if (customerId) {
-        console.log("Trying to find user by customer ID:", customerId);
+        logger.subscription.debug("Trying to find user by customer ID", { customerId });
         const userId = await getUserIdByStripeCustomerId(customerId);
         if (userId) {
             return userId;
@@ -27,14 +28,14 @@ export async function extractUserIdFromStripeEvent(event: any): Promise<string |
     // Strategy 3: Try to get from subscription ID (for subscription events)
     const subscriptionId = event.data.object.subscription || event.data.object.id;
     if (subscriptionId && subscriptionId.startsWith('sub_')) {
-        console.log("Trying to find user by subscription ID:", subscriptionId);
+        logger.subscription.debug("Trying to find user by subscription ID", { subscriptionId });
         const userId = await getUserIdByStripeSubscriptionId(subscriptionId);
         if (userId) {
             return userId;
         }
     }
 
-    console.error("Could not extract user ID from Stripe event");
+    logger.subscription.error("Could not extract user ID from Stripe event", undefined, { eventType: event.type });
     return null;
 }
 

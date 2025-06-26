@@ -3,6 +3,7 @@ import { createVideo } from "@/data-access/videos/create-video";
 import { createClient } from "@/lib/supabase/server";
 import { getVideoByUrl } from "@/data-access/videos/get-video-by-url";
 import { authenticateRequest } from "@/use-cases/extension/authenticate-request";
+import { logger } from "@/lib/logger";
 
 export async function POST(
     request: NextRequest,
@@ -32,11 +33,7 @@ export async function POST(
             { error: "User not authenticated" },
             { status: 401 }
         );
-    }
-
-    try {
-        console.log("Request body:", body);
-
+    }    try {
         // Remove user_id from the request body since we'll use the authenticated user's ID
         const {
             platform,
@@ -61,11 +58,8 @@ export async function POST(
                 },
                 { status: 400 }
             );
-        }
-
-        const videoExists = await getVideoByUrl(videoUrl, authenticatedUserId);
+        }        const videoExists = await getVideoByUrl(videoUrl, authenticatedUserId);
         if (videoExists) {
-            console.log("Video already exists for this user:", videoExists);
             return NextResponse.json(
                 {
                     error: "Video already exists for this user",
@@ -75,7 +69,7 @@ export async function POST(
             );
         }
 
-        console.log("Creating video with data:", {
+        const videoData = {
             user_id: authenticatedUserId, // Use the authenticated user's ID
             platform,
             title,
@@ -85,25 +79,10 @@ export async function POST(
             url,
             description,
             video_id,
-        });
-
-        // Create the video using the authenticated user's ID
-        const createdVideo = await createVideo({
-            user_id: authenticatedUserId, // Always use the authenticated user's ID
-            platform,
-            title,
-            channel_name,
-            duration,
-            category,
-            url,
-            description,
-            video_id,
-        });
-
-        console.log("Video created successfully:", createdVideo);
-        return NextResponse.json(createdVideo, { status: 201 });
+        };        // Create the video using the authenticated user's ID
+        const createdVideo = await createVideo(videoData);        return NextResponse.json(createdVideo, { status: 201 });
     } catch (error) {
-        console.error("Error creating video:", error);
+        logger.video.error("Error creating video", error, { videoUrl, platform: body?.platform });
         return NextResponse.json(
             {
                 error: "Failed to create video",

@@ -3,6 +3,7 @@
 import { stripe } from "@/lib/stripe/stripe";
 import { getUserStripeCustomerId, updateUserStripeCustomerId } from "@/data-access/users/stripe-customer";
 import { createClient } from "@/lib/supabase/server";
+import { logger } from "@/lib/logger";
 
 interface Props {
     userId: string; // Assuming userId is passed as a prop
@@ -21,7 +22,7 @@ export const subscribeAction = async ({ userId }: Props) => {
             .single();
 
         if (userError || !userData) {
-            console.error("Error getting user data:", userError);
+            logger.subscription.error("Error getting user data", userError, { userId });
             return null;
         }
 
@@ -30,7 +31,6 @@ export const subscribeAction = async ({ userId }: Props) => {
         
         // If no customer ID exists, create a new Stripe customer
         if (!customerId) {
-            console.log("Creating new Stripe customer for user:", userId);
             const customer = await stripeInstance.customers.create({
                 email: userData.email,
                 metadata: {
@@ -43,7 +43,7 @@ export const subscribeAction = async ({ userId }: Props) => {
             // Store the customer ID in the users table
             const updateSuccess = await updateUserStripeCustomerId(userId, customerId);
             if (!updateSuccess) {
-                console.error("Failed to store Stripe customer ID");
+                logger.subscription.error("Failed to store Stripe customer ID", undefined, { userId, customerId });
                 return null;
             }
         }
@@ -64,10 +64,9 @@ export const subscribeAction = async ({ userId }: Props) => {
             success_url: `${process.env.NEXT_PUBLIC_URL}`,
             cancel_url: `${process.env.NEXT_PUBLIC_URL}`,
         });
-        console.log("Subscription action triggered");
         return url; // This would be the URL to redirect to for the checkout session
     } catch (error) {
-        console.error("Error during subscription action:", error);
+        logger.subscription.error("Error during subscription action", error, { userId });
         return null;
     }
 };

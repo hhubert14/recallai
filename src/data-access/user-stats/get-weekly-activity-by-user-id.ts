@@ -1,11 +1,9 @@
 import "server-only";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
+import { logger } from "@/lib/logger";
 
 export async function getWeeklyActivityByUserId(userId: string): Promise<{ videosThisWeek: number; questionsThisWeek: number; }> {
-    console.log("getWeeklyActivityByUserId called with userId:", userId);
-    
     if (!userId) {
-        console.log("Invalid parameters - userId is empty");
         return { videosThisWeek: 0, questionsThisWeek: 0 };
     }
 
@@ -17,29 +15,24 @@ export async function getWeeklyActivityByUserId(userId: string): Promise<{ video
         const dayOfWeek = now.getDay(); // 0 = Sunday, 1 = Monday, etc.
         const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // If Sunday, go back 6 days; otherwise go back to Monday
         const startOfWeek = new Date(now);
-        startOfWeek.setDate(now.getDate() - daysToSubtract);
-        startOfWeek.setHours(0, 0, 0, 0);
+        startOfWeek.setDate(now.getDate() - daysToSubtract);        startOfWeek.setHours(0, 0, 0, 0);
 
-        console.log("Start of week (Monday):", startOfWeek.toISOString());        // Get videos added this week
+        // Get videos added this week
         const { count: videosCount, error: videosError } = await supabase
             .from("videos")
             .select("*", { count: 'exact', head: true })
             .eq("user_id", userId)
             .is("deleted_at", null)
-            .gte("created_at", startOfWeek.toISOString());
-
-        if (videosError) {
-            console.error("Database query error for videos:", videosError);
+            .gte("created_at", startOfWeek.toISOString());        if (videosError) {
+            logger.db.error("Database query error for videos", videosError, { userId });
             throw videosError;
-        }        // Get questions answered this week (only from non-deleted videos)
+        }// Get questions answered this week (only from non-deleted videos)
         // First, get valid video IDs
         const { data: validVideos, error: validVideosError } = await supabase
             .from("videos")
             .select("id")
-            .is("deleted_at", null);
-
-        if (validVideosError) {
-            console.error("Database query error for valid videos:", validVideosError);
+            .is("deleted_at", null);        if (validVideosError) {
+            logger.db.error("Database query error for valid videos", validVideosError, { userId });
             throw validVideosError;
         }
 
@@ -51,10 +44,8 @@ export async function getWeeklyActivityByUserId(userId: string): Promise<{ video
             const { data: validQuestions, error: validQuestionsError } = await supabase
                 .from("questions")
                 .select("id")
-                .in("video_id", validVideoIds);
-
-            if (validQuestionsError) {
-                console.error("Database query error for valid questions:", validQuestionsError);
+                .in("video_id", validVideoIds);            if (validQuestionsError) {
+                logger.db.error("Database query error for valid questions", validQuestionsError, { userId });
                 throw validQuestionsError;
             }
 
@@ -67,26 +58,21 @@ export async function getWeeklyActivityByUserId(userId: string): Promise<{ video
                     .select("*", { count: 'exact', head: true })
                     .eq("user_id", userId)
                     .in("question_id", validQuestionIds)
-                    .gte("created_at", startOfWeek.toISOString());
-
-                if (questionsError) {
-                    console.error("Database query error for questions:", questionsError);
+                    .gte("created_at", startOfWeek.toISOString());                if (questionsError) {
+                    logger.db.error("Database query error for questions", questionsError, { userId });
                     throw questionsError;
                 }
 
                 questionsCount = count || 0;
             }
-        }
-
-        const result = {
+        }        const result = {
             videosThisWeek: videosCount || 0,
             questionsThisWeek: questionsCount || 0
         };
 
-        console.log(`Weekly activity for user ${userId}:`, result);
         return result;
     } catch (error) {
-        console.error("Error fetching weekly activity by user ID:", error);
+        logger.db.error("Error fetching weekly activity by user ID", error, { userId });
         return { videosThisWeek: 0, questionsThisWeek: 0 };
     }
 }

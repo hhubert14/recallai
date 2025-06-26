@@ -1,10 +1,9 @@
 import "server-only";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
 import { CreateUserAnswerDto } from "./types";
+import { logger } from "@/lib/logger";
 
 export async function createUserAnswer(userAnswer: CreateUserAnswerDto): Promise<boolean> {
-    console.log("createUserAnswer called with:", userAnswer);
-    
     const supabase = await createServiceRoleClient();
 
     try {
@@ -13,14 +12,13 @@ export async function createUserAnswer(userAnswer: CreateUserAnswerDto): Promise
             .insert([userAnswer]);
 
         if (error) {
-            console.error("Database insert error:", error);
+            logger.db.error("Database insert error", error, { userAnswer });
             throw error;
         }
 
-        console.log("User answer created successfully");
         return true;
     } catch (error) {
-        console.error("Error creating user answer:", error);
+        logger.db.error("Error creating user answer", error, { userAnswer });
         return false;
     }
 }

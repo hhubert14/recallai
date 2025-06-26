@@ -1,12 +1,10 @@
 import "server-only";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
 import { SummaryDto } from "./types";
+import { logger } from "@/lib/logger";
 
 export async function getSummaryByVideoId(videoId: number): Promise<SummaryDto | null> {
-    console.log("getSummaryByVideoId called with videoId:", videoId);
-    
     if (!videoId) {
-        console.log("Invalid parameters - videoId is empty");
         return null;
     }
 
@@ -20,14 +18,13 @@ export async function getSummaryByVideoId(videoId: number): Promise<SummaryDto |
             .single();
 
         if (error) {
-            console.error("Database query error:", error);
+            logger.db.error("Database query error", error, { videoId });
             return null;
         }
 
-        console.log("Found summary for video:", videoId);
         return data;
     } catch (error) {
-        console.error("Error fetching summary by video ID:", error);
+        logger.db.error("Error fetching summary by video ID", error, { videoId });
         return null;
     }
 }

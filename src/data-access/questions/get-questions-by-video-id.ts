@@ -1,12 +1,10 @@
 import "server-only";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
 import { QuestionDto } from "./types";
+import { logger } from "@/lib/logger";
 
 export async function getQuestionsByVideoId(videoId: number): Promise<QuestionDto[]> {
-    console.log("getQuestionsByVideoId called with videoId:", videoId);
-    
     if (!videoId) {
-        console.log("Invalid parameters - videoId is empty");
         return [];
     }
 
@@ -30,13 +28,12 @@ export async function getQuestionsByVideoId(videoId: number): Promise<QuestionDt
             .eq("video_id", videoId)
             .order("created_at", { ascending: true });
 
-        if (error) {
-            console.error("Database query error:", error);
+                if (error) {
+            logger.db.error("Database query error", error, { videoId });
             throw error;
         }
 
         if (!data || data.length === 0) {
-            console.log("No questions found for video:", videoId);
             return [];
         }
 
@@ -53,10 +50,9 @@ export async function getQuestionsByVideoId(videoId: number): Promise<QuestionDt
             )
         }));
 
-        console.log(`Found ${questions.length} questions for video:`, videoId);
         return questions;
     } catch (error) {
-        console.error("Error fetching questions by video ID:", error);
+        logger.db.error("Error fetching questions by video ID", error, { videoId });
         return [];
     }
 }

@@ -1,11 +1,9 @@
 import "server-only";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
+import { logger } from "@/lib/logger";
 
 export async function getQuizCompletionStatus(userId: string, videoId: number): Promise<boolean> {
-    console.log("getQuizCompletionStatus called with:", { userId, videoId });
-    
     if (!userId || !videoId) {
-        console.log("Invalid parameters");
         return false;
     }
 
@@ -19,12 +17,11 @@ export async function getQuizCompletionStatus(userId: string, videoId: number): 
             .eq("video_id", videoId);
 
         if (questionsError) {
-            console.error("Error fetching questions:", questionsError);
+            logger.db.error("Error fetching questions", questionsError, { userId, videoId });
             return false;
         }
 
         if (!questions || questions.length === 0) {
-            console.log("No questions found for video:", videoId);
             return false; // No questions = can't be completed
         }
 
@@ -34,15 +31,12 @@ export async function getQuizCompletionStatus(userId: string, videoId: number): 
             .from("user_answers")
             .select("question_id")
             .eq("user_id", userId)
-            .in("question_id", questionIds);
-
-        if (answersError) {
-            console.error("Error fetching user answers:", answersError);
+            .in("question_id", questionIds);        if (answersError) {
+            logger.db.error("Error fetching user answers", answersError, { userId, videoId });
             return false;
         }
 
         if (!userAnswers) {
-            console.log("No answers found for user:", userId);
             return false;
         }
 
@@ -50,15 +44,9 @@ export async function getQuizCompletionStatus(userId: string, videoId: number): 
         const answeredQuestionIds = userAnswers.map(a => a.question_id);
         const allQuestionsAnswered = questions.every(q => answeredQuestionIds.includes(q.id));
 
-        console.log(`Quiz completion for video ${videoId}:`, {
-            totalQuestions: questions.length,
-            answeredQuestions: answeredQuestionIds.length,
-            completed: allQuestionsAnswered
-        });
-
         return allQuestionsAnswered;
     } catch (error) {
-        console.error("Error checking quiz completion status:", error);
+        logger.db.error("Error checking quiz completion status", error, { userId, videoId });
         return false;
     }
 }

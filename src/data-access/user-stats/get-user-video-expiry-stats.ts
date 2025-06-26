@@ -1,6 +1,7 @@
 import "server-only";
 
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
+import { logger } from "@/lib/logger";
 
 export async function getUserVideoExpiryStats(userId: string) {
     const supabase = createServiceRoleClient();
@@ -59,10 +60,9 @@ export async function getUserVideoExpiryStats(userId: string) {
             expiringVideos: expiringVideos || 0,
             expiringSoon: expiringSoon || 0,
             permanentVideos: permanentVideos || 0,
-            nextExpiring: nextExpiring && nextExpiring.length > 0 ? nextExpiring[0] : null
-        };
+            nextExpiring: nextExpiring && nextExpiring.length > 0 ? nextExpiring[0] : null        };
     } catch (error) {
-        console.error("Error getting user video expiry stats:", error);
+        logger.db.error("Error getting user video expiry stats", error, { userId });
         return {
             expiringVideos: 0,
             expiringSoon: 0,

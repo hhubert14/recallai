@@ -1,13 +1,12 @@
 import "server-only";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
+import { logger } from "@/lib/logger";
 
 /**
  * Updates a user's Stripe customer ID in the users table
  * This is called when a customer is created in Stripe to maintain the relationship
  */
 export async function updateUserStripeCustomerId(userId: string, stripeCustomerId: string): Promise<boolean> {
-    console.log("Updating user Stripe customer ID:", { userId, stripeCustomerId });
-    
     const supabase = createServiceRoleClient();
     
     try {
@@ -17,14 +16,13 @@ export async function updateUserStripeCustomerId(userId: string, stripeCustomerI
             .eq('id', userId);
 
         if (error) {
-            console.error("Error updating user Stripe customer ID:", error);
+            logger.subscription.error("Error updating user Stripe customer ID", error, { userId, stripeCustomerId });
             return false;
         }
 
-        console.log("Successfully updated user Stripe customer ID");
         return true;
     } catch (error) {
-        console.error("Exception updating user Stripe customer ID:", error);
+        logger.subscription.error("Exception updating user Stripe customer ID", error, { userId, stripeCustomerId });
         return false;
     }
 }
@@ -33,8 +31,6 @@ export async function updateUserStripeCustomerId(userId: string, stripeCustomerI
  * Gets a user's Stripe customer ID from the users table
  */
 export async function getUserStripeCustomerId(userId: string): Promise<string | null> {
-    console.log("Getting user Stripe customer ID for user:", userId);
-    
     const supabase = createServiceRoleClient();
     
     try {
@@ -45,13 +41,11 @@ export async function getUserStripeCustomerId(userId: string): Promise<string | 
             .single();
 
         if (error) {
-            console.error("Error getting user Stripe customer ID:", error);
+            logger.subscription.error("Error getting user Stripe customer ID", error, { userId });
             return null;
-        }
-
-        return data?.stripe_customer_id || null;
+        }        return data?.stripe_customer_id || null;
     } catch (error) {
-        console.error("Exception getting user Stripe customer ID:", error);
+        logger.db.error("Exception getting user Stripe customer ID", error, { userId });
         return null;
     }
 }

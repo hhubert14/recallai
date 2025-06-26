@@ -1,5 +1,6 @@
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
 import { CreateQuestionDto } from "./types";
+import { logger } from "@/lib/logger";
 
 export async function createQuestion(questionData: CreateQuestionDto) {
     const supabase = createServiceRoleClient();
@@ -21,7 +22,7 @@ export async function createQuestion(questionData: CreateQuestionDto) {
 
         return data;
     } catch (error) {
-        console.error("Error creating question:", error);
+        logger.db.error("Error creating question", error, { videoId: questionData.video_id });
         throw error;
     }
 }

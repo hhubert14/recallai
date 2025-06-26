@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { logger } from "@/lib/logger";
 
 export interface UserSubscriptionStatus {
     isSubscribed: boolean;
@@ -21,7 +22,7 @@ export async function getUserSubscriptionStatus(userId: string): Promise<UserSub
             .single();
 
         if (userError) {
-            console.error('Error fetching user subscription status:', userError);
+            logger.subscription.error('Error fetching user subscription status', userError, { userId });
             return { isSubscribed: false };
         }
 
@@ -47,10 +48,8 @@ export async function getUserSubscriptionStatus(userId: string): Promise<UserSub
             currentPeriodEnd: subscriptionData.current_period_end,
             cancelAtPeriodEnd: subscriptionData.cancel_at_period_end,
             canceledAt: subscriptionData.canceled_at
-        };
-
-    } catch (error) {
-        console.error('Error fetching subscription status:', error);
+        };    } catch (error) {
+        logger.subscription.error('Error fetching subscription status', error, { userId });
         return { isSubscribed: false };
     }
 }

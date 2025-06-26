@@ -2,23 +2,23 @@ import "server-only";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
 import { VideoDto } from "./types";
 import { toDtoMapper } from "./utils";
+import { logger } from "@/lib/logger";
 
 export async function getVideosByUserId(
     userId: string,
     limit?: number
 ): Promise<VideoDto[]> {
-    console.log("getVideosByUserId called with:", { userId, limit });
+    logger.db.debug("Getting videos by user ID", { userId, limit });
     
     if (!userId) {
-        console.log("Invalid parameters - userId is empty");
+        logger.db.warn("Invalid parameters - userId is empty");
         return [];
     }
 
-    console.log("Creating Supabase service role client...");
     const supabase = await createServiceRoleClient();
 
     try {
-        console.log("Querying database for videos with user ID:", userId);
+        logger.db.debug("Querying database for videos", { userId });
           let query = supabase
             .from("videos")
             .select("*")
@@ -30,29 +30,22 @@ export async function getVideosByUserId(
             query = query.limit(limit);
         }
 
-        const { data, error } = await query;
-
-        if (error) {
-            console.error("Database query error:", error);
+        const { data, error } = await query;        if (error) {
+            logger.db.error("Database query error", error, { userId });
             throw error;
         }
 
         if (!data || data.length === 0) {
-            console.log("No videos found for the given user ID");
+            logger.db.debug("No videos found for user", { userId });
             return [];
         }
 
-        console.log(`Found ${data.length} videos for user:`, userId);
+        logger.db.info("Found videos for user", { userId, videoCount: data.length });
         const mappedVideos = data.map((video) => toDtoMapper(video));
-        console.log("Mapped video DTOs:", mappedVideos.length);
         
         return mappedVideos;
     } catch (error) {
-        console.error("Error fetching videos by user ID:", error);
-        console.error("Error details:", {
-            message: error instanceof Error ? error.message : "Unknown error",
-            stack: error instanceof Error ? error.stack : undefined,
-        });
+        logger.db.error("Error fetching videos by user ID", error, { userId });
         return [];
     }
 }

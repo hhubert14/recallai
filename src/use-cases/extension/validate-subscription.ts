@@ -1,6 +1,7 @@
 import "server-only";
 
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
+import { logger } from "@/lib/logger";
 
 export interface SubscriptionValidationResult {
     allowed: boolean;
@@ -29,7 +30,7 @@ const SUBSCRIPTION_LIMITS: Record<string, SubscriptionLimits> = {
 };
 
 export async function validateSubscriptionForExtension(userId: string): Promise<SubscriptionValidationResult> {
-    console.log("Validating subscription for extension user:", userId);
+    logger.subscription.debug("Validating subscription for extension user", { userId });
     
     try {
         const supabase = createServiceRoleClient();
@@ -40,10 +41,8 @@ export async function validateSubscriptionForExtension(userId: string): Promise<
             .from('users')
             .select('is_subscribed')
             .eq('id', userId)
-            .single();
-
-        if (userError || !userData) {
-            console.error("Error fetching user subscription data:", userError);
+            .single();        if (userError || !userData) {
+            logger.subscription.error("Error fetching user subscription data", userError, { userId });
             return {
                 allowed: false,
                 error: {
@@ -55,7 +54,7 @@ export async function validateSubscriptionForExtension(userId: string): Promise<
         }
 
         const isSubscribed = userData.is_subscribed;
-        console.log("User subscription status from database:", { userId, isSubscribed });
+        logger.subscription.debug("User subscription status from database", { userId, isSubscribed });
         
         // Calculate the start of current month to count videos
         const now = new Date();
@@ -66,10 +65,8 @@ export async function validateSubscriptionForExtension(userId: string): Promise<
             .from('videos')
             .select('*', { count: 'exact', head: true })
             .eq('user_id', userId)
-            .gte('created_at', startOfMonth.toISOString());
-
-        if (videoCountError) {
-            console.error("Error counting user videos:", videoCountError);
+            .gte('created_at', startOfMonth.toISOString());        if (videoCountError) {
+            logger.subscription.error("Error counting user videos", videoCountError, { userId });
             return {
                 allowed: false,
                 error: {
@@ -86,7 +83,12 @@ export async function validateSubscriptionForExtension(userId: string): Promise<
         const userPlan = isSubscribed ? 'premium' : 'free';
         const limits = SUBSCRIPTION_LIMITS[userPlan];
         
-        console.log("User plan:", userPlan, "Current month usage:", currentUsage, "Limits:", limits);
+        logger.subscription.info("User plan validation", { 
+            userId, 
+            userPlan, 
+            currentUsage, 
+            monthlyLimit: limits.monthlyVideoLimit 
+        });
 
         // Check if user has exceeded their monthly limit
         if (currentUsage >= limits.monthlyVideoLimit) {
@@ -107,10 +109,8 @@ export async function validateSubscriptionForExtension(userId: string): Promise<
         // If we get here, user is allowed to process videos
         return {
             allowed: true
-        };
-
-    } catch (error) {
-        console.error("Error validating subscription:", error);
+        };    } catch (error) {
+        logger.subscription.error("Error validating subscription", error, { userId });
         return {
             allowed: false,
             error: {

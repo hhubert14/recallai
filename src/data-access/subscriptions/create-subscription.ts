@@ -1,6 +1,7 @@
 import "server-only";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
 import { SubscriptionStatus, SubscriptionPlan } from "./types";
+import { logger } from "@/lib/logger";
 
 export interface CreateSubscriptionParams {
     userId: string;
@@ -13,7 +14,11 @@ export interface CreateSubscriptionParams {
 }
 
 export async function createSubscription(params: CreateSubscriptionParams): Promise<boolean> {
-    console.log("Creating subscription:", params);
+    logger.subscription.debug("Creating subscription", { 
+        userId: params.userId, 
+        stripeSubscriptionId: params.stripeSubscriptionId,
+        plan: params.plan 
+    });
     
     const supabase = createServiceRoleClient();
     
@@ -23,15 +28,13 @@ export async function createSubscription(params: CreateSubscriptionParams): Prom
             .from('subscriptions')
             .select('id')
             .eq('stripe_subscription_id', params.stripeSubscriptionId)
-            .single();
-
-        if (checkError && checkError.code !== 'PGRST116') { // PGRST116 = no rows found
-            console.error("Error checking for existing subscription:", checkError);
+            .single();        if (checkError && checkError.code !== 'PGRST116') { // PGRST116 = no rows found
+            logger.db.error("Error checking for existing subscription", checkError, { stripeSubscriptionId: params.stripeSubscriptionId });
             return false;
         }
 
         if (existingSubscription) {
-            console.log("Subscription already exists, skipping creation:", params.stripeSubscriptionId);
+            logger.subscription.debug("Subscription already exists, skipping creation", { stripeSubscriptionId: params.stripeSubscriptionId });
             return true; // Return true since the subscription exists
         }
 
@@ -46,17 +49,18 @@ export async function createSubscription(params: CreateSubscriptionParams): Prom
                 plan: params.plan,
                 current_period_start: params.currentPeriodStart.toISOString(),
                 current_period_end: params.currentPeriodEnd.toISOString(),
-            });
-
-        if (error) {
-            console.error("Error creating subscription:", error);
+            });        if (error) {
+            logger.db.error("Error creating subscription", error, { stripeSubscriptionId: params.stripeSubscriptionId });
             return false;
         }
 
-        console.log("Subscription created successfully");
+        logger.subscription.info("Subscription created successfully", { 
+            userId: params.userId, 
+            stripeSubscriptionId: params.stripeSubscriptionId 
+        });
         return true;
     } catch (error) {
-        console.error("Exception creating subscription:", error);
+        logger.db.error("Exception creating subscription", error, { stripeSubscriptionId: params.stripeSubscriptionId });
         return false;
     }
 }

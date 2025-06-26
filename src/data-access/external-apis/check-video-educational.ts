@@ -3,6 +3,7 @@ import "server-only";
 import OpenAI from "openai";
 // import { YoutubeTranscript } from "./types";
 import { extractTranscriptText } from "./utils";
+import { logger } from "@/lib/logger";
 
 export async function checkVideoEducational(
     title: string,
@@ -10,10 +11,10 @@ export async function checkVideoEducational(
     // transcript: YoutubeTranscript
     transcript: string
 ): Promise<boolean | undefined> {
-    console.log("checkVideoEducational called with:", {
+    logger.video.debug("Checking if video is educational", {
         title,
-        description,
-        transcript: transcript.substring(0, 50), // Log first 50 chars of transcript
+        hasDescription: !!description,
+        transcriptLength: transcript?.length || 0
     });
     
     // Title and transcript are required, but description can be empty
@@ -62,7 +63,10 @@ Respond with exactly "EDUCATIONAL" or "NOT_EDUCATIONAL" and nothing else.`,
 
     const answer = response.choices[0].message.content?.trim();
 
-    console.log("OpenAI response:", answer);
+    logger.video.debug("OpenAI educational classification response", { 
+        answer,
+        isEducational: answer === "EDUCATIONAL"
+    });
 
     if (!answer || typeof answer !== "string") {
         return undefined;

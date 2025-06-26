@@ -2,6 +2,7 @@ import "server-only";
 
 import { ChatOpenAI } from "@langchain/openai";
 import { z } from "zod";
+import { logger } from "@/lib/logger";
 
 // Define the schema for multiple choice questions only
 const MultipleChoiceQuestionsSchema = z.object({
@@ -37,22 +38,16 @@ export async function generateVideoQuestions(
     transcript: string
 ): Promise<MultipleChoiceQuestions | undefined> {
     if (!title || !description || !transcript) {
-        console.log("❌ Missing required parameters");
-        console.log(
-            "Missing - Title:",
-            !title,
-            "Description:",
-            !description,
-            "Transcript:",
-            !transcript
-        );
+        logger.video.warn("Missing required parameters for question generation", {
+            hasTitle: !!title,
+            hasDescription: !!description,
+            hasTranscript: !!transcript
+        });
         return undefined;
     }
 
-    const transcriptText = transcript;
-
-    // Initialize ChatOpenAI with structured output
-    console.log("🔧 Initializing ChatOpenAI...");
+    const transcriptText = transcript;    // Initialize ChatOpenAI with structured output
+    logger.video.debug("Initializing ChatOpenAI for question generation");
     const llm = new ChatOpenAI({
         model: "gpt-4.1-nano-2025-04-14", // Note: using a more standard model name
         temperature: 0,
@@ -93,29 +88,20 @@ Each question should include:
 - A brief explanation for why the correct answer is right
 
 Make the questions challenging but fair, testing genuine understanding of important concepts from the video.`,
-            },
-        ]);
+            },        ]);
 
-        console.log("✅ LLM API call successful");
-        console.log("Result type:", typeof result);
-        console.log("Result keys:", result ? Object.keys(result) : "NO RESULT");
-        console.log("Number of questions:", result?.questions?.length || 0);
+        logger.video.info("Questions generated successfully", {
+            resultType: typeof result,
+            questionCount: result?.questions?.length || 0,
+            hasResult: !!result
+        });
 
         return result;
     } catch (error) {
-        console.error("❌ Error generating multiple choice questions:", error);
-        console.error(
-            "Error type:",
-            error instanceof Error ? error.constructor.name : typeof error
-        );
-        console.error(
-            "Error message:",
-            error instanceof Error ? error.message : String(error)
-        );
-
-        if (error instanceof Error && error.stack) {
-            console.error("Error stack:", error.stack);
-        }
+        logger.video.error("Error generating multiple choice questions", error, {
+            title,
+            transcriptLength: transcriptText?.length || 0
+        });
 
         return undefined;
     }

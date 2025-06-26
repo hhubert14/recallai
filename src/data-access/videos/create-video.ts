@@ -3,6 +3,7 @@ import "server-only"; // Ensure this file is only used on the server side
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
 import { CreateVideoDto } from "./types";
 import { getUserSubscriptionStatus } from "@/data-access/subscriptions/get-user-subscription-status";
+import { logger } from "@/lib/logger";
 // import { getVideoByUrl } from "./get-video-by-url";
 
 export async function createVideo(videoData: CreateVideoDto) {
@@ -42,7 +43,10 @@ export async function createVideo(videoData: CreateVideoDto) {
 
         return data;
     } catch (error) {
-        console.error("Error creating video:", error);
+        logger.db.error("Error creating video", error, { 
+            userId: videoData.user_id, 
+            url: videoData.url 
+        });
         throw error;
     }
 }

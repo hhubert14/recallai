@@ -4,6 +4,7 @@ import "server-only";
 
 // @ts-ignore
 import TranscriptAPI from "youtube-transcript-api";
+import { logger } from "@/lib/logger";
 // import { YoutubeTranscript } from "./types";
 
 export async function getYoutubeTranscript(
@@ -35,27 +36,16 @@ export async function getYoutubeTranscript(
     } catch (error) {
         if (error instanceof Error) {
             if (error.message.includes("unavailable")) {
-                console.error(
-                    `Video unavailable for transcript extraction - video ID: ${videoId}. Error: ${error.message}`
-                );
+                logger.video.warn("Video unavailable for transcript extraction", { videoId, error: error.message });
             } else if (error.message.includes("captions disabled")) {
-                console.error(
-                    `Captions are disabled for video ID: ${videoId}. Error: ${error.message}`
-                );
+                logger.video.warn("Captions are disabled for video", { videoId, error: error.message });
             } else if (error.message.includes("private")) {
-                console.error(
-                    `Video is private or restricted for video ID: ${videoId}. Error: ${error.message}`
-                );
+                logger.video.warn("Video is private or restricted", { videoId, error: error.message });
             } else {
-                console.error(
-                    `Unexpected error fetching transcript for video ID: ${videoId}. Error: ${error.message}`
-                );
+                logger.video.error("Unexpected error fetching transcript", error, { videoId });
             }
         } else {
-            console.error(
-                `Unknown error type fetching transcript for video ID: ${videoId}:`,
-                error
-            );
+            logger.video.error("Unknown error type fetching transcript", error, { videoId });
         }
         return null;
     }

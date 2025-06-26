@@ -1,6 +1,7 @@
 import "server-only";
 
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
+import { logger } from "@/lib/logger";
 
 /**
  * Updates all user's videos to not expire when they upgrade to premium
@@ -13,16 +14,15 @@ export async function updateVideosOnSubscriptionUpgrade(userId: string) {
             .from("videos")
             .update({ should_expire: false })
             .eq("user_id", userId)
-            .select();
-
-        if (error) {
+            .select();        if (error) {
             throw new Error(`Error updating videos on subscription upgrade: ${error.message}`);
-        }
-
-        console.log(`Updated ${data?.length || 0} videos to not expire for user ${userId}`);
+        }        logger.subscription.info("Videos updated on subscription upgrade", {
+            userId,
+            videosUpdated: data?.length || 0
+        });
         return data;
     } catch (error) {
-        console.error("Error updating videos on subscription upgrade:", error);
+        logger.subscription.error("Error updating videos on subscription upgrade", error, { userId });
         throw error;
     }
 }
@@ -31,10 +31,12 @@ export async function updateVideosOnSubscriptionUpgrade(userId: string) {
  * Grace period approach for downgrades:
  * - Keep existing videos with should_expire = false (they keep what they have)
  * - Only new videos will have should_expire = true after the downgrade
- * This function is mainly for logging/tracking purposes
- */
+ * This function is mainly for logging/tracking purposes */
 export async function handleSubscriptionDowngrade(userId: string) {
-    console.log(`User ${userId} downgraded subscription. Existing videos will be preserved with current expiry settings. New videos will have 7-day expiry.`);
+    logger.subscription.info("Handling subscription downgrade with grace period", {
+        userId,
+        message: "Existing videos preserved, new videos will have 7-day expiry"
+    });
     
     // Optional: You could add analytics/logging here to track downgrades
     // For now, we don't change existing videos (grace period approach)
@@ -66,10 +68,9 @@ export async function getUserVideoStats(userId: string) {
         return {
             totalVideos,
             expiringVideos,
-            permanentVideos
-        };
+            permanentVideos        };
     } catch (error) {
-        console.error("Error getting user video stats:", error);
+        logger.db.error("Error getting user video stats", error, { userId });
         throw error;
     }
 }

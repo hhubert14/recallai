@@ -1,9 +1,8 @@
 import "server-only";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
+import { logger } from "@/lib/logger";
 
 export async function updateUserSubscriptionStatus(userId: string, isSubscribed: boolean): Promise<boolean> {
-    console.log("Updating user subscription status:", { userId, isSubscribed });
-    
     const supabase = createServiceRoleClient();
     
     try {
@@ -15,13 +14,14 @@ export async function updateUserSubscriptionStatus(userId: string, isSubscribed:
             .eq('id', userId);
 
         if (error) {
-            console.error("Error updating user subscription status:", error);
+            logger.subscription.error("Error updating user subscription status", error, { userId, isSubscribed });
             return false;
         }
 
-        console.log("User subscription status updated successfully");        return true;
+        logger.subscription.info("User subscription status updated successfully", { userId, isSubscribed });
+        return true;
     } catch (error) {
-        console.error("Exception updating user subscription status:", error);
+        logger.subscription.error("Exception updating user subscription status", error, { userId, isSubscribed });
         return false;
     }
 }

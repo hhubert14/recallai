@@ -1,5 +1,6 @@
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
 import { CreateSummaryDto } from "./types";
+import { logger } from "@/lib/logger";
 
 export async function createSummary(summaryData: CreateSummaryDto) {
     const supabase = createServiceRoleClient();
@@ -21,7 +22,7 @@ export async function createSummary(summaryData: CreateSummaryDto) {
 
         return data;
     } catch (error) {
-        console.error("Error creating summary:", error);
+        logger.db.error("Error creating summary", error, { video_id: summaryData.video_id });
         throw error;
     }
 }

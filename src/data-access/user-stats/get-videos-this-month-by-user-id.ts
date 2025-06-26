@@ -1,4 +1,5 @@
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
+import { logger } from "@/lib/logger";
 
 export async function getVideosThisMonthByUserId(userId: string): Promise<number> {
     const supabase = await createServiceRoleClient();
@@ -15,13 +16,13 @@ export async function getVideosThisMonthByUserId(userId: string): Promise<number
             .gte('created_at', startOfMonth.toISOString());
 
         if (error) {
-            console.error('Error fetching monthly video count:', error);
+            logger.db.error('Error fetching monthly video count', error, { userId });
             return 0;
         }
 
         return count || 0;
     } catch (error) {
-        console.error('Error fetching monthly video count:', error);
+        logger.db.error('Error fetching monthly video count', error, { userId });
         return 0;
     }
 }

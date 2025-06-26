@@ -1,5 +1,6 @@
 import { CreateQuestionOptionsDto } from "./types";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
+import { logger } from "@/lib/logger";
 
 export async function createQuestionOptions(
     questionOptionsData: CreateQuestionOptionsDto
@@ -25,7 +26,7 @@ export async function createQuestionOptions(
 
         return data;
     } catch (error) {
-        console.error("Error creating question options:", error);
+        logger.db.error("Error creating question options", error, { questionId: questionOptionsData.question_id });
         throw error;
     }
 }

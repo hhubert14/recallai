@@ -1,6 +1,7 @@
 import "server-only";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
 import { SubscriptionStatus } from "./types";
+import { logger } from "@/lib/logger";
 
 export interface UpdateSubscriptionParams {
     stripeSubscriptionId: string;
@@ -12,7 +13,7 @@ export interface UpdateSubscriptionParams {
 }
 
 export async function updateSubscriptionByStripeId(params: UpdateSubscriptionParams): Promise<boolean> {
-    console.log("Updating subscription:", params);
+    logger.subscription.debug("Updating subscription", { stripeSubscriptionId: params.stripeSubscriptionId, status: params.status });
     
     const supabase = createServiceRoleClient();
     
@@ -41,15 +42,14 @@ export async function updateSubscriptionByStripeId(params: UpdateSubscriptionPar
             .update(updateData)
             .eq('stripe_subscription_id', params.stripeSubscriptionId);
 
-        if (error) {
-            console.error("Error updating subscription:", error);
+        if (error) {            logger.db.error("Error updating subscription", error, { stripeSubscriptionId: params.stripeSubscriptionId });
             return false;
         }
 
-        console.log("Subscription updated successfully");
+        logger.subscription.info("Subscription updated successfully", { stripeSubscriptionId: params.stripeSubscriptionId });
         return true;
     } catch (error) {
-        console.error("Exception updating subscription:", error);
+        logger.db.error("Exception updating subscription", error, { stripeSubscriptionId: params.stripeSubscriptionId });
         return false;
     }
 }

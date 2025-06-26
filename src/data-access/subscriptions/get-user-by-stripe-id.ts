@@ -1,9 +1,8 @@
 import "server-only";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
+import { logger } from "@/lib/logger";
 
 export async function getUserIdByStripeCustomerId(stripeCustomerId: string): Promise<string | null> {
-    console.log("Getting user ID for Stripe customer:", stripeCustomerId);
-    
     const supabase = createServiceRoleClient();
     
     try {
@@ -15,34 +14,29 @@ export async function getUserIdByStripeCustomerId(stripeCustomerId: string): Pro
             .single();
 
         if (!userError && userData) {
-            console.log("Found user ID in users table:", userData.id);
             return userData.id;
         }
 
-        console.log("User not found in users table, trying subscriptions table");
-        
         // Fallback to subscriptions table
         const { data: subData, error: subError } = await supabase
             .from('subscriptions')
             .select('user_id')
             .eq('stripe_customer_id', stripeCustomerId)
-            .single();
-
-        if (subError) {
-            console.error("Error getting user ID by customer ID from both tables:", { userError, subError });
+            .single();        if (subError) {
+            logger.db.error("Error getting user ID by customer ID from both tables", { userError, subError }, { stripeCustomerId });
             return null;
         }
 
-        console.log("Found user ID in subscriptions table:", subData.user_id);
+        logger.subscription.debug("Found user ID in subscriptions table", { userId: subData.user_id, stripeCustomerId });
         return subData.user_id;
     } catch (error) {
-        console.error("Exception getting user ID by customer ID:", error);
+        logger.db.error("Exception getting user ID by customer ID", error, { stripeCustomerId });
         return null;
     }
 }
 
 export async function getUserIdByStripeSubscriptionId(stripeSubscriptionId: string): Promise<string | null> {
-    console.log("Getting user ID for Stripe subscription:", stripeSubscriptionId);
+    logger.subscription.debug("Getting user ID for Stripe subscription", { stripeSubscriptionId });
     
     const supabase = createServiceRoleClient();
     
@@ -51,17 +45,15 @@ export async function getUserIdByStripeSubscriptionId(stripeSubscriptionId: stri
             .from('subscriptions')
             .select('user_id')
             .eq('stripe_subscription_id', stripeSubscriptionId)
-            .single();
-
-        if (error) {
-            console.error("Error getting user ID by subscription ID:", error);
+            .single();        if (error) {
+            logger.db.error("Error getting user ID by subscription ID", error, { stripeSubscriptionId });
             return null;
         }
 
-        console.log("Found user ID:", data.user_id);
+        logger.subscription.debug("Found user ID", { userId: data.user_id, stripeSubscriptionId });
         return data.user_id;
     } catch (error) {
-        console.error("Exception getting user ID by subscription ID:", error);
+        logger.db.error("Exception getting user ID by subscription ID", error, { stripeSubscriptionId });
         return null;
     }
 }

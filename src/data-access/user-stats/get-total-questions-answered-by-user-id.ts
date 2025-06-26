@@ -1,11 +1,9 @@
 import "server-only";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
+import { logger } from "@/lib/logger";
 
 export async function getTotalQuestionsAnsweredByUserId(userId: string): Promise<number> {
-    console.log("getTotalQuestionsAnsweredByUserId called with userId:", userId);
-    
     if (!userId) {
-        console.log("Invalid parameters - userId is empty");
         return 0;
     }
 
@@ -14,15 +12,12 @@ export async function getTotalQuestionsAnsweredByUserId(userId: string): Promise
         const { data: validVideos, error: videoError } = await supabase
             .from("videos")
             .select("id")
-            .is("deleted_at", null);
-
-        if (videoError) {
-            console.error("Database query error for videos:", videoError);
+            .is("deleted_at", null);        if (videoError) {
+            logger.db.error("Database query error for videos", videoError, { userId });
             throw videoError;
         }
 
         if (!validVideos || validVideos.length === 0) {
-            console.log("No valid videos found");
             return 0;
         }
 
@@ -32,15 +27,12 @@ export async function getTotalQuestionsAnsweredByUserId(userId: string): Promise
         const { data: validQuestions, error: questionError } = await supabase
             .from("questions")
             .select("id")
-            .in("video_id", validVideoIds);
-
-        if (questionError) {
-            console.error("Database query error for questions:", questionError);
+            .in("video_id", validVideoIds);        if (questionError) {
+            logger.db.error("Database query error for questions", questionError, { userId });
             throw questionError;
         }
 
         if (!validQuestions || validQuestions.length === 0) {
-            console.log("No valid questions found for non-deleted videos");
             return 0;
         }
 
@@ -51,17 +43,14 @@ export async function getTotalQuestionsAnsweredByUserId(userId: string): Promise
             .from("user_answers")
             .select("*", { count: 'exact', head: true })
             .eq("user_id", userId)
-            .in("question_id", validQuestionIds);
-
-        if (error) {
-            console.error("Database query error:", error);
+            .in("question_id", validQuestionIds);        if (error) {
+            logger.db.error("Database query error", error, { userId });
             throw error;
         }
 
-        console.log(`Found ${count} total questions answered for user:`, userId);
         return count || 0;
     } catch (error) {
-        console.error("Error fetching total questions answered by user ID:", error);
+        logger.db.error("Error fetching total questions answered by user ID", error, { userId });
         return 0;
     }
 }
