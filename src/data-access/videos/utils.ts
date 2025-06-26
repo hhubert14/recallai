@@ -16,5 +16,6 @@ export function toDtoMapper(video: any): VideoDto {
         expiry_date: video.expiry_date,
         video_id: video.video_id,
         deleted_at: video.deleted_at,
+        should_expire: video.should_expire,
     };
 }
