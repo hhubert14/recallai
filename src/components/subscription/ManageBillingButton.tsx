@@ -14,10 +14,17 @@ export function ManageBillingButton({ userId, className }: ManageBillingButtonPr
     const [isLoading, setIsLoading] = useState(false);    const handleManageBilling = async () => {
         setIsLoading(true);
         try {
-            await createBillingPortalSession({ 
+            const result = await createBillingPortalSession({ 
                 userId,
                 returnUrl: `${window.location.origin}/dashboard/settings`
             });
+            
+            // Redirect to the billing portal URL
+            if (result?.url) {
+                window.location.href = result.url;
+            } else {
+                throw new Error("No billing portal URL received");
+            }
         } catch (error: any) {
             console.error("Error opening billing portal:", error);
             

@@ -2,7 +2,6 @@
 
 import { stripe } from "@/lib/stripe/stripe";
 import { getUserStripeCustomerId } from "@/data-access/users/stripe-customer";
-import { redirect } from "next/navigation";
 import { logger } from "@/lib/logger";
 
 interface CreatePortalSessionProps {
@@ -25,7 +24,14 @@ export async function createBillingPortalSession({ userId, returnUrl }: CreatePo
             return_url: returnUrl || `${process.env.NEXT_PUBLIC_URL}/dashboard/settings`,
         });
         
-        // Redirect to the portal URL        redirect(portalSession.url);
+        logger.subscription.info("Billing portal session created successfully", { 
+            userId, 
+            portalSessionId: portalSession.id,
+            portalUrl: portalSession.url 
+        });
+        
+        // Return the URL instead of redirecting server-side
+        return { url: portalSession.url };
     } catch (error) {
         logger.subscription.error("Error creating billing portal session", error, { userId });
         throw error;
