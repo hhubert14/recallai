@@ -15,7 +15,9 @@ export async function checkVideoEducational(
         description,
         transcript: transcript.substring(0, 50), // Log first 50 chars of transcript
     });
-    if (!title || !description || !transcript) {
+    
+    // Title and transcript are required, but description can be empty
+    if (!title || !transcript) {
         return undefined;
     }
 
@@ -49,7 +51,7 @@ Examples of non-educational content:
                 content: `Classify this video as educational or not educational based on its primary purpose.
 
 Title: ${title}
-Description: ${description}
+Description: ${description || 'No description provided'}
 Transcript excerpt: ${transcriptText.substring(0, 2000)}...
 
 Respond with exactly "EDUCATIONAL" or "NOT_EDUCATIONAL" and nothing else.`,
