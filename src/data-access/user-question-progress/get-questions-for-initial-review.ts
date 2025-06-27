@@ -19,11 +19,11 @@ export async function getQuestionsForInitialReview(
             .from("user_answers")
             .select(`
                 question_id,
-                questions!inner (
+                questions (
                     id,
                     question_text,
                     video_id,
-                    videos!inner (
+                    videos (
                         id,
                         title,
                         user_id,
@@ -50,14 +50,14 @@ export async function getQuestionsForInitialReview(
 
         if (!answeredQuestions || answeredQuestions.length === 0) {
             return [];
-        }
-
-        // Remove duplicates and get unique questions
+        }        // Remove duplicates and get unique questions
         const uniqueQuestions = new Map();
         for (const answer of answeredQuestions) {
-            const question = answer.questions;
-            if (question && !uniqueQuestions.has(question.id)) {
-                uniqueQuestions.set(question.id, question);
+            const question = answer.questions as any;
+            if (question && question.id) {
+                if (!uniqueQuestions.has(question.id)) {
+                    uniqueQuestions.set(question.id, question);
+                }
             }
         }
 

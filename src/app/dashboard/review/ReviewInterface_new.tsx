@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { QuestionForReviewDto } from "@/data-access/user-question-progress/types";
 import { ReviewStatsDto } from "@/data-access/user-question-progress/get-review-stats";
@@ -19,10 +19,8 @@ export function ReviewInterface({
     dueQuestions, 
     initialQuestions 
 }: ReviewInterfaceProps) {
-    // Memoize the combined questions array to prevent unnecessary re-renders
-    const allQuestions = useMemo(() => {
-        return [...dueQuestions, ...initialQuestions];
-    }, [dueQuestions, initialQuestions]);
+    // Combine all questions in a single array - due questions first, then initial
+    const allQuestions = [...dueQuestions, ...initialQuestions];
     
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [selectedOptionId, setSelectedOptionId] = useState<number | null>(null);
@@ -32,20 +30,7 @@ export function ReviewInterface({
     // Track which questions we're showing (due vs initial)
     const totalDueQuestions = dueQuestions.length;
     const isInDueMode = currentQuestionIndex < totalDueQuestions;
-    
-    // Check if session is complete first (before accessing questions)
-    const sessionComplete = allQuestions.length === 0 || currentQuestionIndex >= allQuestions.length;
-    
-    // Only access current question if session is not complete
-    const currentQuestion = sessionComplete ? null : allQuestions[currentQuestionIndex];
-    
-    // Check if this is the last question (only if session not complete)
-    const isLastQuestion = !sessionComplete && currentQuestionIndex === allQuestions.length - 1;
-    
-    // Find the selected option for result display
-    const selectedOption = currentQuestion?.options.find(
-        option => option.id === selectedOptionId
-    );
+    const currentQuestion = allQuestions[currentQuestionIndex];
 
     const handleSubmit = async () => {
         if (!selectedOptionId || !currentQuestion) return;
@@ -86,8 +71,19 @@ export function ReviewInterface({
         setCurrentQuestionIndex(allQuestions.length);
     };
 
-    // Early return for session complete to avoid accessing invalid indices
-    if (sessionComplete && allQuestions.length > 0) {
+    // Check if this is the last question
+    const isLastQuestion = currentQuestionIndex === allQuestions.length - 1;
+    
+    // Find the selected option for result display
+    const selectedOption = currentQuestion?.options.find(
+        option => option.id === selectedOptionId
+    );
+
+    // Check if session is complete (beyond last question)
+    const sessionComplete = currentQuestionIndex >= allQuestions.length;
+
+    // Show session complete screen
+    if (sessionComplete) {
         return (
             <div className="max-w-2xl mx-auto">
                 {/* Stats */}
@@ -173,17 +169,6 @@ export function ReviewInterface({
                             Go to Dashboard
                         </Button>
                     </div>
-                </div>
-            </div>
-        );
-    }
-
-    // Guard against null currentQuestion
-    if (!currentQuestion) {
-        return (
-            <div className="max-w-2xl mx-auto">
-                <div className="text-center py-12">
-                    <p className="text-gray-600">Loading question...</p>
                 </div>
             </div>
         );
