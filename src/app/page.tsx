@@ -1035,7 +1035,7 @@ export default function Home() {
             {/* Footer */}
             <footer className="w-full border-t bg-background py-12">
                 <div className="container px-4 md:px-6">
-                    <div className="grid gap-8 lg:grid-cols-4">
+                    <div className="grid gap-8 lg:grid-cols-5">
                         <div className="space-y-4">
                             <div className="flex items-center gap-2">
                                 <Brain className="h-6 w-6 text-blue-600" />
@@ -1180,10 +1180,47 @@ export default function Home() {
                                 </li>
                                 <li>
                                     <Link
-                                        href="#"
+                                        href="mailto:hubert@recallai.io"
                                         className="text-gray-500 hover:text-blue-600"
                                     >
                                         Contact
+                                    </Link>
+                                </li>
+                            </ul>
+                        </div>
+                        <div className="space-y-4">
+                            <h4 className="text-sm font-medium">Support</h4>
+                            <ul className="space-y-2 text-sm">
+                                <li>
+                                    <Link
+                                        href="mailto:hubert@recallai.io"
+                                        className="text-gray-500 hover:text-blue-600"
+                                    >
+                                        Contact Support
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link
+                                        href="mailto:hubert@recallai.io?subject=Bug Report"
+                                        className="text-gray-500 hover:text-blue-600"
+                                    >
+                                        Report a Bug
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link
+                                        href="mailto:hubert@recallai.io?subject=Feature Request"
+                                        className="text-gray-500 hover:text-blue-600"
+                                    >
+                                        Feature Request
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link
+                                        href="#"
+                                        className="text-gray-500 hover:text-blue-600"
+                                    >
+                                        Help Center
                                     </Link>
                                 </li>
                             </ul>

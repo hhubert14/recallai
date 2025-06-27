@@ -11,7 +11,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LogOut, Settings, User } from "lucide-react";
+import { LogOut, Settings, User, HelpCircle } from "lucide-react";
 import { useAuth } from "@/lib/auth-provider";
 
 export function UserButton() {
@@ -57,6 +57,12 @@ export function UserButton() {
                 >
                     <Settings className="mr-2 h-4 w-4" />
                     <span>Settings</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                    <a href="mailto:hubert@recallai.io">
+                        <HelpCircle className="mr-2 h-4 w-4" />
+                        <span>Contact Support</span>
+                    </a>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleSignOut} disabled={isLoading}>

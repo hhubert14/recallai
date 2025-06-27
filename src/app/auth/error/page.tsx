@@ -1,4 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default async function Page({
     searchParams,
@@ -19,14 +21,29 @@ export default async function Page({
                         </CardHeader>
                         <CardContent>
                             {params?.message ? (
-                                <p className="text-sm text-muted-foreground">
+                                <p className="text-sm text-muted-foreground mb-4">
                                     Code error: {params.message}
                                 </p>
                             ) : (
-                                <p className="text-sm text-muted-foreground">
+                                <p className="text-sm text-muted-foreground mb-4">
                                     An unspecified error occurred.
                                 </p>
                             )}
+                            <div className="space-y-3">
+                                <p className="text-sm text-gray-600">
+                                    If this error persists, please contact our support team:
+                                </p>
+                                <Button asChild variant="outline" size="sm" className="w-full">
+                                    <Link href="mailto:hubert@recallai.io?subject=Error Report">
+                                        📧 Contact Support
+                                    </Link>
+                                </Button>
+                                <Button asChild size="sm" className="w-full">
+                                    <Link href="/">
+                                        Return to Home
+                                    </Link>
+                                </Button>
+                            </div>
                         </CardContent>
                     </Card>
                 </div>

@@ -257,6 +257,47 @@ export default async function SettingsPage() {
                             )}
                         </div>
                     </div>
+
+                    {/* Help & Support Section */}
+                    <div className="rounded-lg border p-6 shadow-sm">
+                        <div className="flex items-center gap-3 mb-4">
+                            <svg className="h-5 w-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <h2 className="text-xl font-semibold text-blue-900">Help & Support</h2>
+                        </div>
+                        <div className="space-y-4">
+                            <p className="text-gray-600">
+                                Need help? Have a question or found a bug? Get in touch with our support team.
+                            </p>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <a
+                                    href="mailto:hubert@recallai.io"
+                                    className="flex items-center gap-3 p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+                                >
+                                    <svg className="h-5 w-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                    </svg>
+                                    <div>
+                                        <p className="font-medium text-blue-900">Email Support</p>
+                                        <p className="text-sm text-gray-600">hubert@recallai.io</p>
+                                    </div>
+                                </a>
+                                <a
+                                    href="mailto:hubert@recallai.io?subject=Bug Report"
+                                    className="flex items-center gap-3 p-4 bg-red-50 rounded-lg hover:bg-red-100 transition-colors"
+                                >
+                                    <svg className="h-5 w-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.854-.833-2.598 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                                    </svg>
+                                    <div>
+                                        <p className="font-medium text-red-900">Report Bug</p>
+                                        <p className="text-sm text-gray-600">Found an issue?</p>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </main>
         </div>
