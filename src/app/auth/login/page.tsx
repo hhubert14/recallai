@@ -4,8 +4,8 @@ import { LoginForm } from "@/app/auth/login/LoginForm";
 import { Brain } from "lucide-react";
 
 export const metadata: Metadata = {
-    title: "Log In | LearnSync",
-    description: "Log in to your LearnSync account",
+    title: "Log In | RecallAI",
+    description: "Log in to your RecallAI account",
 };
 
 export default function LoginPage() {
@@ -17,7 +17,7 @@ export default function LoginPage() {
                         <Link href="/" className="flex items-center gap-2">
                             <Brain className="h-8 w-8 text-blue-600" />
                             <span className="text-2xl font-bold">
-                                LearnSync
+                                RecallAI
                             </span>
                         </Link>
                         <h1 className="text-3xl font-bold tracking-tight text-blue-900">
@@ -25,7 +25,7 @@ export default function LoginPage() {
                         </h1>
                         <p className="text-center text-gray-500">
                             Enter your email and password to access your
-                            LearnSync dashboard
+                            RecallAI dashboard
                         </p>
                     </div>
 

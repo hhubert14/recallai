@@ -31,7 +31,7 @@ export default function Home() {
                 <div className="container flex h-16 items-center justify-between">
                     <div className="flex items-center gap-2">
                         <Brain className="h-6 w-6 text-blue-600" />
-                        <span className="text-xl font-bold">LearnSync</span>
+                        <span className="text-xl font-bold">RecallAI</span>
                     </div>
                     <nav className="hidden md:flex gap-6">
                         <Link
@@ -93,7 +93,7 @@ export default function Home() {
                                         Summaries
                                     </h1>
                                     <p className="max-w-[600px] text-gray-500 md:text-xl">
-                                        LearnSync automatically creates concise
+                                        RecallAI automatically creates concise
                                         summaries and active recall questions
                                         from educational YouTube videos, helping
                                         you retain knowledge better.
@@ -139,7 +139,7 @@ export default function Home() {
                                     src="/placeholder.svg?height=550&width=550"
                                     width={550}
                                     height={550}
-                                    alt="LearnSync Dashboard Preview"
+                                    alt="RecallAI Dashboard Preview"
                                     className="rounded-lg object-cover shadow-xl"
                                 />
                             </div>
@@ -221,7 +221,7 @@ export default function Home() {
                                                     <Brain className="h-6 w-6 text-blue-600" />
                                                 </div>
                                                 <h3 className="text-xl font-bold text-blue-900">
-                                                    LearnSync Learning
+                                                    RecallAI Learning
                                                 </h3>
                                                 <p className="text-gray-500">
                                                     Active learning with
@@ -275,7 +275,7 @@ export default function Home() {
                                     Simple 3-Step Process
                                 </h2>
                                 <p className="max-w-[900px] text-gray-500 md:text-xl/relaxed">
-                                    LearnSync seamlessly integrates with your
+                                    RecallAI seamlessly integrates with your
                                     learning routine, requiring minimal effort
                                     while delivering maximum results.
                                 </p>
@@ -347,7 +347,7 @@ export default function Home() {
                                     Powerful Learning Tools
                                 </h2>
                                 <p className="max-w-[900px] text-gray-500 md:text-xl/relaxed">
-                                    LearnSync combines cutting-edge AI with
+                                    RecallAI combines cutting-edge AI with
                                     proven learning techniques to help you
                                     retain knowledge better.
                                 </p>
@@ -442,7 +442,7 @@ export default function Home() {
                                     src="/placeholder.svg?height=550&width=550"
                                     width={550}
                                     height={550}
-                                    alt="LearnSync Benefits Visualization"
+                                    alt="RecallAI Benefits Visualization"
                                     className="rounded-lg object-cover shadow-xl"
                                 />
                             </div>
@@ -456,7 +456,7 @@ export default function Home() {
                                         Learning
                                     </h2>
                                     <p className="text-gray-500 md:text-xl/relaxed">
-                                        LearnSync helps you get more value from
+                                        RecallAI helps you get more value from
                                         every educational video you watch.
                                     </p>
                                 </div>
@@ -536,8 +536,8 @@ export default function Home() {
                                     Perfect for All Types of Learners
                                 </h2>
                                 <p className="max-w-[900px] text-gray-500 md:text-xl/relaxed">
-                                    LearnSync is designed for anyone who wants
-                                    to get more value from educational videos.
+                                    RecallAI is designed for anyone who wants
+                                    to                                    get more value from educational videos.
                                 </p>
                             </div>
                         </div>
@@ -608,7 +608,7 @@ export default function Home() {
                                 <p className="max-w-[900px] text-gray-500 md:text-xl/relaxed">
                                     Join thousands of satisfied users who have
                                     transformed their learning experience with
-                                    LearnSync.
+                                    RecallAI.
                                 </p>
                             </div>
                         </div>
@@ -633,7 +633,7 @@ export default function Home() {
                                         ))}
                                     </div>
                                     <blockquote className="text-lg font-semibold text-blue-900">
-                                        "LearnSync has completely changed how I
+                                        "RecallAI has completely changed how I
                                         study. I retain so much more information
                                         now and save hours of time."
                                     </blockquote>
@@ -674,7 +674,7 @@ export default function Home() {
                                         ))}
                                     </div>
                                     <blockquote className="text-lg font-semibold text-blue-900">
-                                        "As a teacher, I recommend LearnSync to
+                                        "As a teacher, I recommend RecallAI to
                                         all my students. It's like having a
                                         personal note-taker and tutor in one."
                                     </blockquote>
@@ -718,7 +718,7 @@ export default function Home() {
                                     </div>
                                     <blockquote className="text-lg font-semibold text-blue-900">
                                         "I'm preparing for my medical board
-                                        exams, and LearnSync has been a
+                                        exams, and RecallAI has been a
                                         game-changer for organizing all my study
                                         materials."
                                     </blockquote>
@@ -821,7 +821,7 @@ export default function Home() {
                                         Free
                                     </h3>
                                     <p className="text-gray-500">
-                                        Perfect for trying out LearnSync.
+                                        Perfect for trying out RecallAI.
                                     </p>
                                 </div>
                                 <div className="mt-4 flex items-baseline">
@@ -921,18 +921,18 @@ export default function Home() {
                                 </h2>
                                 <p className="max-w-[900px] text-gray-500 md:text-xl/relaxed">
                                     Find answers to common questions about
-                                    LearnSync.
+                                    RecallAI.
                                 </p>
                             </div>
                         </div>
                         <div className="mx-auto max-w-3xl space-y-4 py-12">
                             <div className="rounded-lg border border-blue-100 bg-white p-6 shadow-sm">
                                 <h3 className="text-lg font-bold text-blue-900">
-                                    How does LearnSync detect educational
+                                    How does RecallAI detect educational
                                     videos?
                                 </h3>
                                 <p className="mt-2 text-gray-500">
-                                    LearnSync uses a combination of video
+                                    RecallAI uses a combination of video
                                     metadata, content analysis, and user
                                     behavior patterns to identify educational
                                     content. It works best with videos that have
@@ -967,11 +967,11 @@ export default function Home() {
                             </div>
                             <div className="rounded-lg border border-blue-100 bg-white p-6 shadow-sm">
                                 <h3 className="text-lg font-bold text-blue-900">
-                                    Can I use LearnSync with videos in languages
+                                    Can I use RecallAI with videos in languages
                                     other than English?
                                 </h3>
                                 <p className="mt-2 text-gray-500">
-                                    Currently, LearnSync works best with
+                                    Currently, RecallAI works best with
                                     English-language videos. We're actively
                                     working on adding support for additional
                                     languages in the near future.
@@ -985,7 +985,7 @@ export default function Home() {
                                 <p className="mt-2 text-gray-500">
                                     Yes, Premium users can share summaries and
                                     questions with others through a secure link.
-                                    The recipient doesn't need a LearnSync
+                                    The recipient doesn't need a RecallAI
                                     account to view shared content.
                                 </p>
                             </div> */}
@@ -1004,7 +1004,7 @@ export default function Home() {
                                 <p className="max-w-[600px] md:text-xl/relaxed">
                                     Join thousands of satisfied users who have
                                     improved their knowledge retention with
-                                    LearnSync.
+                                    RecallAI.
                                 </p>
                             </div>
                             <div className="flex flex-col gap-2 min-[400px]:flex-row">
@@ -1040,7 +1040,7 @@ export default function Home() {
                             <div className="flex items-center gap-2">
                                 <Brain className="h-6 w-6 text-blue-600" />
                                 <span className="text-xl font-bold">
-                                    LearnSync
+                                    RecallAI
                                 </span>
                             </div>
                             <p className="text-sm text-gray-500">
@@ -1227,7 +1227,7 @@ export default function Home() {
                         </div>
                     </div>
                     <div className="mt-8 border-t pt-8 text-center text-sm text-gray-500">
-                        © {new Date().getFullYear()} LearnSync. All rights
+                        © {new Date().getFullYear()} RecallAI. All rights
                         reserved.
                     </div>
                 </div>

@@ -9,7 +9,7 @@ export function UpgradePrompt() {
                 <div className="container flex h-16 items-center justify-between">
                     <div className="flex items-center gap-2">
                         <Brain className="h-6 w-6 text-blue-600" />
-                        <span className="text-xl font-bold">LearnSync</span>
+                        <span className="text-xl font-bold">RecallAI</span>
                     </div>
                     <nav className="hidden md:flex gap-6">
                         <Link

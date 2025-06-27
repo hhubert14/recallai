@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Brain } from "lucide-react";
 
 export const metadata: Metadata = {
-    title: "Sign Up | LearnSync",
-    description: "Sign up for your LearnSync account",
+    title: "Sign Up | RecallAI",
+    description: "Sign up for your RecallAI account",
 };
 
 export default function SignUpPage() {
@@ -18,7 +18,7 @@ export default function SignUpPage() {
                         <Link href="/" className="flex items-center gap-2">
                             <Brain className="h-8 w-8 text-blue-600" />
                             <span className="text-2xl font-bold">
-                                LearnSync
+                                RecallAI
                             </span>
                         </Link>
                         <h1 className="text-3xl font-bold tracking-tight text-blue-900">
@@ -26,7 +26,7 @@ export default function SignUpPage() {
                         </h1>
                         <p className="text-center text-gray-500">
                             Enter your email and password to create your
-                            LearnSync account
+                            RecallAI account
                         </p>
                     </div>
 

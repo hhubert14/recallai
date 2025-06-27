@@ -3,8 +3,8 @@ import Link from "next/link";
 import { Brain } from "lucide-react";
 
 export const metadata: Metadata = {
-    title: "Confirm Email | LearnSync",
-    description: "Confirm your email address for LearnSync",
+    title: "Confirm Email | RecallAI",
+    description: "Confirm your email address for RecallAI",
 };
 
 export default function ConfirmEmailPage() {
@@ -16,7 +16,7 @@ export default function ConfirmEmailPage() {
                         <Link href="/" className="flex items-center gap-2">
                             <Brain className="h-8 w-8 text-blue-600" />
                             <span className="text-2xl font-bold">
-                                LearnSync
+                                RecallAI
                             </span>
                         </Link>
                         <h1 className="text-3xl font-bold tracking-tight text-blue-900">

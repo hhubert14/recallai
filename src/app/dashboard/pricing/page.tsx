@@ -10,7 +10,7 @@ import { ManageBillingButton } from "@/components/subscription/ManageBillingButt
 import { BackButton } from "@/components/ui/back-button";
 
 export const metadata: Metadata = {
-    title: "Pricing | LearnSync",
+    title: "Pricing | RecallAI",
     description: "Choose the perfect plan for your learning journey",
 };
 
@@ -25,7 +25,7 @@ export default async function PricingPage() {
     const subscriptionStatus = await getUserSubscriptionStatus(user.id);    const plans = [        {
             id: "free",
             name: "Free",
-            description: "Perfect for trying out LearnSync.",
+            description: "Perfect for trying out RecallAI.",
             price: 0,
             features: [
                 "5 videos at a time",
@@ -64,7 +64,7 @@ export default async function PricingPage() {
                 <div className="container flex h-16 items-center justify-between">
                     <div className="flex items-center gap-2">
                         <Brain className="h-6 w-6 text-blue-600" />
-                        <span className="text-xl font-bold">LearnSync</span>
+                        <span className="text-xl font-bold">RecallAI</span>
                     </div>                    <nav className="hidden md:flex gap-6">
                         <Link
                             href="/dashboard"

@@ -12,7 +12,7 @@ import { ContentTabs } from "./ContentTabs";
 import { BackButton } from "./BackButton";
 
 export const metadata: Metadata = {
-    title: "Video Detail | LearnSync",
+    title: "Video Detail | RecallAI",
     description: "View video summary and Q&A",
 };
 
@@ -58,7 +58,7 @@ export default async function VideoDetailPage({ params }: VideoDetailPageProps) 
                         <BackButton />
                         <div className="flex items-center gap-2">
                             <Brain className="h-6 w-6 text-blue-600" />
-                            <span className="text-xl font-bold">LearnSync</span>
+                            <span className="text-xl font-bold">RecallAI</span>
                         </div>
                     </div>
                     <div className="flex items-center gap-4">

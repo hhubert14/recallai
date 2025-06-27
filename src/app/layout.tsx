@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-    title: "LearnSync - AI-Powered Video Summaries",
+    title: "RecallAI - AI-Powered Video Summaries",
     description:
         "Transform video learning with AI-powered summaries and active recall questions, helping you retain knowledge better.",
 };
