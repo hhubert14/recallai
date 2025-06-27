@@ -19,19 +19,22 @@ export function ReviewInterface({
     dueQuestions, 
     initialQuestions 
 }: ReviewInterfaceProps) {
-    // Memoize the combined questions array to prevent unnecessary re-renders
-    const allQuestions = useMemo(() => {
-        return [...dueQuestions, ...initialQuestions];
-    }, [dueQuestions, initialQuestions]);
-    
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [selectedOptionId, setSelectedOptionId] = useState<number | null>(null);
     const [showResult, setShowResult] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    // Memoize the combined questions array to prevent unnecessary re-renders
+    const allQuestions = useMemo(() => {
+        return [...dueQuestions, ...initialQuestions];
+    }, [dueQuestions, initialQuestions]);
+
     // Track which questions we're showing (due vs initial)
     const totalDueQuestions = dueQuestions.length;
+    const totalInitialQuestions = initialQuestions.length;
     const isInDueMode = currentQuestionIndex < totalDueQuestions;
+    const isInInitialMode = currentQuestionIndex >= totalDueQuestions && 
+                          currentQuestionIndex < totalDueQuestions + totalInitialQuestions;
     
     // Check if session is complete first (before accessing questions)
     const sessionComplete = allQuestions.length === 0 || currentQuestionIndex >= allQuestions.length;
@@ -166,6 +169,7 @@ export function ReviewInterface({
                             You don't have any questions due for review today. 
                             Complete some video quizzes to add questions to your spaced repetition system.
                         </p>
+                        
                         <Button 
                             onClick={() => window.location.href = '/dashboard'}
                             variant="outline"
@@ -216,7 +220,7 @@ export function ReviewInterface({
             <div className="flex items-center justify-between text-sm text-gray-500">
                 <span>
                     Question {currentQuestionIndex + 1} of {allQuestions.length}
-                    {isInDueMode ? ' (Due Today)' : ' (Initial Review)'}
+                    {isInDueMode ? ' (Due Today)' : isInInitialMode ? ' (Initial Review)' : ''}
                 </span>
                 <div className="w-32 bg-gray-200 rounded-full h-2">
                     <div 
