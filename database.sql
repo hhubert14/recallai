@@ -70,6 +70,21 @@ CREATE TABLE public.user_answers (
   CONSTRAINT user_answers_question_id_fkey FOREIGN KEY (question_id) REFERENCES public.questions(id),
   CONSTRAINT user_answers_selected_option_id_fkey FOREIGN KEY (selected_option_id) REFERENCES public.question_options(id)
 );
+CREATE TABLE public.user_question_progress (
+  id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+  user_id uuid NOT NULL UNIQUE,
+  question_id bigint NOT NULL UNIQUE,
+  box_level integer DEFAULT 1,
+  next_review_date date NOT NULL,
+  times_correct integer DEFAULT 0,
+  times_incorrect integer DEFAULT 0,
+  last_reviewed_at timestamp without time zone,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  updated_at timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT user_question_progress_pkey PRIMARY KEY (id),
+  CONSTRAINT user_question_progress_question_id_fkey FOREIGN KEY (question_id) REFERENCES public.questions(id),
+  CONSTRAINT user_question_progress_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id)
+);
 CREATE TABLE public.users (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
   created_at timestamp with time zone NOT NULL DEFAULT now(),
