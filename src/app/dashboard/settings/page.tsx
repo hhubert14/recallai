@@ -29,7 +29,7 @@ export default async function SettingsPage() {
         getUserStatsByUserId(user.id),
         getVideosThisMonthByUserId(user.id),
         getUserVideoExpiryStats(user.id)
-    ]);// Calculate usage percentage for free users
+    ]);    // Calculate usage percentage for free users
     const monthlyLimit = subscriptionStatus.isSubscribed ? null : 5;
     const usagePercentage = monthlyLimit ? Math.min(videosThisMonth / monthlyLimit * 100, 100) : 0;
 
@@ -131,8 +131,8 @@ export default async function SettingsPage() {
                                 <div>
                                     <div className="mb-4">
                                         <div className="flex justify-between items-center mb-2">
-                                            <span className="text-sm font-medium text-gray-700">Monthly Videos</span>                                            <span className="text-sm text-gray-500">
-                                                {videosThisMonth} / {monthlyLimit} used
+                                            <span className="text-sm font-medium text-gray-700">Current Videos</span>                                            <span className="text-sm text-gray-500">
+                                                {videosThisMonth} / {monthlyLimit} active
                                             </span>
                                         </div>
                                         <div className="w-full bg-gray-200 rounded-full h-2">
@@ -143,18 +143,20 @@ export default async function SettingsPage() {
                                         </div>
                                         {usagePercentage >= 80 && (
                                             <p className="text-sm text-amber-600 mt-2">
-                                                You're approaching your monthly limit. Consider upgrading for unlimited access.
+                                                You're approaching your storage limit. Consider upgrading for unlimited access.
                                             </p>
                                         )}
+                                        <p className="text-xs text-gray-500 mt-2">
+                                            Videos automatically expire after 7 days. You can have up to 5 videos stored at a time.
+                                        </p>
                                     </div>
                                     <UpgradeButton />
                                 </div>
                             ) : (
-                                <div className="space-y-3">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">                                        <div>
-                                            <label className="text-sm font-medium text-gray-700">Videos This Month</label>
+                                <div className="space-y-3">                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">                                        <div>
+                                            <label className="text-sm font-medium text-gray-700">Current Videos</label>
                                             <p className="text-2xl font-bold text-blue-900">{videosThisMonth}</p>
-                                            <p className="text-sm text-gray-500">Unlimited</p>
+                                            <p className="text-sm text-gray-500">Unlimited storage</p>
                                         </div>
                                         <div>
                                             <label className="text-sm font-medium text-gray-700">Total Videos</label>

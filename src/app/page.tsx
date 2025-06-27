@@ -834,7 +834,7 @@ export default function Home() {
                                 </div>
                                 <ul className="mt-6 space-y-3">
                                     {[
-                                        "5 videos per month",
+                                        "5 videos at a time",
                                         "Auto-generated study questions",
                                         "Smart study notes",
                                         "Progress tracking",

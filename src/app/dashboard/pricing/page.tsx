@@ -28,7 +28,7 @@ export default async function PricingPage() {
             description: "Perfect for trying out LearnSync.",
             price: 0,
             features: [
-                "5 videos per month",
+                "5 videos at a time",
                 "Auto-generated study questions", 
                 "Smart study notes",
                 "Progress tracking",
