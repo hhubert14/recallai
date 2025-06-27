@@ -65,8 +65,7 @@ export default async function PricingPage() {
                     <div className="flex items-center gap-2">
                         <Brain className="h-6 w-6 text-blue-600" />
                         <span className="text-xl font-bold">LearnSync</span>
-                    </div>
-                    <nav className="hidden md:flex gap-6">
+                    </div>                    <nav className="hidden md:flex gap-6">
                         <Link
                             href="/dashboard"
                             className="text-sm font-medium hover:text-blue-600"
@@ -78,6 +77,12 @@ export default async function PricingPage() {
                             className="text-sm font-medium hover:text-blue-600"
                         >
                             My Library
+                        </Link>
+                        <Link
+                            href="/dashboard/review"
+                            className="text-sm font-medium hover:text-blue-600"
+                        >
+                            Review
                         </Link>
                         <Link
                             href="/dashboard/pricing"

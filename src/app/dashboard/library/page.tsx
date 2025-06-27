@@ -48,6 +48,12 @@ export default async function LibraryPage() {
                             My Library
                         </Link>
                         <Link
+                            href="/dashboard/review"
+                            className="text-sm font-medium hover:text-blue-600"
+                        >
+                            Review
+                        </Link>
+                        <Link
                             href="/dashboard/pricing"
                             className="text-sm font-medium hover:text-blue-600"
                         >
