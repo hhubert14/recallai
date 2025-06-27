@@ -72,10 +72,10 @@ CREATE TABLE public.user_answers (
 );
 CREATE TABLE public.user_question_progress (
   id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
-  user_id uuid NOT NULL UNIQUE,
-  question_id bigint NOT NULL UNIQUE,
+  user_id uuid NOT NULL,
+  question_id bigint NOT NULL,
   box_level integer DEFAULT 1,
-  next_review_date date NOT NULL,
+  next_review_date date DEFAULT CURRENT_DATE,
   times_correct integer DEFAULT 0,
   times_incorrect integer DEFAULT 0,
   last_reviewed_at timestamp without time zone,
