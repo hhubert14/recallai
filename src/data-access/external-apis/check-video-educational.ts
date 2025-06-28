@@ -2,7 +2,7 @@ import "server-only";
 
 import OpenAI from "openai";
 // import { YoutubeTranscript } from "./types";
-import { extractTranscriptText } from "./utils";
+// import { extractTranscriptText } from "./utils";
 import { logger } from "@/lib/logger";
 
 export async function checkVideoEducational(
