@@ -15,7 +15,7 @@ export async function OPTIONS() {
 
 export async function POST(
     request: NextRequest,
-    { params }: { params: { url: string } }
+    { params }: { params: Promise<{ url: string }> }
 ) {
     logger.extension.debug("Processing video request", { videoUrl: (await params).url });
     const { videoId, authToken, processType } = await request.json();
