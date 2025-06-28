@@ -11,7 +11,7 @@ import { authenticateRequest } from "@/use-cases/extension/authenticate-request"
 
 export async function GET(
     request: NextRequest,
-    { params }: { params: { url: string } }
+    { params }: { params: Promise<{ url: string }> }
 ) {
     const supabase = await createClient();
 

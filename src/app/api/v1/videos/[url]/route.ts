@@ -7,7 +7,7 @@ import { logger } from "@/lib/logger";
 
 export async function POST(
     request: NextRequest,
-    { params }: { params: { url: string } }
+    { params }: { params: Promise<{ url: string }> }
 ) {
     const { url: videoUrl } = await params;
     const body = await request.json();
