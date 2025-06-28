@@ -16,6 +16,8 @@ const eslintConfig = [
         rules: {
             // "indent": ["error", 4],
             // "prettier/prettier": ["error", { "tabWidth": 4 }],
+            "@typescript-eslint/no-unused-vars": "warn",
+            "@typescript-eslint/no-explicit-any": "warn",
         },
     },
 ];
