@@ -17,12 +17,13 @@ export const metadata: Metadata = {
 };
 
 interface VideoDetailPageProps {
-    params: {
+    params: Promise<{
         id: string;
-    };
+    }>;
 }
 
 export default async function VideoDetailPage({ params }: VideoDetailPageProps) {
+    const { id } = await params;
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -30,7 +31,7 @@ export default async function VideoDetailPage({ params }: VideoDetailPageProps) 
         notFound();
     }    // Get all user videos to find the specific one
     const userVideos = await getVideosByUserId(user.id);
-    const video = userVideos.find(v => v.id === parseInt(params.id));
+    const video = userVideos.find(v => v.id === parseInt(id));
 
     if (!video) {
         notFound();
