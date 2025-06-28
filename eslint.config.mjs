@@ -14,8 +14,8 @@ const eslintConfig = [
     ...compat.extends("prettier"),
     {
         rules: {
-            "indent": ["error", 4],
-            "prettier/prettier": ["error", { "tabWidth": 4 }],
+            // "indent": ["error", 4],
+            // "prettier/prettier": ["error", { "tabWidth": 4 }],
         },
     },
 ];
