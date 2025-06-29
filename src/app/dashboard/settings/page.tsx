@@ -43,7 +43,7 @@ export default async function SettingsPage() {
     return (
         <div className="flex min-h-screen flex-col">
             <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-                <div className="container flex h-16 items-center justify-between">
+                <div className="container flex h-16 items-center justify-between px-4 md:px-6">
                     <div className="flex items-center gap-2">
                         <Brain className="h-6 w-6 text-blue-600" />
                         <span className="text-xl font-bold">RecallAI</span>
@@ -60,6 +60,12 @@ export default async function SettingsPage() {
                             className="text-sm font-medium hover:text-blue-600"
                         >
                             My Library
+                        </Link>
+                        <Link
+                            href="/dashboard/review"
+                            className="text-sm font-medium text-blue-600"
+                        >
+                            Review
                         </Link>
                         <Link
                             href="/dashboard/pricing"
