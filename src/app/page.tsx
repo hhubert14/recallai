@@ -850,7 +850,7 @@ export default function Home() {
                                         </li>
                                     ))}
                                 </ul>
-                                <Button className="mt-8 bg-blue-600 hover:bg-blue-700">
+                                <Button className="mt-8 bg-blue-600 hover:bg-blue-700" asChild>
                                     <Link href="/auth/sign-up">Get Started</Link>
                                 </Button>
                             </div>
@@ -893,7 +893,7 @@ export default function Home() {
                                         </li>
                                     ))}
                                 </ul>
-                                <Button className="mt-8 bg-blue-600 hover:bg-blue-700">
+                                <Button className="mt-8 bg-blue-600 hover:bg-blue-700" asChild>
                                     <Link href="/auth/sign-up">Get Started</Link>
                                 </Button>
                                 {/* <SubscribeButton userId="your-user-id" /> */}
@@ -1011,16 +1011,22 @@ export default function Home() {
                                 <Button
                                     size="lg"
                                     className="bg-white text-blue-600 hover:bg-blue-50 gap-1"
+                                    asChild
                                 >
-                                    Get Started Free{" "}
-                                    <ArrowRight className="h-4 w-4" />
+                                    <Link href="/auth/sign-up">
+                                        Get Started Free{" "}
+                                        <ArrowRight className="h-4 w-4" />
+                                    </Link>
                                 </Button>
                                 <Button
                                     size="lg"
                                     variant="outline"
                                     className="border-white text-white hover:bg-blue-700"
+                                    asChild
                                 >
-                                    Download Extension
+                                    <Link href="#" target="_blank">
+                                        Download Extension
+                                    </Link>
                                 </Button>
                             </div>
                             <p className="text-sm text-blue-100">
