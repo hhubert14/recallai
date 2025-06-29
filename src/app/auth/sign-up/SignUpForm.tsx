@@ -203,7 +203,7 @@ export function SignUpForm() {
                 </Button>
             </div>
 
-            <div className="relative">
+            {/* <div className="relative">
                 <div className="absolute inset-0 flex items-center">
                     <span className="w-full border-t" />
                 </div>
@@ -262,7 +262,7 @@ export function SignUpForm() {
                     </svg>
                     Google
                 </Button>
-            </div>
+            </div> */}
         </form>
     );
 }
