@@ -420,9 +420,14 @@ export default function Home() {
                                 <div className="rounded-full bg-blue-50 p-3 w-12 h-12 flex items-center justify-center">
                                     <Search className="h-6 w-6 text-blue-600" />
                                 </div>
-                                <h3 className="text-xl font-bold text-blue-900">
-                                    Smart Search
-                                </h3>
+                                <div className="flex items-center gap-2">
+                                    <h3 className="text-xl font-bold text-blue-900">
+                                        Smart Search
+                                    </h3>
+                                    <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-600">
+                                        Coming Soon
+                                    </span>
+                                </div>
                                 <p className="text-gray-500">
                                     Find specific topics across your entire
                                     video library with powerful search
