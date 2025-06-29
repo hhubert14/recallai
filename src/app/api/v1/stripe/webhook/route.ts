@@ -69,7 +69,13 @@ export async function POST(request: NextRequest) {
             revalidatePath(`/dashboard`);
         }
         // Log the event for debugging purposes
-        console.log(`Received event: ${event.type} (ID: ${event.id})`);
+        console.log(`✅ Successfully verified event: ${event.type} (ID: ${event.id})`);
+        console.log("Event data preview:", {
+            type: event.type,
+            id: event.id,
+            object: (event.data.object as any)?.id || 'N/A',
+            customer: (event.data.object as any)?.customer || 'N/A'
+        });
         
         // Check for duplicate events
         if (isEventAlreadyProcessed(event.id)) {
@@ -81,6 +87,9 @@ export async function POST(request: NextRequest) {
         }
         
         // Handle the event
+        console.log(`🎯 About to handle event: ${event.type}`);
+        console.log("🔍 Full event data for debugging:", JSON.stringify(event.data, null, 2));
+        
         switch (event.type) {
             case "checkout.session.completed":
                 await handleCheckoutSessionCompleted(event);
@@ -104,7 +113,7 @@ export async function POST(request: NextRequest) {
                 await handleBillingPortalSessionCreated(event);
                 break;
             default:
-                console.warn(`Unhandled event type: ${event.type}`);
+                console.warn(`⚠️ Unhandled event type: ${event.type}`);
         }
 
         return new Response(JSON.stringify({ received: true }), {
@@ -112,7 +121,17 @@ export async function POST(request: NextRequest) {
             headers: { "Content-Type": "application/json" },
         });
     } catch (error) {
-        console.error("Error processing webhook:", error);
+        console.error("❌ Error processing webhook:", error);
+        
+        // Log more detailed error information
+        if (error instanceof Error) {
+            console.error("Error details:", {
+                message: error.message,
+                name: error.name,
+                stack: error.stack?.substring(0, 500)
+            });
+        }
+        
         return new Response("Webhook Error", { status: 400 });
     }
 }
@@ -184,11 +203,17 @@ async function handleCheckoutSessionCompleted(event: any) {
 
         const userId = await extractUserIdFromStripeEvent(event);
         if (!userId) {
-            console.error("Could not extract user ID from checkout session");
+            console.error("❌ Could not extract user ID from checkout session");
+            console.error("🔍 Customer ID from event:", session.customer);
+            console.error("🔍 Session metadata:", session.metadata);
+            console.error("🔍 Full session object keys:", Object.keys(session));
+            console.error("Event data:", JSON.stringify(event.data, null, 2));
             return;
         }
 
-        console.log("Creating subscription with checkout session data:", {
+        console.log("✅ Successfully extracted userId:", userId);
+
+        console.log("🔍 About to create subscription with data:", {
             userId,
             customer: session.customer,
             subscription: session.subscription
@@ -204,16 +229,20 @@ async function handleCheckoutSessionCompleted(event: any) {
             currentPeriodStart: new Date(), // Use current time as placeholder
             currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now as placeholder
         });        if (success) {
+            console.log("✅ Subscription created successfully in database");
             // Update user subscription status
             await updateUserSubscriptionStatus(userId, true);
+            console.log("✅ User subscription status updated to true");
             
             // User just subscribed - update all their videos to not expire
-            console.log("New subscription created, updating video expiry settings");
+            console.log("🎬 Updating video expiry settings for new subscriber");
             await updateVideosOnSubscriptionUpgrade(userId);
+            console.log("✅ Video expiry settings updated successfully");
             
-            console.log("Checkout session processed successfully - subscription created");
+            console.log("🎉 Checkout session processed successfully - subscription created");
         } else {
-            console.error("Failed to create subscription in database");
+            console.error("❌ Failed to create subscription in database");
+            console.error("🔍 Attempted to create subscription with userId:", userId);
         }
 
         // Revalidate the dashboard
@@ -246,9 +275,15 @@ async function handleInvoicePaymentSucceeded(event: any) {
 
         const userId = await extractUserIdFromStripeEvent(event);
         if (!userId) {
-            console.error("Could not extract user ID from invoice");
+            console.error("❌ Could not extract user ID from invoice");
+            console.error("🔍 Customer ID from invoice:", invoice.customer);
+            console.error("🔍 Subscription ID from invoice:", invoice.subscription);
+            console.error("🔍 Invoice metadata:", invoice.metadata);
+            console.error("Event data:", JSON.stringify(event.data, null, 2));
             return;
         }
+
+        console.log("✅ Successfully extracted userId from invoice:", userId);
 
         // Get subscription details from Stripe
         const stripeInstance = await stripe();
