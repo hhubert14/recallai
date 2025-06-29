@@ -46,7 +46,7 @@ export default function EmailConfirmedPage() {
                         </Link> */}
                     </div>
 
-                    <div className="text-center text-sm text-gray-500 mt-8">
+                    {/* <div className="text-center text-sm text-gray-500 mt-8">
                         <p>
                             Need help?{" "}
                             <Link
@@ -56,7 +56,7 @@ export default function EmailConfirmedPage() {
                                 Contact Support
                             </Link>
                         </p>
-                    </div>
+                    </div> */}
                 </div>
             </div>
         </div>
