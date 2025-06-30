@@ -27,7 +27,7 @@ export default function LoginPage() {
                             </span>
                         </Link>
                         <h1 className="text-3xl font-bold tracking-tight text-blue-900 dark:text-blue-100">
-                            Sign in to your account
+                            Log In
                         </h1>
                         <p className="text-center text-gray-500 dark:text-gray-400">
                             Enter your email and password to access your

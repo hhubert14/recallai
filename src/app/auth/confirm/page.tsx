@@ -50,7 +50,7 @@ export default function ConfirmEmailPage() {
                                 href="/auth/login"
                                 className="font-medium text-blue-600 hover:text-blue-500"
                             >
-                                Login
+                                Log In
                             </Link>
                         </p>
                     </div>

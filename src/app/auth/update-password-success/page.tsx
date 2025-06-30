@@ -35,7 +35,7 @@ export default function RecoverySuccessPage() {
                 </CardContent>
                 <CardFooter className="flex justify-center">
                     <Button asChild className="flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
-                        <Link href="/auth/login">Continue to Login</Link>
+                        <Link href="/auth/login">Continue to Log In</Link>
                     </Button>
                 </CardFooter>
             </Card>

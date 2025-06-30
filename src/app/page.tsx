@@ -66,7 +66,7 @@ export default function Home() {
                             href="/auth/login"
                             className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:underline underline-offset-4 hidden sm:inline-block"
                         >
-                            Login
+                            Log In
                         </Link>
                         <Button
                             asChild
