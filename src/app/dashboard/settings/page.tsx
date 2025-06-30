@@ -42,8 +42,8 @@ export default async function SettingsPage() {
     });
 
     return (
-        <div className="flex min-h-screen flex-col bg-white dark:bg-gray-900">
-            <header className="sticky top-0 z-50 w-full border-b border-gray-200 dark:border-gray-700 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="flex min-h-screen flex-col bg-white dark:bg-gray-950">
+            <header className="sticky top-0 z-50 w-full border-b border-gray-200 dark:border-gray-800 bg-white/95 dark:bg-gray-950/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-gray-950/60">
                 <div className="container flex h-16 items-center justify-between px-6 md:px-8">
                     <div className="flex items-center gap-2">
                         <Brain className="h-6 w-6 text-blue-600" />

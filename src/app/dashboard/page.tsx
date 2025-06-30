@@ -45,8 +45,8 @@ export default async function DashboardPage() {
         subscriptionStatus = subscription;
     }
     return (
-        <div className="flex min-h-screen flex-col bg-white dark:bg-gray-900">
-            <header className="sticky top-0 z-50 w-full border-b border-gray-200 dark:border-gray-700 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="flex min-h-screen flex-col bg-white dark:bg-gray-950">
+            <header className="sticky top-0 z-50 w-full border-b border-gray-200 dark:border-gray-800 bg-white/95 dark:bg-gray-950/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-gray-950/60">
                 <div className="container flex h-16 items-center justify-between px-6 md:px-8">
                     <div className="flex items-center gap-2">
                         <Brain className="h-6 w-6 text-blue-600" />
@@ -224,9 +224,9 @@ export default async function DashboardPage() {
                         )}
                     </div>
 
-                    <div className="rounded-xl border border-blue-200 dark:border-blue-800/30 p-6 shadow-sm bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20">
+                    <div className="rounded-xl border border-blue-200 dark:border-blue-800 p-6 shadow-sm bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20">
                         <div className="flex items-center gap-3 mb-4">
-                            <div className="p-2 bg-blue-100 dark:bg-blue-950/40 rounded-lg">
+                            <div className="p-2 bg-blue-100 dark:bg-blue-800 rounded-lg">
                                 <svg className="h-5 w-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                                 </svg>
