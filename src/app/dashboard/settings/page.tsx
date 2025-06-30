@@ -43,7 +43,7 @@ export default async function SettingsPage() {
     return (
         <div className="flex min-h-screen flex-col">
             <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-                <div className="container flex h-16 items-center justify-between px-4 md:px-6">
+                <div className="container flex h-16 items-center justify-between px-6 md:px-8">
                     <div className="flex items-center gap-2">
                         <Brain className="h-6 w-6 text-blue-600" />
                         <span className="text-xl font-bold">RecallAI</span>
@@ -63,7 +63,7 @@ export default async function SettingsPage() {
                         </Link>
                         <Link
                             href="/dashboard/review"
-                            className="text-sm font-medium text-blue-600"
+                            className="text-sm font-medium hover:text-blue-600"
                         >
                             Review
                         </Link>
@@ -86,20 +86,20 @@ export default async function SettingsPage() {
                 </div>
             </header>
 
-            <main className="flex-1 container py-12 max-w-4xl">
-                <div className="mb-8">
-                    <h1 className="text-3xl font-bold tracking-tight text-blue-900 mb-2">
+            <main className="flex-1 container py-4 px-6 md:px-8 max-w-7xl mx-auto">
+                <div className="mb-6">
+                    <h1 className="text-4xl font-bold tracking-tight text-blue-900 mb-3">
                         Settings
                     </h1>
-                    <p className="text-gray-500">
+                    <p className="text-lg text-gray-600">
                         Manage your account settings and preferences.
                     </p>
                 </div>
 
                 <div className="space-y-8">
                     {/* Account Section */}
-                    <div className="rounded-lg border p-6 shadow-sm">
-                        <div className="flex items-center gap-3 mb-4">
+                    <div className="rounded-xl border border-gray-200 p-8 shadow-sm bg-white">
+                        <div className="flex items-center gap-3 mb-6">
                             <User className="h-5 w-5 text-blue-600" />
                             <h2 className="text-xl font-semibold text-blue-900">Account</h2>
                         </div>
@@ -127,8 +127,8 @@ export default async function SettingsPage() {
                     </div>
 
                     {/* Subscription Section */}
-                    <div className="rounded-lg border p-6 shadow-sm">
-                        <div className="flex items-center gap-3 mb-4">
+                    <div className="rounded-xl border border-gray-200 p-8 shadow-sm bg-white">
+                        <div className="flex items-center gap-3 mb-6">
                             <CreditCard className="h-5 w-5 text-blue-600" />
                             <h2 className="text-xl font-semibold text-blue-900">Subscription & Usage</h2>
                         </div>
@@ -174,8 +174,8 @@ export default async function SettingsPage() {
                             )}
                         </div>
                     </div>                    {/* Chrome Extension Section */}
-                    <div className="rounded-lg border p-6 shadow-sm">
-                        <div className="flex items-center gap-3 mb-4">
+                    <div className="rounded-xl border border-gray-200 p-8 shadow-sm bg-white">
+                        <div className="flex items-center gap-3 mb-6">
                             <Chrome className="h-5 w-5 text-blue-600" />
                             <h2 className="text-xl font-semibold text-blue-900">Chrome Extension</h2>
                         </div>                        <div className="space-y-4">
@@ -190,8 +190,8 @@ export default async function SettingsPage() {
                     </div>
 
                     {/* Data Management Section */}
-                    <div className="rounded-lg border p-6 shadow-sm">
-                        <div className="flex items-center gap-3 mb-4">
+                    <div className="rounded-xl border border-gray-200 p-8 shadow-sm bg-white">
+                        <div className="flex items-center gap-3 mb-6">
                             <Database className="h-5 w-5 text-blue-600" />
                             <h2 className="text-xl font-semibold text-blue-900">Data Management</h2>
                         </div>
@@ -214,8 +214,8 @@ export default async function SettingsPage() {
                         </div>                    </div>
 
                     {/* Video Expiry Section */}
-                    <div className="rounded-lg border p-6 shadow-sm">
-                        <div className="flex items-center gap-3 mb-4">
+                    <div className="rounded-xl border border-gray-200 p-8 shadow-sm bg-white">
+                        <div className="flex items-center gap-3 mb-6">
                             <Clock className="h-5 w-5 text-blue-600" />
                             <h2 className="text-xl font-semibold text-blue-900">Video Storage</h2>
                         </div>
@@ -265,8 +265,8 @@ export default async function SettingsPage() {
                     </div>
 
                     {/* Help & Support Section */}
-                    <div className="rounded-lg border p-6 shadow-sm">
-                        <div className="flex items-center gap-3 mb-4">
+                    <div className="rounded-xl border border-gray-200 p-8 shadow-sm bg-white">
+                        <div className="flex items-center gap-3 mb-6">
                             <svg className="h-5 w-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>

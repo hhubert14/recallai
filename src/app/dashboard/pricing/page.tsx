@@ -61,7 +61,7 @@ export default async function PricingPage() {
     return (
         <div className="flex min-h-screen flex-col">
             <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-                <div className="container flex h-16 items-center justify-between px-4 md:px-6">
+                <div className="container flex h-16 items-center justify-between px-6 md:px-8">
                     <div className="flex items-center gap-2">
                         <Brain className="h-6 w-6 text-blue-600" />
                         <span className="text-xl font-bold">RecallAI</span>
@@ -103,25 +103,24 @@ export default async function PricingPage() {
                 </div>
             </header>
 
-            <main className="flex-1 container py-12">                <div className="mb-8">
-                    <div className="mb-4">
-                        <BackButton />
-                    </div>
-                    <div className="space-y-2">
-                        <h1 className="text-3xl font-bold tracking-tight text-blue-900">
+            <main className="flex-1 container py-4 px-6 md:px-8 max-w-7xl mx-auto">
+                <div className="mb-6">
+                    <BackButton />
+                    <div className="mt-2">
+                        <h1 className="text-4xl font-bold tracking-tight text-blue-900 mb-3">
                             Choose Your Plan
                         </h1>
-                        <p className="text-gray-500 max-w-2xl">
+                        <p className="text-lg text-gray-600 max-w-2xl">
                             Choose the plan that's right for you and start transforming your learning experience today.
                         </p>
                     </div>
                 </div>
 
-                <div className="grid gap-6 md:grid-cols-2 max-w-4xl mx-auto">
+                <div className="grid gap-8 md:grid-cols-2 max-w-4xl mx-auto">
                     {plans.map((plan) => (
                         <div
                             key={plan.id}
-                            className={`flex flex-col rounded-lg border p-6 shadow-sm relative ${
+                            className={`flex flex-col rounded-xl border p-8 shadow-sm relative ${
                                 plan.isPopular
                                     ? "border-2 border-blue-600 bg-white shadow-lg"
                                     : plan.isCurrent

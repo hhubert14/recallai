@@ -38,7 +38,7 @@ export default async function ReviewPage() {
     return (
         <div className="flex min-h-screen flex-col">
             <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-                <div className="container flex h-16 items-center justify-between px-4 md:px-6">
+                <div className="container flex h-16 items-center justify-between px-6 md:px-8">
                     <div className="flex items-center gap-2">
                         <Brain className="h-6 w-6 text-blue-600" />
                         <span className="text-xl font-bold">RecallAI</span>
@@ -75,16 +75,14 @@ export default async function ReviewPage() {
                 </div>
             </header>
 
-            <main className="flex-1 container py-12">
-                <div className="mb-8">
-                    <div className="mb-4">
-                        <BackButton />
-                    </div>
-                    <div className="space-y-2">
-                        <h1 className="text-3xl font-bold tracking-tight text-blue-900">
+            <main className="flex-1 container py-4 px-6 md:px-8 max-w-7xl mx-auto">
+                <div className="mb-6">
+                    <BackButton />
+                    <div className="mt-2">
+                        <h1 className="text-4xl font-bold tracking-tight text-blue-900 mb-3">
                             Review Questions
                         </h1>
-                        <p className="text-gray-500 max-w-2xl">
+                        <p className="text-lg text-gray-600 max-w-2xl">
                             Use spaced repetition to reinforce your learning and improve retention.
                         </p>
                     </div>

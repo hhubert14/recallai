@@ -19,7 +19,7 @@ export function BackButton() {
     return (
         <button
             onClick={handleBack}
-            className="flex items-center gap-2 text-sm font-medium hover:text-blue-600 transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
         >
             <ArrowLeft className="h-4 w-4" />
             Back

@@ -30,7 +30,7 @@ export default async function LibraryPage() {
     return (
         <div className="flex min-h-screen flex-col">
             <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-                <div className="container flex h-16 items-center justify-between px-4 md:px-6">
+                <div className="container flex h-16 items-center justify-between px-6 md:px-8">
                     <div className="flex items-center gap-2">
                         <Brain className="h-6 w-6 text-blue-600" />
                         <span className="text-xl font-bold">RecallAI</span>
@@ -70,12 +70,13 @@ export default async function LibraryPage() {
                         <UserButton />
                     </div>
                 </div>
-            </header>            <main className="flex-1 container py-12">                <div className="flex items-center justify-between mb-6">
+            </header>            <main className="flex-1 container py-12 px-6 md:px-8 max-w-7xl mx-auto">
+                <div className="flex items-center justify-between mb-8">
                     <div>
-                        <h1 className="text-3xl font-bold tracking-tight text-blue-900 mb-2">
+                        <h1 className="text-4xl font-bold tracking-tight text-blue-900 mb-3">
                             My Library
                         </h1>
-                        <p className="text-gray-500">
+                        <p className="text-lg text-gray-600">
                             Browse all your saved videos and track your learning progress.
                         </p>
                     </div>

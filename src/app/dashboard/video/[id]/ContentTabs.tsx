@@ -17,14 +17,14 @@ export function ContentTabs({ summary, questions, userId, videoId }: ContentTabs
     const [activeTab, setActiveTab] = useState<"summary" | "qa">("summary");
 
     return (
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
             {/* Tab Headers */}
-            <div className="flex border-b border-gray-200 mb-4">
+            <div className="flex border-b border-gray-200 px-6 bg-gray-50">
                 <button
                     onClick={() => setActiveTab("summary")}
-                    className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+                    className={`px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
                         activeTab === "summary"
-                            ? "border-blue-600 text-blue-600"
+                            ? "border-blue-600 text-blue-600 bg-white -mb-px"
                             : "border-transparent text-gray-500 hover:text-gray-700"
                     }`}
                 >
@@ -32,9 +32,9 @@ export function ContentTabs({ summary, questions, userId, videoId }: ContentTabs
                 </button>
                 <button
                     onClick={() => setActiveTab("qa")}
-                    className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+                    className={`px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
                         activeTab === "qa"
-                            ? "border-blue-600 text-blue-600"
+                            ? "border-blue-600 text-blue-600 bg-white -mb-px"
                             : "border-transparent text-gray-500 hover:text-gray-700"
                     }`}
                 >
@@ -43,16 +43,16 @@ export function ContentTabs({ summary, questions, userId, videoId }: ContentTabs
             </div>
 
             {/* Tab Content */}
-            <div className="flex-1 overflow-auto">
+            <div className="flex-1 overflow-auto p-6">
                 {activeTab === "summary" && (
                     <div className="prose prose-sm max-w-none">
                         {summary ? (
-                            <div className="whitespace-pre-wrap text-gray-700 leading-relaxed">
+                            <div className="whitespace-pre-wrap text-gray-700 leading-relaxed text-base">
                                 {summary.content}
                             </div>
                         ) : (
-                            <div className="text-center py-8">
-                                <p className="text-gray-500">
+                            <div className="text-center py-12">
+                                <p className="text-gray-500 text-lg">
                                     No summary available for this video yet.
                                 </p>
                             </div>
@@ -61,15 +61,16 @@ export function ContentTabs({ summary, questions, userId, videoId }: ContentTabs
                 )}
 
                 {activeTab === "qa" && (
-                    <div>                        {questions.length > 0 ? (
+                    <div>
+                        {questions.length > 0 ? (
                             <QuizInterface
                                 questions={questions}
                                 userId={userId}
                                 videoId={videoId}
                             />
                         ) : (
-                            <div className="text-center py-8">
-                                <p className="text-gray-500">
+                            <div className="text-center py-12">
+                                <p className="text-gray-500 text-lg">
                                     No questions available for this video yet.
                                 </p>
                             </div>

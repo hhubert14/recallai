@@ -46,7 +46,7 @@ export default async function DashboardPage() {
     return (
         <div className="flex min-h-screen flex-col">
             <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-                <div className="container flex h-16 items-center justify-between px-4 md:px-6">
+                <div className="container flex h-16 items-center justify-between px-6 md:px-8">
                     <div className="flex items-center gap-2">
                         <Brain className="h-6 w-6 text-blue-600" />
                         <span className="text-xl font-bold">RecallAI</span>
@@ -88,16 +88,16 @@ export default async function DashboardPage() {
                 </div>
             </header>
 
-            <main className="flex-1 container py-12">
-                <div className="flex items-center justify-between mb-6">
+            <main className="flex-1 container py-12 px-6 md:px-8 max-w-7xl mx-auto">
+                <div className="flex items-center justify-between mb-8">
                     <div>
-                        <h1 className="text-3xl font-bold tracking-tight text-blue-900 mb-2">
+                        <h1 className="text-4xl font-bold tracking-tight text-blue-900 mb-3">
                             Welcome to your Dashboard
                         </h1>
-                        <p className="text-gray-500">
+                        {/* <p className="text-lg text-gray-600">
                             This is a placeholder dashboard. You've successfully signed
                             in with Supabase authentication.
-                        </p>
+                        </p> */}
                     </div>
                     <div className="flex flex-col items-end gap-3">
                         <SubscriptionStatusBadge 
@@ -112,12 +112,12 @@ export default async function DashboardPage() {
                     </div>
                 </div>
 
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    <div className="rounded-lg border p-6 shadow-sm">
-                        <h2 className="text-xl font-bold mb-4">
+                <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                    <div className="rounded-xl border border-gray-200 p-8 shadow-sm bg-white">
+                        <h2 className="text-xl font-bold mb-6 text-gray-900">
                             Getting Started
                         </h2>
-                        <p className="text-gray-500 mb-4">
+                        <p className="text-gray-600 mb-6 leading-relaxed">
                             Install the Chrome extension to start capturing
                             video summaries.
                         </p>
@@ -129,24 +129,24 @@ export default async function DashboardPage() {
                         </div>
                     </div>
 
-                    <div className="rounded-lg border p-6 shadow-sm">
-                        <h2 className="text-xl font-bold mb-4">
+                    <div className="rounded-xl border border-gray-200 p-8 shadow-sm bg-white">
+                        <h2 className="text-xl font-bold mb-6 text-gray-900">
                             Recent Videos
                         </h2>
                         {recentVideos.length > 0 ? (
-                            <div className="space-y-3">
+                            <div className="space-y-4">
                                 {recentVideos.map((video) => (
                                     <Link 
                                         key={video.id} 
                                         href={`/dashboard/video/${video.id}`}
-                                        className="block p-3 rounded-lg border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-colors"
+                                        className="block p-4 rounded-lg border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-all duration-200 hover:shadow-sm"
                                     >
-                                        <div className="flex items-center gap-3">
+                                        <div className="flex items-center gap-4">
                                             <div className="flex-shrink-0">
                                                 <Play className="h-5 w-5 text-blue-600" />
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <h3 className="font-medium truncate text-gray-900">
+                                                <h3 className="font-medium truncate text-gray-900 mb-1">
                                                     {video.title}
                                                 </h3>
                                                 {video.channel_name && (
@@ -160,16 +160,18 @@ export default async function DashboardPage() {
                                 ))}
                             </div>
                         ) : (
-                            <p className="text-gray-500">
-                                You don't have any videos yet. Watch educational
-                                videos with the extension installed to create
-                                summaries.
-                            </p>
+                            <div className="text-center py-8">
+                                <p className="text-gray-500 leading-relaxed">
+                                    You don't have any videos yet. Watch educational
+                                    videos with the extension installed to create
+                                    summaries.
+                                </p>
+                            </div>
                         )}
                     </div>
 
-                    <div className="rounded-lg border p-6 shadow-sm">
-                        <h2 className="text-xl font-bold mb-4">Your Stats</h2>
+                    <div className="rounded-xl border border-gray-200 p-8 shadow-sm bg-white">
+                        <h2 className="text-xl font-bold mb-6 text-gray-900">Your Stats</h2>
                         <div className="grid grid-cols-2 gap-4">
                             <StatsCard
                                 title="Total Videos"
