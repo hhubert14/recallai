@@ -1243,7 +1243,7 @@ export default function Home() {
                             <ul className="space-y-2 text-sm">
                                 <li>
                                     <Link
-                                        href="/t"
+                                        href="/terms"
                                         className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
                                     >
                                         Terms
@@ -1251,7 +1251,7 @@ export default function Home() {
                                 </li>
                                 <li>
                                     <Link
-                                        href="#"
+                                        href="/privacy"
                                         className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
                                     >
                                         Privacy
