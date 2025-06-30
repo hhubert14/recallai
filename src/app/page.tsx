@@ -138,11 +138,11 @@ export default function Home() {
                             </div>
                             <div className="flex items-center justify-center">
                                 <Image
-                                    src="/placeholder.svg?height=550&width=550"
-                                    width={550}
-                                    height={550}
+                                    src="/dashboard-preview.png"
+                                    width={600}
+                                    height={300}
                                     alt="RecallAI Dashboard Preview"
-                                    className="rounded-lg object-cover shadow-xl"
+                                    className="rounded-lg object-contain shadow-xl border border-gray-200 dark:border-gray-700"
                                 />
                             </div>
                         </div>
