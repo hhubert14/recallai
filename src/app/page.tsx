@@ -446,7 +446,7 @@ export default function Home() {
                         <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
                             <div className="flex items-center justify-center">
                                 <Image
-                                    src="/placeholder.svg?height=550&width=550"
+                                    src="/benefits.png"
                                     width={550}
                                     height={550}
                                     alt="RecallAI Benefits Visualization"
