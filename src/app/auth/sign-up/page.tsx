@@ -48,14 +48,6 @@ export default function SignUpPage() {
                                 Log In
                             </Link>
                         </p>
-                        <p className="mt-2">
-                            <Link
-                                href="/auth/forgot-password"
-                                className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
-                            >
-                                Forgot your password?
-                            </Link>
-                        </p>
                     </div>
                 </div>
             </div>
