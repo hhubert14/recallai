@@ -455,42 +455,42 @@ export default function Home() {
                             </div>
                             <div className="flex flex-col justify-center space-y-4">
                                 <div className="space-y-2">
-                                    <div className="inline-block rounded-lg bg-blue-100 px-3 py-1 text-sm text-blue-600">
+                                    <div className="inline-block rounded-lg bg-blue-100 dark:bg-blue-900 px-3 py-1 text-sm text-blue-600 dark:text-blue-400">
                                         Benefits
                                     </div>
-                                    <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight text-blue-900">
+                                    <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight text-blue-900 dark:text-blue-100">
                                         Transform Passive Watching into Active
                                         Learning
                                     </h2>
-                                    <p className="text-gray-500 md:text-xl/relaxed">
+                                    <p className="text-gray-500 dark:text-gray-400 md:text-xl/relaxed">
                                         RecallAI helps you get more value from
                                         every educational video you watch.
                                     </p>
                                 </div>
                                 <ul className="space-y-4">
                                     <li className="flex items-start gap-4">
-                                        <div className="rounded-full bg-blue-100 p-1">
-                                            <Clock className="h-5 w-5 text-blue-600" />
+                                        <div className="rounded-full bg-blue-100 dark:bg-blue-900 p-1">
+                                            <Clock className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                                         </div>
                                         <div>
-                                            <h3 className="font-bold text-blue-900">
+                                            <h3 className="font-bold text-blue-900 dark:text-blue-100">
                                                 Save Time
                                             </h3>
-                                            <p className="text-gray-500">
+                                            <p className="text-gray-500 dark:text-gray-400">
                                                 No need to rewatch videos or
                                                 take manual notes.
                                             </p>
                                         </div>
                                     </li>
                                     <li className="flex items-start gap-4">
-                                        <div className="rounded-full bg-blue-100 p-1">
-                                            <Brain className="h-5 w-5 text-blue-600" />
+                                        <div className="rounded-full bg-blue-100 dark:bg-blue-900 p-1">
+                                            <Brain className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                                         </div>
                                         <div>
-                                            <h3 className="font-bold text-blue-900">
+                                            <h3 className="font-bold text-blue-900 dark:text-blue-100">
                                                 Improve Retention
                                             </h3>
-                                            <p className="text-gray-500">
+                                            <p className="text-gray-500 dark:text-gray-400">
                                                 Boost knowledge retention
                                                 through proven active recall
                                                 techniques.
@@ -498,28 +498,28 @@ export default function Home() {
                                         </div>
                                     </li>
                                     <li className="flex items-start gap-4">
-                                        <div className="rounded-full bg-blue-100 p-1">
-                                            <Library className="h-5 w-5 text-blue-600" />
+                                        <div className="rounded-full bg-blue-100 dark:bg-blue-900 p-1">
+                                            <Library className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                                         </div>
                                         <div>
-                                            <h3 className="font-bold text-blue-900">
+                                            <h3 className="font-bold text-blue-900 dark:text-blue-100">
                                                 Build Your Library
                                             </h3>
-                                            <p className="text-gray-500">
+                                            <p className="text-gray-500 dark:text-gray-400">
                                                 Create a searchable library of
                                                 learning insights.
                                             </p>
                                         </div>
                                     </li>
                                     <li className="flex items-start gap-4">
-                                        <div className="rounded-full bg-blue-100 p-1">
-                                            <Laptop className="h-5 w-5 text-blue-600" />
+                                        <div className="rounded-full bg-blue-100 dark:bg-blue-900 p-1">
+                                            <Laptop className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                                         </div>
                                         <div>
-                                            <h3 className="font-bold text-blue-900">
+                                            <h3 className="font-bold text-blue-900 dark:text-blue-100">
                                                 Study Anywhere
                                             </h3>
-                                            <p className="text-gray-500">
+                                            <p className="text-gray-500 dark:text-gray-400">
                                                 Access your learning materials
                                                 on any device, anytime.
                                             </p>
@@ -536,13 +536,13 @@ export default function Home() {
                     <div className="container px-4 md:px-6">
                         <div className="flex flex-col items-center justify-center space-y-4 text-center">
                             <div className="space-y-2">
-                                <div className="inline-block rounded-lg bg-blue-100 px-3 py-1 text-sm text-blue-600">
+                                <div className="inline-block rounded-lg bg-blue-100 dark:bg-blue-900 px-3 py-1 text-sm text-blue-600 dark:text-blue-400">
                                     Who It's For
                                 </div>
-                                <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight text-blue-900">
+                                <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight text-blue-900 dark:text-blue-100">
                                     Perfect for All Types of Learners
                                 </h2>
-                                <p className="max-w-[900px] text-gray-500 md:text-xl/relaxed">
+                                <p className="max-w-[900px] text-gray-500 dark:text-gray-400 md:text-xl/relaxed">
                                     RecallAI is designed for anyone who wants
                                     to                                    get more value from educational videos.
                                 </p>
