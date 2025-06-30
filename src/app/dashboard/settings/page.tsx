@@ -274,9 +274,9 @@ export default async function SettingsPage() {
                         </div>
                         <div className="space-y-4">
                             <p className="text-gray-600">
-                                Need help? Have a question or found a bug? Get in touch with our support team.
+                                Need help? Have a question, found a bug, or want to request a feature? Get in touch with our support team.
                             </p>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <a
                                     href="mailto:hubert@recallai.io"
                                     className="flex items-center gap-3 p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
@@ -287,6 +287,18 @@ export default async function SettingsPage() {
                                     <div>
                                         <p className="font-medium text-blue-900">Email Support</p>
                                         <p className="text-sm text-gray-600">hubert@recallai.io</p>
+                                    </div>
+                                </a>
+                                <a
+                                    href="mailto:hubert@recallai.io?subject=Feature Request"
+                                    className="flex items-center gap-3 p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors"
+                                >
+                                    <svg className="h-5 w-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                                    </svg>
+                                    <div>
+                                        <p className="font-medium text-green-900">Feature Request</p>
+                                        <p className="text-sm text-gray-600">Share your ideas</p>
                                     </div>
                                 </a>
                                 <a
