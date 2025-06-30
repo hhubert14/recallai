@@ -19,17 +19,17 @@ const iconMap: Record<string, LucideIcon> = {
 export function StatsCard({ title, value, iconName, subtitle }: StatsCardProps) {
     const Icon = iconMap[iconName];
     return (
-        <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm hover:shadow-md transition-shadow">
+        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 shadow-sm hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between mb-2">
-                <div className="p-2 bg-blue-50 rounded-lg">
-                    <Icon className="h-5 w-5 text-blue-600" />
+                <div className="p-2 bg-blue-50 dark:bg-blue-950/40 rounded-lg">
+                    <Icon className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                 </div>
             </div>
             <div className="space-y-1">
-                <p className="text-2xl font-bold text-gray-900">{value}</p>
-                <p className="text-sm font-medium text-gray-600">{title}</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">{value}</p>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{title}</p>
                 {subtitle && (
-                    <p className="text-xs text-gray-500">{subtitle}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">{subtitle}</p>
                 )}
             </div>
         </div>

@@ -29,7 +29,7 @@ export function SubscriptionStatusBadge({
         return (
             <div className={cn(
                 "inline-flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium w-fit",
-                "bg-blue-50 text-blue-700 border border-blue-200",
+                "bg-blue-50 dark:bg-blue-950/20 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800",
                 className
             )}>
                 <span>Free Plan</span>
@@ -40,16 +40,16 @@ export function SubscriptionStatusBadge({
     return (
         <div className={cn(
             "inline-flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium w-fit",
-            "bg-gradient-to-r from-blue-50 to-purple-50 text-blue-700 border border-blue-200",
+            "bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800",
             className
         )}>
-            <Crown className="h-4 w-4 text-amber-500 flex-shrink-0" />
+            <Crown className="h-4 w-4 text-amber-500 dark:text-amber-400 flex-shrink-0" />
             <div className="flex flex-col min-w-0">
                 <span className="capitalize whitespace-nowrap">
                     {planType ? `${planType} Plan` : 'Premium'}
                 </span>
                 {currentPeriodEnd && (
-                    <span className="text-xs text-gray-500 whitespace-nowrap">
+                    <span className="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
                         Renews {formatDate(currentPeriodEnd)}
                     </span>
                 )}

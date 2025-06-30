@@ -195,18 +195,18 @@ export default async function DashboardPage() {
                                     <Link 
                                         key={video.id} 
                                         href={`/dashboard/video/${video.id}`}
-                                        className="block bg-white rounded-lg p-3 border border-blue-100 shadow-sm hover:border-blue-300 hover:bg-blue-50 transition-all duration-200"
+                                        className="block bg-white dark:bg-gray-800 rounded-lg p-3 border border-blue-100 dark:border-gray-600 shadow-sm hover:border-blue-300 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950/20 transition-all duration-200"
                                     >
                                         <div className="flex items-center gap-3">
                                             <div className="flex-shrink-0">
-                                                <Play className="h-4 w-4 text-blue-600" />
+                                                <Play className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <h3 className="font-semibold truncate text-gray-900 text-sm mb-1">
+                                                <h3 className="font-semibold truncate text-gray-900 dark:text-white text-sm mb-1">
                                                     {video.title}
                                                 </h3>
                                                 {video.channel_name && (
-                                                    <p className="text-xs text-gray-600 truncate">
+                                                    <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
                                                         {video.channel_name}
                                                     </p>
                                                 )}
@@ -216,24 +216,24 @@ export default async function DashboardPage() {
                                 ))}
                             </div>
                         ) : (
-                            <div className="bg-white rounded-lg p-3 border border-blue-100 shadow-sm text-center">
-                                <p className="text-sm text-gray-600 leading-relaxed">
+                            <div className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-blue-100 dark:border-gray-600 shadow-sm text-center">
+                                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                                     No videos yet. Install the extension and start watching to build your library.
                                 </p>
                             </div>
                         )}
                     </div>
 
-                    <div className="rounded-xl border border-blue-200 p-6 shadow-sm bg-gradient-to-br from-blue-50 to-indigo-50">
+                    <div className="rounded-xl border border-blue-200 dark:border-blue-800/30 p-6 shadow-sm bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20">
                         <div className="flex items-center gap-3 mb-4">
-                            <div className="p-2 bg-blue-100 rounded-lg">
-                                <svg className="h-5 w-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div className="p-2 bg-blue-100 dark:bg-blue-950/40 rounded-lg">
+                                <svg className="h-5 w-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                                 </svg>
                             </div>
                             <div>
-                                <h2 className="text-xl font-bold text-gray-900">Your Stats</h2>
-                                <p className="text-sm text-gray-600">
+                                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Your Stats</h2>
+                                <p className="text-sm text-gray-600 dark:text-gray-400">
                                     Track your learning progress
                                 </p>
                             </div>
