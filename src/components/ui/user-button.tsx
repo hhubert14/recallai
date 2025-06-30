@@ -40,32 +40,33 @@ export function UserButton() {
                     <User className="h-5 w-5" />
                 </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56 bg-white border border-gray-200 shadow-lg" align="end" forceMount>
+            <DropdownMenuContent className="w-56 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-medium leading-none">
+                        <p className="text-sm font-medium leading-none text-gray-900 dark:text-white">
                             {user?.email || "My Account"}
                         </p>
-                        <p className="text-xs leading-none text-muted-foreground">
+                        <p className="text-xs leading-none text-gray-500 dark:text-gray-400">
                             Manage your account
                         </p>
                     </div>
                 </DropdownMenuLabel>
-                <DropdownMenuSeparator />
+                <DropdownMenuSeparator className="bg-gray-200 dark:bg-gray-600" />
                 <DropdownMenuItem
                     onClick={() => router.push("/dashboard/settings")}
+                    className="text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:bg-gray-50 dark:focus:bg-gray-700"
                 >
                     <Settings className="mr-2 h-4 w-4" />
                     <span>Settings</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                    <a href="mailto:hubert@recallai.io">
+                    <a href="mailto:hubert@recallai.io" className="text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:bg-gray-50 dark:focus:bg-gray-700">
                         <HelpCircle className="mr-2 h-4 w-4" />
                         <span>Contact Support</span>
                     </a>
                 </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleSignOut} disabled={isLoading}>
+                <DropdownMenuSeparator className="bg-gray-200 dark:bg-gray-600" />
+                <DropdownMenuItem onClick={handleSignOut} disabled={isLoading} className="text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:bg-gray-50 dark:focus:bg-gray-700">
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>{isLoading ? "Signing out..." : "Sign out"}</span>
                 </DropdownMenuItem>
