@@ -103,7 +103,8 @@ export function ExtensionConnectorButton() {
             <Button
                 onClick={generateToken}
                 disabled={isDisabled}
-                className="bg-blue-600 hover:bg-blue-700"
+                size="sm"
+                className="w-full bg-blue-600 hover:bg-blue-700"
             >
                 {buttonText}
             </Button>
