@@ -61,6 +61,38 @@ export default async function VideoDetailPage({ params }: VideoDetailPageProps) 
                         <Brain className="h-6 w-6 text-blue-600 dark:text-blue-500" />
                         <span className="text-xl font-bold text-gray-900 dark:text-white">RecallAI</span>
                     </div>
+                    <nav className="hidden md:flex gap-6">
+                        <Link
+                            href="/dashboard"
+                            className="text-sm font-medium text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400"
+                        >
+                            Dashboard
+                        </Link>
+                        <Link
+                            href="/dashboard/library"
+                            className="text-sm font-medium text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400"
+                        >
+                            My Library
+                        </Link>
+                        <Link
+                            href="/dashboard/review"
+                            className="text-sm font-medium text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400"
+                        >
+                            Review
+                        </Link>
+                        <Link
+                            href="/dashboard/pricing"
+                            className="text-sm font-medium text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400"
+                        >
+                            Premium
+                        </Link>
+                        {/* <Link
+                            href="/dashboard/settings"
+                            className="text-sm font-medium hover:text-blue-600"
+                        >
+                            Settings
+                        </Link> */}
+                    </nav>
                     <div className="flex items-center gap-4">
                         <ThemeToggle />
                         <UserButton />
