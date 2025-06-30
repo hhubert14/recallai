@@ -10,6 +10,7 @@ import { UserSubscriptionStatus } from "@/data-access/subscriptions/types";
 import { LibraryVideoList } from "@/app/dashboard/library/LibraryVideoList";
 import { SubscriptionStatusBadge } from "@/components/subscription/SubscriptionStatusBadge";
 import { UpgradeButton } from "@/components/subscription/UpgradeButton";
+import { SupportBanner } from "@/components/ui/support-banner";
 
 export const metadata: Metadata = {
     title: "My Library | RecallAI",
@@ -74,6 +75,11 @@ export default async function LibraryPage() {
                     </div>
                 </div>
             </header>
+
+            {/* Show support banner only for non-subscribed users */}
+            {!subscriptionStatus.isSubscribed && (
+                <SupportBanner userId={user.id} />
+            )}
 
             <main className="flex-1 container py-12 px-6 md:px-8 max-w-7xl mx-auto">
                 <div className="flex items-center justify-between mb-8">
