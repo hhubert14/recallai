@@ -964,12 +964,11 @@ export default function Home() {
                                     How accurate are the AI-generated summaries?
                                 </h3>
                                 <p className="mt-2 text-gray-500 dark:text-gray-400">
-                                    Our AI models are trained on educational
-                                    content and continuously improved. While no
-                                    AI is perfect, our users report high
-                                    satisfaction with the accuracy and
-                                    usefulness of the summaries. You can always
-                                    provide feedback to help us improve.
+                                    RecallAI uses advanced AI technology specifically 
+                                    optimized for educational content. While no AI is 
+                                    perfect, our users report high satisfaction with 
+                                    the accuracy and usefulness of the summaries. 
+                                    You can always provide feedback to help us improve.
                                 </p>
                             </div>
                             <div className="rounded-lg border border-blue-100 dark:border-blue-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
