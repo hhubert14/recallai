@@ -68,12 +68,12 @@ export function UpgradePrompt() {
                                 Upgrade to Premium
                             </Button>
                         </Link>
-                        <Link href="/dashboard">
+                        {/* <Link href="/dashboard">
                             <Button variant="outline" className="w-full border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800">
                                 <ArrowLeft className="h-4 w-4 mr-2" />
                                 Back to Dashboard
                             </Button>
-                        </Link>
+                        </Link> */}
                     </div>
                 </div>
             </main>
