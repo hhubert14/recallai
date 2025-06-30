@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Brain, ArrowLeft, CheckCircle, Crown } from "lucide-react";
 import { UserButton } from "@/components/ui/user-button";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { createClient } from "@/lib/supabase/server";
 import { getUserSubscriptionStatus } from "@/data-access/subscriptions/get-user-subscription-status";
 import SubscribeButton from "@/components/subscription/SubscribeButton";
@@ -59,34 +60,35 @@ export default async function PricingPage() {
     ];
 
     return (
-        <div className="flex min-h-screen flex-col">
-            <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="flex min-h-screen flex-col bg-white dark:bg-gray-950">
+            <header className="sticky top-0 z-50 w-full border-b border-gray-200 dark:border-gray-800 bg-white/95 dark:bg-gray-950/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-gray-950/60">
                 <div className="container flex h-16 items-center justify-between px-6 md:px-8">
                     <div className="flex items-center gap-2">
-                        <Brain className="h-6 w-6 text-blue-600" />
-                        <span className="text-xl font-bold">RecallAI</span>
-                    </div>                    <nav className="hidden md:flex gap-6">
+                        <Brain className="h-6 w-6 text-blue-600 dark:text-blue-500" />
+                        <span className="text-xl font-bold text-gray-900 dark:text-white">RecallAI</span>
+                    </div>
+                    <nav className="hidden md:flex gap-6">
                         <Link
                             href="/dashboard"
-                            className="text-sm font-medium hover:text-blue-600"
+                            className="text-sm font-medium text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400"
                         >
                             Dashboard
                         </Link>
                         <Link
                             href="/dashboard/library"
-                            className="text-sm font-medium hover:text-blue-600"
+                            className="text-sm font-medium text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400"
                         >
                             My Library
                         </Link>
                         <Link
                             href="/dashboard/review"
-                            className="text-sm font-medium hover:text-blue-600"
+                            className="text-sm font-medium text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400"
                         >
                             Review
                         </Link>
                         <Link
                             href="/dashboard/pricing"
-                            className="text-sm font-medium text-blue-600"
+                            className="text-sm font-medium text-blue-600 dark:text-blue-400"
                         >
                             Premium
                         </Link>
@@ -98,6 +100,7 @@ export default async function PricingPage() {
                         </Link> */}
                     </nav>
                     <div className="flex items-center gap-4">
+                        <ThemeToggle />
                         <UserButton />
                     </div>
                 </div>
@@ -107,10 +110,10 @@ export default async function PricingPage() {
                 <div className="mb-6">
                     <BackButton />
                     <div className="mt-2">
-                        <h1 className="text-4xl font-bold tracking-tight text-blue-900 mb-3">
+                        <h1 className="text-4xl font-bold tracking-tight text-blue-900 dark:text-blue-100 mb-3">
                             Choose Your Plan
                         </h1>
-                        <p className="text-lg text-gray-600 max-w-2xl">
+                        <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl">
                             Choose the plan that's right for you and start transforming your learning experience today.
                         </p>
                     </div>
@@ -122,14 +125,14 @@ export default async function PricingPage() {
                             key={plan.id}
                             className={`flex flex-col rounded-xl border p-8 shadow-sm relative ${
                                 plan.isPopular
-                                    ? "border-2 border-blue-600 bg-white shadow-lg"
+                                    ? "border-2 border-blue-600 dark:border-blue-500 bg-white dark:bg-gray-900 shadow-lg"
                                     : plan.isCurrent
-                                    ? "border-2 border-green-500 bg-green-50"
-                                    : "border border-blue-100 bg-white"
+                                    ? "border-2 border-green-500 bg-green-50 dark:bg-green-950/20 dark:border-green-400"
+                                    : "border border-blue-100 dark:border-gray-700 bg-white dark:bg-gray-900"
                             }`}
                         >
                             {plan.isPopular && (
-                                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white text-sm font-medium py-1 px-3 rounded-full">
+                                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-blue-600 dark:bg-blue-500 text-white text-sm font-medium py-1 px-3 rounded-full">
                                     Most Popular
                                 </div>
                             )}
@@ -141,19 +144,19 @@ export default async function PricingPage() {
                             )}
                             
                             <div className="space-y-2">
-                                <h3 className="text-2xl font-bold text-blue-900">
+                                <h3 className="text-2xl font-bold text-blue-900 dark:text-blue-100">
                                     {plan.name}
                                 </h3>
-                                <p className="text-gray-500">
+                                <p className="text-gray-500 dark:text-gray-400">
                                     {plan.description}
                                 </p>
                             </div>
                             
                             <div className="mt-4 flex items-baseline">
-                                <span className="text-4xl font-bold text-blue-900">
+                                <span className="text-4xl font-bold text-blue-900 dark:text-blue-100">
                                     ${plan.price}
                                 </span>
-                                <span className="ml-1 text-gray-500">
+                                <span className="ml-1 text-gray-500 dark:text-gray-400">
                                     /month
                                 </span>
                             </div>
@@ -164,8 +167,8 @@ export default async function PricingPage() {
                                         key={feature}
                                         className="flex items-center gap-2"
                                     >
-                                        <CheckCircle className="h-4 w-4 text-blue-600" />
-                                        <span>{feature}</span>
+                                        <CheckCircle className="h-4 w-4 text-blue-600 dark:text-blue-500" />
+                                        <span className="text-gray-700 dark:text-gray-300">{feature}</span>
                                     </li>
                                 ))}
                             </ul>                            <div className="mt-8">
@@ -215,44 +218,44 @@ export default async function PricingPage() {
                 {/* Additional Info Section */}
                 <div className="mt-16 max-w-3xl mx-auto">
                     <div className="text-center space-y-4">
-                        <h2 className="text-2xl font-bold text-blue-900">
+                        <h2 className="text-2xl font-bold text-blue-900 dark:text-blue-100">
                             Why Upgrade to Premium?
                         </h2>
-                        <p className="text-gray-500">
+                        <p className="text-gray-500 dark:text-gray-400">
                             Unlock the full potential of your learning with unlimited access to all features.
                         </p>
                     </div>
                     
                     <div className="mt-8 grid gap-6 md:grid-cols-2">
-                        <div className="p-6 rounded-lg border border-blue-100 bg-blue-50">
-                            <h3 className="font-semibold text-blue-900 mb-2">
+                        <div className="p-6 rounded-lg border border-blue-100 dark:border-blue-800/30 bg-blue-50 dark:bg-blue-950/20">
+                            <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">
                                 Unlimited Learning
                             </h3>
-                            <p className="text-gray-600 text-sm">
+                            <p className="text-gray-600 dark:text-gray-300 text-sm">
                                 Process unlimited videos and never worry about monthly limits again.
                             </p>
                         </div>
-                        <div className="p-6 rounded-lg border border-blue-100 bg-blue-50">
-                            <h3 className="font-semibold text-blue-900 mb-2">
+                        <div className="p-6 rounded-lg border border-blue-100 dark:border-blue-800/30 bg-blue-50 dark:bg-blue-950/20">
+                            <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">
                                 Advanced Features
                             </h3>
-                            <p className="text-gray-600 text-sm">
+                            <p className="text-gray-600 dark:text-gray-300 text-sm">
                                 Access spaced repetition and advanced study tools for better retention.
                             </p>
                         </div>
-                        <div className="p-6 rounded-lg border border-blue-100 bg-blue-50">
-                            <h3 className="font-semibold text-blue-900 mb-2">
+                        <div className="p-6 rounded-lg border border-blue-100 dark:border-blue-800/30 bg-blue-50 dark:bg-blue-950/20">
+                            <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">
                                 Permanent Storage
                             </h3>
-                            <p className="text-gray-600 text-sm">
+                            <p className="text-gray-600 dark:text-gray-300 text-sm">
                                 Keep your study materials forever with unlimited storage.
                             </p>
                         </div>
-                        <div className="p-6 rounded-lg border border-blue-100 bg-blue-50">
-                            <h3 className="font-semibold text-blue-900 mb-2">
+                        <div className="p-6 rounded-lg border border-blue-100 dark:border-blue-800/30 bg-blue-50 dark:bg-blue-950/20">
+                            <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">
                                 Priority Support
                             </h3>
-                            <p className="text-gray-600 text-sm">
+                            <p className="text-gray-600 dark:text-gray-300 text-sm">
                                 Get faster response times and dedicated customer support.
                             </p>
                         </div>

@@ -51,20 +51,20 @@ export function LibraryVideoCard({ video }: LibraryVideoCardProps) {
     return (
         <Link 
             href={`/dashboard/video/${video.id}`}
-            className="block p-4 rounded-lg border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-colors"
+            className="block p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/20 transition-colors bg-white dark:bg-gray-900"
         >
             <div className="flex items-center justify-between">
                 {/* Left side - Video info */}
                 <div className="flex items-center gap-3 flex-1 min-w-0">
                     <div className="flex-shrink-0">
-                        <Play className="h-5 w-5 text-blue-600" />
+                        <Play className="h-5 w-5 text-blue-600 dark:text-blue-500" />
                     </div>
                     <div className="flex-1 min-w-0">
-                        <h3 className="font-medium truncate text-gray-900">
+                        <h3 className="font-medium truncate text-gray-900 dark:text-white">
                             {video.title}
                         </h3>
                         {video.channel_name && (
-                            <p className="text-sm text-gray-500 truncate">
+                            <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
                                 {video.channel_name}
                             </p>
                         )}
@@ -74,12 +74,12 @@ export function LibraryVideoCard({ video }: LibraryVideoCardProps) {
                                 expiryStatus.status === 'expires-soon' ? (
                                     <AlertTriangle className="h-3 w-3 text-orange-500" />
                                 ) : (
-                                    <Clock className="h-3 w-3 text-gray-400" />
+                                    <Clock className="h-3 w-3 text-gray-400 dark:text-gray-500" />
                                 )
                             ) : (
                                 <Check className="h-3 w-3 text-green-500" />
                             )}
-                            <span className={`text-xs ${expiryStatus.color}`}>
+                            <span className={`text-xs ${expiryStatus.color === 'text-gray-500' ? 'text-gray-500 dark:text-gray-400' : expiryStatus.color}`}>
                                 {expiryStatus.message}
                             </span>
                         </div>
@@ -89,7 +89,7 @@ export function LibraryVideoCard({ video }: LibraryVideoCardProps) {
                 {/* Right side - Additional info */}
                 <div className="flex items-center gap-4 flex-shrink-0 ml-4">
                     <div className="text-right">
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-gray-600 dark:text-gray-300">
                             {formatDate(video.created_at)}
                         </p>
                         <div className="flex items-center justify-end gap-1 mt-1">
@@ -100,8 +100,8 @@ export function LibraryVideoCard({ video }: LibraryVideoCardProps) {
                                 </>
                             ) : (
                                 <>
-                                    <X className="h-4 w-4 text-gray-400" />
-                                    <span className="text-xs text-gray-500">Incomplete</span>
+                                    <X className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+                                    <span className="text-xs text-gray-500 dark:text-gray-400">Incomplete</span>
                                 </>
                             )}
                         </div>

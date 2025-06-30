@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Brain, Play, Chrome } from "lucide-react";
 import { UserButton } from "@/components/ui/user-button";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { ExtensionConnectorButton } from "@/app/dashboard/ExtensionConnectorButton";
 import { createClient } from "@/lib/supabase/server";
 import { getVideosByUserId } from "@/data-access/videos/get-videos-by-user-id";
@@ -44,12 +45,12 @@ export default async function DashboardPage() {
         subscriptionStatus = subscription;
     }
     return (
-        <div className="flex min-h-screen flex-col">
-            <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="flex min-h-screen flex-col bg-white dark:bg-gray-900">
+            <header className="sticky top-0 z-50 w-full border-b border-gray-200 dark:border-gray-700 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
                 <div className="container flex h-16 items-center justify-between px-6 md:px-8">
                     <div className="flex items-center gap-2">
                         <Brain className="h-6 w-6 text-blue-600" />
-                        <span className="text-xl font-bold">RecallAI</span>
+                        <span className="text-xl font-bold text-gray-900 dark:text-white">RecallAI</span>
                     </div>                    <nav className="hidden md:flex gap-6">
                         <Link
                             href="/dashboard"
@@ -59,19 +60,19 @@ export default async function DashboardPage() {
                         </Link>
                         <Link
                             href="/dashboard/library"
-                            className="text-sm font-medium hover:text-blue-600"
+                            className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600"
                         >
                             My Library
                         </Link>
                         <Link
                             href="/dashboard/review"
-                            className="text-sm font-medium hover:text-blue-600"
+                            className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600"
                         >
                             Review
                         </Link>
                         <Link
                             href="/dashboard/pricing"
-                            className="text-sm font-medium hover:text-blue-600"
+                            className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600"
                         >
                             Premium
                         </Link>
@@ -83,6 +84,7 @@ export default async function DashboardPage() {
                         </Link> */}
                     </nav>
                     <div className="flex items-center gap-4">
+                        <ThemeToggle />
                         <UserButton />
                     </div>
                 </div>
@@ -91,7 +93,7 @@ export default async function DashboardPage() {
             <main className="flex-1 container py-12 px-6 md:px-8 max-w-7xl mx-auto">
                 <div className="flex items-center justify-between mb-8">
                     <div>
-                        <h1 className="text-4xl font-bold tracking-tight text-blue-900 mb-3">
+                        <h1 className="text-4xl font-bold tracking-tight text-blue-900 dark:text-blue-100 mb-3">
                             Welcome to your Dashboard
                         </h1>
                         {/* <p className="text-lg text-gray-600">
@@ -113,30 +115,30 @@ export default async function DashboardPage() {
                 </div>
 
                 <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                    <div className="rounded-xl border border-blue-200 p-6 shadow-sm bg-gradient-to-br from-blue-50 to-indigo-50">
+                    <div className="rounded-xl border border-blue-200 dark:border-blue-800 p-6 shadow-sm bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20">
                         <div className="flex items-start gap-3 mb-4">
-                            <div className="p-2 bg-blue-100 rounded-lg">
-                                <svg className="h-5 w-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div className="p-2 bg-blue-100 dark:bg-blue-800 rounded-lg">
+                                <svg className="h-5 w-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                                 </svg>
                             </div>
                             <div>
-                                <h2 className="text-xl font-bold text-gray-900">
+                                <h2 className="text-xl font-bold text-gray-900 dark:text-white">
                                     Getting Started
                                 </h2>
-                                <p className="text-sm text-gray-600">
+                                <p className="text-sm text-gray-600 dark:text-gray-400">
                                     Get started in 3 simple steps
                                 </p>
                             </div>
                         </div>
                         
                         <div className="space-y-3">
-                            <div className="bg-white rounded-lg p-3 border border-blue-100 shadow-sm">
+                            <div className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-blue-100 dark:border-blue-800 shadow-sm">
                                 <div className="flex items-center gap-2 mb-2">
                                     <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold">1</div>
-                                    <h3 className="font-semibold text-gray-900 text-sm">Install Extension</h3>
+                                    <h3 className="font-semibold text-gray-900 dark:text-white text-sm">Install Extension</h3>
                                 </div>
-                                <p className="text-xs text-gray-600 mb-2">
+                                <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">
                                     Add our Chrome extension to capture videos
                                 </p>
                                 <Button size="sm" className="w-full bg-blue-600 hover:bg-blue-700">
@@ -145,26 +147,26 @@ export default async function DashboardPage() {
                                 </Button>
                             </div>
                             
-                            <div className="bg-white rounded-lg p-3 border border-blue-100 shadow-sm">
+                            <div className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-blue-100 dark:border-blue-800 shadow-sm">
                                 <div className="flex items-center gap-2 mb-2">
                                     <div className="w-6 h-6 bg-green-600 text-white rounded-full flex items-center justify-center text-xs font-bold">2</div>
-                                    <h3 className="font-semibold text-gray-900 text-sm">Connect Account</h3>
+                                    <h3 className="font-semibold text-gray-900 dark:text-white text-sm">Connect Account</h3>
                                 </div>
-                                <p className="text-xs text-gray-600 mb-2">
+                                <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">
                                     Link extension to dashboard for sync
                                 </p>
                                 <ExtensionConnectorButton />
                             </div>
                             
-                            <div className="bg-white rounded-lg p-3 border border-blue-100 shadow-sm">
+                            <div className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-blue-100 dark:border-blue-800 shadow-sm">
                                 <div className="flex items-center gap-2 mb-2">
                                     <div className="w-6 h-6 bg-purple-600 text-white rounded-full flex items-center justify-center text-xs font-bold">3</div>
-                                    <h3 className="font-semibold text-gray-900 text-sm">Start Learning</h3>
+                                    <h3 className="font-semibold text-gray-900 dark:text-white text-sm">Start Learning</h3>
                                 </div>
-                                <p className="text-xs text-gray-600 mb-2">
+                                <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">
                                     Watch videos and get summaries & quizzes
                                 </p>
-                                <Button size="sm" variant="outline" className="w-full border-purple-200 text-purple-700 hover:bg-purple-50">
+                                <Button size="sm" variant="outline" className="w-full border-purple-200 dark:border-purple-700 text-purple-700 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-900/20">
                                     <Play className="h-4 w-4 mr-2" />
                                     View Tutorial
                                 </Button>
@@ -172,16 +174,16 @@ export default async function DashboardPage() {
                         </div>
                     </div>
 
-                    <div className="rounded-xl border border-blue-200 p-6 shadow-sm bg-gradient-to-br from-blue-50 to-indigo-50">
+                    <div className="rounded-xl border border-blue-200 dark:border-blue-800 p-6 shadow-sm bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20">
                         <div className="flex items-center gap-3 mb-4">
-                            <div className="p-2 bg-blue-100 rounded-lg">
-                                <Play className="h-5 w-5 text-blue-600" />
+                            <div className="p-2 bg-blue-100 dark:bg-blue-800 rounded-lg">
+                                <Play className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                             </div>
                             <div>
-                                <h2 className="text-xl font-bold text-gray-900">
+                                <h2 className="text-xl font-bold text-gray-900 dark:text-white">
                                     Recent Videos
                                 </h2>
-                                <p className="text-sm text-gray-600">
+                                <p className="text-sm text-gray-600 dark:text-gray-400">
                                     Your latest learning content
                                 </p>
                             </div>

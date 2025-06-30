@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Brain } from "lucide-react";
 import { UserButton } from "@/components/ui/user-button";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { createClient } from "@/lib/supabase/server";
 import { getVideosByUserId } from "@/data-access/videos/get-videos-by-user-id";
 import { getSummaryByVideoId } from "@/data-access/summaries/get-summary-by-video-id";
@@ -53,14 +54,15 @@ export default async function VideoDetailPage({ params }: VideoDetailPageProps) 
     const youtubeVideoId = getYouTubeVideoId(video.url);
 
     return (
-        <div className="flex min-h-screen flex-col">
-            <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="flex min-h-screen flex-col bg-white dark:bg-gray-950">
+            <header className="sticky top-0 z-50 w-full border-b border-gray-200 dark:border-gray-800 bg-white/95 dark:bg-gray-950/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-gray-950/60">
                 <div className="container flex h-16 items-center justify-between px-6 md:px-8">
                     <div className="flex items-center gap-2">
-                        <Brain className="h-6 w-6 text-blue-600" />
-                        <span className="text-xl font-bold">RecallAI</span>
+                        <Brain className="h-6 w-6 text-blue-600 dark:text-blue-500" />
+                        <span className="text-xl font-bold text-gray-900 dark:text-white">RecallAI</span>
                     </div>
                     <div className="flex items-center gap-4">
+                        <ThemeToggle />
                         <UserButton />
                     </div>
                 </div>
@@ -69,11 +71,11 @@ export default async function VideoDetailPage({ params }: VideoDetailPageProps) 
             <main className="flex-1 container py-4 px-6 md:px-8 max-w-7xl mx-auto">
                 <div className="mb-6">
                     <BackButton />
-                    <h1 className="text-3xl font-bold text-gray-900 mb-3 mt-2">
+                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-3 mt-2">
                         {video.title}
                     </h1>
                     {video.channel_name && (
-                        <p className="text-lg text-gray-600">
+                        <p className="text-lg text-gray-600 dark:text-gray-300">
                             by {video.channel_name}
                         </p>
                     )}

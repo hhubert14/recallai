@@ -75,19 +75,19 @@ export function QuizInterface({ questions, userId, videoId }: QuizInterfaceProps
     return (
         <div className="space-y-6">
             {/* Progress */}
-            <div className="flex items-center justify-between text-sm text-gray-500">
+            <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
                 <span>Question {currentQuestionIndex + 1} of {questions.length}</span>
-                <div className="w-32 bg-gray-200 rounded-full h-2">
+                <div className="w-32 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                     <div 
-                        className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                        className="bg-blue-600 dark:bg-blue-500 h-2 rounded-full transition-all duration-300"
                         style={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }}
                     />
                 </div>
             </div>
 
             {/* Question */}
-            <div className="bg-gray-50 p-6 rounded-lg">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">
+            <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700">
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
                     {currentQuestion.question_text}
                 </h3>
 
@@ -98,15 +98,15 @@ export function QuizInterface({ questions, userId, videoId }: QuizInterfaceProps
                             key={option.id}
                             className={`block p-3 border rounded-lg cursor-pointer transition-colors ${
                                 selectedOptionId === option.id
-                                    ? "border-blue-600 bg-blue-50"
-                                    : "border-gray-200 hover:border-gray-300"
+                                    ? "border-blue-600 dark:border-blue-500 bg-blue-50 dark:bg-blue-950/20"
+                                    : "border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500"
                             } ${
                                 showResult
                                     ? option.is_correct
-                                        ? "border-green-600 bg-green-50"
+                                        ? "border-green-600 dark:border-green-500 bg-green-50 dark:bg-green-950/20"
                                         : selectedOptionId === option.id && !option.is_correct
-                                        ? "border-red-600 bg-red-50"
-                                        : "border-gray-200 bg-gray-50"
+                                        ? "border-red-600 dark:border-red-500 bg-red-50 dark:bg-red-950/20"
+                                        : "border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800"
                                     : ""
                             }`}
                         >
@@ -122,14 +122,14 @@ export function QuizInterface({ questions, userId, videoId }: QuizInterfaceProps
                             <div className="flex items-center">
                                 <div className={`w-4 h-4 rounded-full border-2 mr-3 flex items-center justify-center ${
                                     selectedOptionId === option.id
-                                        ? "border-blue-600"
-                                        : "border-gray-300"
+                                        ? "border-blue-600 dark:border-blue-500"
+                                        : "border-gray-300 dark:border-gray-600"
                                 }`}>
                                     {selectedOptionId === option.id && (
-                                        <div className="w-2 h-2 rounded-full bg-blue-600" />
+                                        <div className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-500" />
                                     )}
                                 </div>
-                                <span className="text-gray-900">{option.option_text}</span>
+                                <span className="text-gray-900 dark:text-white">{option.option_text}</span>
                             </div>
                         </label>
                     ))}
@@ -139,17 +139,19 @@ export function QuizInterface({ questions, userId, videoId }: QuizInterfaceProps
             {/* Result */}
             {showResult && (
                 <div className={`p-4 rounded-lg ${
-                    selectedOption?.is_correct ? "bg-green-50 border border-green-200" : "bg-red-50 border border-red-200"
+                    selectedOption?.is_correct 
+                        ? "bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800" 
+                        : "bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800"
                 }`}>
                     <div className="flex items-center mb-2">
                         <span className={`font-medium ${
-                            selectedOption?.is_correct ? "text-green-800" : "text-red-800"
+                            selectedOption?.is_correct ? "text-green-800 dark:text-green-100" : "text-red-800 dark:text-red-100"
                         }`}>
                             {selectedOption?.is_correct ? "Correct!" : "Incorrect"}
                         </span>
                     </div>
                     {correctAnswer?.explanation && (
-                        <p className="text-sm text-gray-700">
+                        <p className="text-sm text-gray-700 dark:text-gray-300">
                             {correctAnswer.explanation}
                         </p>
                     )}
@@ -162,7 +164,7 @@ export function QuizInterface({ questions, userId, videoId }: QuizInterfaceProps
                     <Button
                         onClick={handleSubmit}
                         disabled={!selectedOptionId || isSubmitting}
-                        className="bg-blue-600 hover:bg-blue-700"
+                        className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700"
                     >
                         {isSubmitting ? "Submitting..." : "Submit Answer"}
                     </Button>
@@ -171,7 +173,7 @@ export function QuizInterface({ questions, userId, videoId }: QuizInterfaceProps
                         {!isLastQuestion ? (
                             <Button
                                 onClick={handleNext}
-                                className="bg-blue-600 hover:bg-blue-700"
+                                className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700"
                             >
                                 Next Question
                             </Button>
@@ -179,6 +181,7 @@ export function QuizInterface({ questions, userId, videoId }: QuizInterfaceProps
                             <Button
                                 onClick={handleReset}
                                 variant="outline"
+                                className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
                             >
                                 Start Over
                             </Button>
