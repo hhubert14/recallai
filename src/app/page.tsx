@@ -82,7 +82,7 @@ export default function Home() {
                 {/* Hero Section */}
                 <section className="w-full py-8 md:py-16 lg:py-20 bg-gradient-to-b from-blue-50 to-white dark:from-blue-950/20 dark:to-gray-950">
                     <div className="container px-4 md:px-6">
-                        <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
+                        <div className="grid gap-6 lg:grid-cols-2 lg:gap-12">
                             <div className="flex flex-col justify-center space-y-4">
                                 <div className="inline-flex items-center rounded-full border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/30 px-3 py-1 text-sm text-blue-600 dark:text-blue-400">
                                     <span>
