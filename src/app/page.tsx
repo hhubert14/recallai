@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import {
     ArrowRight,
     Brain,
@@ -25,44 +26,45 @@ import SubscribeButton from "@/components/subscription/SubscribeButton";
 
 export default function Home() {
     return (
-        <div className="flex min-h-[100dvh] flex-col">
+        <div className="flex min-h-[100dvh] flex-col bg-white dark:bg-gray-950">
             {/* Header */}
-            <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+            <header className="sticky top-0 z-50 w-full border-b border-gray-200 dark:border-gray-800 bg-white/95 dark:bg-gray-950/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-gray-950/60">
                 <div className="container flex h-16 items-center justify-between px-4 md:px-6">
                     <div className="flex items-center gap-2">
-                        <Brain className="h-6 w-6 text-blue-600" />
-                        <span className="text-xl font-bold">RecallAI</span>
+                        <Brain className="h-6 w-6 text-blue-600 dark:text-blue-500" />
+                        <span className="text-xl font-bold text-gray-900 dark:text-white">RecallAI</span>
                     </div>
                     <nav className="hidden md:flex gap-6">
                         <Link
                             href="#how-it-works"
-                            className="text-sm font-medium hover:text-blue-600"
+                            className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
                         >
                             How It Works
                         </Link>
                         <Link
                             href="#features"
-                            className="text-sm font-medium hover:text-blue-600"
+                            className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
                         >
                             Features
                         </Link>
                         <Link
                             href="#pricing"
-                            className="text-sm font-medium hover:text-blue-600"
+                            className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
                         >
                             Pricing
                         </Link>
                         <Link
                             href="#faq"
-                            className="text-sm font-medium hover:text-blue-600"
+                            className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
                         >
                             FAQ
                         </Link>
                     </nav>
                     <div className="flex items-center gap-4">
+                        <ThemeToggle />
                         <Link
                             href="/auth/login"
-                            className="text-sm font-medium hover:underline underline-offset-4 hidden sm:inline-block"
+                            className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:underline underline-offset-4 hidden sm:inline-block"
                         >
                             Login
                         </Link>
@@ -78,21 +80,21 @@ export default function Home() {
 
             <main className="flex-1">
                 {/* Hero Section */}
-                <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-b from-blue-50 to-white">
+                <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-b from-blue-50 to-white dark:from-blue-950/20 dark:to-gray-950">
                     <div className="container px-4 md:px-6">
                         <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
                             <div className="flex flex-col justify-center space-y-4">
-                                <div className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-sm text-blue-600">
+                                <div className="inline-flex items-center rounded-full border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/30 px-3 py-1 text-sm text-blue-600 dark:text-blue-400">
                                     <span>
                                         Transform Video Learning with AI
                                     </span>
                                 </div>
                                 <div className="space-y-2">
-                                    <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none text-blue-900">
+                                    <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none text-blue-900 dark:text-blue-100">
                                         Transform Video Learning with AI-Powered
                                         Summaries
                                     </h1>
-                                    <p className="max-w-[600px] text-gray-500 md:text-xl">
+                                    <p className="max-w-[600px] text-gray-500 dark:text-gray-400 md:text-xl">
                                         RecallAI automatically creates concise
                                         summaries and active recall questions
                                         from educational YouTube videos, helping
@@ -113,7 +115,7 @@ export default function Home() {
                                     <Button
                                         size="lg"
                                         variant="outline"
-                                        className="border-blue-200 text-blue-600 hover:bg-blue-50"
+                                        className="border-blue-200 dark:border-blue-700 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/20"
                                         asChild
                                     >
                                         <Link
@@ -148,14 +150,14 @@ export default function Home() {
                 </section>
 
                 {/* Problem Statement Section */}
-                <section className="w-full py-12 md:py-24 lg:py-32">
+                <section className="w-full py-12 md:py-24 lg:py-32 bg-white dark:bg-gray-950">
                     <div className="container px-4 md:px-6">
                         <div className="flex flex-col items-center justify-center space-y-4 text-center">
                             <div className="space-y-2">
-                                <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight text-blue-900">
+                                <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight text-blue-900 dark:text-blue-100">
                                     The Problem with Video Learning
                                 </h2>
-                                <p className="max-w-[900px] text-gray-500 md:text-xl/relaxed">
+                                <p className="max-w-[900px] text-gray-500 dark:text-gray-400 md:text-xl/relaxed">
                                     In today's information-rich world, people
                                     consume massive amounts of educational video
                                     content but struggle with poor retention
@@ -167,45 +169,45 @@ export default function Home() {
                             </div>
                             <div className="w-full max-w-3xl py-12">
                                 <div className="grid gap-6 md:grid-cols-2">
-                                    <Card className="border-blue-100">
+                                    <Card className="border-blue-100 dark:border-red-800 bg-white dark:bg-gray-900">
                                         <CardContent className="p-6">
                                             <div className="flex flex-col items-center space-y-4 text-center">
-                                                <div className="rounded-full bg-red-100 p-3">
-                                                    <Youtube className="h-6 w-6 text-red-600" />
+                                                <div className="rounded-full bg-red-100 dark:bg-red-950/30 p-3">
+                                                    <Youtube className="h-6 w-6 text-red-600 dark:text-red-400" />
                                                 </div>
-                                                <h3 className="text-xl font-bold text-blue-900">
+                                                <h3 className="text-xl font-bold text-blue-900 dark:text-white">
                                                     Traditional Learning
                                                 </h3>
-                                                <p className="text-gray-500">
+                                                <p className="text-gray-500 dark:text-gray-400">
                                                     Passive video watching with
                                                     minimal retention and no
                                                     structured review system.
                                                 </p>
                                                 <ul className="space-y-2 text-left w-full">
                                                     <li className="flex items-start gap-2">
-                                                        <span className="text-red-500 mt-1">
+                                                        <span className="text-red-500 dark:text-red-400 mt-1">
                                                             ✕
                                                         </span>
-                                                        <span>
+                                                        <span className="text-gray-700 dark:text-gray-300">
                                                             Information
                                                             forgotten within
                                                             days
                                                         </span>
                                                     </li>
                                                     <li className="flex items-start gap-2">
-                                                        <span className="text-red-500 mt-1">
+                                                        <span className="text-red-500 dark:text-red-400 mt-1">
                                                             ✕
                                                         </span>
-                                                        <span>
+                                                        <span className="text-gray-700 dark:text-gray-300">
                                                             No organized
                                                             learning materials
                                                         </span>
                                                     </li>
                                                     <li className="flex items-start gap-2">
-                                                        <span className="text-red-500 mt-1">
+                                                        <span className="text-red-500 dark:text-red-400 mt-1">
                                                             ✕
                                                         </span>
-                                                        <span>
+                                                        <span className="text-gray-700 dark:text-gray-300">
                                                             Time wasted
                                                             rewatching videos
                                                         </span>
@@ -214,38 +216,38 @@ export default function Home() {
                                             </div>
                                         </CardContent>
                                     </Card>
-                                    <Card className="border-blue-100 bg-blue-50">
+                                    <Card className="border-blue-100 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/20">
                                         <CardContent className="p-6">
                                             <div className="flex flex-col items-center space-y-4 text-center">
-                                                <div className="rounded-full bg-blue-100 p-3">
-                                                    <Brain className="h-6 w-6 text-blue-600" />
+                                                <div className="rounded-full bg-blue-100 dark:bg-blue-800 p-3">
+                                                    <Brain className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                                                 </div>
-                                                <h3 className="text-xl font-bold text-blue-900">
+                                                <h3 className="text-xl font-bold text-blue-900 dark:text-white">
                                                     RecallAI Learning
                                                 </h3>
-                                                <p className="text-gray-500">
+                                                <p className="text-gray-500 dark:text-gray-400">
                                                     Active learning with
                                                     AI-generated summaries and
                                                     recall questions.
                                                 </p>
                                                 <ul className="space-y-2 text-left w-full">
                                                     <li className="flex items-start gap-2">
-                                                        <CheckCircle className="h-4 w-4 text-blue-600 mt-1" />
-                                                        <span>
+                                                        <CheckCircle className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-1" />
+                                                        <span className="text-gray-700 dark:text-gray-300">
                                                             Improved knowledge
                                                             retention
                                                         </span>
                                                     </li>
                                                     <li className="flex items-start gap-2">
-                                                        <CheckCircle className="h-4 w-4 text-blue-600 mt-1" />
-                                                        <span>
+                                                        <CheckCircle className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-1" />
+                                                        <span className="text-gray-700 dark:text-gray-300">
                                                             Organized learning
                                                             library
                                                         </span>
                                                     </li>
                                                     <li className="flex items-start gap-2">
-                                                        <CheckCircle className="h-4 w-4 text-blue-600 mt-1" />
-                                                        <span>
+                                                        <CheckCircle className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-1" />
+                                                        <span className="text-gray-700 dark:text-gray-300">
                                                             Time saved with
                                                             concise summaries
                                                         </span>
@@ -263,18 +265,18 @@ export default function Home() {
                 {/* How It Works Section */}
                 <section
                     id="how-it-works"
-                    className="w-full py-12 md:py-24 lg:py-32 bg-blue-50"
+                    className="w-full py-12 md:py-24 lg:py-32 bg-blue-50 dark:bg-blue-950/10"
                 >
                     <div className="container px-4 md:px-6">
                         <div className="flex flex-col items-center justify-center space-y-4 text-center">
                             <div className="space-y-2">
-                                <div className="inline-block rounded-lg bg-blue-100 px-3 py-1 text-sm text-blue-600">
+                                <div className="inline-block rounded-lg bg-blue-100 dark:bg-blue-900/50 px-3 py-1 text-sm text-blue-600 dark:text-blue-400">
                                     How It Works
                                 </div>
-                                <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight text-blue-900">
+                                <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight text-blue-900 dark:text-blue-100">
                                     Simple 3-Step Process
                                 </h2>
-                                <p className="max-w-[900px] text-gray-500 md:text-xl/relaxed">
+                                <p className="max-w-[900px] text-gray-500 dark:text-gray-400 md:text-xl/relaxed">
                                     RecallAI seamlessly integrates with your
                                     learning routine, requiring minimal effort
                                     while delivering maximum results.
@@ -282,50 +284,50 @@ export default function Home() {
                             </div>
                         </div>
                         <div className="mx-auto grid max-w-5xl items-center gap-6 py-12 md:grid-cols-3">
-                            <div className="flex flex-col items-center space-y-4 rounded-lg border border-blue-100 bg-white p-6 shadow-sm">
-                                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 text-blue-900">
+                            <div className="flex flex-col items-center space-y-4 rounded-lg border border-blue-100 dark:border-blue-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
+                                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-800 text-blue-900 dark:text-blue-100 font-bold text-lg">
                                     1
                                 </div>
-                                <h3 className="text-xl font-bold text-blue-900">
+                                <h3 className="text-xl font-bold text-blue-900 dark:text-white">
                                     Watch
                                 </h3>
-                                <p className="text-center text-gray-500">
+                                <p className="text-center text-gray-500 dark:text-gray-400">
                                     Install the Chrome extension and watch
                                     educational videos on YouTube as normal.
                                 </p>
-                                <div className="rounded-full bg-blue-50 p-3">
-                                    <Youtube className="h-6 w-6 text-red-600" />
+                                <div className="rounded-full bg-blue-50 dark:bg-red-950/30 p-3">
+                                    <Youtube className="h-6 w-6 text-red-600 dark:text-red-400" />
                                 </div>
                             </div>
-                            <div className="flex flex-col items-center space-y-4 rounded-lg border border-blue-100 bg-white p-6 shadow-sm">
-                                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 text-blue-900">
+                            <div className="flex flex-col items-center space-y-4 rounded-lg border border-blue-100 dark:border-blue-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
+                                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-800 text-blue-900 dark:text-blue-100 font-bold text-lg">
                                     2
                                 </div>
-                                <h3 className="text-xl font-bold text-blue-900">
+                                <h3 className="text-xl font-bold text-blue-900 dark:text-white">
                                     Process
                                 </h3>
-                                <p className="text-center text-gray-500">
+                                <p className="text-center text-gray-500 dark:text-gray-400">
                                     AI automatically detects educational content
                                     and creates summaries and questions in the
                                     background.
                                 </p>
-                                <div className="rounded-full bg-blue-50 p-3">
-                                    <Zap className="h-6 w-6 text-blue-600" />
+                                <div className="rounded-full bg-blue-50 dark:bg-blue-950/30 p-3">
+                                    <Zap className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                                 </div>
                             </div>
-                            <div className="flex flex-col items-center space-y-4 rounded-lg border border-blue-100 bg-white p-6 shadow-sm">
-                                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 text-blue-900">
+                            <div className="flex flex-col items-center space-y-4 rounded-lg border border-blue-100 dark:border-blue-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
+                                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-800 text-blue-900 dark:text-blue-100 font-bold text-lg">
                                     3
                                 </div>
-                                <h3 className="text-xl font-bold text-blue-900">
+                                <h3 className="text-xl font-bold text-blue-900 dark:text-white">
                                     Learn
                                 </h3>
-                                <p className="text-center text-gray-500">
+                                <p className="text-center text-gray-500 dark:text-gray-400">
                                     Access your personalized learning materials
                                     through the web app to review and practice.
                                 </p>
-                                <div className="rounded-full bg-blue-50 p-3">
-                                    <Brain className="h-6 w-6 text-blue-600" />
+                                <div className="rounded-full bg-blue-50 dark:bg-blue-950/30 p-3">
+                                    <Brain className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                                 </div>
                             </div>
                         </div>
@@ -335,18 +337,18 @@ export default function Home() {
                 {/* Key Features Section */}
                 <section
                     id="features"
-                    className="w-full py-12 md:py-24 lg:py-32"
+                    className="w-full py-12 md:py-24 lg:py-32 bg-white dark:bg-gray-950"
                 >
                     <div className="container px-4 md:px-6">
                         <div className="flex flex-col items-center justify-center space-y-4 text-center">
                             <div className="space-y-2">
-                                <div className="inline-block rounded-lg bg-blue-100 px-3 py-1 text-sm text-blue-600">
+                                <div className="inline-block rounded-lg bg-blue-100 dark:bg-blue-900/50 px-3 py-1 text-sm text-blue-600 dark:text-blue-400">
                                     Features
                                 </div>
-                                <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight text-blue-900">
+                                <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight text-blue-900 dark:text-blue-100">
                                     Powerful Learning Tools
                                 </h2>
-                                <p className="max-w-[900px] text-gray-500 md:text-xl/relaxed">
+                                <p className="max-w-[900px] text-gray-500 dark:text-gray-400 md:text-xl/relaxed">
                                     RecallAI combines cutting-edge AI with
                                     proven learning techniques to help you
                                     retain knowledge better.
@@ -354,81 +356,81 @@ export default function Home() {
                             </div>
                         </div>
                         <div className="mx-auto grid max-w-5xl gap-6 py-12 md:grid-cols-2 lg:grid-cols-3">
-                            <div className="flex flex-col space-y-4 rounded-lg border border-blue-100 bg-white p-6 shadow-sm">
-                                <div className="rounded-full bg-blue-50 p-3 w-12 h-12 flex items-center justify-center">
-                                    <Chrome className="h-6 w-6 text-blue-600" />
+                            <div className="flex flex-col space-y-4 rounded-lg border border-blue-100 dark:border-blue-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
+                                <div className="rounded-full bg-blue-50 dark:bg-blue-950/30 p-3 w-12 h-12 flex items-center justify-center">
+                                    <Chrome className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                                 </div>
-                                <h3 className="text-xl font-bold text-blue-900">
+                                <h3 className="text-xl font-bold text-blue-900 dark:text-white">
                                     Automatic Detection
                                 </h3>
-                                <p className="text-gray-500">
+                                <p className="text-gray-500 dark:text-gray-400">
                                     Chrome extension intelligently identifies
                                     educational YouTube videos.
                                 </p>
                             </div>
-                            <div className="flex flex-col space-y-4 rounded-lg border border-blue-100 bg-white p-6 shadow-sm">
-                                <div className="rounded-full bg-blue-50 p-3 w-12 h-12 flex items-center justify-center">
-                                    <Layers className="h-6 w-6 text-blue-600" />
+                            <div className="flex flex-col space-y-4 rounded-lg border border-blue-100 dark:border-blue-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
+                                <div className="rounded-full bg-blue-50 dark:bg-blue-950/30 p-3 w-12 h-12 flex items-center justify-center">
+                                    <Layers className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                                 </div>
-                                <h3 className="text-xl font-bold text-blue-900">
+                                <h3 className="text-xl font-bold text-blue-900 dark:text-white">
                                     AI-Powered Summaries
                                 </h3>
-                                <p className="text-gray-500">
+                                <p className="text-gray-500 dark:text-gray-400">
                                     Creates concise, well-structured summaries
                                     highlighting key concepts and important
                                     details.
                                 </p>
                             </div>
-                            <div className="flex flex-col space-y-4 rounded-lg border border-blue-100 bg-white p-6 shadow-sm">
-                                <div className="rounded-full bg-blue-50 p-3 w-12 h-12 flex items-center justify-center">
-                                    <FileQuestion className="h-6 w-6 text-blue-600" />
+                            <div className="flex flex-col space-y-4 rounded-lg border border-blue-100 dark:border-blue-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
+                                <div className="rounded-full bg-blue-50 dark:bg-blue-950/30 p-3 w-12 h-12 flex items-center justify-center">
+                                    <FileQuestion className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                                 </div>
-                                <h3 className="text-xl font-bold text-blue-900">
+                                <h3 className="text-xl font-bold text-blue-900 dark:text-white">
                                     Active Recall Questions
                                 </h3>
-                                <p className="text-gray-500">
+                                <p className="text-gray-500 dark:text-gray-400">
                                     Generates 5 custom questions with answers
                                     for each video to strengthen memory
                                     retention.
                                 </p>
                             </div>
-                            <div className="flex flex-col space-y-4 rounded-lg border border-blue-100 bg-white p-6 shadow-sm">
-                                <div className="rounded-full bg-blue-50 p-3 w-12 h-12 flex items-center justify-center">
-                                    <Library className="h-6 w-6 text-blue-600" />
+                            <div className="flex flex-col space-y-4 rounded-lg border border-blue-100 dark:border-blue-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
+                                <div className="rounded-full bg-blue-50 dark:bg-blue-950/30 p-3 w-12 h-12 flex items-center justify-center">
+                                    <Library className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                                 </div>
-                                <h3 className="text-xl font-bold text-blue-900">
+                                <h3 className="text-xl font-bold text-blue-900 dark:text-white">
                                     Personal Learning Library
                                 </h3>
-                                <p className="text-gray-500">
+                                <p className="text-gray-500 dark:text-gray-400">
                                     Centralized web dashboard where all
                                     processed videos are stored and organized.
                                 </p>
                             </div>
-                            <div className="flex flex-col space-y-4 rounded-lg border border-blue-100 bg-white p-6 shadow-sm">
-                                <div className="rounded-full bg-blue-50 p-3 w-12 h-12 flex items-center justify-center">
-                                    <Laptop className="h-6 w-6 text-blue-600" />
+                            <div className="flex flex-col space-y-4 rounded-lg border border-blue-100 dark:border-blue-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
+                                <div className="rounded-full bg-blue-50 dark:bg-blue-950/30 p-3 w-12 h-12 flex items-center justify-center">
+                                    <Laptop className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                                 </div>
-                                <h3 className="text-xl font-bold text-blue-900">
+                                <h3 className="text-xl font-bold text-blue-900 dark:text-white">
                                     Cross-Device Access
                                 </h3>
-                                <p className="text-gray-500">
+                                <p className="text-gray-500 dark:text-gray-400">
                                     Study materials available on any device
                                     through the web application.
                                 </p>
                             </div>
-                            <div className="flex flex-col space-y-4 rounded-lg border border-blue-100 bg-white p-6 shadow-sm">
-                                <div className="rounded-full bg-blue-50 p-3 w-12 h-12 flex items-center justify-center">
-                                    <Search className="h-6 w-6 text-blue-600" />
+                            <div className="flex flex-col space-y-4 rounded-lg border border-blue-100 dark:border-blue-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
+                                <div className="rounded-full bg-blue-50 dark:bg-blue-950/30 p-3 w-12 h-12 flex items-center justify-center">
+                                    <Search className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <h3 className="text-xl font-bold text-blue-900">
+                                    <h3 className="text-xl font-bold text-blue-900 dark:text-white">
                                         Smart Search
                                     </h3>
-                                    <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-600">
+                                    <span className="inline-flex items-center rounded-full bg-blue-100 dark:bg-blue-900/50 px-2 py-1 text-xs font-medium text-blue-600 dark:text-blue-400">
                                         Coming Soon
                                     </span>
                                 </div>
-                                <p className="text-gray-500">
+                                <p className="text-gray-500 dark:text-gray-400">
                                     Find specific topics across your entire
                                     video library with powerful search
                                     capabilities.
@@ -439,7 +441,7 @@ export default function Home() {
                 </section>
 
                 {/* Benefits Section */}
-                <section className="w-full py-12 md:py-24 lg:py-32 bg-blue-50">
+                <section className="w-full py-12 md:py-24 lg:py-32 bg-blue-50 dark:bg-blue-950/10">
                     <div className="container px-4 md:px-6">
                         <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
                             <div className="flex items-center justify-center">
@@ -547,50 +549,50 @@ export default function Home() {
                             </div>
                         </div>
                         <div className="mx-auto grid max-w-5xl gap-6 py-12 md:grid-cols-2 lg:grid-cols-4">
-                            <div className="flex flex-col items-center space-y-4 rounded-lg border border-blue-100 bg-white p-6 shadow-sm">
-                                <div className="rounded-full bg-blue-50 p-3">
-                                    <BookOpen className="h-6 w-6 text-blue-600" />
+                            <div className="flex flex-col items-center space-y-4 rounded-lg border border-blue-100 dark:border-blue-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
+                                <div className="rounded-full bg-blue-50 dark:bg-blue-950 p-3">
+                                    <BookOpen className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                                 </div>
-                                <h3 className="text-xl font-bold text-blue-900">
+                                <h3 className="text-xl font-bold text-blue-900 dark:text-blue-100">
                                     Students
                                 </h3>
-                                <p className="text-center text-gray-500">
+                                <p className="text-center text-gray-500 dark:text-gray-400">
                                     High school, college, and graduate students
                                     looking to improve their study efficiency.
                                 </p>
                             </div>
-                            <div className="flex flex-col items-center space-y-4 rounded-lg border border-blue-100 bg-white p-6 shadow-sm">
-                                <div className="rounded-full bg-blue-50 p-3">
-                                    <Lightbulb className="h-6 w-6 text-blue-600" />
+                            <div className="flex flex-col items-center space-y-4 rounded-lg border border-blue-100 dark:border-blue-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
+                                <div className="rounded-full bg-blue-50 dark:bg-blue-950 p-3">
+                                    <Lightbulb className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                                 </div>
-                                <h3 className="text-xl font-bold text-blue-900">
+                                <h3 className="text-xl font-bold text-blue-900 dark:text-blue-100">
                                     Lifelong Learners
                                 </h3>
-                                <p className="text-center text-gray-500">
+                                <p className="text-center text-gray-500 dark:text-gray-400">
                                     Professional and personal learners who
                                     regularly consume educational content.
                                 </p>
                             </div>
-                            <div className="flex flex-col items-center space-y-4 rounded-lg border border-blue-100 bg-white p-6 shadow-sm">
-                                <div className="rounded-full bg-blue-50 p-3">
-                                    <Youtube className="h-6 w-6 text-red-600" />
+                            <div className="flex flex-col items-center space-y-4 rounded-lg border border-blue-100 dark:border-blue-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
+                                <div className="rounded-full bg-blue-50 dark:bg-blue-950 p-3">
+                                    <Youtube className="h-6 w-6 text-red-600 dark:text-red-400" />
                                 </div>
-                                <h3 className="text-xl font-bold text-blue-900">
+                                <h3 className="text-xl font-bold text-blue-900 dark:text-blue-100">
                                     Content Creators
                                 </h3>
-                                <p className="text-center text-gray-500">
+                                <p className="text-center text-gray-500 dark:text-gray-400">
                                     Educators and content creators who want to
                                     provide more value to their audience.
                                 </p>
                             </div>
-                            <div className="flex flex-col items-center space-y-4 rounded-lg border border-blue-100 bg-white p-6 shadow-sm">
-                                <div className="rounded-full bg-blue-50 p-3">
-                                    <Shield className="h-6 w-6 text-blue-600" />
+                            <div className="flex flex-col items-center space-y-4 rounded-lg border border-blue-100 dark:border-blue-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
+                                <div className="rounded-full bg-blue-50 dark:bg-blue-950 p-3">
+                                    <Shield className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                                 </div>
-                                <h3 className="text-xl font-bold text-blue-900">
+                                <h3 className="text-xl font-bold text-blue-900 dark:text-blue-100">
                                     Exam Preppers
                                 </h3>
-                                <p className="text-center text-gray-500">
+                                <p className="text-center text-gray-500 dark:text-gray-400">
                                     People preparing for certifications or exams
                                     who need efficient study materials.
                                 </p>
@@ -618,7 +620,7 @@ export default function Home() {
                             </div>
                         </div>
                         <div className="mx-auto grid max-w-5xl gap-6 py-12 md:grid-cols-3">
-                            <div className="flex flex-col justify-between rounded-lg border border-blue-100 bg-white p-6 shadow-sm">
+                            <div className="flex flex-col justify-between rounded-lg border border-blue-100 dark:border-blue-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
                                 <div className="space-y-4">
                                     <div className="flex gap-0.5 text-yellow-500">
                                         {[...Array(5)].map((_, i) => (
@@ -637,7 +639,7 @@ export default function Home() {
                                             </svg>
                                         ))}
                                     </div>
-                                    <blockquote className="text-lg font-semibold text-blue-900">
+                                    <blockquote className="text-lg font-semibold text-blue-900 dark:text-blue-100">
                                         "RecallAI has completely changed how I
                                         study. I retain so much more information
                                         now and save hours of time."
@@ -652,14 +654,14 @@ export default function Home() {
                                         className="rounded-full object-cover"
                                     />
                                     <div>
-                                        <p className="font-medium">Alex Chen</p>
-                                        <p className="text-sm text-gray-500">
+                                        <p className="font-medium text-gray-900 dark:text-white">Alex Chen</p>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400">
                                             Computer Science Student
                                         </p>
                                     </div>
                                 </div>
                             </div>
-                            <div className="flex flex-col justify-between rounded-lg border border-blue-100 bg-white p-6 shadow-sm">
+                            <div className="flex flex-col justify-between rounded-lg border border-blue-100 dark:border-blue-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
                                 <div className="space-y-4">
                                     <div className="flex gap-0.5 text-yellow-500">
                                         {[...Array(5)].map((_, i) => (
@@ -678,7 +680,7 @@ export default function Home() {
                                             </svg>
                                         ))}
                                     </div>
-                                    <blockquote className="text-lg font-semibold text-blue-900">
+                                    <blockquote className="text-lg font-semibold text-blue-900 dark:text-blue-100">
                                         "As a teacher, I recommend RecallAI to
                                         all my students. It's like having a
                                         personal note-taker and tutor in one."
@@ -693,16 +695,16 @@ export default function Home() {
                                         className="rounded-full object-cover"
                                     />
                                     <div>
-                                        <p className="font-medium">
+                                        <p className="font-medium text-gray-900 dark:text-white">
                                             Maria Rodriguez
                                         </p>
-                                        <p className="text-sm text-gray-500">
+                                        <p className="text-sm text-gray-500 dark:text-gray-400">
                                             High School Teacher
                                         </p>
                                     </div>
                                 </div>
                             </div>
-                            <div className="flex flex-col justify-between rounded-lg border border-blue-100 bg-white p-6 shadow-sm">
+                            <div className="flex flex-col justify-between rounded-lg border border-blue-100 dark:border-blue-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
                                 <div className="space-y-4">
                                     <div className="flex gap-0.5 text-yellow-500">
                                         {[...Array(5)].map((_, i) => (
@@ -721,7 +723,7 @@ export default function Home() {
                                             </svg>
                                         ))}
                                     </div>
-                                    <blockquote className="text-lg font-semibold text-blue-900">
+                                    <blockquote className="text-lg font-semibold text-blue-900 dark:text-blue-100">
                                         "I'm preparing for my medical board
                                         exams, and RecallAI has been a
                                         game-changer for organizing all my study
@@ -737,10 +739,10 @@ export default function Home() {
                                         className="rounded-full object-cover"
                                     />
                                     <div>
-                                        <p className="font-medium">
+                                        <p className="font-medium text-gray-900 dark:text-white">
                                             James Wilson
                                         </p>
-                                        <p className="text-sm text-gray-500">
+                                        <p className="text-sm text-gray-500 dark:text-gray-400">
                                             Medical Student
                                         </p>
                                     </div>
@@ -749,46 +751,46 @@ export default function Home() {
                         </div>
                         <div className="mx-auto max-w-5xl">
                             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-                                <div className="flex flex-col items-center justify-center space-y-2 rounded-lg border border-blue-100 bg-white p-6 shadow-sm">
-                                    <BarChart className="h-10 w-10 text-blue-600" />
+                                <div className="flex flex-col items-center justify-center space-y-2 rounded-lg border border-blue-100 dark:border-blue-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
+                                    <BarChart className="h-10 w-10 text-blue-600 dark:text-blue-400" />
                                     <div className="text-center">
-                                        <h3 className="text-3xl font-bold text-blue-900">
+                                        <h3 className="text-3xl font-bold text-blue-900 dark:text-blue-100">
                                             85%
                                         </h3>
-                                        <p className="text-sm text-gray-500">
+                                        <p className="text-sm text-gray-500 dark:text-gray-400">
                                             Improvement in knowledge retention
                                         </p>
                                     </div>
                                 </div>
-                                <div className="flex flex-col items-center justify-center space-y-2 rounded-lg border border-blue-100 bg-white p-6 shadow-sm">
-                                    <Clock className="h-10 w-10 text-blue-600" />
+                                <div className="flex flex-col items-center justify-center space-y-2 rounded-lg border border-blue-100 dark:border-blue-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
+                                    <Clock className="h-10 w-10 text-blue-600 dark:text-blue-400" />
                                     <div className="text-center">
-                                        <h3 className="text-3xl font-bold text-blue-900">
+                                        <h3 className="text-3xl font-bold text-blue-900 dark:text-blue-100">
                                             3.5 hrs
                                         </h3>
-                                        <p className="text-sm text-gray-500">
+                                        <p className="text-sm text-gray-500 dark:text-gray-400">
                                             Average time saved per week
                                         </p>
                                     </div>
                                 </div>
-                                <div className="flex flex-col items-center justify-center space-y-2 rounded-lg border border-blue-100 bg-white p-6 shadow-sm">
-                                    <Youtube className="h-10 w-10 text-red-600" />
+                                <div className="flex flex-col items-center justify-center space-y-2 rounded-lg border border-blue-100 dark:border-blue-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
+                                    <Youtube className="h-10 w-10 text-red-600 dark:text-red-400" />
                                     <div className="text-center">
-                                        <h3 className="text-3xl font-bold text-blue-900">
+                                        <h3 className="text-3xl font-bold text-blue-900 dark:text-blue-100">
                                             250K+
                                         </h3>
-                                        <p className="text-sm text-gray-500">
+                                        <p className="text-sm text-gray-500 dark:text-gray-400">
                                             Videos processed
                                         </p>
                                     </div>
                                 </div>
-                                <div className="flex flex-col items-center justify-center space-y-2 rounded-lg border border-blue-100 bg-white p-6 shadow-sm">
-                                    <Brain className="h-10 w-10 text-blue-600" />
+                                <div className="flex flex-col items-center justify-center space-y-2 rounded-lg border border-blue-100 dark:border-blue-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
+                                    <Brain className="h-10 w-10 text-blue-600 dark:text-blue-400" />
                                     <div className="text-center">
-                                        <h3 className="text-3xl font-bold text-blue-900">
+                                        <h3 className="text-3xl font-bold text-blue-900 dark:text-blue-100">
                                             98%
                                         </h3>
-                                        <p className="text-sm text-gray-500">
+                                        <p className="text-sm text-gray-500 dark:text-gray-400">
                                             User satisfaction rate
                                         </p>
                                     </div>
@@ -801,18 +803,18 @@ export default function Home() {
                 {/* Pricing Section */}
                 <section
                     id="pricing"
-                    className="w-full py-12 md:py-24 lg:py-32"
+                    className="w-full py-12 md:py-24 lg:py-32 bg-white dark:bg-gray-950"
                 >
                     <div className="container px-4 md:px-6">
                         <div className="flex flex-col items-center justify-center space-y-4 text-center">
                             <div className="space-y-2">
-                                <div className="inline-block rounded-lg bg-blue-100 px-3 py-1 text-sm text-blue-600">
+                                <div className="inline-block rounded-lg bg-blue-100 dark:bg-blue-900/50 px-3 py-1 text-sm text-blue-600 dark:text-blue-400">
                                     Pricing
                                 </div>
-                                <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight text-blue-900">
+                                <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight text-blue-900 dark:text-blue-100">
                                     Simple, Transparent Pricing
                                 </h2>
-                                <p className="max-w-[900px] text-gray-500 md:text-xl/relaxed">
+                                <p className="max-w-[900px] text-gray-500 dark:text-gray-400 md:text-xl/relaxed">
                                     Choose the plan that's right for you and
                                     start transforming your learning experience
                                     today.
@@ -820,20 +822,20 @@ export default function Home() {
                             </div>
                         </div>
                         <div className="mx-auto grid max-w-4xl gap-6 py-12 md:grid-cols-2">
-                            <div className="flex flex-col rounded-lg border border-blue-100 bg-white p-6 shadow-sm">
+                            <div className="flex flex-col rounded-lg border border-blue-100 dark:border-blue-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
                                 <div className="space-y-2">
-                                    <h3 className="text-2xl font-bold text-blue-900">
+                                    <h3 className="text-2xl font-bold text-blue-900 dark:text-white">
                                         Free
                                     </h3>
-                                    <p className="text-gray-500">
+                                    <p className="text-gray-500 dark:text-gray-400">
                                         Perfect for trying out RecallAI.
                                     </p>
                                 </div>
                                 <div className="mt-4 flex items-baseline">
-                                    <span className="text-4xl font-bold text-blue-900">
+                                    <span className="text-4xl font-bold text-blue-900 dark:text-blue-100">
                                         $0
                                     </span>
-                                    <span className="ml-1 text-gray-500">
+                                    <span className="ml-1 text-gray-500 dark:text-gray-400">
                                         /month
                                     </span>
                                 </div>
@@ -850,8 +852,8 @@ export default function Home() {
                                             key={feature}
                                             className="flex items-center gap-2"
                                         >
-                                            <CheckCircle className="h-4 w-4 text-blue-600" />
-                                            <span>{feature}</span>
+                                            <CheckCircle className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                                            <span className="text-gray-700 dark:text-gray-300">{feature}</span>
                                         </li>
                                     ))}
                                 </ul>
@@ -859,23 +861,23 @@ export default function Home() {
                                     <Link href="/auth/sign-up">Get Started</Link>
                                 </Button>
                             </div>
-                            <div className="flex flex-col rounded-lg border-2 border-blue-600 bg-white p-6 shadow-lg relative">
-                                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white text-sm font-medium py-1 px-3 rounded-full">
+                            <div className="flex flex-col rounded-lg border-2 border-blue-600 dark:border-blue-500 bg-white dark:bg-gray-900 p-6 shadow-lg relative">
+                                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-blue-600 dark:bg-blue-500 text-white text-sm font-medium py-1 px-3 rounded-full">
                                     Most Popular
                                 </div>
                                 <div className="space-y-2">
-                                    <h3 className="text-2xl font-bold text-blue-900">
+                                    <h3 className="text-2xl font-bold text-blue-900 dark:text-white">
                                         Premium
                                     </h3>
-                                    <p className="text-gray-500">
+                                    <p className="text-gray-500 dark:text-gray-400">
                                         For serious learners.
                                     </p>
                                 </div>
                                 <div className="mt-4 flex items-baseline">
-                                    <span className="text-4xl font-bold text-blue-900">
+                                    <span className="text-4xl font-bold text-blue-900 dark:text-blue-100">
                                         $9.99
                                     </span>
-                                    <span className="ml-1 text-gray-500">
+                                    <span className="ml-1 text-gray-500 dark:text-gray-400">
                                         /month
                                     </span>
                                 </div>
@@ -893,8 +895,8 @@ export default function Home() {
                                             key={feature}
                                             className="flex items-center gap-2"
                                         >
-                                            <CheckCircle className="h-4 w-4 text-blue-600" />
-                                            <span>{feature}</span>
+                                            <CheckCircle className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                                            <span className="text-gray-700 dark:text-gray-300">{feature}</span>
                                         </li>
                                     ))}
                                 </ul>
@@ -913,30 +915,30 @@ export default function Home() {
                 {/* FAQ Section */}
                 <section
                     id="faq"
-                    className="w-full py-12 md:py-24 lg:py-32 bg-blue-50"
+                    className="w-full py-12 md:py-24 lg:py-32 bg-blue-50 dark:bg-blue-950/10"
                 >
                     <div className="container px-4 md:px-6">
                         <div className="flex flex-col items-center justify-center space-y-4 text-center">
                             <div className="space-y-2">
-                                <div className="inline-block rounded-lg bg-blue-100 px-3 py-1 text-sm text-blue-600">
+                                <div className="inline-block rounded-lg bg-blue-100 dark:bg-blue-900/50 px-3 py-1 text-sm text-blue-600 dark:text-blue-400">
                                     FAQ
                                 </div>
-                                <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight text-blue-900">
+                                <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight text-blue-900 dark:text-blue-100">
                                     Frequently Asked Questions
                                 </h2>
-                                <p className="max-w-[900px] text-gray-500 md:text-xl/relaxed">
+                                <p className="max-w-[900px] text-gray-500 dark:text-gray-400 md:text-xl/relaxed">
                                     Find answers to common questions about
                                     RecallAI.
                                 </p>
                             </div>
                         </div>
                         <div className="mx-auto max-w-3xl space-y-4 py-12">
-                            <div className="rounded-lg border border-blue-100 bg-white p-6 shadow-sm">
-                                <h3 className="text-lg font-bold text-blue-900">
+                            <div className="rounded-lg border border-blue-100 dark:border-blue-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
+                                <h3 className="text-lg font-bold text-blue-900 dark:text-blue-100">
                                     How does RecallAI detect educational
                                     videos?
                                 </h3>
-                                <p className="mt-2 text-gray-500">
+                                <p className="mt-2 text-gray-500 dark:text-gray-400">
                                     RecallAI uses a combination of video
                                     metadata, content analysis, and user
                                     behavior patterns to identify educational
@@ -945,11 +947,11 @@ export default function Home() {
                                     lectures, and explainer videos.
                                 </p>
                             </div>
-                            <div className="rounded-lg border border-blue-100 bg-white p-6 shadow-sm">
-                                <h3 className="text-lg font-bold text-blue-900">
+                            <div className="rounded-lg border border-blue-100 dark:border-blue-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
+                                <h3 className="text-lg font-bold text-blue-900 dark:text-blue-100">
                                     Is my data private and secure?
                                 </h3>
-                                <p className="mt-2 text-gray-500">
+                                <p className="mt-2 text-gray-500 dark:text-gray-400">
                                     Yes, we take privacy and security seriously.
                                     Your learning data is encrypted and stored
                                     securely. We do not share your personal
@@ -957,11 +959,11 @@ export default function Home() {
                                     delete your data at any time.
                                 </p>
                             </div>
-                            <div className="rounded-lg border border-blue-100 bg-white p-6 shadow-sm">
-                                <h3 className="text-lg font-bold text-blue-900">
+                            <div className="rounded-lg border border-blue-100 dark:border-blue-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
+                                <h3 className="text-lg font-bold text-blue-900 dark:text-blue-100">
                                     How accurate are the AI-generated summaries?
                                 </h3>
-                                <p className="mt-2 text-gray-500">
+                                <p className="mt-2 text-gray-500 dark:text-gray-400">
                                     Our AI models are trained on educational
                                     content and continuously improved. While no
                                     AI is perfect, our users report high
@@ -970,12 +972,12 @@ export default function Home() {
                                     provide feedback to help us improve.
                                 </p>
                             </div>
-                            <div className="rounded-lg border border-blue-100 bg-white p-6 shadow-sm">
-                                <h3 className="text-lg font-bold text-blue-900">
+                            <div className="rounded-lg border border-blue-100 dark:border-blue-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
+                                <h3 className="text-lg font-bold text-blue-900 dark:text-blue-100">
                                     Can I use RecallAI with videos in languages
                                     other than English?
                                 </h3>
-                                <p className="mt-2 text-gray-500">
+                                <p className="mt-2 text-gray-500 dark:text-gray-400">
                                     Currently, RecallAI works best with
                                     English-language videos. We're actively
                                     working on adding support for additional
@@ -999,14 +1001,14 @@ export default function Home() {
                 </section>
 
                 {/* Final CTA Section */}
-                <section className="w-full py-12 md:py-24 lg:py-32 bg-blue-600">
+                <section className="w-full py-12 md:py-24 lg:py-32 bg-blue-600 dark:bg-blue-800">
                     <div className="container px-4 md:px-6">
                         <div className="flex flex-col items-center justify-center space-y-4 text-center text-white">
                             <div className="space-y-2">
                                 <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight">
                                     Ready to Transform Your Learning Experience?
                                 </h2>
-                                <p className="max-w-[600px] md:text-xl/relaxed">
+                                <p className="max-w-[600px] md:text-xl/relaxed text-blue-100 dark:text-blue-50">
                                     Join thousands of satisfied users who have
                                     improved their knowledge retention with
                                     RecallAI.
@@ -1015,7 +1017,7 @@ export default function Home() {
                             <div className="flex flex-col gap-2 min-[400px]:flex-row">
                                 <Button
                                     size="lg"
-                                    className="bg-white text-blue-600 hover:bg-blue-50 gap-1"
+                                    className="bg-white text-blue-600 hover:bg-blue-50 dark:bg-gray-100 dark:text-blue-700 dark:hover:bg-white gap-1"
                                     asChild
                                 >
                                     <Link href="/auth/sign-up">
@@ -1026,7 +1028,7 @@ export default function Home() {
                                 <Button
                                     size="lg"
                                     variant="outline"
-                                    className="border-white text-white hover:bg-blue-700"
+                                    className="border-white bg-transparent text-white hover:!bg-white hover:!text-blue-600 hover:!border-blue-600 dark:border-blue-200 dark:bg-transparent dark:text-blue-100 dark:hover:!bg-blue-100 dark:hover:!text-blue-700 dark:hover:!border-blue-100"
                                     asChild
                                 >
                                     <Link href="#" target="_blank">
@@ -1034,7 +1036,7 @@ export default function Home() {
                                     </Link>
                                 </Button>
                             </div>
-                            <p className="text-sm text-blue-100">
+                            <p className="text-sm text-blue-100 dark:text-blue-200">
                                 No credit card required. Start learning for
                                 free.
                             </p>
@@ -1044,24 +1046,24 @@ export default function Home() {
             </main>
 
             {/* Footer */}
-            <footer className="w-full border-t bg-background py-12">
+            <footer className="w-full border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 py-12">
                 <div className="container px-4 md:px-6">
                     <div className="grid gap-8 lg:grid-cols-5">
                         <div className="space-y-4">
                             <div className="flex items-center gap-2">
-                                <Brain className="h-6 w-6 text-blue-600" />
-                                <span className="text-xl font-bold">
+                                <Brain className="h-6 w-6 text-blue-600 dark:text-blue-500" />
+                                <span className="text-xl font-bold text-gray-900 dark:text-white">
                                     RecallAI
                                 </span>
                             </div>
-                            <p className="text-sm text-gray-500">
+                            <p className="text-sm text-gray-500 dark:text-gray-400">
                                 Transform video learning with AI-powered
                                 summaries and active recall questions.
                             </p>
                             <div className="flex gap-4">
                                 <Link
                                     href="#"
-                                    className="text-gray-500 hover:text-blue-600"
+                                    className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
                                 >
                                     <svg
                                         className="h-5 w-5"
@@ -1078,7 +1080,7 @@ export default function Home() {
                                 </Link>
                                 <Link
                                     href="#"
-                                    className="text-gray-500 hover:text-blue-600"
+                                    className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
                                 >
                                     <svg
                                         className="h-5 w-5"
@@ -1091,7 +1093,7 @@ export default function Home() {
                                 </Link>
                                 <Link
                                     href="#"
-                                    className="text-gray-500 hover:text-blue-600"
+                                    className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
                                 >
                                     <svg
                                         className="h-5 w-5"
@@ -1108,7 +1110,7 @@ export default function Home() {
                                 </Link>
                                 <Link
                                     href="#"
-                                    className="text-gray-500 hover:text-blue-600"
+                                    className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
                                 >
                                     <svg
                                         className="h-5 w-5"
@@ -1126,12 +1128,12 @@ export default function Home() {
                             </div>
                         </div>
                         <div className="space-y-4">
-                            <h4 className="text-sm font-medium">Product</h4>
+                            <h4 className="text-sm font-medium text-gray-900 dark:text-white">Product</h4>
                             <ul className="space-y-2 text-sm">
                                 <li>
                                     <Link
                                         href="#features"
-                                        className="text-gray-500 hover:text-blue-600"
+                                        className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
                                     >
                                         Features
                                     </Link>
@@ -1139,7 +1141,7 @@ export default function Home() {
                                 <li>
                                     <Link
                                         href="#pricing"
-                                        className="text-gray-500 hover:text-blue-600"
+                                        className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
                                     >
                                         Pricing
                                     </Link>
@@ -1147,7 +1149,7 @@ export default function Home() {
                                 <li>
                                     <Link
                                         href="#"
-                                        className="text-gray-500 hover:text-blue-600"
+                                        className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
                                     >
                                         Chrome Extension
                                     </Link>
@@ -1155,7 +1157,7 @@ export default function Home() {
                                 <li>
                                     <Link
                                         href="#"
-                                        className="text-gray-500 hover:text-blue-600"
+                                        className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
                                     >
                                         Roadmap
                                     </Link>
@@ -1163,12 +1165,12 @@ export default function Home() {
                             </ul>
                         </div>
                         <div className="space-y-4">
-                            <h4 className="text-sm font-medium">Company</h4>
+                            <h4 className="text-sm font-medium text-gray-900 dark:text-white">Company</h4>
                             <ul className="space-y-2 text-sm">
                                 <li>
                                     <Link
                                         href="#"
-                                        className="text-gray-500 hover:text-blue-600"
+                                        className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
                                     >
                                         About
                                     </Link>
@@ -1176,7 +1178,7 @@ export default function Home() {
                                 <li>
                                     <Link
                                         href="#"
-                                        className="text-gray-500 hover:text-blue-600"
+                                        className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
                                     >
                                         Blog
                                     </Link>
@@ -1184,7 +1186,7 @@ export default function Home() {
                                 <li>
                                     <Link
                                         href="#"
-                                        className="text-gray-500 hover:text-blue-600"
+                                        className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
                                     >
                                         Careers
                                     </Link>
@@ -1192,7 +1194,7 @@ export default function Home() {
                                 <li>
                                     <Link
                                         href="mailto:hubert@recallai.io"
-                                        className="text-gray-500 hover:text-blue-600"
+                                        className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
                                     >
                                         Contact
                                     </Link>
@@ -1200,12 +1202,12 @@ export default function Home() {
                             </ul>
                         </div>
                         <div className="space-y-4">
-                            <h4 className="text-sm font-medium">Support</h4>
+                            <h4 className="text-sm font-medium text-gray-900 dark:text-white">Support</h4>
                             <ul className="space-y-2 text-sm">
                                 <li>
                                     <Link
                                         href="mailto:hubert@recallai.io"
-                                        className="text-gray-500 hover:text-blue-600"
+                                        className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
                                     >
                                         Contact Support
                                     </Link>
@@ -1213,7 +1215,7 @@ export default function Home() {
                                 <li>
                                     <Link
                                         href="mailto:hubert@recallai.io?subject=Bug Report"
-                                        className="text-gray-500 hover:text-blue-600"
+                                        className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
                                     >
                                         Report a Bug
                                     </Link>
@@ -1221,7 +1223,7 @@ export default function Home() {
                                 <li>
                                     <Link
                                         href="mailto:hubert@recallai.io?subject=Feature Request"
-                                        className="text-gray-500 hover:text-blue-600"
+                                        className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
                                     >
                                         Feature Request
                                     </Link>
@@ -1229,7 +1231,7 @@ export default function Home() {
                                 <li>
                                     <Link
                                         href="#"
-                                        className="text-gray-500 hover:text-blue-600"
+                                        className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
                                     >
                                         Help Center
                                     </Link>
@@ -1237,12 +1239,12 @@ export default function Home() {
                             </ul>
                         </div>
                         <div className="space-y-4">
-                            <h4 className="text-sm font-medium">Legal</h4>
+                            <h4 className="text-sm font-medium text-gray-900 dark:text-white">Legal</h4>
                             <ul className="space-y-2 text-sm">
                                 <li>
                                     <Link
-                                        href="#"
-                                        className="text-gray-500 hover:text-blue-600"
+                                        href="/t"
+                                        className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
                                     >
                                         Terms
                                     </Link>
@@ -1250,7 +1252,7 @@ export default function Home() {
                                 <li>
                                     <Link
                                         href="#"
-                                        className="text-gray-500 hover:text-blue-600"
+                                        className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
                                     >
                                         Privacy
                                     </Link>
@@ -1258,7 +1260,7 @@ export default function Home() {
                                 <li>
                                     <Link
                                         href="#"
-                                        className="text-gray-500 hover:text-blue-600"
+                                        className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
                                     >
                                         Cookies
                                     </Link>
@@ -1266,7 +1268,7 @@ export default function Home() {
                                 <li>
                                     <Link
                                         href="#"
-                                        className="text-gray-500 hover:text-blue-600"
+                                        className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
                                     >
                                         Licenses
                                     </Link>
@@ -1274,7 +1276,7 @@ export default function Home() {
                             </ul>
                         </div>
                     </div>
-                    <div className="mt-8 border-t pt-8 text-center text-sm text-gray-500">
+                    <div className="mt-8 border-t border-gray-200 dark:border-gray-800 pt-8 text-center text-sm text-gray-500 dark:text-gray-400">
                         © {new Date().getFullYear()} RecallAI. All rights
                         reserved.
                     </div>
