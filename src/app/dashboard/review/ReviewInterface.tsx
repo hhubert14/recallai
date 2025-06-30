@@ -50,6 +50,10 @@ export function ReviewInterface({
         option => option.id === selectedOptionId
     );
 
+    // Calculate aggregated stats for clearer display
+    const inProgressQuestions = reviewStats.questionsInBox1 + reviewStats.questionsInBox2 + reviewStats.questionsInBox3 + reviewStats.questionsInBox4;
+    const masteredQuestions = reviewStats.questionsInBox5;
+
     const handleSubmit = async () => {
         if (!selectedOptionId || !currentQuestion) return;
 
@@ -104,12 +108,12 @@ export function ReviewInterface({
                         <p className="text-sm text-gray-600 dark:text-gray-400">Total Questions</p>
                     </div>
                     <div className="bg-orange-50 dark:bg-orange-950/20 p-4 rounded-lg">
-                        <p className="text-2xl font-bold text-orange-900 dark:text-orange-100">{reviewStats.questionsInBox1}</p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">Box 1 (Struggling)</p>
+                        <p className="text-2xl font-bold text-orange-900 dark:text-orange-100">{inProgressQuestions}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">In Progress</p>
                     </div>
                     <div className="bg-purple-50 dark:bg-purple-950/20 p-4 rounded-lg">
-                        <p className="text-2xl font-bold text-purple-900 dark:text-purple-100">{reviewStats.questionsInBox5}</p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">Box 5 (Mastered)</p>
+                        <p className="text-2xl font-bold text-purple-900 dark:text-purple-100">{masteredQuestions}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">Mastered</p>
                     </div>
                 </div>
 
@@ -150,12 +154,12 @@ export function ReviewInterface({
                         <p className="text-sm text-gray-600 dark:text-gray-400">Total Questions</p>
                     </div>
                     <div className="bg-orange-50 dark:bg-orange-950/20 p-4 rounded-lg">
-                        <p className="text-2xl font-bold text-orange-900 dark:text-orange-100">{reviewStats.questionsInBox1}</p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">Box 1 (Struggling)</p>
+                        <p className="text-2xl font-bold text-orange-900 dark:text-orange-100">{inProgressQuestions}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">In Progress</p>
                     </div>
                     <div className="bg-purple-50 dark:bg-purple-950/20 p-4 rounded-lg">
-                        <p className="text-2xl font-bold text-purple-900 dark:text-purple-100">{reviewStats.questionsInBox5}</p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">Box 5 (Mastered)</p>
+                        <p className="text-2xl font-bold text-purple-900 dark:text-purple-100">{masteredQuestions}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">Mastered</p>
                     </div>
                 </div>
 
@@ -208,12 +212,12 @@ export function ReviewInterface({
                     <p className="text-sm text-gray-600 dark:text-gray-400">Total Questions</p>
                 </div>
                 <div className="bg-orange-50 dark:bg-orange-950/20 p-4 rounded-lg">
-                    <p className="text-2xl font-bold text-orange-900 dark:text-orange-100">{reviewStats.questionsInBox1}</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Box 1 (Struggling)</p>
+                    <p className="text-2xl font-bold text-orange-900 dark:text-orange-100">{inProgressQuestions}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">In Progress</p>
                 </div>
                 <div className="bg-purple-50 dark:bg-purple-950/20 p-4 rounded-lg">
-                    <p className="text-2xl font-bold text-purple-900 dark:text-purple-100">{reviewStats.questionsInBox5}</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Box 5 (Mastered)</p>
+                    <p className="text-2xl font-bold text-purple-900 dark:text-purple-100">{masteredQuestions}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Mastered</p>
                 </div>
             </div>
 
