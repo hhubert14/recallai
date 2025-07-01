@@ -161,6 +161,12 @@ export default async function PricingPage() {
                                 </span>
                             </div>
                             
+                            {plan.id === "premium" && (
+                                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                    Just $0.16 per day
+                                </p>
+                            )}
+                            
                             <ul className="mt-6 space-y-3 flex-1">
                                 {plan.features.map((feature) => (
                                     <li

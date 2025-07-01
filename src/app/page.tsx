@@ -881,6 +881,9 @@ export default function Home() {
                                         /month
                                     </span>
                                 </div>
+                                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                    Just $0.16 per day
+                                </p>
                                 <ul className="mt-6 space-y-3">
                                     {[
                                         "Unlimited videos",
