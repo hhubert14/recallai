@@ -65,7 +65,7 @@ export function SupportBanner({ userId }: SupportBannerProps) {
             <Coffee className="h-5 w-5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
             <div className="min-w-0 flex-1">
               <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-                <span className="font-medium text-blue-700 dark:text-blue-300">Hi! I'm the college student behind RecallAI.</span> I built this because I was tired of watching hours of educational content and retaining almost nothing. Your Premium subscription doesn't just unlock unlimited videos and advanced features, it directly supports a solo developer who's passionate about transforming how we learn. Let's build better study habits together!
+                <span className="font-medium text-blue-700 dark:text-blue-300">Hi! I'm the college student behind RecallAI.</span> I built this because I was tired of watching hours of educational content and retaining almost nothing. If you found this tool helpful, consider upgrading to a Premium subscription. Your Premium subscription doesn't just unlock unlimited videos and advanced features, it directly supports a solo developer who's passionate about transforming how we learn. Let's build better study habits together!
               </p>
             </div>
           </div>
