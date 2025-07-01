@@ -53,7 +53,7 @@ export const subscribeAction = async ({ userId }: Props) => {
             payment_method_types: ["card"],
             line_items: [
                 {
-                    price: "price_1RVDqlRZzrkl5nOgpYbtHTSi", // Replace with your actual price ID
+                    price: process.env.STRIPE_PRICE_ID, // Replace with your actual price ID
                     quantity: 1,
                 },
             ],

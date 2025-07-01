@@ -875,7 +875,7 @@ export default function Home() {
                                 </div>
                                 <div className="mt-4 flex items-baseline">
                                     <span className="text-4xl font-bold text-blue-900 dark:text-blue-100">
-                                        $9.99
+                                        $4.99
                                     </span>
                                     <span className="ml-1 text-gray-500 dark:text-gray-400">
                                         /month

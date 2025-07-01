@@ -43,7 +43,7 @@ export default async function PricingPage() {
             id: "premium",
             name: "Premium",
             description: "For serious learners.",
-            price: 9.99,
+            price: 4.99,
             features: [
                 "Unlimited videos",
                 "Auto-generated study questions",
