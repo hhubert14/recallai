@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { Brain } from "lucide-react";
 import { UserButton } from "@/components/ui/user-button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
@@ -30,8 +30,9 @@ export default async function VideoDetailPage({ params }: VideoDetailPageProps) 
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
+    // Redirect to login if user is not authenticated
     if (!user) {
-        notFound();
+        redirect('/auth/login');
     }    // Get all user videos to find the specific one
     const userVideos = await getVideosByUserId(user.id);
     const video = userVideos.find(v => v.id === parseInt(id));

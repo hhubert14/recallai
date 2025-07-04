@@ -46,13 +46,33 @@ export async function updateSession(request: NextRequest) {
         return NextResponse.redirect(url);
     }
 
+    // Protect dashboard routes - redirect unauthenticated users to login
+    if (
+        !user &&
+        request.nextUrl.pathname.startsWith("/dashboard")
+    ) {
+        const url = request.nextUrl.clone();
+        url.pathname = "/auth/login";
+        return NextResponse.redirect(url);
+    }
+
+    // Redirect unauthenticated users from other protected routes to landing page
     if (
         !user &&
         !request.nextUrl.pathname.startsWith("/auth/sign-up") &&
         !request.nextUrl.pathname.startsWith("/auth/login") &&
-        !request.nextUrl.pathname.startsWith("/")
+        !request.nextUrl.pathname.startsWith("/auth/confirm") &&
+        !request.nextUrl.pathname.startsWith("/auth/error") &&
+        !request.nextUrl.pathname.startsWith("/auth/forgot-password") &&
+        !request.nextUrl.pathname.startsWith("/auth/success") &&
+        !request.nextUrl.pathname.startsWith("/auth/update-password") &&
+        !request.nextUrl.pathname.startsWith("/auth/sign-up-success") &&
+        !request.nextUrl.pathname.startsWith("/auth/update-password-success") &&
+        !request.nextUrl.pathname.startsWith("/privacy") &&
+        !request.nextUrl.pathname.startsWith("/terms") &&
+        !request.nextUrl.pathname.startsWith("/") &&
+        !request.nextUrl.pathname.startsWith("/api")
     ) {
-        // no user, potentially respond by redirecting the user to the login page
         const url = request.nextUrl.clone();
         url.pathname = "/";
         return NextResponse.redirect(url);

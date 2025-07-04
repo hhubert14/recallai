@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Brain, ArrowLeft, CheckCircle, Crown } from "lucide-react";
 import { UserButton } from "@/components/ui/user-button";
@@ -19,8 +20,9 @@ export default async function PricingPage() {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
+    // Redirect to login if user is not authenticated
     if (!user) {
-        return null;
+        redirect('/auth/login');
     }
 
     const subscriptionStatus = await getUserSubscriptionStatus(user.id);    const plans = [        {

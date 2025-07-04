@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getUserSubscriptionStatus } from "@/data-access/subscriptions/get-user-subscription-status";
 import { getQuestionsDueForReview } from "@/data-access/user-question-progress/get-questions-due-for-review";
@@ -21,8 +22,9 @@ export default async function ReviewPage() {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
+    // Redirect to login if user is not authenticated
     if (!user) {
-        return null;
+        redirect('/auth/login');
     }
 
     const subscriptionStatus = await getUserSubscriptionStatus(user.id);

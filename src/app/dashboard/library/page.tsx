@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Brain, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { UserButton } from "@/components/ui/user-button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { createClient } from "@/lib/supabase/server";
@@ -19,8 +20,11 @@ export const metadata: Metadata = {
 
 export default async function LibraryPage() {
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();    if (!user) {
-        return null;
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    // Redirect to login if user is not authenticated
+    if (!user) {
+        redirect('/auth/login');
     }
 
     // Get all user videos and subscription status

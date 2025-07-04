@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Brain, User, CreditCard, Chrome, Database, Clock } from "lucide-react";
 import { UserButton } from "@/components/ui/user-button";
@@ -23,8 +24,9 @@ export default async function SettingsPage() {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
+    // Redirect to login if user is not authenticated
     if (!user) {
-        return null;
+        redirect('/auth/login');
     }    const [subscriptionStatus, userStats, videosThisMonth, videoExpiryStats] = await Promise.all([
         getUserSubscriptionStatus(user.id),
         getUserStatsByUserId(user.id),

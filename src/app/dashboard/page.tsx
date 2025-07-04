@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Brain, Play, Chrome } from "lucide-react";
 import { UserButton } from "@/components/ui/user-button";
@@ -25,6 +26,11 @@ export default async function DashboardPage() {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     
+    // Redirect to login if user is not authenticated
+    if (!user) {
+        redirect('/auth/login');
+    }
+    
     let recentVideos: VideoDto[] = [];
     let userStats = {
         totalVideos: 0,
@@ -35,16 +41,14 @@ export default async function DashboardPage() {
     };
     let subscriptionStatus: UserSubscriptionStatus = { isSubscribed: false };
 
-    if (user) {
-        const [videos, stats, subscription] = await Promise.all([
-            getVideosByUserId(user.id, 5), // Get latest 5 videos
-            getUserStatsByUserId(user.id),
-            getUserSubscriptionStatus(user.id)
-        ]);
-        recentVideos = videos;
-        userStats = stats;
-        subscriptionStatus = subscription;
-    }
+    const [videos, stats, subscription] = await Promise.all([
+        getVideosByUserId(user.id, 5), // Get latest 5 videos
+        getUserStatsByUserId(user.id),
+        getUserSubscriptionStatus(user.id)
+    ]);
+    recentVideos = videos;
+    userStats = stats;
+    subscriptionStatus = subscription;
     return (
         <div className="flex min-h-screen flex-col bg-white dark:bg-gray-950">
             <header className="sticky top-0 z-50 w-full border-b border-gray-200 dark:border-gray-800 bg-white/95 dark:bg-gray-950/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-gray-950/60">
@@ -92,7 +96,7 @@ export default async function DashboardPage() {
             </header>
 
             {/* Show support banner only for non-subscribed users */}
-            {user && !subscriptionStatus.isSubscribed && (
+            {!subscriptionStatus.isSubscribed && (
                 <SupportBanner userId={user.id} />
             )}
 
