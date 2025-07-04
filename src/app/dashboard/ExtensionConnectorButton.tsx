@@ -6,7 +6,7 @@ import { Loader2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export function ExtensionConnectorButton() {
-    const editorExtensionId = "ahfeccogjadlimhhheblanpilcmbcjik";
+    const editorExtensionId = "dciecdpjkhhagindacahojeiaeecblaa";
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [cooldown, setCooldown] = useState(0);
