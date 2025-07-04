@@ -892,7 +892,7 @@ export default function Home() {
                                         "Smart study notes",
                                         "Progress tracking",
                                         "Unlimited storage",
-                                        "Keep all videos forever (no 7-day expiry)"
+                                        "Keep all videos forever (existing + future videos)"
                                     ].map(feature => (
                                         <li
                                             key={feature}
