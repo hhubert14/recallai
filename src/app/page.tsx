@@ -119,7 +119,7 @@ export default function Home() {
                                         asChild
                                     >
                                         <Link
-                                            href="https://chrome.google.com/webstore"
+                                            href="https://chromewebstore.google.com/detail/recallai/dciecdpjkhhagindacahojeiaeecblaa"
                                             target="_blank"
                                             rel="noopener noreferrer"
                                         >
@@ -1033,7 +1033,8 @@ export default function Home() {
                                     className="border-white bg-transparent text-white hover:!bg-white hover:!text-blue-600 hover:!border-blue-600 dark:border-blue-200 dark:bg-transparent dark:text-blue-100 dark:hover:!bg-blue-100 dark:hover:!text-blue-700 dark:hover:!border-blue-100"
                                     asChild
                                 >
-                                    <Link href="#" target="_blank">
+                                    <Link href="https://chromewebstore.google.com/detail/recallai/dciecdpjkhhagindacahojeiaeecblaa" target="_blank"
+                                          rel="noopener noreferrer">
                                         Download Extension
                                     </Link>
                                 </Button>

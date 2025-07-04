@@ -147,9 +147,19 @@ export default async function DashboardPage() {
                                 <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">
                                     Add our Chrome extension to capture videos
                                 </p>
-                                <Button size="sm" className="w-full bg-blue-600 hover:bg-blue-700">
-                                    <Chrome className="h-4 w-4 mr-2" />
-                                    Download Extension
+                                <Button 
+                                    size="sm" 
+                                    className="w-full bg-blue-600 hover:bg-blue-700"
+                                    asChild
+                                >
+                                    <a 
+                                        href="https://chromewebstore.google.com/detail/recallai/dciecdpjkhhagindacahojeiaeecblaa"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        <Chrome className="h-4 w-4 mr-2" />
+                                        Download Extension
+                                    </a>
                                 </Button>
                             </div>
                             
