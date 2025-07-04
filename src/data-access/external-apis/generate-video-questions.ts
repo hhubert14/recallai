@@ -65,29 +65,27 @@ export async function generateVideoQuestions(
                 content: `Generate meaningful multiple choice questions based on the following video:
 
 Title: ${title}
-
 Description: ${description}
-
 Transcript: ${transcriptText}
 
-Please provide exactly 5 multiple-choice questions that test SUBSTANTIVE UNDERSTANDING of key concepts, not just superficial details. Focus on:
-- Core concepts and their applications
-- Technical knowledge and principles
-- Problem-solving approaches
-- Fundamental ideas and their implications
+Create exactly 5 multiple-choice questions that test TRANSFERABLE UNDERSTANDING of key concepts that extend beyond this specific video. Focus on:
+- Universal principles and best practices
+- Conceptual knowledge applicable to similar situations  
+- Problem-solving approaches that generalize
+- Fundamental ideas with broad implications
 
 AVOID questions about:
-- Basic course information (title, instructor, date)
-- Superficial details (what university offers it, course logistics)
-- Trivial facts that don't test understanding
+- Video-specific details (particular websites, tools, or examples mentioned)
+- Basic course logistics or superficial information
+- Trivia that doesn't test conceptual understanding
 
-Each question should include:
-- Question text focusing on important concepts
-- Four answer options (only one correct)
-- The index of the correct answer (0-3)
-- A brief explanation for why the correct answer is right
+ANSWER FORMAT REQUIREMENTS:
+- All four answer options must be similar in length (within 1-2 words of each other)
+- Create plausible but clearly incorrect distractors
+- Avoid making the correct answer obviously longer or more detailed
+- Ensure someone who understands the concept could answer without watching this specific video
 
-Make the questions challenging but fair, testing genuine understanding of important concepts from the video.`,
+Each question should test whether someone truly grasps the underlying principle, not whether they remember specific details from this video.`
             },        ]);
 
         logger.video.info("Questions generated successfully", {
