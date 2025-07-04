@@ -17,6 +17,7 @@ import { StatsCard } from "@/components/ui/stats-card";
 import { SubscriptionStatusBadge } from "@/components/subscription/SubscriptionStatusBadge";
 import { UpgradeButton } from "@/components/subscription/UpgradeButton";
 import { SupportBanner } from "@/components/ui/support-banner";
+import { RefreshButton } from "./RefreshButton";
 
 export const metadata: Metadata = {
     title: "Dashboard | RecallAI",
@@ -225,18 +226,21 @@ export default async function DashboardPage() {
                     </div>
 
                     <div className="rounded-xl border border-blue-200 dark:border-blue-800 p-6 shadow-sm bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20">
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className="p-2 bg-blue-100 dark:bg-blue-800 rounded-lg">
-                                <Play className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 bg-blue-100 dark:bg-blue-800 rounded-lg">
+                                    <Play className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                                </div>
+                                <div>
+                                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                                        Recent Videos
+                                    </h2>
+                                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                                        Your latest learning content
+                                    </p>
+                                </div>
                             </div>
-                            <div>
-                                <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                                    Recent Videos
-                                </h2>
-                                <p className="text-sm text-gray-600 dark:text-gray-400">
-                                    Your latest learning content
-                                </p>
-                            </div>
+                            <RefreshButton />
                         </div>
                         
                         {recentVideos.length > 0 ? (
