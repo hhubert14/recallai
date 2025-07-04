@@ -176,7 +176,21 @@ export default async function DashboardPage() {
                         <div className="space-y-3">
                             <div className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-blue-100 dark:border-blue-800 shadow-sm">
                                 <div className="flex items-center gap-2 mb-2">
-                                    <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold">1</div>
+                                    <div className="w-6 h-6 bg-purple-600 text-white rounded-full flex items-center justify-center text-xs font-bold">1</div>
+                                    <h3 className="font-semibold text-gray-900 dark:text-white text-sm">Watch Tutorial</h3>
+                                </div>
+                                <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">
+                                    Learn how to use RecallAI effectively
+                                </p>
+                                <Button size="sm" variant="outline" className="w-full border-purple-200 dark:border-purple-700 text-purple-700 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-900/20">
+                                    <Play className="h-4 w-4 mr-2" />
+                                    View Tutorial
+                                </Button>
+                            </div>
+                            
+                            <div className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-blue-100 dark:border-blue-800 shadow-sm">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold">2</div>
                                     <h3 className="font-semibold text-gray-900 dark:text-white text-sm">Install Extension</h3>
                                 </div>
                                 <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">
@@ -200,27 +214,13 @@ export default async function DashboardPage() {
                             
                             <div className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-blue-100 dark:border-blue-800 shadow-sm">
                                 <div className="flex items-center gap-2 mb-2">
-                                    <div className="w-6 h-6 bg-green-600 text-white rounded-full flex items-center justify-center text-xs font-bold">2</div>
+                                    <div className="w-6 h-6 bg-green-600 text-white rounded-full flex items-center justify-center text-xs font-bold">3</div>
                                     <h3 className="font-semibold text-gray-900 dark:text-white text-sm">Connect Account</h3>
                                 </div>
                                 <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">
                                     Link extension to dashboard for sync
                                 </p>
                                 <ExtensionConnectorButton />
-                            </div>
-                            
-                            <div className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-blue-100 dark:border-blue-800 shadow-sm">
-                                <div className="flex items-center gap-2 mb-2">
-                                    <div className="w-6 h-6 bg-purple-600 text-white rounded-full flex items-center justify-center text-xs font-bold">3</div>
-                                    <h3 className="font-semibold text-gray-900 dark:text-white text-sm">Start Learning</h3>
-                                </div>
-                                <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">
-                                    Watch videos and get summaries & quizzes
-                                </p>
-                                <Button size="sm" variant="outline" className="w-full border-purple-200 dark:border-purple-700 text-purple-700 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-900/20">
-                                    <Play className="h-4 w-4 mr-2" />
-                                    View Tutorial
-                                </Button>
                             </div>
                         </div>
                     </div>
