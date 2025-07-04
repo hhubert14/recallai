@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { QuestionDto, QuestionOptionDto } from "@/data-access/questions/types";
 import { submitAnswer } from "./actions";
@@ -12,16 +12,51 @@ interface QuizInterfaceProps {
     videoId: number;
 }
 
+// Function to shuffle an array using Fisher-Yates algorithm
+function shuffleArray<T>(array: T[]): T[] {
+    if (array.length <= 1) return [...array];
+    
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+}
+
+// Function to shuffle questions and their options
+function shuffleQuestionsAndOptions(questions: QuestionDto[]): QuestionDto[] {
+    const shuffledQuestions = shuffleArray(questions);
+    return shuffledQuestions.map(question => ({
+        ...question,
+        options: shuffleArray(question.options)
+    }));
+}
+
 export function QuizInterface({ questions, userId, videoId }: QuizInterfaceProps) {
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [selectedOptionId, setSelectedOptionId] = useState<number | null>(null);
     const [showResult, setShowResult] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [correctAnswer, setCorrectAnswer] = useState<QuestionOptionDto | null>(null);
+    const [shuffledQuestions, setShuffledQuestions] = useState<QuestionDto[]>([]);
     
     const { markVideoAsCompleted } = useQuizCompletion();
 
-    const currentQuestion = questions[currentQuestionIndex];
+    // Shuffle questions and their options when component mounts or questions change
+    useEffect(() => {
+        if (questions.length > 0) {
+            const shuffled = shuffleQuestionsAndOptions(questions);
+            setShuffledQuestions(shuffled);
+        }
+    }, [questions]);
+
+    const currentQuestion = shuffledQuestions[currentQuestionIndex];
+
+    // Don't render if questions are not yet shuffled
+    if (!currentQuestion || shuffledQuestions.length === 0) {
+        return <div className="text-center py-8">Loading quiz...</div>;
+    }
 
     const handleSubmit = async () => {
         if (!selectedOptionId) return;
@@ -46,13 +81,13 @@ export function QuizInterface({ questions, userId, videoId }: QuizInterfaceProps
         setIsSubmitting(false);
         
         // Mark video as completed if this is the last question
-        if (currentQuestionIndex === questions.length - 1) {
+        if (currentQuestionIndex === shuffledQuestions.length - 1) {
             markVideoAsCompleted(videoId);
         }
     };
 
     const handleNext = () => {
-        if (currentQuestionIndex < questions.length - 1) {
+        if (currentQuestionIndex < shuffledQuestions.length - 1) {
             setCurrentQuestionIndex(currentQuestionIndex + 1);
             setSelectedOptionId(null);
             setShowResult(false);
@@ -67,7 +102,7 @@ export function QuizInterface({ questions, userId, videoId }: QuizInterfaceProps
         setCorrectAnswer(null);
     };
 
-    const isLastQuestion = currentQuestionIndex === questions.length - 1;
+    const isLastQuestion = currentQuestionIndex === shuffledQuestions.length - 1;
     const selectedOption = currentQuestion.options.find(
         option => option.id === selectedOptionId
     );
@@ -76,11 +111,11 @@ export function QuizInterface({ questions, userId, videoId }: QuizInterfaceProps
         <div className="space-y-6">
             {/* Progress */}
             <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
-                <span>Question {currentQuestionIndex + 1} of {questions.length}</span>
+                <span>Question {currentQuestionIndex + 1} of {shuffledQuestions.length}</span>
                 <div className="w-32 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                     <div 
                         className="bg-blue-600 dark:bg-blue-500 h-2 rounded-full transition-all duration-300"
-                        style={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }}
+                        style={{ width: `${((currentQuestionIndex + 1) / shuffledQuestions.length) * 100}%` }}
                     />
                 </div>
             </div>

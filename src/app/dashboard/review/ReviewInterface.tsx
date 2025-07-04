@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { QuestionForReviewDto } from "@/data-access/user-question-progress/types";
 import { ReviewStatsDto } from "@/data-access/user-question-progress/get-review-stats";
@@ -13,6 +13,25 @@ interface ReviewInterfaceProps {
     initialQuestions: QuestionForReviewDto[];
 }
 
+// Function to shuffle an array using Fisher-Yates algorithm
+function shuffleArray<T>(array: T[]): T[] {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+}
+
+// Function to shuffle questions and their options
+function shuffleQuestionsAndOptions(questions: QuestionForReviewDto[]): QuestionForReviewDto[] {
+    const shuffledQuestions = shuffleArray(questions);
+    return shuffledQuestions.map(question => ({
+        ...question,
+        options: shuffleArray(question.options)
+    }));
+}
+
 export function ReviewInterface({ 
     userId, 
     reviewStats, 
@@ -23,18 +42,13 @@ export function ReviewInterface({
     const [selectedOptionId, setSelectedOptionId] = useState<number | null>(null);
     const [showResult, setShowResult] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [allQuestions, setAllQuestions] = useState<QuestionForReviewDto[]>([]);
 
-    // Memoize the combined questions array to prevent unnecessary re-renders
-    const allQuestions = useMemo(() => {
-        return [...dueQuestions, ...initialQuestions];
+    // Shuffle questions and their options when component mounts or questions change
+    useEffect(() => {
+        const combined = [...dueQuestions, ...initialQuestions];
+        setAllQuestions(shuffleQuestionsAndOptions(combined));
     }, [dueQuestions, initialQuestions]);
-
-    // Track which questions we're showing (due vs initial)
-    const totalDueQuestions = dueQuestions.length;
-    const totalInitialQuestions = initialQuestions.length;
-    const isInDueMode = currentQuestionIndex < totalDueQuestions;
-    const isInInitialMode = currentQuestionIndex >= totalDueQuestions && 
-                          currentQuestionIndex < totalDueQuestions + totalInitialQuestions;
     
     // Check if session is complete first (before accessing questions)
     const sessionComplete = allQuestions.length === 0 || currentQuestionIndex >= allQuestions.length;
@@ -225,7 +239,6 @@ export function ReviewInterface({
             <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
                 <span>
                     Question {currentQuestionIndex + 1} of {allQuestions.length}
-                    {isInDueMode ? ' (Due Today)' : isInInitialMode ? ' (Initial Review)' : ''}
                 </span>
                 <div className="w-32 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                     <div 
