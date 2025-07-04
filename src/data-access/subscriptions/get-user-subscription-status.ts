@@ -36,7 +36,7 @@ export async function getUserSubscriptionStatus(userId: string): Promise<UserSub
             .from('subscriptions')
             .select('status, plan, current_period_end, cancel_at_period_end, canceled_at')
             .eq('user_id', userId)
-            .in('status', ['active', 'trialing', 'past_due']) // Include all statuses that should have access
+            .in('status', ['active', 'trialing']) // Removed 'past_due' since we immediately downgrade on payment failure
             .single();
 
         if (subscriptionError || !subscriptionData) {
@@ -86,7 +86,7 @@ export async function getUserSubscriptionStatusWithServiceRole(userId: string): 
             .from('subscriptions')
             .select('status, plan, current_period_end, cancel_at_period_end, canceled_at')
             .eq('user_id', userId)
-            .in('status', ['active', 'trialing', 'past_due']) // Include all statuses that should have access
+            .in('status', ['active', 'trialing']) // Removed 'past_due' since we immediately downgrade on payment failure
             .single();
 
         if (subscriptionError || !subscriptionData) {

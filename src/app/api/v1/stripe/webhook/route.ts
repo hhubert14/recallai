@@ -7,7 +7,7 @@ import { extractUserIdFromStripeEvent, mapStripeStatusToDbStatus, shouldHaveSubs
 import { createSubscription } from "@/data-access/subscriptions/create-subscription";
 import { updateSubscriptionByStripeId } from "@/data-access/subscriptions/update-subscription";
 import { updateUserSubscriptionStatus } from "@/data-access/users/update-user-subscription";
-import { updateVideosOnSubscriptionUpgrade, handleSubscriptionDowngrade } from "@/data-access/videos/update-video-expiry-on-subscription-change";
+import { updateVideosOnSubscriptionUpgrade, handleSubscriptionDowngrade, handleImmediateSubscriptionDowngrade } from "@/data-access/videos/update-video-expiry-on-subscription-change";
 
 // Simple in-memory cache to prevent duplicate processing
 const processedEvents = new Map<string, number>();
@@ -306,23 +306,15 @@ async function handleInvoicePaymentSucceeded(event: any) {
             currentPeriodEnd: new Date(subscription.current_period_end * 1000),
         });
 
-        // If update failed, this might be a new subscription, try to create it
+        // If update failed, log the issue but DON'T create a new subscription
+        // Subscriptions should only be created via checkout.session.completed
         if (!updateSuccess) {
-            console.log("Subscription update failed, attempting to create new subscription");
-            const createSuccess = await createSubscription({
-                userId,
-                stripeCustomerId: subscription.customer as string,
-                stripeSubscriptionId: subscription.id,
-                status: mapStripeStatusToDbStatus(subscription.status),
-                plan: 'premium',
-                currentPeriodStart: new Date(subscription.current_period_start * 1000),
-                currentPeriodEnd: new Date(subscription.current_period_end * 1000),
-            });
-            
-            if (!createSuccess) {
-                console.error("Failed to create subscription in database");
-                return;
-            }
+            console.warn("⚠️ Subscription update failed for invoice payment - this may indicate the subscription doesn't exist in our database");
+            console.warn("🔍 This could happen if checkout.session.completed didn't process correctly");
+            console.warn("🔍 Subscription ID:", subscriptionId);
+            console.warn("🔍 User ID:", userId);
+            // Don't create a new subscription here - investigate the root cause
+            return;
         }        // Ensure user has subscription access
         await updateUserSubscriptionStatus(userId, true);
         
@@ -337,7 +329,7 @@ async function handleInvoicePaymentSucceeded(event: any) {
 
 // Handle failed renewal payments
 async function handleInvoicePaymentFailed(event: any) {
-    console.log("Processing invoice payment failed");
+    console.log("Processing invoice payment failed - implementing immediate downgrade");
     
     try {
         const invoice = event.data.object;
@@ -348,20 +340,37 @@ async function handleInvoicePaymentFailed(event: any) {
             return;
         }
 
-        // Get subscription details from Stripe to get current status
-        const stripeInstance = await stripe();
-        const subscription = await stripeInstance.subscriptions.retrieve(subscriptionId);
+        // Get user ID from the event
+        const userId = await extractUserIdFromStripeEvent(event);
+        if (!userId) {
+            console.error("Could not extract user ID from invoice payment failed event");
+            return;
+        }
 
-        // Update subscription status (Stripe will set it to 'past_due')
+        // Immediately cancel subscription and downgrade user to free plan
         const success = await updateSubscriptionByStripeId({
             stripeSubscriptionId: subscriptionId,
-            status: mapStripeStatusToDbStatus(subscription.status),
+            status: 'canceled', // Immediately cancel instead of past_due
         });
 
         if (success) {
-            console.log("Invoice payment failed processed successfully");
+            console.log("Subscription marked as canceled due to payment failure");
+            
+            // Remove user's premium access immediately
+            await updateUserSubscriptionStatus(userId, false);
+            console.log("User subscription status set to false");
+            
+            // Apply immediate downgrade - all videos now expire
+            console.log("Applying immediate downgrade - setting all videos to expire");
+            await handleImmediateSubscriptionDowngrade(userId);
+            console.log("Immediate downgrade completed successfully");
+            
+            // Revalidate the dashboard
+            revalidatePath('/dashboard');
+            
+            console.log("Payment failure processed successfully - user downgraded to free plan");
         } else {
-            console.error("Failed to update subscription status for failed payment");
+            console.error("Failed to update subscription status for payment failure");
         }
     } catch (error) {
         console.error("Error handling invoice payment failed:", error);

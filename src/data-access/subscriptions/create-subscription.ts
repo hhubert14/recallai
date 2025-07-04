@@ -23,7 +23,7 @@ export async function createSubscription(params: CreateSubscriptionParams): Prom
     const supabase = createServiceRoleClient();
     
     try {
-        // First check if subscription already exists
+        // First check if subscription already exists by Stripe subscription ID
         const { data: existingSubscription, error: checkError } = await supabase
             .from('subscriptions')
             .select('id')
@@ -36,6 +36,23 @@ export async function createSubscription(params: CreateSubscriptionParams): Prom
         if (existingSubscription) {
             logger.subscription.debug("Subscription already exists, skipping creation", { stripeSubscriptionId: params.stripeSubscriptionId });
             return true; // Return true since the subscription exists
+        }
+
+        // Additional safety: Check if user already has an active subscription
+        const { data: userActiveSubscription, error: userCheckError } = await supabase
+            .from('subscriptions')
+            .select('id, stripe_subscription_id, status')
+            .eq('user_id', params.userId)
+            .in('status', ['active', 'trialing'])
+            .single();
+
+        if (!userCheckError && userActiveSubscription) {
+            logger.subscription.warn("User already has an active subscription, preventing duplicate", {
+                userId: params.userId,
+                existingSubscriptionId: userActiveSubscription.stripe_subscription_id,
+                newSubscriptionId: params.stripeSubscriptionId
+            });
+            return false; // Prevent duplicate subscriptions for same user
         }
 
         // Create new subscription if it doesn't exist
