@@ -180,11 +180,22 @@ export default async function DashboardPage() {
                                     <h3 className="font-semibold text-gray-900 dark:text-white text-sm">Watch Tutorial</h3>
                                 </div>
                                 <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">
-                                    Learn how to use RecallAI effectively
+                                    Learn how to use RecallAI
                                 </p>
-                                <Button size="sm" variant="outline" className="w-full border-purple-200 dark:border-purple-700 text-purple-700 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-900/20">
-                                    <Play className="h-4 w-4 mr-2" />
-                                    View Tutorial
+                                <Button 
+                                    size="sm" 
+                                    variant="outline" 
+                                    className="w-full border-purple-200 dark:border-purple-700 text-purple-700 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                                    asChild
+                                >
+                                    <a 
+                                        href="https://www.youtube.com/watch?v=PNyWjtPW3yM"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        <Play className="h-4 w-4 mr-2" />
+                                        View Tutorial
+                                    </a>
                                 </Button>
                             </div>
                             
