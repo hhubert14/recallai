@@ -12,6 +12,7 @@ import { LibraryVideoList } from "@/app/dashboard/library/LibraryVideoList";
 import { SubscriptionStatusBadge } from "@/components/subscription/SubscriptionStatusBadge";
 import { UpgradeButton } from "@/components/subscription/UpgradeButton";
 import { SupportBanner } from "@/components/ui/support-banner";
+import { TextRefreshButton } from "../TextRefreshButton";
 
 export const metadata: Metadata = {
     title: "My Library | RecallAI",
@@ -95,16 +96,19 @@ export default async function LibraryPage() {
                             Browse all your saved videos and track your learning progress.
                         </p>
                     </div>
-                    <div className="flex flex-col items-end gap-3">
-                        <SubscriptionStatusBadge 
-                            isSubscribed={subscriptionStatus.isSubscribed}
-                            status={subscriptionStatus.status}
-                            planType={subscriptionStatus.planType}
-                            currentPeriodEnd={subscriptionStatus.currentPeriodEnd}
-                        />
-                        {!subscriptionStatus.isSubscribed && (
-                            <UpgradeButton size="sm" />
-                        )}
+                    <div className="flex items-center gap-3">
+                        <div className="flex flex-col items-end gap-3">
+                            <SubscriptionStatusBadge 
+                                isSubscribed={subscriptionStatus.isSubscribed}
+                                status={subscriptionStatus.status}
+                                planType={subscriptionStatus.planType}
+                                currentPeriodEnd={subscriptionStatus.currentPeriodEnd}
+                            />
+                            {!subscriptionStatus.isSubscribed && (
+                                <UpgradeButton size="sm" />
+                            )}
+                            <TextRefreshButton />
+                        </div>
                     </div>
                 </div>
 
