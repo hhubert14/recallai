@@ -101,7 +101,7 @@ export function LibraryVideoCard({ video }: LibraryVideoCardProps) {
                             ) : (
                                 <>
                                     <X className="h-4 w-4 text-gray-400 dark:text-gray-500" />
-                                    <span className="text-xs text-gray-500 dark:text-gray-400">Incomplete</span>
+                                    <span className="text-xs text-gray-500 dark:text-gray-400">Questions Unanswered</span>
                                 </>
                             )}
                         </div>
