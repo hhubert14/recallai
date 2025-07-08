@@ -158,13 +158,7 @@ export default function Home() {
                                     The Problem with Video Learning
                                 </h2>
                                 <p className="max-w-[900px] text-gray-500 dark:text-gray-400 md:text-xl/relaxed">
-                                    In today's information-rich world, people
-                                    consume massive amounts of educational video
-                                    content but struggle with poor retention
-                                    rates. Most learners watch videos passively
-                                    without taking notes or reviewing key
-                                    concepts, leading to forgotten information
-                                    within days.
+                                    In today's information-rich world, people consume massive amounts of educational video content but struggle with poor retention rates. Research shows learners forget 90% of video content within 7 days without structured review. Most learners watch videos passively without taking notes, leading to massive knowledge loss.
                                 </p>
                             </div>
                             <div className="w-full max-w-3xl py-12">
@@ -491,9 +485,7 @@ export default function Home() {
                                                 Improve Retention
                                             </h3>
                                             <p className="text-gray-500 dark:text-gray-400">
-                                                Boost knowledge retention
-                                                through proven active recall
-                                                techniques.
+                                                Studies show 55% better performance with active learning techniques like recall questions and spaced repetition.
                                             </p>
                                         </div>
                                     </li>
@@ -938,6 +930,14 @@ export default function Home() {
                         <div className="mx-auto max-w-3xl space-y-4 py-12">
                             <div className="rounded-lg border border-blue-100 dark:border-blue-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
                                 <h3 className="text-lg font-bold text-blue-900 dark:text-blue-100">
+                                    Is there scientific evidence that this approach works?
+                                </h3>
+                                <p className="mt-2 text-gray-500 dark:text-gray-400">
+                                    Yes! Meta-analysis of 225+ studies shows active learning (like our recall questions) improves performance by 6% on average with 55% fewer failures compared to passive video watching. Spaced repetition research demonstrates 200% better long-term retention.
+                                </p>
+                            </div>
+                            <div className="rounded-lg border border-blue-100 dark:border-blue-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
+                                <h3 className="text-lg font-bold text-blue-900 dark:text-blue-100">
                                     How does RecallAI detect educational
                                     videos?
                                 </h3>
@@ -955,7 +955,7 @@ export default function Home() {
                                     Is my data private and secure?
                                 </h3>
                                 <p className="mt-2 text-gray-500 dark:text-gray-400">
-                                    Yes, we take privacy and security seriously.
+                                    Yes! We take privacy and security seriously.
                                     Your learning data is encrypted and stored
                                     securely. We do not share your personal
                                     information with third parties, and you can
@@ -980,10 +980,7 @@ export default function Home() {
                                     other than English?
                                 </h3>
                                 <p className="mt-2 text-gray-500 dark:text-gray-400">
-                                    Currently, RecallAI works best with
-                                    English-language videos. We're actively
-                                    working on adding support for additional
-                                    languages in the near future.
+                                    Yes! RecallAI can process educational videos in multiple languages. However, all generated summaries and questions will be provided in English, and our web interface is currently only available in English. We're working on adding translated outputs and interface language options in the future.
                                 </p>
                             </div>
                             {/* <div className="rounded-lg border border-blue-100 bg-white p-6 shadow-sm">
