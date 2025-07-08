@@ -570,11 +570,10 @@ export default function Home() {
                                     <Youtube className="h-6 w-6 text-red-600 dark:text-red-400" />
                                 </div>
                                 <h3 className="text-xl font-bold text-blue-900 dark:text-blue-100">
-                                    Content Creators
+                                    Video Learners
                                 </h3>
                                 <p className="text-center text-gray-500 dark:text-gray-400">
-                                    Educators and content creators who want to
-                                    provide more value to their audience.
+                                    People who prefer learning through videos over text/books.
                                 </p>
                             </div>
                             <div className="flex flex-col items-center space-y-4 rounded-lg border border-blue-100 dark:border-blue-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
