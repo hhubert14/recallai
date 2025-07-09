@@ -26,7 +26,7 @@ export default function PrivacyPolicyPage() {
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
               </svg>
               <span className="text-sm font-medium text-green-800 dark:text-green-300">
-                Effective Date: June 29, 2025
+                Effective Date: July 8, 2025
               </span>
             </div>
           </div>
@@ -68,15 +68,12 @@ export default function PrivacyPolicyPage() {
             <ul className="list-disc pl-6 mb-4">
               <li>YouTube video URLs and metadata that you choose to analyze</li>
               <li>Quiz responses and learning progress</li>
-              <li>Extension usage statistics and performance data</li>
-              <li>Device information and browser type</li>
             </ul>
 
-            <h3 className="text-xl font-medium mb-3">2.3 Automatically Collected Information</h3>
+            <h3 className="text-xl font-medium mb-3">2.3 Technical Data</h3>
             <ul className="list-disc pl-6 mb-4">
-              <li>IP address and location data</li>
-              <li>Browser and device information</li>
-              <li>Usage patterns and interaction data</li>
+              <li>Authentication cookies for secure login sessions</li>
+              <li>Local storage for user interface preferences (banner dismissals)</li>
             </ul>
           </section>
 
@@ -125,7 +122,7 @@ export default function PrivacyPolicyPage() {
               <li><strong>OpenAI:</strong> To generate summaries and quiz questions</li>
               <li><strong>Stripe:</strong> For secure payment processing</li>
               <li><strong>Supabase:</strong> For database and authentication services</li>
-              <li><strong>ZeroBounce:</strong> For email validation</li>
+              {/* <li><strong>ZeroBounce:</strong> For email validation</li> */}
             </ul>
             <p>
               Each service has its own privacy policy, and we recommend reviewing them to understand 
@@ -237,7 +234,7 @@ export default function PrivacyPolicyPage() {
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
                 </svg>
                 <span className="text-sm text-gray-600 dark:text-gray-400">
-                  Last updated: June 29, 2025
+                  Last updated: July 8, 2025
                 </span>
               </div>
             </div>

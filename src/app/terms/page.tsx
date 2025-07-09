@@ -26,7 +26,7 @@ export default function TermsOfServicePage() {
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
               </svg>
               <span className="text-sm font-medium text-blue-800 dark:text-blue-300">
-                Effective Date: June 29, 2025
+                Effective Date: July 8, 2025
               </span>
             </div>
           </div>
@@ -192,7 +192,7 @@ export default function TermsOfServicePage() {
               Governing Law
             </h2>
             <p>
-              These Terms are governed by and construed in accordance with the laws of [Your Jurisdiction], 
+              These Terms are governed by and construed in accordance with the laws of Missouri, United States, 
               without regard to its conflict of law principles.
             </p>
           </section>
@@ -219,7 +219,7 @@ export default function TermsOfServicePage() {
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
                 </svg>
                 <span className="text-sm text-gray-600 dark:text-gray-400">
-                  Last updated: June 29, 2025
+                  Last updated: July 8, 2025
                 </span>
               </div>
             </div>
