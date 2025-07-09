@@ -2,25 +2,14 @@
 
 import type React from "react";
 
-import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-export function UpdatePasswordForm({
-    className,
-    ...props
-}: React.ComponentPropsWithoutRef<"div">) {
+export function UpdatePasswordForm() {
     const [password, setPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -47,46 +36,39 @@ export function UpdatePasswordForm({
     };
 
     return (
-        <div className={cn("flex flex-col gap-6", className)} {...props}>
-            <Card>
-                <CardHeader>
-                    <CardTitle className="text-2xl">
-                        Reset Your Password
-                    </CardTitle>
-                    <CardDescription>
-                        Please enter your new password below.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <form onSubmit={handleForgotPassword}>
-                        <div className="flex flex-col gap-6">
-                            <div className="grid gap-2">
-                                <Label htmlFor="password">New password</Label>
-                                <Input
-                                    id="password"
-                                    type="password"
-                                    placeholder="New password"
-                                    required
-                                    value={password}
-                                    onChange={e => setPassword(e.target.value)}
-                                    minLength={8}
-                                    maxLength={64}
-                                />
-                            </div>
-                            {error && (
-                                <p className="text-sm text-red-500">{error}</p>
-                            )}
-                            <Button
-                                type="submit"
-                                className="flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-                                disabled={isLoading}
-                            >
-                                {isLoading ? "Saving..." : "Save new password"}
-                            </Button>
-                        </div>
-                    </form>
-                </CardContent>
-            </Card>
-        </div>
+        <form onSubmit={handleForgotPassword} className="space-y-6">
+            {error && (
+                <div className="rounded-md bg-red-50 p-4">
+                    <p className="text-sm text-red-800">{error}</p>
+                </div>
+            )}
+            
+            <div>
+                <Label htmlFor="password">New password</Label>
+                <Input
+                    id="password"
+                    name="password"
+                    type="password"
+                    autoComplete="new-password"
+                    required
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    className="mt-1"
+                    placeholder="New password (8+ characters)"
+                    minLength={8}
+                    maxLength={64}
+                />
+            </div>
+            
+            <div>
+                <Button
+                    type="submit"
+                    className="w-full bg-blue-600 hover:bg-blue-700"
+                    disabled={isLoading}
+                >
+                    {isLoading ? "Saving..." : "Save new password"}
+                </Button>
+            </div>
+        </form>
     );
 }
