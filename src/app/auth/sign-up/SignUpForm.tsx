@@ -14,6 +14,7 @@ import { AlertCircle, Loader2 } from "lucide-react";
 export function SignUpForm() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [agreeToTerms, setAgreeToTerms] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
@@ -27,6 +28,13 @@ export function SignUpForm() {
             // Check if email is valid
             if (!email || !/\S+@\S+\.\S+/.test(email)) {
                 setError("Please enter a valid email address.");
+                setIsLoading(false);
+                return;
+            }
+
+            // Check if user agreed to terms
+            if (!agreeToTerms) {
+                setError("Please review and accept our Terms of Service and Privacy Policy to continue");
                 setIsLoading(false);
                 return;
             }
@@ -183,6 +191,40 @@ export function SignUpForm() {
                         maxLength={64}
                     />
                 </div>
+            </div>
+
+            {/* Terms of Service and Privacy Policy Agreement */}
+            <div className="flex items-start space-x-2">
+                <input
+                    id="agree-to-terms"
+                    name="agree-to-terms"
+                    type="checkbox"
+                    checked={agreeToTerms}
+                    onChange={(e) => setAgreeToTerms(e.target.checked)}
+                    className={`mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 ${
+                        error && !agreeToTerms ? 'border-red-500' : ''
+                    }`}
+                />
+                <label htmlFor="agree-to-terms" className="text-sm text-gray-700 dark:text-gray-300">
+                    I have read and agree to the{' '}
+                    <a
+                        href="/terms"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:text-blue-500 hover:underline"
+                    >
+                        Terms of Service
+                    </a>{' '}
+                    and{' '}
+                    <a
+                        href="/privacy"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:text-blue-500 hover:underline"
+                    >
+                        Privacy Policy
+                    </a>
+                </label>
             </div>
 
             <div>
