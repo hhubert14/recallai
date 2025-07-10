@@ -189,7 +189,7 @@ export default async function DashboardPage() {
                                     asChild
                                 >
                                     <a 
-                                        href="https://www.youtube.com/watch?v=PNyWjtPW3yM"
+                                        href="https://youtu.be/hP2wbBBBN20"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                     >
