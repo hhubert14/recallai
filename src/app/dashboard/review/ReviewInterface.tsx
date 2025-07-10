@@ -328,7 +328,7 @@ export function ReviewInterface({
                     <Button
                         onClick={handleSubmit}
                         disabled={!selectedOptionId || isSubmitting}
-                        className="bg-blue-600 hover:bg-blue-700"
+                        className="bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-100"
                     >
                         {isSubmitting ? "Submitting..." : "Submit Answer"}
                     </Button>
