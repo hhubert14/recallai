@@ -4,6 +4,7 @@ import "./globals.css";
 import { AuthProviderWrapper } from "@/components/providers/AuthProviderWrapper";
 import { QuizCompletionProvider } from "@/components/providers/QuizCompletionProvider";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
+import { Analytics } from "@vercel/analytics/next"
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -35,6 +36,7 @@ export default function RootLayout({
                     <AuthProviderWrapper>
                         <QuizCompletionProvider>
                             {children}
+                            <Analytics />
                         </QuizCompletionProvider>
                     </AuthProviderWrapper>
                 </ThemeProvider>
