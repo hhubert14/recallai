@@ -1149,23 +1149,25 @@ export default function Home() {
                                 </li>
                                 <li>
                                     <Link
-                                        href="#"
+                                        href="https://chromewebstore.google.com/detail/recallai/dciecdpjkhhagindacahojeiaeecblaa"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
                                         className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
                                     >
                                         Chrome Extension
                                     </Link>
                                 </li>
-                                <li>
+                                {/* <li>
                                     <Link
                                         href="#"
                                         className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
                                     >
                                         Roadmap
                                     </Link>
-                                </li>
+                                </li> */}
                             </ul>
                         </div>
-                        <div className="space-y-4">
+                        {/* <div className="space-y-4">
                             <h4 className="text-sm font-medium text-gray-900 dark:text-white">Company</h4>
                             <ul className="space-y-2 text-sm">
                                 <li>
@@ -1201,7 +1203,7 @@ export default function Home() {
                                     </Link>
                                 </li>
                             </ul>
-                        </div>
+                        </div> */}
                         <div className="space-y-4">
                             <h4 className="text-sm font-medium text-gray-900 dark:text-white">Support</h4>
                             <ul className="space-y-2 text-sm">
@@ -1229,14 +1231,14 @@ export default function Home() {
                                         Feature Request
                                     </Link>
                                 </li>
-                                <li>
+                                {/* <li>
                                     <Link
                                         href="#"
                                         className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
                                     >
                                         Help Center
                                     </Link>
-                                </li>
+                                </li> */}
                             </ul>
                         </div>
                         <div className="space-y-4">
@@ -1258,22 +1260,22 @@ export default function Home() {
                                         Privacy
                                     </Link>
                                 </li>
-                                <li>
+                                {/* <li>
                                     <Link
                                         href="#"
                                         className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
                                     >
                                         Cookies
                                     </Link>
-                                </li>
-                                <li>
+                                </li> */}
+                                {/* <li>
                                     <Link
                                         href="#"
                                         className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
                                     >
                                         Licenses
                                     </Link>
-                                </li>
+                                </li> */}
                             </ul>
                         </div>
                     </div>
