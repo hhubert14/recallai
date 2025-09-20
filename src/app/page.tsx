@@ -32,7 +32,9 @@ export default function Home() {
                 <div className="container flex h-16 items-center justify-between px-4 md:px-6">
                     <div className="flex items-center gap-2">
                         <Brain className="h-6 w-6 text-blue-600 dark:text-blue-500" />
-                        <span className="text-xl font-bold text-gray-900 dark:text-white">RecallAI</span>
+                        <span className="text-xl font-bold text-gray-900 dark:text-white">
+                            RecallAI
+                        </span>
                     </div>
                     <nav className="hidden md:flex gap-6">
                         <Link
@@ -158,7 +160,14 @@ export default function Home() {
                                     The Problem with Video Learning
                                 </h2>
                                 <p className="max-w-[900px] text-gray-500 dark:text-gray-400 md:text-xl/relaxed">
-                                    In today's information-rich world, people consume massive amounts of educational video content but struggle with poor retention rates. Research shows learners forget 90% of video content within 7 days without structured review. Most learners watch videos passively without taking notes, leading to massive knowledge loss.
+                                    In today's information-rich world, people
+                                    consume massive amounts of educational video
+                                    content but struggle with poor retention
+                                    rates. Research shows learners forget 90% of
+                                    video content within 7 days without
+                                    structured review. Most learners watch
+                                    videos passively without taking notes,
+                                    leading to massive knowledge loss.
                                 </p>
                             </div>
                             <div className="w-full max-w-3xl py-12">
@@ -485,7 +494,10 @@ export default function Home() {
                                                 Improve Retention
                                             </h3>
                                             <p className="text-gray-500 dark:text-gray-400">
-                                                Studies show 55% better performance with active learning techniques like recall questions and spaced repetition.
+                                                Studies show 55% better
+                                                performance with active learning
+                                                techniques like recall questions
+                                                and spaced repetition.
                                             </p>
                                         </div>
                                     </li>
@@ -535,8 +547,8 @@ export default function Home() {
                                     Perfect for All Types of Learners
                                 </h2>
                                 <p className="max-w-[900px] text-gray-500 dark:text-gray-400 md:text-xl/relaxed">
-                                    RecallAI is designed for anyone who wants
-                                    to                                    get more value from educational videos.
+                                    RecallAI is designed for anyone who wants to
+                                    get more value from educational videos.
                                 </p>
                             </div>
                         </div>
@@ -573,7 +585,8 @@ export default function Home() {
                                     Video Learners
                                 </h3>
                                 <p className="text-center text-gray-500 dark:text-gray-400">
-                                    People who prefer learning through videos over text/books.
+                                    People who prefer learning through videos
+                                    over text/books.
                                 </p>
                             </div>
                             <div className="flex flex-col items-center space-y-4 rounded-lg border border-blue-100 dark:border-blue-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
@@ -844,12 +857,19 @@ export default function Home() {
                                             className="flex items-center gap-2"
                                         >
                                             <CheckCircle className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                                            <span className="text-gray-700 dark:text-gray-300">{feature}</span>
+                                            <span className="text-gray-700 dark:text-gray-300">
+                                                {feature}
+                                            </span>
                                         </li>
                                     ))}
                                 </ul>
-                                <Button className="mt-8 bg-blue-600 hover:bg-blue-700" asChild>
-                                    <Link href="/auth/sign-up">Get Started</Link>
+                                <Button
+                                    className="mt-8 bg-blue-600 hover:bg-blue-700"
+                                    asChild
+                                >
+                                    <Link href="/auth/sign-up">
+                                        Get Started
+                                    </Link>
                                 </Button>
                             </div>
                             <div className="flex flex-col rounded-lg border-2 border-blue-600 dark:border-blue-500 bg-white dark:bg-gray-900 p-6 shadow-lg relative">
@@ -883,19 +903,26 @@ export default function Home() {
                                         "Smart study notes",
                                         "Progress tracking",
                                         "Unlimited storage",
-                                        "Keep all videos forever (existing + future videos)"
+                                        "Keep all videos forever (existing + future videos)",
                                     ].map(feature => (
                                         <li
                                             key={feature}
                                             className="flex items-center gap-2"
                                         >
                                             <CheckCircle className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                                            <span className="text-gray-700 dark:text-gray-300">{feature}</span>
+                                            <span className="text-gray-700 dark:text-gray-300">
+                                                {feature}
+                                            </span>
                                         </li>
                                     ))}
                                 </ul>
-                                <Button className="mt-8 bg-blue-600 hover:bg-blue-700" asChild>
-                                    <Link href="/auth/sign-up">Get Started</Link>
+                                <Button
+                                    className="mt-8 bg-blue-600 hover:bg-blue-700"
+                                    asChild
+                                >
+                                    <Link href="/auth/sign-up">
+                                        Get Started
+                                    </Link>
                                 </Button>
                                 {/* <SubscribeButton userId="your-user-id" /> */}
                                 {/* <Button className="mt-8 bg-blue-600 hover:bg-blue-700">
@@ -929,16 +956,22 @@ export default function Home() {
                         <div className="mx-auto max-w-3xl space-y-4 py-12">
                             <div className="rounded-lg border border-blue-100 dark:border-blue-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
                                 <h3 className="text-lg font-bold text-blue-900 dark:text-blue-100">
-                                    Is there scientific evidence that this approach works?
+                                    Is there scientific evidence that this
+                                    approach works?
                                 </h3>
                                 <p className="mt-2 text-gray-500 dark:text-gray-400">
-                                    Yes! Meta-analysis of 225+ studies shows active learning (like our recall questions) improves performance by 6% on average with 55% fewer failures compared to passive video watching. Spaced repetition research demonstrates 200% better long-term retention.
+                                    Yes! Meta-analysis of 225+ studies shows
+                                    active learning (like our recall questions)
+                                    improves performance by 6% on average with
+                                    55% fewer failures compared to passive video
+                                    watching. Spaced repetition research
+                                    demonstrates 200% better long-term
+                                    retention.
                                 </p>
                             </div>
                             <div className="rounded-lg border border-blue-100 dark:border-blue-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
                                 <h3 className="text-lg font-bold text-blue-900 dark:text-blue-100">
-                                    How does RecallAI detect educational
-                                    videos?
+                                    How does RecallAI detect educational videos?
                                 </h3>
                                 <p className="mt-2 text-gray-500 dark:text-gray-400">
                                     RecallAI uses a combination of video
@@ -966,11 +999,12 @@ export default function Home() {
                                     How accurate are the AI-generated summaries?
                                 </h3>
                                 <p className="mt-2 text-gray-500 dark:text-gray-400">
-                                    RecallAI uses advanced AI technology specifically 
-                                    optimized for educational content. While no AI is 
-                                    perfect, our users report high satisfaction with 
-                                    the accuracy and usefulness of the summaries. 
-                                    You can always provide feedback to help us improve.
+                                    RecallAI uses advanced AI technology
+                                    specifically optimized for educational
+                                    content. While no AI is perfect, our users
+                                    report high satisfaction with the accuracy
+                                    and usefulness of the summaries. You can
+                                    always provide feedback to help us improve.
                                 </p>
                             </div>
                             <div className="rounded-lg border border-blue-100 dark:border-blue-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
@@ -979,7 +1013,14 @@ export default function Home() {
                                     other than English?
                                 </h3>
                                 <p className="mt-2 text-gray-500 dark:text-gray-400">
-                                    Yes! RecallAI can process educational videos in multiple languages. However, all generated summaries and questions will be provided in English, and our web interface is currently only available in English. We're working on adding translated outputs and interface language options in the future.
+                                    Yes! RecallAI can process educational videos
+                                    in multiple languages. However, all
+                                    generated summaries and questions will be
+                                    provided in English, and our web interface
+                                    is currently only available in English.
+                                    We're working on adding translated outputs
+                                    and interface language options in the
+                                    future.
                                 </p>
                             </div>
                             {/* <div className="rounded-lg border border-blue-100 bg-white p-6 shadow-sm">
@@ -1029,8 +1070,11 @@ export default function Home() {
                                     className="border-white bg-transparent text-white hover:!bg-white hover:!text-blue-600 hover:!border-blue-600 dark:border-blue-200 dark:bg-transparent dark:text-blue-100 dark:hover:!bg-blue-100 dark:hover:!text-blue-700 dark:hover:!border-blue-100"
                                     asChild
                                 >
-                                    <Link href="https://chromewebstore.google.com/detail/recallai/dciecdpjkhhagindacahojeiaeecblaa" target="_blank"
-                                          rel="noopener noreferrer">
+                                    <Link
+                                        href="https://chromewebstore.google.com/detail/recallai/dciecdpjkhhagindacahojeiaeecblaa"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
                                         Download Extension
                                     </Link>
                                 </Button>
@@ -1129,7 +1173,9 @@ export default function Home() {
                             </div>
                         </div>
                         <div className="space-y-4">
-                            <h4 className="text-sm font-medium text-gray-900 dark:text-white">Product</h4>
+                            <h4 className="text-sm font-medium text-gray-900 dark:text-white">
+                                Product
+                            </h4>
                             <ul className="space-y-2 text-sm">
                                 <li>
                                     <Link
@@ -1205,7 +1251,9 @@ export default function Home() {
                             </ul>
                         </div> */}
                         <div className="space-y-4">
-                            <h4 className="text-sm font-medium text-gray-900 dark:text-white">Support</h4>
+                            <h4 className="text-sm font-medium text-gray-900 dark:text-white">
+                                Support
+                            </h4>
                             <ul className="space-y-2 text-sm">
                                 <li>
                                     <Link
@@ -1242,7 +1290,9 @@ export default function Home() {
                             </ul>
                         </div>
                         <div className="space-y-4">
-                            <h4 className="text-sm font-medium text-gray-900 dark:text-white">Legal</h4>
+                            <h4 className="text-sm font-medium text-gray-900 dark:text-white">
+                                Legal
+                            </h4>
                             <ul className="space-y-2 text-sm">
                                 <li>
                                     <Link

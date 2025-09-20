@@ -34,7 +34,9 @@ export function SignUpForm() {
 
             // Check if user agreed to terms
             if (!agreeToTerms) {
-                setError("Please review and accept our Terms of Service and Privacy Policy to continue");
+                setError(
+                    "Please review and accept our Terms of Service and Privacy Policy to continue"
+                );
                 setIsLoading(false);
                 return;
             }
@@ -200,13 +202,16 @@ export function SignUpForm() {
                     name="agree-to-terms"
                     type="checkbox"
                     checked={agreeToTerms}
-                    onChange={(e) => setAgreeToTerms(e.target.checked)}
+                    onChange={e => setAgreeToTerms(e.target.checked)}
                     className={`mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 ${
-                        error && !agreeToTerms ? 'border-red-500' : ''
+                        error && !agreeToTerms ? "border-red-500" : ""
                     }`}
                 />
-                <label htmlFor="agree-to-terms" className="text-sm text-gray-700 dark:text-gray-300">
-                    I have read and agree to the{' '}
+                <label
+                    htmlFor="agree-to-terms"
+                    className="text-sm text-gray-700 dark:text-gray-300"
+                >
+                    I have read and agree to the{" "}
                     <a
                         href="/terms"
                         target="_blank"
@@ -214,8 +219,8 @@ export function SignUpForm() {
                         className="text-blue-600 hover:text-blue-500 hover:underline"
                     >
                         Terms of Service
-                    </a>{' '}
-                    and{' '}
+                    </a>{" "}
+                    and{" "}
                     <a
                         href="/privacy"
                         target="_blank"

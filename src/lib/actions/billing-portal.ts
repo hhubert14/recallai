@@ -9,31 +9,50 @@ interface CreatePortalSessionProps {
     returnUrl?: string;
 }
 
-export async function createBillingPortalSession({ userId, returnUrl }: CreatePortalSessionProps) {
+export async function createBillingPortalSession({
+    userId,
+    returnUrl,
+}: CreatePortalSessionProps) {
     try {
         const stripeInstance = await stripe();
-        
+
         // Get user's Stripe customer ID
         const customerId = await getUserStripeCustomerId(userId);
-          if (!customerId) {
-            logger.subscription.error("No Stripe customer found for user", undefined, { userId });
-            throw new Error("No subscription found. Please create a subscription first.");
-        }// Create the billing portal session
-        const portalSession = await stripeInstance.billingPortal.sessions.create({
-            customer: customerId,
-            return_url: returnUrl || `${process.env.NEXT_PUBLIC_URL}/dashboard/settings`,
-        });
-        
-        logger.subscription.info("Billing portal session created successfully", { 
-            userId, 
-            portalSessionId: portalSession.id,
-            portalUrl: portalSession.url 
-        });
-        
+        if (!customerId) {
+            logger.subscription.error(
+                "No Stripe customer found for user",
+                undefined,
+                { userId }
+            );
+            throw new Error(
+                "No subscription found. Please create a subscription first."
+            );
+        } // Create the billing portal session
+        const portalSession =
+            await stripeInstance.billingPortal.sessions.create({
+                customer: customerId,
+                return_url:
+                    returnUrl ||
+                    `${process.env.NEXT_PUBLIC_URL}/dashboard/settings`,
+            });
+
+        logger.subscription.info(
+            "Billing portal session created successfully",
+            {
+                userId,
+                portalSessionId: portalSession.id,
+                portalUrl: portalSession.url,
+            }
+        );
+
         // Return the URL instead of redirecting server-side
         return { url: portalSession.url };
     } catch (error) {
-        logger.subscription.error("Error creating billing portal session", error, { userId });
+        logger.subscription.error(
+            "Error creating billing portal session",
+            error,
+            { userId }
+        );
         throw error;
     }
 }

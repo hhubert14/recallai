@@ -1,6 +1,12 @@
 "use client";
 
-import { BookOpen, HelpCircle, Target, Calendar, LucideIcon } from "lucide-react";
+import {
+    BookOpen,
+    HelpCircle,
+    Target,
+    Calendar,
+    LucideIcon,
+} from "lucide-react";
 
 interface StatsCardProps {
     title: string;
@@ -16,7 +22,12 @@ const iconMap: Record<string, LucideIcon> = {
     Calendar,
 };
 
-export function StatsCard({ title, value, iconName, subtitle }: StatsCardProps) {
+export function StatsCard({
+    title,
+    value,
+    iconName,
+    subtitle,
+}: StatsCardProps) {
     const Icon = iconMap[iconName];
     return (
         <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 shadow-sm hover:shadow-md transition-shadow">
@@ -26,10 +37,16 @@ export function StatsCard({ title, value, iconName, subtitle }: StatsCardProps) 
                 </div>
             </div>
             <div className="space-y-1">
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">{value}</p>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{title}</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                    {value}
+                </p>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
+                    {title}
+                </p>
                 {subtitle && (
-                    <p className="text-xs text-gray-500 dark:text-gray-400">{subtitle}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                        {subtitle}
+                    </p>
                 )}
             </div>
         </div>

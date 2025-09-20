@@ -2,7 +2,9 @@ import "server-only";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
 import { logger } from "@/lib/logger";
 
-export async function softDeleteAllUserVideos(userId: string): Promise<boolean> {
+export async function softDeleteAllUserVideos(
+    userId: string
+): Promise<boolean> {
     if (!userId) {
         return false;
     }
@@ -24,7 +26,9 @@ export async function softDeleteAllUserVideos(userId: string): Promise<boolean> 
         logger.video.info("All videos soft deleted successfully", { userId });
         return true;
     } catch (error) {
-        logger.db.error("Error soft deleting all user videos", error, { userId });
+        logger.db.error("Error soft deleting all user videos", error, {
+            userId,
+        });
         return false;
     }
 }

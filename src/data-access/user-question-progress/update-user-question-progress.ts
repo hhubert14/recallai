@@ -15,19 +15,27 @@ export async function updateUserQuestionProgress(
             .from("user_question_progress")
             .update({
                 ...updateData,
-                updated_at: new Date().toISOString()
+                updated_at: new Date().toISOString(),
             })
             .eq("user_id", userId)
             .eq("question_id", questionId);
 
         if (error) {
-            logger.db.error("Database update error", error, { userId, questionId, updateData });
+            logger.db.error("Database update error", error, {
+                userId,
+                questionId,
+                updateData,
+            });
             throw error;
         }
 
         return true;
     } catch (error) {
-        logger.db.error("Error updating user question progress", error, { userId, questionId, updateData });
+        logger.db.error("Error updating user question progress", error, {
+            userId,
+            questionId,
+            updateData,
+        });
         return false;
     }
 }

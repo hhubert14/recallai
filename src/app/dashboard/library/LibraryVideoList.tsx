@@ -7,7 +7,10 @@ interface LibraryVideoListProps {
     userId: string;
 }
 
-export async function LibraryVideoList({ videos, userId }: LibraryVideoListProps) {
+export async function LibraryVideoList({
+    videos,
+    userId,
+}: LibraryVideoListProps) {
     if (videos.length === 0) {
         return (
             <div className="text-center py-12">
@@ -21,7 +24,8 @@ export async function LibraryVideoList({ videos, userId }: LibraryVideoListProps
                         No videos in your library yet
                     </h3>
                     <p className="text-gray-500 dark:text-gray-400 mb-6">
-                        Start watching educational videos with the RecallAI extension to build your library.
+                        Start watching educational videos with the RecallAI
+                        extension to build your library.
                     </p>
                     <div className="text-sm text-gray-400 dark:text-gray-500">
                         Install the Chrome extension to get started
@@ -29,13 +33,14 @@ export async function LibraryVideoList({ videos, userId }: LibraryVideoListProps
                 </div>
             </div>
         );
-    }    // Get quiz completion status for all videos
+    } // Get quiz completion status for all videos
     const videosWithCompletion = await Promise.all(
-        videos.map(async (video) => ({
+        videos.map(async video => ({
             ...video,
-            quizCompleted: await getQuizCompletionStatus(userId, video.id)
+            quizCompleted: await getQuizCompletionStatus(userId, video.id),
         }))
-    );    return (
+    );
+    return (
         <ClientLibraryVideoList videos={videosWithCompletion} userId={userId} />
     );
 }

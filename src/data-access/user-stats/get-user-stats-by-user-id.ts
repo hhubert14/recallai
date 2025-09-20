@@ -6,16 +6,18 @@ import { getQuizAccuracyByUserId } from "./get-quiz-accuracy-by-user-id";
 import { getWeeklyActivityByUserId } from "./get-weekly-activity-by-user-id";
 import { logger } from "@/lib/logger";
 
-export async function getUserStatsByUserId(userId: string): Promise<UserStatsDto> {
+export async function getUserStatsByUserId(
+    userId: string
+): Promise<UserStatsDto> {
     logger.db.debug("Getting user stats", { userId });
-      if (!userId) {
+    if (!userId) {
         logger.db.warn("Invalid parameters - userId is empty");
         return {
             totalVideos: 0,
             totalQuestionsAnswered: 0,
             quizAccuracy: 0,
             videosThisWeek: 0,
-            questionsThisWeek: 0
+            questionsThisWeek: 0,
         };
     }
 
@@ -25,12 +27,12 @@ export async function getUserStatsByUserId(userId: string): Promise<UserStatsDto
             totalVideos,
             totalQuestionsAnswered,
             quizAccuracy,
-            weeklyActivity
+            weeklyActivity,
         ] = await Promise.all([
             getTotalVideosByUserId(userId),
             getTotalQuestionsAnsweredByUserId(userId),
             getQuizAccuracyByUserId(userId),
-            getWeeklyActivityByUserId(userId)
+            getWeeklyActivityByUserId(userId),
         ]);
 
         const stats: UserStatsDto = {
@@ -38,7 +40,8 @@ export async function getUserStatsByUserId(userId: string): Promise<UserStatsDto
             totalQuestionsAnswered,
             quizAccuracy,
             videosThisWeek: weeklyActivity.videosThisWeek,
-            questionsThisWeek: weeklyActivity.questionsThisWeek        };
+            questionsThisWeek: weeklyActivity.questionsThisWeek,
+        };
 
         logger.db.info("User stats retrieved", { userId, stats });
         return stats;
@@ -49,7 +52,7 @@ export async function getUserStatsByUserId(userId: string): Promise<UserStatsDto
             totalQuestionsAnswered: 0,
             quizAccuracy: 0,
             videosThisWeek: 0,
-            questionsThisWeek: 0
+            questionsThisWeek: 0,
         };
     }
 }

@@ -25,12 +25,12 @@ export async function POST(
     // const transcript = searchParams.get("transcript");
     const { authToken, video_id, title, description, transcript } =
         await request.json();
-    
-    logger.video.debug("Processing video summary request", { 
+
+    logger.video.debug("Processing video summary request", {
         video_id,
         hasTitle: !!title,
         hasDescription: !!description,
-        hasTranscript: !!transcript
+        hasTranscript: !!transcript,
     });
 
     if (!authToken || !video_id || !title || !description || !transcript) {
@@ -81,10 +81,10 @@ export async function POST(
                 { status: 500 }
             );
         }
-        
-        logger.video.info("Summary generated successfully", { 
-            video_id, 
-            summaryLength: summary.summary?.length || 0 
+
+        logger.video.info("Summary generated successfully", {
+            video_id,
+            summaryLength: summary.summary?.length || 0,
         });
 
         const createdSummary = await createSummary({

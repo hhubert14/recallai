@@ -21,17 +21,19 @@ export const metadata: Metadata = {
 
 export default async function LibraryPage() {
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    
+    const {
+        data: { user },
+    } = await supabase.auth.getUser();
+
     // Redirect to login if user is not authenticated
     if (!user) {
-        redirect('/auth/login');
+        redirect("/auth/login");
     }
 
     // Get all user videos and subscription status
     const [allVideos, subscriptionStatus] = await Promise.all([
         getVideosByUserId(user.id),
-        getUserSubscriptionStatus(user.id)
+        getUserSubscriptionStatus(user.id),
     ]);
 
     return (
@@ -40,7 +42,9 @@ export default async function LibraryPage() {
                 <div className="container flex h-16 items-center justify-between px-6 md:px-8">
                     <div className="flex items-center gap-2">
                         <Brain className="h-6 w-6 text-blue-600 dark:text-blue-500" />
-                        <span className="text-xl font-bold text-gray-900 dark:text-white">RecallAI</span>
+                        <span className="text-xl font-bold text-gray-900 dark:text-white">
+                            RecallAI
+                        </span>
                     </div>
                     <nav className="hidden md:flex gap-6">
                         <Link
@@ -93,16 +97,19 @@ export default async function LibraryPage() {
                             My Library
                         </h1>
                         <p className="text-lg text-gray-600 dark:text-gray-300">
-                            Browse all your saved videos and track your learning progress.
+                            Browse all your saved videos and track your learning
+                            progress.
                         </p>
                     </div>
                     <div className="flex items-center gap-3">
                         <div className="flex flex-col items-end gap-3">
-                            <SubscriptionStatusBadge 
+                            <SubscriptionStatusBadge
                                 isSubscribed={subscriptionStatus.isSubscribed}
                                 status={subscriptionStatus.status}
                                 planType={subscriptionStatus.planType}
-                                currentPeriodEnd={subscriptionStatus.currentPeriodEnd}
+                                currentPeriodEnd={
+                                    subscriptionStatus.currentPeriodEnd
+                                }
                             />
                             {!subscriptionStatus.isSubscribed && (
                                 <UpgradeButton size="sm" />

@@ -24,7 +24,9 @@ export async function getYoutubeVideoData(
         const data = await response.json();
         return data;
     } catch (error) {
-        logger.video.error("Error fetching YouTube video data", error, { videoId });
+        logger.video.error("Error fetching YouTube video data", error, {
+            videoId,
+        });
         throw error;
     }
 }

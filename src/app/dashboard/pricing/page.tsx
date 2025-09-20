@@ -18,27 +18,33 @@ export const metadata: Metadata = {
 
 export default async function PricingPage() {
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+        data: { user },
+    } = await supabase.auth.getUser();
 
     // Redirect to login if user is not authenticated
     if (!user) {
-        redirect('/auth/login');
+        redirect("/auth/login");
     }
 
-    const subscriptionStatus = await getUserSubscriptionStatus(user.id);    const plans = [        {
+    const subscriptionStatus = await getUserSubscriptionStatus(user.id);
+    const plans = [
+        {
             id: "free",
             name: "Free",
             description: "Perfect for trying out RecallAI.",
             price: 0,
             features: [
                 "5 videos at a time",
-                "Auto-generated study questions", 
+                "Auto-generated study questions",
                 "Smart study notes",
                 "Progress tracking",
                 "7-day storage",
             ],
             isCurrent: !subscriptionStatus.isSubscribed,
-            buttonText: !subscriptionStatus.isSubscribed ? "Current Plan" : "Manage Subscription",
+            buttonText: !subscriptionStatus.isSubscribed
+                ? "Current Plan"
+                : "Manage Subscription",
             buttonDisabled: !subscriptionStatus.isSubscribed, // Only disabled when it's current plan
         },
         {
@@ -49,14 +55,21 @@ export default async function PricingPage() {
             features: [
                 "Unlimited videos",
                 "Auto-generated study questions",
-                "Spaced repetition system", 
+                "Spaced repetition system",
                 "Smart study notes",
                 "Progress tracking",
                 "Unlimited storage",
                 "Keep all videos forever (existing + future videos)",
-            ],            isPopular: true,
-            isCurrent: subscriptionStatus.isSubscribed && subscriptionStatus.planType === "premium",
-            buttonText: subscriptionStatus.isSubscribed && subscriptionStatus.planType === "premium" ? "Current Plan" : "Upgrade to Premium",
+            ],
+            isPopular: true,
+            isCurrent:
+                subscriptionStatus.isSubscribed &&
+                subscriptionStatus.planType === "premium",
+            buttonText:
+                subscriptionStatus.isSubscribed &&
+                subscriptionStatus.planType === "premium"
+                    ? "Current Plan"
+                    : "Upgrade to Premium",
             buttonDisabled: subscriptionStatus.isSubscribed, // Disable if user already has any subscription
         },
     ];
@@ -67,7 +80,9 @@ export default async function PricingPage() {
                 <div className="container flex h-16 items-center justify-between px-6 md:px-8">
                     <div className="flex items-center gap-2">
                         <Brain className="h-6 w-6 text-blue-600 dark:text-blue-500" />
-                        <span className="text-xl font-bold text-gray-900 dark:text-white">RecallAI</span>
+                        <span className="text-xl font-bold text-gray-900 dark:text-white">
+                            RecallAI
+                        </span>
                     </div>
                     <nav className="hidden md:flex gap-6">
                         <Link
@@ -116,21 +131,22 @@ export default async function PricingPage() {
                             Choose Your Plan
                         </h1>
                         <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl">
-                            Choose the plan that's right for you and start transforming your learning experience today.
+                            Choose the plan that's right for you and start
+                            transforming your learning experience today.
                         </p>
                     </div>
                 </div>
 
                 <div className="grid gap-8 md:grid-cols-2 max-w-4xl mx-auto">
-                    {plans.map((plan) => (
+                    {plans.map(plan => (
                         <div
                             key={plan.id}
                             className={`flex flex-col rounded-xl border p-8 shadow-sm relative ${
                                 plan.isPopular
                                     ? "border-2 border-blue-600 dark:border-blue-500 bg-white dark:bg-gray-900 shadow-lg"
                                     : plan.isCurrent
-                                    ? "border-2 border-green-500 bg-green-50 dark:bg-green-950/20 dark:border-green-400"
-                                    : "border border-blue-100 dark:border-gray-700 bg-white dark:bg-gray-900"
+                                      ? "border-2 border-green-500 bg-green-50 dark:bg-green-950/20 dark:border-green-400"
+                                      : "border border-blue-100 dark:border-gray-700 bg-white dark:bg-gray-900"
                             }`}
                         >
                             {plan.isPopular && (
@@ -144,7 +160,6 @@ export default async function PricingPage() {
                                     Current Plan
                                 </div>
                             )}
-                            
                             <div className="space-y-2">
                                 <h3 className="text-2xl font-bold text-blue-900 dark:text-blue-100">
                                     {plan.name}
@@ -153,7 +168,6 @@ export default async function PricingPage() {
                                     {plan.description}
                                 </p>
                             </div>
-                            
                             <div className="mt-4 flex items-baseline">
                                 <span className="text-4xl font-bold text-blue-900 dark:text-blue-100">
                                     ${plan.price}
@@ -162,27 +176,29 @@ export default async function PricingPage() {
                                     /month
                                 </span>
                             </div>
-                            
                             {plan.id === "premium" && (
                                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                                     Just $0.16 per day
                                 </p>
                             )}
-                            
                             <ul className="mt-6 space-y-3 flex-1">
-                                {plan.features.map((feature) => (
+                                {plan.features.map(feature => (
                                     <li
                                         key={feature}
                                         className="flex items-center gap-2"
                                     >
                                         <CheckCircle className="h-4 w-4 text-blue-600 dark:text-blue-500" />
-                                        <span className="text-gray-700 dark:text-gray-300">{feature}</span>
+                                        <span className="text-gray-700 dark:text-gray-300">
+                                            {feature}
+                                        </span>
                                     </li>
                                 ))}
-                            </ul>                            <div className="mt-8">
-                                {plan.id === "premium" && !subscriptionStatus.isSubscribed ? (
-                                    <SubscribeButton 
-                                        userId={user.id} 
+                            </ul>{" "}
+                            <div className="mt-8">
+                                {plan.id === "premium" &&
+                                !subscriptionStatus.isSubscribed ? (
+                                    <SubscribeButton
+                                        userId={user.id}
                                         className="w-full bg-blue-600 hover:bg-blue-700"
                                     />
                                 ) : plan.id === "premium" && plan.isCurrent ? (
@@ -193,14 +209,16 @@ export default async function PricingPage() {
                                         >
                                             {plan.buttonText}
                                         </Button>
-                                        <ManageBillingButton 
-                                            userId={user.id} 
-                                            className="w-full" 
+                                        <ManageBillingButton
+                                            userId={user.id}
+                                            className="w-full"
                                         />
-                                    </div>                                ) : plan.id === "free" && subscriptionStatus.isSubscribed ? (
-                                    <ManageBillingButton 
-                                        userId={user.id} 
-                                        className="w-full bg-orange-600 hover:bg-orange-700 border-orange-600" 
+                                    </div>
+                                ) : plan.id === "free" &&
+                                  subscriptionStatus.isSubscribed ? (
+                                    <ManageBillingButton
+                                        userId={user.id}
+                                        className="w-full bg-orange-600 hover:bg-orange-700 border-orange-600"
                                     />
                                 ) : (
                                     <Button
@@ -209,12 +227,14 @@ export default async function PricingPage() {
                                             plan.isCurrent
                                                 ? "bg-green-600 hover:bg-green-600 cursor-default"
                                                 : plan.buttonDisabled
-                                                ? "bg-gray-400 hover:bg-gray-400 cursor-not-allowed text-gray-600"
-                                                : "bg-blue-600 hover:bg-blue-700"
+                                                  ? "bg-gray-400 hover:bg-gray-400 cursor-not-allowed text-gray-600"
+                                                  : "bg-blue-600 hover:bg-blue-700"
                                         }`}
                                     >
-                                        {plan.buttonDisabled && !plan.isCurrent && subscriptionStatus.isSubscribed 
-                                            ? "Already Subscribed" 
+                                        {plan.buttonDisabled &&
+                                        !plan.isCurrent &&
+                                        subscriptionStatus.isSubscribed
+                                            ? "Already Subscribed"
                                             : plan.buttonText}
                                     </Button>
                                 )}
@@ -230,17 +250,19 @@ export default async function PricingPage() {
                             Why Upgrade to Premium?
                         </h2>
                         <p className="text-gray-500 dark:text-gray-400">
-                            Unlock the full potential of your learning with unlimited access to all features.
+                            Unlock the full potential of your learning with
+                            unlimited access to all features.
                         </p>
                     </div>
-                    
+
                     <div className="mt-8 grid gap-6 md:grid-cols-2">
                         <div className="p-6 rounded-lg border border-blue-100 dark:border-blue-800/30 bg-blue-50 dark:bg-blue-950/20">
                             <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">
                                 Unlimited Learning
                             </h3>
                             <p className="text-gray-600 dark:text-gray-300 text-sm">
-                                Process unlimited videos and never worry about monthly limits again.
+                                Process unlimited videos and never worry about
+                                monthly limits again.
                             </p>
                         </div>
                         <div className="p-6 rounded-lg border border-blue-100 dark:border-blue-800/30 bg-blue-50 dark:bg-blue-950/20">
@@ -248,7 +270,8 @@ export default async function PricingPage() {
                                 Advanced Features
                             </h3>
                             <p className="text-gray-600 dark:text-gray-300 text-sm">
-                                Access spaced repetition and advanced study tools for better retention.
+                                Access spaced repetition and advanced study
+                                tools for better retention.
                             </p>
                         </div>
                         <div className="p-6 rounded-lg border border-blue-100 dark:border-blue-800/30 bg-blue-50 dark:bg-blue-950/20">
@@ -256,7 +279,8 @@ export default async function PricingPage() {
                                 Permanent Storage
                             </h3>
                             <p className="text-gray-600 dark:text-gray-300 text-sm">
-                                Keep your study materials forever with unlimited storage.
+                                Keep your study materials forever with unlimited
+                                storage.
                             </p>
                         </div>
                         <div className="p-6 rounded-lg border border-blue-100 dark:border-blue-800/30 bg-blue-50 dark:bg-blue-950/20">
@@ -264,7 +288,8 @@ export default async function PricingPage() {
                                 Priority Support
                             </h3>
                             <p className="text-gray-600 dark:text-gray-300 text-sm">
-                                Get faster response times and dedicated customer support.
+                                Get faster response times and dedicated customer
+                                support.
                             </p>
                         </div>
                     </div>

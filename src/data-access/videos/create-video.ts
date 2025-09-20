@@ -11,23 +11,24 @@ export async function createVideo(videoData: CreateVideoDto) {
 
     try {
         // Get user's subscription status to determine should_expire value
-        const subscriptionStatus = await getUserSubscriptionStatusWithServiceRole(videoData.user_id);
-        
+        const subscriptionStatus =
+            await getUserSubscriptionStatusWithServiceRole(videoData.user_id);
+
         // Add detailed logging to debug the subscription status
         logger.db.debug("User subscription status for video creation", {
             userId: videoData.user_id,
             subscriptionStatus,
-            isSubscribed: subscriptionStatus.isSubscribed
+            isSubscribed: subscriptionStatus.isSubscribed,
         });
-        
+
         // Set should_expire based on subscription status
         // Free users: should_expire = true, Premium users: should_expire = false
         const should_expire = !subscriptionStatus.isSubscribed;
-        
+
         logger.db.debug("Video should_expire value calculated", {
             userId: videoData.user_id,
             isSubscribed: subscriptionStatus.isSubscribed,
-            should_expire
+            should_expire,
         });
 
         // // Check if video already exists for this user
@@ -39,10 +40,12 @@ export async function createVideo(videoData: CreateVideoDto) {
 
         const { data, error } = await supabase
             .from("videos")
-            .insert([{
-                ...videoData,
-                should_expire
-            }])
+            .insert([
+                {
+                    ...videoData,
+                    should_expire,
+                },
+            ])
             .select()
             .single();
 
@@ -56,9 +59,9 @@ export async function createVideo(videoData: CreateVideoDto) {
 
         return data;
     } catch (error) {
-        logger.db.error("Error creating video", error, { 
-            userId: videoData.user_id, 
-            url: videoData.url 
+        logger.db.error("Error creating video", error, {
+            userId: videoData.user_id,
+            url: videoData.url,
         });
         throw error;
     }

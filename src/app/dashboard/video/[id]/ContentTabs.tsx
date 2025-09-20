@@ -13,7 +13,12 @@ interface ContentTabsProps {
     videoId: number;
 }
 
-export function ContentTabs({ summary, questions, userId, videoId }: ContentTabsProps) {
+export function ContentTabs({
+    summary,
+    questions,
+    userId,
+    videoId,
+}: ContentTabsProps) {
     const [activeTab, setActiveTab] = useState<"summary" | "qa">("summary");
 
     return (

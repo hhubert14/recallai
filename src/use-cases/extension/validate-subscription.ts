@@ -6,7 +6,10 @@ import { logger } from "@/lib/logger";
 export interface SubscriptionValidationResult {
     allowed: boolean;
     error?: {
-        type: 'SUBSCRIPTION_REQUIRED' | 'MONTHLY_LIMIT_EXCEEDED' | 'VIDEO_LIMIT_EXCEEDED';
+        type:
+            | "SUBSCRIPTION_REQUIRED"
+            | "MONTHLY_LIMIT_EXCEEDED"
+            | "VIDEO_LIMIT_EXCEEDED";
         message: string;
         currentUsage?: number;
         limit?: number;
@@ -26,69 +29,87 @@ const SUBSCRIPTION_LIMITS: Record<string, SubscriptionLimits> = {
     },
     premium: {
         monthlyVideoLimit: Infinity, // Premium users have unlimited access
-    }
+    },
 };
 
-export async function validateSubscriptionForExtension(userId: string): Promise<SubscriptionValidationResult> {
-    logger.subscription.debug("Validating subscription for extension user", { userId });
-    
+export async function validateSubscriptionForExtension(
+    userId: string
+): Promise<SubscriptionValidationResult> {
+    logger.subscription.debug("Validating subscription for extension user", {
+        userId,
+    });
+
     try {
         const supabase = createServiceRoleClient();
-        
+
         // Get user's subscription status directly from database using service role client
         // This ensures we get the most up-to-date data, not cached session data
         const { data: userData, error: userError } = await supabase
-            .from('users')
-            .select('is_subscribed')
-            .eq('id', userId)
-            .single();        if (userError || !userData) {
-            logger.subscription.error("Error fetching user subscription data", userError, { userId });
+            .from("users")
+            .select("is_subscribed")
+            .eq("id", userId)
+            .single();
+        if (userError || !userData) {
+            logger.subscription.error(
+                "Error fetching user subscription data",
+                userError,
+                { userId }
+            );
             return {
                 allowed: false,
                 error: {
-                    type: 'SUBSCRIPTION_REQUIRED',
-                    message: 'Unable to verify user subscription status',
-                    requiresUpgrade: false
-                }
+                    type: "SUBSCRIPTION_REQUIRED",
+                    message: "Unable to verify user subscription status",
+                    requiresUpgrade: false,
+                },
             };
         }
 
         const isSubscribed = userData.is_subscribed;
-        logger.subscription.debug("User subscription status from database", { userId, isSubscribed });
-        
+        logger.subscription.debug("User subscription status from database", {
+            userId,
+            isSubscribed,
+        });
+
         // Calculate the start of current month to count videos
         const now = new Date();
         const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-          // Count videos created this month that count towards free plan limit
+        // Count videos created this month that count towards free plan limit
         // Only videos processed under free plan (should_expire = true) count towards the limit
-        const { count: currentMonthVideoCount, error: videoCountError } = await supabase
-            .from('videos')
-            .select('*', { count: 'exact', head: true })
-            .eq('user_id', userId)
-            .eq('should_expire', true)
-            .gte('created_at', startOfMonth.toISOString());if (videoCountError) {
-            logger.subscription.error("Error counting user videos", videoCountError, { userId });
+        const { count: currentMonthVideoCount, error: videoCountError } =
+            await supabase
+                .from("videos")
+                .select("*", { count: "exact", head: true })
+                .eq("user_id", userId)
+                .eq("should_expire", true)
+                .gte("created_at", startOfMonth.toISOString());
+        if (videoCountError) {
+            logger.subscription.error(
+                "Error counting user videos",
+                videoCountError,
+                { userId }
+            );
             return {
                 allowed: false,
                 error: {
-                    type: 'SUBSCRIPTION_REQUIRED',
-                    message: 'Unable to verify user video usage',
-                    requiresUpgrade: false
-                }
+                    type: "SUBSCRIPTION_REQUIRED",
+                    message: "Unable to verify user video usage",
+                    requiresUpgrade: false,
+                },
             };
         }
 
         const currentUsage = currentMonthVideoCount || 0;
-        
+
         // Determine user's plan and limits
-        const userPlan = isSubscribed ? 'premium' : 'free';
+        const userPlan = isSubscribed ? "premium" : "free";
         const limits = SUBSCRIPTION_LIMITS[userPlan];
-        
-        logger.subscription.info("User plan validation", { 
-            userId, 
-            userPlan, 
-            currentUsage, 
-            monthlyLimit: limits.monthlyVideoLimit 
+
+        logger.subscription.info("User plan validation", {
+            userId,
+            userPlan,
+            currentUsage,
+            monthlyLimit: limits.monthlyVideoLimit,
         });
 
         // Check if user has exceeded their monthly limit
@@ -96,29 +117,32 @@ export async function validateSubscriptionForExtension(userId: string): Promise<
             return {
                 allowed: false,
                 error: {
-                    type: 'MONTHLY_LIMIT_EXCEEDED',
-                    message: isSubscribed 
-                        ? 'You have reached your monthly video processing limit'
-                        : 'You have reached your free monthly limit. Upgrade to Premium for unlimited access',
+                    type: "MONTHLY_LIMIT_EXCEEDED",
+                    message: isSubscribed
+                        ? "You have reached your monthly video processing limit"
+                        : "You have reached your free monthly limit. Upgrade to Premium for unlimited access",
                     currentUsage,
                     limit: limits.monthlyVideoLimit,
-                    requiresUpgrade: !isSubscribed
-                }
+                    requiresUpgrade: !isSubscribed,
+                },
             };
         }
 
         // If we get here, user is allowed to process videos
         return {
-            allowed: true
-        };    } catch (error) {
-        logger.subscription.error("Error validating subscription", error, { userId });
+            allowed: true,
+        };
+    } catch (error) {
+        logger.subscription.error("Error validating subscription", error, {
+            userId,
+        });
         return {
             allowed: false,
             error: {
-                type: 'SUBSCRIPTION_REQUIRED',
-                message: 'Unable to validate subscription. Please try again.',
-                requiresUpgrade: false
-            }
+                type: "SUBSCRIPTION_REQUIRED",
+                message: "Unable to validate subscription. Please try again.",
+                requiresUpgrade: false,
+            },
         };
     }
 }

@@ -15,9 +15,7 @@ export default function ConfirmEmailPage() {
                     <div className="flex flex-col items-center space-y-4">
                         <Link href="/" className="flex items-center gap-2">
                             <Brain className="h-8 w-8 text-blue-600" />
-                            <span className="text-2xl font-bold">
-                                RecallAI
-                            </span>
+                            <span className="text-2xl font-bold">RecallAI</span>
                         </Link>
                         <h1 className="text-3xl font-bold tracking-tight text-blue-900">
                             Check Your Email

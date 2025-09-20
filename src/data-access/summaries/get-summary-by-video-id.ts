@@ -3,7 +3,9 @@ import { createServiceRoleClient } from "@/lib/supabase/service-role";
 import { SummaryDto } from "./types";
 import { logger } from "@/lib/logger";
 
-export async function getSummaryByVideoId(videoId: number): Promise<SummaryDto | null> {
+export async function getSummaryByVideoId(
+    videoId: number
+): Promise<SummaryDto | null> {
     if (!videoId) {
         return null;
     }
@@ -24,7 +26,9 @@ export async function getSummaryByVideoId(videoId: number): Promise<SummaryDto |
 
         return data;
     } catch (error) {
-        logger.db.error("Error fetching summary by video ID", error, { videoId });
+        logger.db.error("Error fetching summary by video ID", error, {
+            videoId,
+        });
         return null;
     }
 }

@@ -14,9 +14,9 @@ export async function checkVideoEducational(
     logger.video.debug("Checking if video is educational", {
         title,
         hasDescription: !!description,
-        transcriptLength: transcript?.length || 0
+        transcriptLength: transcript?.length || 0,
     });
-    
+
     // Title and transcript are required, but description can be empty
     if (!title || !transcript) {
         return undefined;
@@ -45,14 +45,14 @@ Examples of non-educational content:
 - Entertainment/comedy content
 - Vlogs and personal stories
 - Reaction videos
-- Casual conversations about topics`
+- Casual conversations about topics`,
             },
             {
                 role: "user",
                 content: `Classify this video as educational or not educational based on its primary purpose.
 
 Title: ${title}
-Description: ${description || 'No description provided'}
+Description: ${description || "No description provided"}
 Transcript excerpt: ${transcriptText.substring(0, 2000)}...
 
 Respond with exactly "EDUCATIONAL" or "NOT_EDUCATIONAL" and nothing else.`,
@@ -63,9 +63,9 @@ Respond with exactly "EDUCATIONAL" or "NOT_EDUCATIONAL" and nothing else.`,
 
     const answer = response.choices[0].message.content?.trim();
 
-    logger.video.debug("OpenAI educational classification response", { 
+    logger.video.debug("OpenAI educational classification response", {
         answer,
-        isEducational: answer === "EDUCATIONAL"
+        isEducational: answer === "EDUCATIONAL",
     });
 
     if (!answer || typeof answer !== "string") {

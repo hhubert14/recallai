@@ -9,7 +9,7 @@ export async function getVideosByUserId(
     limit?: number
 ): Promise<VideoDto[]> {
     logger.db.debug("Getting videos by user ID", { userId, limit });
-    
+
     if (!userId) {
         logger.db.warn("Invalid parameters - userId is empty");
         return [];
@@ -19,7 +19,7 @@ export async function getVideosByUserId(
 
     try {
         logger.db.debug("Querying database for videos", { userId });
-          let query = supabase
+        let query = supabase
             .from("videos")
             .select("*")
             .eq("user_id", userId)
@@ -30,7 +30,8 @@ export async function getVideosByUserId(
             query = query.limit(limit);
         }
 
-        const { data, error } = await query;        if (error) {
+        const { data, error } = await query;
+        if (error) {
             logger.db.error("Database query error", error, { userId });
             throw error;
         }
@@ -40,9 +41,12 @@ export async function getVideosByUserId(
             return [];
         }
 
-        logger.db.info("Found videos for user", { userId, videoCount: data.length });
-        const mappedVideos = data.map((video) => toDtoMapper(video));
-        
+        logger.db.info("Found videos for user", {
+            userId,
+            videoCount: data.length,
+        });
+        const mappedVideos = data.map(video => toDtoMapper(video));
+
         return mappedVideos;
     } catch (error) {
         logger.db.error("Error fetching videos by user ID", error, { userId });

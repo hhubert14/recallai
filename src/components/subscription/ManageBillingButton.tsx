@@ -10,15 +10,19 @@ interface ManageBillingButtonProps {
     className?: string;
 }
 
-export function ManageBillingButton({ userId, className }: ManageBillingButtonProps) {
-    const [isLoading, setIsLoading] = useState(false);    const handleManageBilling = async () => {
+export function ManageBillingButton({
+    userId,
+    className,
+}: ManageBillingButtonProps) {
+    const [isLoading, setIsLoading] = useState(false);
+    const handleManageBilling = async () => {
         setIsLoading(true);
         try {
-            const result = await createBillingPortalSession({ 
+            const result = await createBillingPortalSession({
                 userId,
-                returnUrl: `${window.location.origin}/dashboard/settings`
+                returnUrl: `${window.location.origin}/dashboard/settings`,
             });
-            
+
             // Redirect to the billing portal URL
             if (result?.url) {
                 window.location.href = result.url;
@@ -27,9 +31,11 @@ export function ManageBillingButton({ userId, className }: ManageBillingButtonPr
             }
         } catch (error: any) {
             console.error("Error opening billing portal:", error);
-            
+
             // Show user-friendly error message
-            const errorMessage = error.message || "Failed to open billing portal. Please try again.";
+            const errorMessage =
+                error.message ||
+                "Failed to open billing portal. Please try again.";
             alert(errorMessage);
         } finally {
             setIsLoading(false);

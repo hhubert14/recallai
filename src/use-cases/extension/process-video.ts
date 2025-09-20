@@ -10,7 +10,12 @@ export const processVideo = async (
     authToken: string,
     processType: "automatic" | "manual",
     request: NextRequest
-) => {    logger.extension.info("Processing video request", { videoUrl, videoId, processType });
+) => {
+    logger.extension.info("Processing video request", {
+        videoUrl,
+        videoId,
+        processType,
+    });
     const encodedVideoUrl = encodeURIComponent(videoUrl);
 
     // Implementation for processing the video
@@ -29,30 +34,36 @@ export const processVideo = async (
 
     if (!authenticatedUserId) {
         throw new Error("User not authenticated");
-    }    // 2. Check if video already exists for this user
+    } // 2. Check if video already exists for this user
     logger.extension.debug("Checking if video already exists");
     const existingVideo = await getVideoByUrl(videoUrl, authenticatedUserId);
     if (existingVideo) {
-        logger.extension.info("Video already exists, returning existing data", { videoId: existingVideo.id });
+        logger.extension.info("Video already exists, returning existing data", {
+            videoId: existingVideo.id,
+        });
         return {
             video_id: existingVideo.id,
             summary: "Video already processed",
             questions: [],
             message: "Video already exists in your library",
-            alreadyExists: true
+            alreadyExists: true,
         };
     }
 
     // 3. Validate subscription limits before processing
     logger.extension.debug("Validating subscription limits");
-    const subscriptionValidation = await validateSubscriptionForExtension(authenticatedUserId);
+    const subscriptionValidation =
+        await validateSubscriptionForExtension(authenticatedUserId);
     if (!subscriptionValidation.allowed && subscriptionValidation.error) {
         const error = subscriptionValidation.error;
         throw new Error(`${error.type}: ${error.message}`);
-    }    if (processType === "automatic") {
+    }
+    if (processType === "automatic") {
         // Logic for automatic processing
-        logger.extension.info("Starting automatic video processing", { videoId });
-        
+        logger.extension.info("Starting automatic video processing", {
+            videoId,
+        });
+
         // Now proceed with the expensive API calls since checks passed
         const queryParams = new URLSearchParams();
         queryParams.append("videoId", videoId);
@@ -77,11 +88,12 @@ export const processVideo = async (
             );
         }
         if (!videoData || !videoData.videoData) {
-            throw new Error("Invalid response from educational endpoint");        }
+            throw new Error("Invalid response from educational endpoint");
+        }
 
-        logger.extension.debug("Video educational check completed", { 
-            videoId, 
-            isEducational: videoData.isEducational 
+        logger.extension.debug("Video educational check completed", {
+            videoId,
+            isEducational: videoData.isEducational,
         });
 
         response = await fetch(
@@ -102,11 +114,11 @@ export const processVideo = async (
                     video_id: videoId,
                 }),
             }
-        );        // First, get the raw response and log it to see its structure
+        ); // First, get the raw response and log it to see its structure
         const responseJson = await response.json();
-        logger.extension.debug("Video creation API response received", { 
+        logger.extension.debug("Video creation API response received", {
             success: response.ok,
-            status: response.status 
+            status: response.status,
         });
 
         // Then extract createdVideo based on the actual structure
@@ -119,8 +131,8 @@ export const processVideo = async (
             );
         }
 
-        logger.extension.info("Video created successfully", { 
-            videoId: createdVideo?.video_id 
+        logger.extension.info("Video created successfully", {
+            videoId: createdVideo?.video_id,
         });
 
         // Check if createdVideo has video_id before using it
@@ -132,7 +144,8 @@ export const processVideo = async (
 
         const video_id_num = createdVideo.id;
 
-        const title = videoData.videoData.snippet.title || "No Title";        const description =
+        const title = videoData.videoData.snippet.title || "No Title";
+        const description =
             videoData.videoData.snippet.description || "No Description";
         const transcript = videoData.transcript || "No Transcript";
 
@@ -159,10 +172,11 @@ export const processVideo = async (
             throw new Error(
                 `Error generating summary: ${summaryData.error || "Unknown error"}`
             );
-        }        const summary = summaryData.content || "No Summary";
-        logger.extension.info("Summary generated successfully", { 
+        }
+        const summary = summaryData.content || "No Summary";
+        logger.extension.info("Summary generated successfully", {
             videoId: video_id_num,
-            summaryLength: summary.length 
+            summaryLength: summary.length,
         });
 
         response = await fetch(
@@ -188,9 +202,10 @@ export const processVideo = async (
             throw new Error(
                 `Error generating questions: ${questionsData.error || "Unknown error"}`
             );
-        }        logger.extension.info("Questions generated successfully", { 
+        }
+        logger.extension.info("Questions generated successfully", {
             videoId: video_id_num,
-            questionCount: questionsData.questions?.length || 0
+            questionCount: questionsData.questions?.length || 0,
         });
 
         return {

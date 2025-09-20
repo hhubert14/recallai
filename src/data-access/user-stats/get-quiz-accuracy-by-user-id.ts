@@ -7,13 +7,17 @@ export async function getQuizAccuracyByUserId(userId: string): Promise<number> {
         return 0;
     }
 
-    const supabase = await createServiceRoleClient();    try {
+    const supabase = await createServiceRoleClient();
+    try {
         // First, get all video IDs that are not soft-deleted
         const { data: validVideos, error: videoError } = await supabase
             .from("videos")
             .select("id")
-            .is("deleted_at", null);        if (videoError) {
-            logger.db.error("Database query error for videos", videoError, { userId });
+            .is("deleted_at", null);
+        if (videoError) {
+            logger.db.error("Database query error for videos", videoError, {
+                userId,
+            });
             throw videoError;
         }
 
@@ -27,8 +31,13 @@ export async function getQuizAccuracyByUserId(userId: string): Promise<number> {
         const { data: validQuestions, error: questionError } = await supabase
             .from("questions")
             .select("id")
-            .in("video_id", validVideoIds);        if (questionError) {
-            logger.db.error("Database query error for questions", questionError, { userId });
+            .in("video_id", validVideoIds);
+        if (questionError) {
+            logger.db.error(
+                "Database query error for questions",
+                questionError,
+                { userId }
+            );
             throw questionError;
         }
 
@@ -43,7 +52,8 @@ export async function getQuizAccuracyByUserId(userId: string): Promise<number> {
             .from("user_answers")
             .select("is_correct")
             .eq("user_id", userId)
-            .in("question_id", validQuestionIds);        if (error) {
+            .in("question_id", validQuestionIds);
+        if (error) {
             logger.db.error("Database query error", error, { userId });
             throw error;
         }
@@ -58,7 +68,9 @@ export async function getQuizAccuracyByUserId(userId: string): Promise<number> {
 
         return Math.round(accuracy);
     } catch (error) {
-        logger.db.error("Error fetching quiz accuracy by user ID", error, { userId });
+        logger.db.error("Error fetching quiz accuracy by user ID", error, {
+            userId,
+        });
         return 0;
     }
 }

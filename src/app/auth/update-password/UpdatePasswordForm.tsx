@@ -42,7 +42,7 @@ export function UpdatePasswordForm() {
                     <p className="text-sm text-red-800">{error}</p>
                 </div>
             )}
-            
+
             <div>
                 <Label htmlFor="password">New password</Label>
                 <Input
@@ -59,7 +59,7 @@ export function UpdatePasswordForm() {
                     maxLength={64}
                 />
             </div>
-            
+
             <div>
                 <Button
                     type="submit"

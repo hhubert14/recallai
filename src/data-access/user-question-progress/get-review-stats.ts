@@ -21,35 +21,42 @@ export async function getReviewStats(userId: string): Promise<ReviewStatsDto> {
             questionsInBox2: 0,
             questionsInBox3: 0,
             questionsInBox4: 0,
-            questionsInBox5: 0
+            questionsInBox5: 0,
         };
     }
 
     const supabase = await createServiceRoleClient();
 
     try {
-        const today = new Date().toISOString().split('T')[0];
+        const today = new Date().toISOString().split("T")[0];
 
         // Get questions due today
-        const { count: questionsDueToday, error: dueTodayError } = await supabase
-            .from("user_question_progress")
-            .select("*", { count: 'exact', head: true })
-            .eq("user_id", userId)
-            .lte("next_review_date", today)
-            .not("next_review_date", "is", null);
+        const { count: questionsDueToday, error: dueTodayError } =
+            await supabase
+                .from("user_question_progress")
+                .select("*", { count: "exact", head: true })
+                .eq("user_id", userId)
+                .lte("next_review_date", today)
+                .not("next_review_date", "is", null);
 
         if (dueTodayError) {
-            logger.db.error("Error fetching questions due today", dueTodayError, { userId });
+            logger.db.error(
+                "Error fetching questions due today",
+                dueTodayError,
+                { userId }
+            );
         }
 
         // Get total questions in system
         const { count: totalQuestions, error: totalError } = await supabase
             .from("user_question_progress")
-            .select("*", { count: 'exact', head: true })
+            .select("*", { count: "exact", head: true })
             .eq("user_id", userId);
 
         if (totalError) {
-            logger.db.error("Error fetching total questions", totalError, { userId });
+            logger.db.error("Error fetching total questions", totalError, {
+                userId,
+            });
         }
 
         // Get questions by box level
@@ -59,12 +66,18 @@ export async function getReviewStats(userId: string): Promise<ReviewStatsDto> {
             .eq("user_id", userId);
 
         if (boxError) {
-            logger.db.error("Error fetching box distribution", boxError, { userId });
+            logger.db.error("Error fetching box distribution", boxError, {
+                userId,
+            });
         }
 
         // Count questions by box
         const boxCounts = {
-            1: 0, 2: 0, 3: 0, 4: 0, 5: 0
+            1: 0,
+            2: 0,
+            3: 0,
+            4: 0,
+            5: 0,
         };
 
         if (boxData) {
@@ -83,7 +96,7 @@ export async function getReviewStats(userId: string): Promise<ReviewStatsDto> {
             questionsInBox2: boxCounts[2],
             questionsInBox3: boxCounts[3],
             questionsInBox4: boxCounts[4],
-            questionsInBox5: boxCounts[5]
+            questionsInBox5: boxCounts[5],
         };
     } catch (error) {
         logger.db.error("Error fetching review stats", error, { userId });
@@ -94,7 +107,7 @@ export async function getReviewStats(userId: string): Promise<ReviewStatsDto> {
             questionsInBox2: 0,
             questionsInBox3: 0,
             questionsInBox4: 0,
-            questionsInBox5: 0
+            questionsInBox5: 0,
         };
     }
 }

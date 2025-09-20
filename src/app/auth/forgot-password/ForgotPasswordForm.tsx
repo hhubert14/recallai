@@ -60,7 +60,10 @@ export function ForgotPasswordForm({
             ) : (
                 <form onSubmit={handleForgotPassword} className="space-y-6">
                     <div className="space-y-2">
-                        <Label htmlFor="email" className="text-gray-700 dark:text-gray-300">
+                        <Label
+                            htmlFor="email"
+                            className="text-gray-700 dark:text-gray-300"
+                        >
                             Email
                         </Label>
                         <Input
@@ -73,7 +76,7 @@ export function ForgotPasswordForm({
                             className="border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900"
                         />
                     </div>
-                    
+
                     {error && (
                         <div className="rounded-lg bg-red-50 dark:bg-red-950/20 p-4">
                             <p className="text-sm text-red-600 dark:text-red-400">
@@ -81,7 +84,7 @@ export function ForgotPasswordForm({
                             </p>
                         </div>
                     )}
-                    
+
                     <Button
                         type="submit"
                         className="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700"

@@ -41,7 +41,7 @@ export function RegenerateTokenButton() {
         setIsLoading(true);
         setError(null);
         setSuccess(false);
-        
+
         try {
             const response = await fetch(
                 "/api/v1/auth/extension/generate-token",
@@ -72,7 +72,10 @@ export function RegenerateTokenButton() {
                     },
                     response => {
                         if (!response || !response.success) {
-                            console.warn("Extension not found or failed to authenticate:", response);
+                            console.warn(
+                                "Extension not found or failed to authenticate:",
+                                response
+                            );
                             // Don't throw error, just show success for token generation
                         } else {
                             console.log("Extension authenticated successfully");
@@ -80,7 +83,7 @@ export function RegenerateTokenButton() {
                     }
                 );
             }
-            
+
             setSuccess(true);
         } catch (err) {
             setError(
@@ -117,11 +120,12 @@ export function RegenerateTokenButton() {
                     <AlertDescription>{error}</AlertDescription>
                 </Alert>
             )}
-            
+
             {success && (
                 <Alert className="bg-green-50 border-green-200 mb-2">
                     <AlertDescription>
-                        New token generated successfully! If you have the extension installed, it has been automatically updated.
+                        New token generated successfully! If you have the
+                        extension installed, it has been automatically updated.
                     </AlertDescription>
                 </Alert>
             )}

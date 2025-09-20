@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useRouter } from 'next/navigation';
-import { RefreshCw } from 'lucide-react';
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { useRouter } from "next/navigation";
+import { RefreshCw } from "lucide-react";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 export function TextRefreshButton() {
     const router = useRouter();
@@ -24,10 +24,10 @@ export function TextRefreshButton() {
             size="sm"
             className="text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400"
         >
-            <RefreshCw 
-                className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} 
+            <RefreshCw
+                className={`h-4 w-4 mr-2 ${isRefreshing ? "animate-spin" : ""}`}
             />
-            {isRefreshing ? 'Refreshing...' : 'Refresh'}
+            {isRefreshing ? "Refreshing..." : "Refresh"}
         </Button>
     );
 }

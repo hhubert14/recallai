@@ -36,11 +36,12 @@ export async function getAllVideosByUserId(
         if (error) {
             logger.db.error("Database query error", error, { userId });
             throw error;
-        }        if (!data || data.length === 0) {
+        }
+        if (!data || data.length === 0) {
             return [];
         }
 
-        const mappedVideos = data.map((video) => toDtoMapper(video));
+        const mappedVideos = data.map(video => toDtoMapper(video));
         return mappedVideos;
     } catch (error) {
         logger.db.error("Error fetching videos by user ID", error, { userId });

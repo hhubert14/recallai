@@ -40,7 +40,11 @@ export function UserButton() {
                     <User className="h-5 w-5" />
                 </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg" align="end" forceMount>
+            <DropdownMenuContent
+                className="w-56 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg"
+                align="end"
+                forceMount
+            >
                 <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
                         <p className="text-sm font-medium leading-none text-gray-900 dark:text-white">
@@ -60,13 +64,20 @@ export function UserButton() {
                     <span>Settings</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                    <a href="mailto:hubert@recallai.io" className="text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:bg-gray-50 dark:focus:bg-gray-700">
+                    <a
+                        href="mailto:hubert@recallai.io"
+                        className="text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:bg-gray-50 dark:focus:bg-gray-700"
+                    >
                         <HelpCircle className="mr-2 h-4 w-4" />
                         <span>Contact Support</span>
                     </a>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator className="bg-gray-200 dark:bg-gray-600" />
-                <DropdownMenuItem onClick={handleSignOut} disabled={isLoading} className="text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:bg-gray-50 dark:focus:bg-gray-700">
+                <DropdownMenuItem
+                    onClick={handleSignOut}
+                    disabled={isLoading}
+                    className="text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:bg-gray-50 dark:focus:bg-gray-700"
+                >
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>{isLoading ? "Signing out..." : "Sign out"}</span>
                 </DropdownMenuItem>

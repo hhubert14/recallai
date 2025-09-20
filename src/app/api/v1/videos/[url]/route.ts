@@ -33,7 +33,8 @@ export async function POST(
             { error: "User not authenticated" },
             { status: 401 }
         );
-    }    try {
+    }
+    try {
         // Remove user_id from the request body since we'll use the authenticated user's ID
         const {
             platform,
@@ -58,7 +59,8 @@ export async function POST(
                 },
                 { status: 400 }
             );
-        }        const videoExists = await getVideoByUrl(videoUrl, authenticatedUserId);
+        }
+        const videoExists = await getVideoByUrl(videoUrl, authenticatedUserId);
         if (videoExists) {
             return NextResponse.json(
                 {
@@ -79,10 +81,14 @@ export async function POST(
             url,
             description,
             video_id,
-        };        // Create the video using the authenticated user's ID
-        const createdVideo = await createVideo(videoData);        return NextResponse.json(createdVideo, { status: 201 });
+        }; // Create the video using the authenticated user's ID
+        const createdVideo = await createVideo(videoData);
+        return NextResponse.json(createdVideo, { status: 201 });
     } catch (error) {
-        logger.video.error("Error creating video", error, { videoUrl, platform: body?.platform });
+        logger.video.error("Error creating video", error, {
+            videoUrl,
+            platform: body?.platform,
+        });
         return NextResponse.json(
             {
                 error: "Failed to create video",

@@ -20,11 +20,13 @@ export const metadata: Metadata = {
 
 export default async function ReviewPage() {
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+        data: { user },
+    } = await supabase.auth.getUser();
 
     // Redirect to login if user is not authenticated
     if (!user) {
-        redirect('/auth/login');
+        redirect("/auth/login");
     }
 
     const subscriptionStatus = await getUserSubscriptionStatus(user.id);
@@ -32,10 +34,11 @@ export default async function ReviewPage() {
     // Only allow premium users to access review
     if (!subscriptionStatus.isSubscribed) {
         return <UpgradePrompt />;
-    }    const [reviewStats, dueQuestions, initialQuestions] = await Promise.all([
+    }
+    const [reviewStats, dueQuestions, initialQuestions] = await Promise.all([
         getReviewStats(user.id),
         getQuestionsDueForReview(user.id),
-        getQuestionsForInitialReview(user.id, 5)
+        getQuestionsForInitialReview(user.id, 5),
     ]);
 
     return (
@@ -44,7 +47,9 @@ export default async function ReviewPage() {
                 <div className="container flex h-16 items-center justify-between px-6 md:px-8">
                     <div className="flex items-center gap-2">
                         <Brain className="h-6 w-6 text-blue-600 dark:text-blue-500" />
-                        <span className="text-xl font-bold text-gray-900 dark:text-white">RecallAI</span>
+                        <span className="text-xl font-bold text-gray-900 dark:text-white">
+                            RecallAI
+                        </span>
                     </div>
                     <nav className="hidden md:flex gap-6">
                         <Link
@@ -87,10 +92,12 @@ export default async function ReviewPage() {
                             Review Questions
                         </h1>
                         <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl">
-                            Use spaced repetition to reinforce your learning and improve retention.
+                            Use spaced repetition to reinforce your learning and
+                            improve retention.
                         </p>
                     </div>
-                </div>                <ReviewInterface 
+                </div>{" "}
+                <ReviewInterface
                     userId={user.id}
                     reviewStats={reviewStats}
                     dueQuestions={dueQuestions}

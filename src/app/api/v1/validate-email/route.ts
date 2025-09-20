@@ -37,13 +37,19 @@ export async function GET(request: Request) {
         const data = await response.json();
 
         if (data.error) {
-            logger.extension.error("ZeroBounce API error", data.error, { email });
+            logger.extension.error("ZeroBounce API error", data.error, {
+                email,
+            });
             return NextResponse.json({ status: "unknown", reason: data.error });
         }
 
         return NextResponse.json(data);
     } catch (error) {
-        logger.extension.error("Error validating email with ZeroBounce", error, { email });
+        logger.extension.error(
+            "Error validating email with ZeroBounce",
+            error,
+            { email }
+        );
         return NextResponse.json(
             { status: "unknown", reason: "API error" },
             { status: 500 }

@@ -25,15 +25,19 @@ interface VideoDetailPageProps {
     }>;
 }
 
-export default async function VideoDetailPage({ params }: VideoDetailPageProps) {
+export default async function VideoDetailPage({
+    params,
+}: VideoDetailPageProps) {
     const { id } = await params;
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+        data: { user },
+    } = await supabase.auth.getUser();
 
     // Redirect to login if user is not authenticated
     if (!user) {
-        redirect('/auth/login');
-    }    // Get all user videos to find the specific one
+        redirect("/auth/login");
+    } // Get all user videos to find the specific one
     const userVideos = await getVideosByUserId(user.id);
     const video = userVideos.find(v => v.id === parseInt(id));
 
@@ -45,12 +49,13 @@ export default async function VideoDetailPage({ params }: VideoDetailPageProps) 
     const [summary, questions, subscriptionStatus] = await Promise.all([
         getSummaryByVideoId(video.id),
         getQuestionsByVideoId(video.id),
-        getUserSubscriptionStatus(user.id)
+        getUserSubscriptionStatus(user.id),
     ]);
 
     // Extract YouTube video ID from URL
     const getYouTubeVideoId = (url: string): string | null => {
-        const regex = /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/;
+        const regex =
+            /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/;
         const match = url.match(regex);
         return match ? match[1] : null;
     };
@@ -63,7 +68,9 @@ export default async function VideoDetailPage({ params }: VideoDetailPageProps) 
                 <div className="container flex h-16 items-center justify-between px-6 md:px-8">
                     <div className="flex items-center gap-2">
                         <Brain className="h-6 w-6 text-blue-600 dark:text-blue-500" />
-                        <span className="text-xl font-bold text-gray-900 dark:text-white">RecallAI</span>
+                        <span className="text-xl font-bold text-gray-900 dark:text-white">
+                            RecallAI
+                        </span>
                     </div>
                     <nav className="hidden md:flex gap-6">
                         <Link
@@ -120,10 +127,11 @@ export default async function VideoDetailPage({ params }: VideoDetailPageProps) 
                             by {video.channel_name}
                         </p>
                     )}
-                </div>                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 min-h-[calc(100vh-200px)]">
+                </div>{" "}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 min-h-[calc(100vh-200px)]">
                     {/* Video Player - Left Side on Desktop, Top on Mobile */}
                     <div className="bg-black rounded-xl overflow-hidden aspect-video lg:aspect-auto shadow-lg">
-                        <VideoPlayer 
+                        <VideoPlayer
                             videoId={youtubeVideoId}
                             title={video.title}
                         />

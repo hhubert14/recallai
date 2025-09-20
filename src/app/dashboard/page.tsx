@@ -26,20 +26,22 @@ export const metadata: Metadata = {
 
 export default async function DashboardPage() {
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    
+    const {
+        data: { user },
+    } = await supabase.auth.getUser();
+
     // Redirect to login if user is not authenticated
     if (!user) {
-        redirect('/auth/login');
+        redirect("/auth/login");
     }
-    
+
     let recentVideos: VideoDto[] = [];
     let userStats = {
         totalVideos: 0,
         totalQuestionsAnswered: 0,
         quizAccuracy: 0,
         videosThisWeek: 0,
-        questionsThisWeek: 0
+        questionsThisWeek: 0,
     };
     let subscriptionStatus: UserSubscriptionStatus = { isSubscribed: false };
     let videosThisMonth = 0;
@@ -48,7 +50,7 @@ export default async function DashboardPage() {
         getVideosByUserId(user.id, 5), // Get latest 5 videos
         getUserStatsByUserId(user.id),
         getUserSubscriptionStatus(user.id),
-        getVideosThisMonthByUserId(user.id)
+        getVideosThisMonthByUserId(user.id),
     ]);
     recentVideos = videos;
     userStats = stats;
@@ -60,8 +62,11 @@ export default async function DashboardPage() {
                 <div className="container flex h-16 items-center justify-between px-6 md:px-8">
                     <div className="flex items-center gap-2">
                         <Brain className="h-6 w-6 text-blue-600" />
-                        <span className="text-xl font-bold text-gray-900 dark:text-white">RecallAI</span>
-                    </div>                    <nav className="hidden md:flex gap-6">
+                        <span className="text-xl font-bold text-gray-900 dark:text-white">
+                            RecallAI
+                        </span>
+                    </div>{" "}
+                    <nav className="hidden md:flex gap-6">
                         <Link
                             href="/dashboard"
                             className="text-sm font-medium text-blue-600"
@@ -120,33 +125,50 @@ export default async function DashboardPage() {
                         {!subscriptionStatus.isSubscribed && (
                             <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg p-3 w-44">
                                 <div className="flex items-center gap-2 mb-2">
-                                    <svg className="h-4 w-4 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    <svg
+                                        className="h-4 w-4 text-orange-600 dark:text-orange-400"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                        />
                                     </svg>
-                                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Video Usage</span>
+                                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Video Usage
+                                    </span>
                                     <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">
                                         {videosThisMonth} / 5
                                     </span>
                                 </div>
                                 <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
-                                    <div 
-                                        className="bg-orange-600 h-1.5 rounded-full transition-all duration-300" 
-                                        style={{ width: `${Math.min(videosThisMonth / 5 * 100, 100)}%` }}
+                                    <div
+                                        className="bg-orange-600 h-1.5 rounded-full transition-all duration-300"
+                                        style={{
+                                            width: `${Math.min((videosThisMonth / 5) * 100, 100)}%`,
+                                        }}
                                     ></div>
                                 </div>
                                 {videosThisMonth >= 4 && (
                                     <p className="text-xs text-amber-600 dark:text-amber-400 mt-1 leading-relaxed">
-                                        Approaching limit! Upgrade for unlimited access.
+                                        Approaching limit! Upgrade for unlimited
+                                        access.
                                     </p>
                                 )}
                             </div>
                         )}
                         <div className="flex flex-col items-end gap-3">
-                            <SubscriptionStatusBadge 
+                            <SubscriptionStatusBadge
                                 isSubscribed={subscriptionStatus.isSubscribed}
                                 status={subscriptionStatus.status}
                                 planType={subscriptionStatus.planType}
-                                currentPeriodEnd={subscriptionStatus.currentPeriodEnd}
+                                currentPeriodEnd={
+                                    subscriptionStatus.currentPeriodEnd
+                                }
                             />
                             {!subscriptionStatus.isSubscribed && (
                                 <UpgradeButton size="sm" />
@@ -159,8 +181,18 @@ export default async function DashboardPage() {
                     <div className="rounded-xl border border-blue-200 dark:border-blue-800 p-6 shadow-sm bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20">
                         <div className="flex items-start gap-3 mb-4">
                             <div className="p-2 bg-blue-100 dark:bg-blue-800 rounded-lg">
-                                <svg className="h-5 w-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                <svg
+                                    className="h-5 w-5 text-blue-600 dark:text-blue-400"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M13 10V3L4 14h7v7l9-11h-7z"
+                                    />
                                 </svg>
                             </div>
                             <div>
@@ -172,23 +204,27 @@ export default async function DashboardPage() {
                                 </p>
                             </div>
                         </div>
-                        
+
                         <div className="space-y-3">
                             <div className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-blue-100 dark:border-blue-800 shadow-sm">
                                 <div className="flex items-center gap-2 mb-2">
-                                    <div className="w-6 h-6 bg-purple-600 text-white rounded-full flex items-center justify-center text-xs font-bold">1</div>
-                                    <h3 className="font-semibold text-gray-900 dark:text-white text-sm">Watch Tutorial</h3>
+                                    <div className="w-6 h-6 bg-purple-600 text-white rounded-full flex items-center justify-center text-xs font-bold">
+                                        1
+                                    </div>
+                                    <h3 className="font-semibold text-gray-900 dark:text-white text-sm">
+                                        Watch Tutorial
+                                    </h3>
                                 </div>
                                 <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">
                                     Learn how to use RecallAI
                                 </p>
-                                <Button 
-                                    size="sm" 
-                                    variant="outline" 
+                                <Button
+                                    size="sm"
+                                    variant="outline"
                                     className="w-full border-purple-200 dark:border-purple-700 text-purple-700 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-900/20"
                                     asChild
                                 >
-                                    <a 
+                                    <a
                                         href="https://youtu.be/hP2wbBBBN20"
                                         target="_blank"
                                         rel="noopener noreferrer"
@@ -198,21 +234,25 @@ export default async function DashboardPage() {
                                     </a>
                                 </Button>
                             </div>
-                            
+
                             <div className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-blue-100 dark:border-blue-800 shadow-sm">
                                 <div className="flex items-center gap-2 mb-2">
-                                    <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold">2</div>
-                                    <h3 className="font-semibold text-gray-900 dark:text-white text-sm">Install Extension</h3>
+                                    <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold">
+                                        2
+                                    </div>
+                                    <h3 className="font-semibold text-gray-900 dark:text-white text-sm">
+                                        Install Extension
+                                    </h3>
                                 </div>
                                 <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">
                                     Add our Chrome extension to capture videos
                                 </p>
-                                <Button 
-                                    size="sm" 
+                                <Button
+                                    size="sm"
                                     className="w-full bg-blue-600 hover:bg-blue-700"
                                     asChild
                                 >
-                                    <a 
+                                    <a
                                         href="https://chromewebstore.google.com/detail/recallai/dciecdpjkhhagindacahojeiaeecblaa"
                                         target="_blank"
                                         rel="noopener noreferrer"
@@ -222,11 +262,15 @@ export default async function DashboardPage() {
                                     </a>
                                 </Button>
                             </div>
-                            
+
                             <div className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-blue-100 dark:border-blue-800 shadow-sm">
                                 <div className="flex items-center gap-2 mb-2">
-                                    <div className="w-6 h-6 bg-green-600 text-white rounded-full flex items-center justify-center text-xs font-bold">3</div>
-                                    <h3 className="font-semibold text-gray-900 dark:text-white text-sm">Connect Account</h3>
+                                    <div className="w-6 h-6 bg-green-600 text-white rounded-full flex items-center justify-center text-xs font-bold">
+                                        3
+                                    </div>
+                                    <h3 className="font-semibold text-gray-900 dark:text-white text-sm">
+                                        Connect Account
+                                    </h3>
                                 </div>
                                 <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">
                                     Link extension to dashboard for sync
@@ -253,12 +297,12 @@ export default async function DashboardPage() {
                             </div>
                             <RefreshButton />
                         </div>
-                        
+
                         {recentVideos.length > 0 ? (
                             <div className="space-y-2">
-                                {recentVideos.map((video) => (
-                                    <Link 
-                                        key={video.id} 
+                                {recentVideos.map(video => (
+                                    <Link
+                                        key={video.id}
                                         href={`/dashboard/video/${video.id}`}
                                         className="block bg-white dark:bg-gray-800 rounded-lg p-3 border border-blue-100 dark:border-gray-600 shadow-sm hover:border-blue-300 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950/20 transition-all duration-200"
                                     >
@@ -283,7 +327,8 @@ export default async function DashboardPage() {
                         ) : (
                             <div className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-blue-100 dark:border-gray-600 shadow-sm text-center">
                                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                                    No videos yet. Install the extension and start watching to build your library.
+                                    No videos yet. Install the extension and
+                                    start watching to build your library.
                                 </p>
                             </div>
                         )}
@@ -292,12 +337,24 @@ export default async function DashboardPage() {
                     <div className="rounded-xl border border-blue-200 dark:border-blue-800 p-6 shadow-sm bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20">
                         <div className="flex items-center gap-3 mb-4">
                             <div className="p-2 bg-blue-100 dark:bg-blue-800 rounded-lg">
-                                <svg className="h-5 w-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                <svg
+                                    className="h-5 w-5 text-blue-600 dark:text-blue-400"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                                    />
                                 </svg>
                             </div>
                             <div>
-                                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Your Stats</h2>
+                                <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                                    Your Stats
+                                </h2>
                                 <p className="text-sm text-gray-600 dark:text-gray-400">
                                     Track your learning progress
                                 </p>
@@ -318,7 +375,11 @@ export default async function DashboardPage() {
                             />
                             <StatsCard
                                 title="Quiz Accuracy"
-                                value={userStats.quizAccuracy > 0 ? `${userStats.quizAccuracy}%` : "No data"}
+                                value={
+                                    userStats.quizAccuracy > 0
+                                        ? `${userStats.quizAccuracy}%`
+                                        : "No data"
+                                }
                                 iconName="Target"
                                 subtitle="Overall performance"
                             />

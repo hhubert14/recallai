@@ -16,12 +16,12 @@ export async function POST(
 
     const { authToken, video_id, title, description, transcript } =
         await request.json();
-    
+
     logger.video.debug("Received question generation request", {
         video_id,
         title,
         hasDescription: !!description,
-        transcriptLength: transcript?.length || 0
+        transcriptLength: transcript?.length || 0,
     });
 
     if (!authToken || !video_id || !title || !description || !transcript) {
@@ -76,7 +76,7 @@ export async function POST(
         // Return the questions directly without additional nesting
         logger.video.info("Questions generated successfully", {
             video_id,
-            questionCount: questionData.questions.length
+            questionCount: questionData.questions.length,
         });
 
         // Create each question and its options in the database

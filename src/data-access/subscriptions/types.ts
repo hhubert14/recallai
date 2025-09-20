@@ -5,14 +5,14 @@ export interface UserSubscriptionStatus {
     currentPeriodEnd?: string;
 }
 
-export type SubscriptionStatus = 
-  | 'active'      // Subscription is current and paid
-  | 'past_due'    // Payment failed, in retry period (user still has access)
-  | 'canceled'    // Subscription cancelled
-  | 'trialing'    // In trial period (if you add trials later)
-  | 'incomplete'; // Initial payment never succeeded
+export type SubscriptionStatus =
+    | "active" // Subscription is current and paid
+    | "past_due" // Payment failed, in retry period (user still has access)
+    | "canceled" // Subscription cancelled
+    | "trialing" // In trial period (if you add trials later)
+    | "incomplete"; // Initial payment never succeeded
 
-export type SubscriptionPlan = 'free' | 'premium';
+export type SubscriptionPlan = "free" | "premium";
 
 export interface SubscriptionData {
     id: number;

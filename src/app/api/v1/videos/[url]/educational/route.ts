@@ -77,7 +77,8 @@ export async function GET(
                 { error: "User not authenticated" },
                 { status: 401 }
             );
-        }        const video = await getVideoByUrl(videoUrl, authenticatedUserId);
+        }
+        const video = await getVideoByUrl(videoUrl, authenticatedUserId);
         if (video) {
             return NextResponse.json(
                 { error: "Video already exists" },
@@ -110,14 +111,15 @@ export async function GET(
             // transcript = {
             //     transcript: [],
             // };
-            transcript = "";        }
-        
+            transcript = "";
+        }
+
         const isEducational = await checkVideoEducational(
             youtubeData.items[0].snippet.title,
             youtubeData.items[0].snippet.description,
             transcript
         );
-        
+
         if (isEducational === undefined) {
             return NextResponse.json(
                 { error: "Failed to determine if the video is educational" },

@@ -31,17 +31,21 @@ export default async function Page({
                             )}
                             <div className="space-y-3">
                                 <p className="text-sm text-gray-600">
-                                    If this error persists, please contact our support team:
+                                    If this error persists, please contact our
+                                    support team:
                                 </p>
-                                <Button asChild variant="outline" size="sm" className="w-full">
+                                <Button
+                                    asChild
+                                    variant="outline"
+                                    size="sm"
+                                    className="w-full"
+                                >
                                     <Link href="mailto:hubert@recallai.io?subject=Error Report">
                                         📧 Contact Support
                                     </Link>
                                 </Button>
                                 <Button asChild size="sm" className="w-full">
-                                    <Link href="/">
-                                        Return to Home
-                                    </Link>
+                                    <Link href="/">Return to Home</Link>
                                 </Button>
                             </div>
                         </CardContent>

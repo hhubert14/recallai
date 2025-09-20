@@ -4,22 +4,34 @@ import { updateSession } from "@/lib/supabase/middleware";
 export async function middleware(request: NextRequest) {
     try {
         const response = await updateSession(request);
-        
+
         // Add security headers to prevent clickjacking
-        response.headers.set('X-Frame-Options', 'DENY');
-        response.headers.set('Content-Security-Policy', "frame-ancestors 'none'");
-        response.headers.set('X-Content-Type-Options', 'nosniff');
-        response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-        
+        response.headers.set("X-Frame-Options", "DENY");
+        response.headers.set(
+            "Content-Security-Policy",
+            "frame-ancestors 'none'"
+        );
+        response.headers.set("X-Content-Type-Options", "nosniff");
+        response.headers.set(
+            "Referrer-Policy",
+            "strict-origin-when-cross-origin"
+        );
+
         return response;
     } catch (error) {
         console.error("Middleware error:", error);
         // Return a default response that doesn't break the application with security headers
         const response = NextResponse.next();
-        response.headers.set('X-Frame-Options', 'DENY');
-        response.headers.set('Content-Security-Policy', "frame-ancestors 'none'");
-        response.headers.set('X-Content-Type-Options', 'nosniff');
-        response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+        response.headers.set("X-Frame-Options", "DENY");
+        response.headers.set(
+            "Content-Security-Policy",
+            "frame-ancestors 'none'"
+        );
+        response.headers.set("X-Content-Type-Options", "nosniff");
+        response.headers.set(
+            "Referrer-Policy",
+            "strict-origin-when-cross-origin"
+        );
         return response;
     }
 }

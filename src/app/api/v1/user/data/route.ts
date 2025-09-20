@@ -5,7 +5,10 @@ import { softDeleteAllUserVideos } from "@/data-access/videos/soft-delete-all-us
 export async function DELETE(request: NextRequest) {
     try {
         const supabase = await createClient();
-        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        const {
+            data: { user },
+            error: authError,
+        } = await supabase.auth.getUser();
 
         if (authError || !user) {
             return NextResponse.json(

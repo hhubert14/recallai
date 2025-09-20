@@ -4,7 +4,7 @@ import { QuestionForReviewDto } from "./types";
 import { logger } from "@/lib/logger";
 
 export async function getRandomAnsweredQuestions(
-    userId: string, 
+    userId: string,
     limit: number = 5
 ): Promise<QuestionForReviewDto[]> {
     if (!userId) {
@@ -17,7 +17,8 @@ export async function getRandomAnsweredQuestions(
         // Get random questions that the user has answered (whether in spaced repetition or not)
         const { data, error } = await supabase
             .from("questions")
-            .select(`
+            .select(
+                `
                 id,
                 question_text,
                 video_id,
@@ -42,7 +43,8 @@ export async function getRandomAnsweredQuestions(
                     box_level,
                     next_review_date
                 )
-            `)
+            `
+            )
             .eq("videos.user_id", userId)
             .eq("user_answers.user_id", userId)
             .is("videos.deleted_at", null)
@@ -50,7 +52,11 @@ export async function getRandomAnsweredQuestions(
             .order("created_at", { ascending: false }); // Prefer newer questions
 
         if (error) {
-            logger.db.error("Database query error for random answered questions", error, { userId });
+            logger.db.error(
+                "Database query error for random answered questions",
+                error,
+                { userId }
+            );
             throw error;
         }
 
@@ -73,29 +79,33 @@ export async function getRandomAnsweredQuestions(
             .slice(0, limit);
 
         // Transform to our DTO structure
-        const randomQuestions: QuestionForReviewDto[] = shuffled.map((question: any) => {
-            const progress = question.user_question_progress?.[0]; // May or may not exist
-            
-            return {
-                id: progress?.id || 0,
-                question_id: question.id,
-                question_text: question.question_text,
-                video_id: question.video_id,
-                video_title: question.videos.title,
-                box_level: progress?.box_level || 1,
-                next_review_date: progress?.next_review_date || null,
-                options: question.question_options.map((option: any) => ({
-                    id: option.id,
-                    option_text: option.option_text,
-                    is_correct: option.is_correct,
-                    explanation: option.explanation
-                }))
-            };
-        });
+        const randomQuestions: QuestionForReviewDto[] = shuffled.map(
+            (question: any) => {
+                const progress = question.user_question_progress?.[0]; // May or may not exist
+
+                return {
+                    id: progress?.id || 0,
+                    question_id: question.id,
+                    question_text: question.question_text,
+                    video_id: question.video_id,
+                    video_title: question.videos.title,
+                    box_level: progress?.box_level || 1,
+                    next_review_date: progress?.next_review_date || null,
+                    options: question.question_options.map((option: any) => ({
+                        id: option.id,
+                        option_text: option.option_text,
+                        is_correct: option.is_correct,
+                        explanation: option.explanation,
+                    })),
+                };
+            }
+        );
 
         return randomQuestions;
     } catch (error) {
-        logger.db.error("Error fetching random answered questions", error, { userId });
+        logger.db.error("Error fetching random answered questions", error, {
+            userId,
+        });
         return [];
     }
 }

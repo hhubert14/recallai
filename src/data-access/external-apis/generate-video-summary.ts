@@ -24,11 +24,15 @@ export async function generateVideoSummary(
     transcript: string
 ): Promise<VideoSummary | undefined> {
     if (!title || !description || !transcript) {
-        logger.video.error("Missing required parameters for video summary", undefined, {
-            missingTitle: !title,
-            missingDescription: !description,
-            missingTranscript: !transcript
-        });
+        logger.video.error(
+            "Missing required parameters for video summary",
+            undefined,
+            {
+                missingTitle: !title,
+                missingDescription: !description,
+                missingTranscript: !transcript,
+            }
+        );
         return undefined;
     }
 
@@ -64,7 +68,9 @@ Be thorough but concise in your analysis.`,
 
         return result;
     } catch (error) {
-        logger.video.error("Error generating video summary", error, { title: title.substring(0, 50) });
+        logger.video.error("Error generating video summary", error, {
+            title: title.substring(0, 50),
+        });
         return undefined;
     }
 }

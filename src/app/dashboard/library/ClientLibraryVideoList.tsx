@@ -11,8 +11,11 @@ interface ClientLibraryVideoListProps {
     userId: string;
 }
 
-export function ClientLibraryVideoList({ videos, userId }: ClientLibraryVideoListProps) {
-    const { markVideoAsCompleted } = useQuizCompletion();    // Initialize completed videos from server data
+export function ClientLibraryVideoList({
+    videos,
+    userId,
+}: ClientLibraryVideoListProps) {
+    const { markVideoAsCompleted } = useQuizCompletion(); // Initialize completed videos from server data
     useEffect(() => {
         videos.forEach(video => {
             if (video.quizCompleted) {
@@ -34,7 +37,8 @@ export function ClientLibraryVideoList({ videos, userId }: ClientLibraryVideoLis
                         No videos in your library yet
                     </h3>
                     <p className="text-gray-500 dark:text-gray-400 mb-6">
-                        Start watching educational videos with the RecallAI extension to build your library.
+                        Start watching educational videos with the RecallAI
+                        extension to build your library.
                     </p>
                     <div className="text-sm text-gray-400 dark:text-gray-500">
                         Install the Chrome extension to get started
@@ -46,11 +50,8 @@ export function ClientLibraryVideoList({ videos, userId }: ClientLibraryVideoLis
 
     return (
         <div className="space-y-3">
-            {videos.map((video) => (
-                <LibraryVideoCard
-                    key={video.id}
-                    video={video}
-                />
+            {videos.map(video => (
+                <LibraryVideoCard key={video.id} video={video} />
             ))}
         </div>
     );

@@ -22,7 +22,9 @@ export async function createSummary(summaryData: CreateSummaryDto) {
 
         return data;
     } catch (error) {
-        logger.db.error("Error creating summary", error, { video_id: summaryData.video_id });
+        logger.db.error("Error creating summary", error, {
+            video_id: summaryData.video_id,
+        });
         throw error;
     }
 }

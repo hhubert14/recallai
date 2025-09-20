@@ -15,7 +15,7 @@ export default function UpdatePasswordSuccessPage() {
             <div className="absolute top-4 right-4 z-10">
                 <ThemeToggle />
             </div>
-            
+
             <div className="flex min-h-screen flex-col items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
                 <div className="w-full max-w-md space-y-8">
                     <div className="flex flex-col items-center space-y-4">
@@ -32,7 +32,8 @@ export default function UpdatePasswordSuccessPage() {
                         <div className="text-center text-gray-500 dark:text-gray-400">
                             <p>Your password has been successfully updated.</p>
                             <p className="mt-2">
-                                You can now use your new password to log in to your account.
+                                You can now use your new password to log in to
+                                your account.
                             </p>
                         </div>
                     </div>

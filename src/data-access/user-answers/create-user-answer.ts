@@ -3,7 +3,9 @@ import { createServiceRoleClient } from "@/lib/supabase/service-role";
 import { CreateUserAnswerDto } from "./types";
 import { logger } from "@/lib/logger";
 
-export async function createUserAnswer(userAnswer: CreateUserAnswerDto): Promise<boolean> {
+export async function createUserAnswer(
+    userAnswer: CreateUserAnswerDto
+): Promise<boolean> {
     const supabase = await createServiceRoleClient();
 
     try {

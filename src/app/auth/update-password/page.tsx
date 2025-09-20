@@ -16,7 +16,7 @@ export default function UpdatePasswordPage() {
             <div className="absolute top-4 right-4 z-10">
                 <ThemeToggle />
             </div>
-            
+
             <div className="flex min-h-screen flex-col items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
                 <div className="w-full max-w-md space-y-8">
                     <div className="flex flex-col items-center space-y-4">

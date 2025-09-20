@@ -11,7 +11,9 @@ export function UpgradePrompt() {
                 <div className="container flex h-16 items-center justify-between px-4 md:px-6">
                     <div className="flex items-center gap-2">
                         <Brain className="h-6 w-6 text-blue-600 dark:text-blue-500" />
-                        <span className="text-xl font-bold text-gray-900 dark:text-white">RecallAI</span>
+                        <span className="text-xl font-bold text-gray-900 dark:text-white">
+                            RecallAI
+                        </span>
                     </div>
                     <nav className="hidden md:flex gap-6">
                         <Link
@@ -51,14 +53,15 @@ export function UpgradePrompt() {
                     <div className="w-16 h-16 mx-auto bg-blue-100 dark:bg-blue-950 rounded-full flex items-center justify-center">
                         <Crown className="h-8 w-8 text-blue-600 dark:text-blue-400" />
                     </div>
-                    
+
                     <div className="space-y-2">
                         <h1 className="text-2xl font-bold text-blue-900 dark:text-blue-100">
                             Premium Feature
                         </h1>
                         <p className="text-gray-500 dark:text-gray-400">
-                            Spaced repetition is available for Premium subscribers only. 
-                            Upgrade your plan to access this powerful learning tool.
+                            Spaced repetition is available for Premium
+                            subscribers only. Upgrade your plan to access this
+                            powerful learning tool.
                         </p>
                     </div>
 

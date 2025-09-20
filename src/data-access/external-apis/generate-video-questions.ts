@@ -38,15 +38,18 @@ export async function generateVideoQuestions(
     transcript: string
 ): Promise<MultipleChoiceQuestions | undefined> {
     if (!title || !description || !transcript) {
-        logger.video.warn("Missing required parameters for question generation", {
-            hasTitle: !!title,
-            hasDescription: !!description,
-            hasTranscript: !!transcript
-        });
+        logger.video.warn(
+            "Missing required parameters for question generation",
+            {
+                hasTitle: !!title,
+                hasDescription: !!description,
+                hasTranscript: !!transcript,
+            }
+        );
         return undefined;
     }
 
-    const transcriptText = transcript;    // Initialize ChatOpenAI with structured output
+    const transcriptText = transcript; // Initialize ChatOpenAI with structured output
     logger.video.debug("Initializing ChatOpenAI for question generation");
     const llm = new ChatOpenAI({
         model: "gpt-4.1-nano-2025-04-14", // Note: using a more standard model name
@@ -85,21 +88,26 @@ ANSWER FORMAT REQUIREMENTS:
 - Avoid making the correct answer obviously longer or more detailed
 - Ensure someone who understands the concept could answer without watching this specific video
 
-Each question should test whether someone truly grasps the underlying principle, not whether they remember specific details from this video.`
-            },        ]);
+Each question should test whether someone truly grasps the underlying principle, not whether they remember specific details from this video.`,
+            },
+        ]);
 
         logger.video.info("Questions generated successfully", {
             resultType: typeof result,
             questionCount: result?.questions?.length || 0,
-            hasResult: !!result
+            hasResult: !!result,
         });
 
         return result;
     } catch (error) {
-        logger.video.error("Error generating multiple choice questions", error, {
-            title,
-            transcriptLength: transcriptText?.length || 0
-        });
+        logger.video.error(
+            "Error generating multiple choice questions",
+            error,
+            {
+                title,
+                transcriptLength: transcriptText?.length || 0,
+            }
+        );
 
         return undefined;
     }

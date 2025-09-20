@@ -3,7 +3,9 @@ import { createServiceRoleClient } from "@/lib/supabase/service-role";
 import { QuestionDto } from "./types";
 import { logger } from "@/lib/logger";
 
-export async function getQuestionsByVideoId(videoId: number): Promise<QuestionDto[]> {
+export async function getQuestionsByVideoId(
+    videoId: number
+): Promise<QuestionDto[]> {
     if (!videoId) {
         return [];
     }
@@ -13,7 +15,8 @@ export async function getQuestionsByVideoId(videoId: number): Promise<QuestionDt
     try {
         const { data, error } = await supabase
             .from("questions")
-            .select(`
+            .select(
+                `
                 *,
                 question_options (
                     id,
@@ -24,11 +27,12 @@ export async function getQuestionsByVideoId(videoId: number): Promise<QuestionDt
                     explanation,
                     created_at
                 )
-            `)
+            `
+            )
             .eq("video_id", videoId)
             .order("created_at", { ascending: true });
 
-                if (error) {
+        if (error) {
             logger.db.error("Database query error", error, { videoId });
             throw error;
         }
@@ -38,21 +42,23 @@ export async function getQuestionsByVideoId(videoId: number): Promise<QuestionDt
         }
 
         // Transform the data to match our DTO structure
-        const questions: QuestionDto[] = data.map((question) => ({
+        const questions: QuestionDto[] = data.map(question => ({
             id: question.id,
             video_id: question.video_id,
             question_text: question.question_text,
             question_type: question.question_type,
             created_at: question.created_at,
             updated_at: question.updated_at,
-            options: (question.question_options || []).sort((a: any, b: any) => 
-                (a.order_index || 0) - (b.order_index || 0)
-            )
+            options: (question.question_options || []).sort(
+                (a: any, b: any) => (a.order_index || 0) - (b.order_index || 0)
+            ),
         }));
 
         return questions;
     } catch (error) {
-        logger.db.error("Error fetching questions by video ID", error, { videoId });
+        logger.db.error("Error fetching questions by video ID", error, {
+            videoId,
+        });
         return [];
     }
 }

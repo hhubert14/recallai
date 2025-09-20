@@ -22,7 +22,9 @@ export async function createQuestion(questionData: CreateQuestionDto) {
 
         return data;
     } catch (error) {
-        logger.db.error("Error creating question", error, { videoId: questionData.video_id });
+        logger.db.error("Error creating question", error, {
+            videoId: questionData.video_id,
+        });
         throw error;
     }
 }

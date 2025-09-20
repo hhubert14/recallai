@@ -36,7 +36,7 @@
 
 //         // Hard delete the expired videos
 //         const videoIds = expiredVideos.map(video => video.id);
-        
+
 //         const { data: deletedVideos, error: deleteError } = await supabase
 //             .from("videos")
 //             .delete()
@@ -113,8 +113,8 @@
 //         const { data, error } = await supabase
 //             .from("videos")
 //             .select(`
-//                 id, 
-//                 title, 
+//                 id,
+//                 title,
 //                 expiry_date,
 //                 users!inner(
 //                     id,
@@ -133,7 +133,7 @@
 
 //         // Group videos by user
 //         const userVideoMap = new Map();
-        
+
 //         data?.forEach(video => {
 //             const userId = video.users.id;
 //             if (!userVideoMap.has(userId)) {
@@ -182,7 +182,7 @@
 //                 .gte("expiry_date", now.toISOString())
 //                 .lt("expiry_date", tomorrow.toISOString())
 //                 .is("deleted_at", null),
-            
+
 //             // Expiring tomorrow
 //             supabase
 //                 .from("videos")
@@ -191,7 +191,7 @@
 //                 .gte("expiry_date", tomorrow.toISOString())
 //                 .lt("expiry_date", new Date(tomorrow.getTime() + 24 * 60 * 60 * 1000).toISOString())
 //                 .is("deleted_at", null),
-            
+
 //             // Expiring this week
 //             supabase
 //                 .from("videos")
@@ -200,14 +200,14 @@
 //                 .gte("expiry_date", now.toISOString())
 //                 .lte("expiry_date", nextWeek.toISOString())
 //                 .is("deleted_at", null),
-            
+
 //             // Total expiring videos
 //             supabase
 //                 .from("videos")
 //                 .select("*", { count: 'exact', head: true })
 //                 .eq("should_expire", true)
 //                 .is("deleted_at", null),
-            
+
 //             // Total permanent videos
 //             supabase
 //                 .from("videos")

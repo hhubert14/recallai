@@ -21,8 +21,12 @@ export async function processSpacedRepetitionAnswer(
             .eq("question_id", questionId)
             .single();
 
-        if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116 = no rows returned
-            logger.db.error("Error fetching existing progress", fetchError, { userId, questionId });
+        if (fetchError && fetchError.code !== "PGRST116") {
+            // PGRST116 = no rows returned
+            logger.db.error("Error fetching existing progress", fetchError, {
+                userId,
+                questionId,
+            });
             throw fetchError;
         }
 
@@ -35,7 +39,11 @@ export async function processSpacedRepetitionAnswer(
                 existingProgress.times_incorrect
             );
 
-            return await updateUserQuestionProgress(userId, questionId, progressUpdate);
+            return await updateUserQuestionProgress(
+                userId,
+                questionId,
+                progressUpdate
+            );
         } else {
             // Create new progress entry
             const newBoxLevel = isCorrect ? 1 : 1; // Start in box 1 regardless
@@ -48,11 +56,15 @@ export async function processSpacedRepetitionAnswer(
                 next_review_date: nextReviewDate,
                 times_correct: isCorrect ? 1 : 0,
                 times_incorrect: isCorrect ? 0 : 1,
-                last_reviewed_at: new Date().toISOString()
+                last_reviewed_at: new Date().toISOString(),
             });
         }
     } catch (error) {
-        logger.db.error("Error processing spaced repetition answer", error, { userId, questionId, isCorrect });
+        logger.db.error("Error processing spaced repetition answer", error, {
+            userId,
+            questionId,
+            isCorrect,
+        });
         return false;
     }
 }

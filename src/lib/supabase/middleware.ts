@@ -47,10 +47,7 @@ export async function updateSession(request: NextRequest) {
     }
 
     // Protect dashboard routes - redirect unauthenticated users to login
-    if (
-        !user &&
-        request.nextUrl.pathname.startsWith("/dashboard")
-    ) {
+    if (!user && request.nextUrl.pathname.startsWith("/dashboard")) {
         const url = request.nextUrl.clone();
         url.pathname = "/auth/login";
         return NextResponse.redirect(url);

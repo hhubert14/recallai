@@ -12,11 +12,16 @@ export interface UpdateSubscriptionParams {
     canceledAt?: Date;
 }
 
-export async function updateSubscriptionByStripeId(params: UpdateSubscriptionParams): Promise<boolean> {
-    logger.subscription.debug("Updating subscription", { stripeSubscriptionId: params.stripeSubscriptionId, status: params.status });
-    
+export async function updateSubscriptionByStripeId(
+    params: UpdateSubscriptionParams
+): Promise<boolean> {
+    logger.subscription.debug("Updating subscription", {
+        stripeSubscriptionId: params.stripeSubscriptionId,
+        status: params.status,
+    });
+
     const supabase = createServiceRoleClient();
-    
+
     try {
         const updateData: any = {
             updated_at: new Date().toISOString(),
@@ -26,9 +31,12 @@ export async function updateSubscriptionByStripeId(params: UpdateSubscriptionPar
             updateData.status = params.status;
         }
         if (params.currentPeriodStart) {
-            updateData.current_period_start = params.currentPeriodStart.toISOString();
-        }        if (params.currentPeriodEnd) {
-            updateData.current_period_end = params.currentPeriodEnd.toISOString();
+            updateData.current_period_start =
+                params.currentPeriodStart.toISOString();
+        }
+        if (params.currentPeriodEnd) {
+            updateData.current_period_end =
+                params.currentPeriodEnd.toISOString();
         }
         if (params.cancelAtPeriodEnd !== undefined) {
             updateData.cancel_at_period_end = params.cancelAtPeriodEnd;
@@ -38,18 +46,25 @@ export async function updateSubscriptionByStripeId(params: UpdateSubscriptionPar
         }
 
         const { error } = await supabase
-            .from('subscriptions')
+            .from("subscriptions")
             .update(updateData)
-            .eq('stripe_subscription_id', params.stripeSubscriptionId);
+            .eq("stripe_subscription_id", params.stripeSubscriptionId);
 
-        if (error) {            logger.db.error("Error updating subscription", error, { stripeSubscriptionId: params.stripeSubscriptionId });
+        if (error) {
+            logger.db.error("Error updating subscription", error, {
+                stripeSubscriptionId: params.stripeSubscriptionId,
+            });
             return false;
         }
 
-        logger.subscription.info("Subscription updated successfully", { stripeSubscriptionId: params.stripeSubscriptionId });
+        logger.subscription.info("Subscription updated successfully", {
+            stripeSubscriptionId: params.stripeSubscriptionId,
+        });
         return true;
     } catch (error) {
-        logger.db.error("Exception updating subscription", error, { stripeSubscriptionId: params.stripeSubscriptionId });
+        logger.db.error("Exception updating subscription", error, {
+            stripeSubscriptionId: params.stripeSubscriptionId,
+        });
         return false;
     }
 }

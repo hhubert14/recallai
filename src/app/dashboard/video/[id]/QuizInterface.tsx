@@ -15,7 +15,7 @@ interface QuizInterfaceProps {
 // Function to shuffle an array using Fisher-Yates algorithm
 function shuffleArray<T>(array: T[]): T[] {
     if (array.length <= 1) return [...array];
-    
+
     const shuffled = [...array];
     for (let i = shuffled.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -29,18 +29,27 @@ function shuffleQuestionsAndOptions(questions: QuestionDto[]): QuestionDto[] {
     const shuffledQuestions = shuffleArray(questions);
     return shuffledQuestions.map(question => ({
         ...question,
-        options: shuffleArray(question.options)
+        options: shuffleArray(question.options),
     }));
 }
 
-export function QuizInterface({ questions, userId, videoId }: QuizInterfaceProps) {
+export function QuizInterface({
+    questions,
+    userId,
+    videoId,
+}: QuizInterfaceProps) {
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-    const [selectedOptionId, setSelectedOptionId] = useState<number | null>(null);
+    const [selectedOptionId, setSelectedOptionId] = useState<number | null>(
+        null
+    );
     const [showResult, setShowResult] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [correctAnswer, setCorrectAnswer] = useState<QuestionOptionDto | null>(null);
-    const [shuffledQuestions, setShuffledQuestions] = useState<QuestionDto[]>([]);
-    
+    const [correctAnswer, setCorrectAnswer] =
+        useState<QuestionOptionDto | null>(null);
+    const [shuffledQuestions, setShuffledQuestions] = useState<QuestionDto[]>(
+        []
+    );
+
     const { markVideoAsCompleted } = useQuizCompletion();
 
     // Shuffle questions and their options when component mounts or questions change
@@ -70,16 +79,19 @@ export function QuizInterface({ questions, userId, videoId }: QuizInterfaceProps
         if (!selectedOption) return;
 
         // Find the correct answer
-        const correctOption = currentQuestion.options.find(option => option.is_correct);
-        setCorrectAnswer(correctOption || null);        // Save user answer
+        const correctOption = currentQuestion.options.find(
+            option => option.is_correct
+        );
+        setCorrectAnswer(correctOption || null); // Save user answer
         await submitAnswer({
             user_id: userId,
             question_id: currentQuestion.id,
             selected_option_id: selectedOptionId,
-            is_correct: selectedOption.is_correct
-        });        setShowResult(true);
+            is_correct: selectedOption.is_correct,
+        });
+        setShowResult(true);
         setIsSubmitting(false);
-        
+
         // Mark video as completed if this is the last question
         if (currentQuestionIndex === shuffledQuestions.length - 1) {
             markVideoAsCompleted(videoId);
@@ -102,7 +114,8 @@ export function QuizInterface({ questions, userId, videoId }: QuizInterfaceProps
         setCorrectAnswer(null);
     };
 
-    const isLastQuestion = currentQuestionIndex === shuffledQuestions.length - 1;
+    const isLastQuestion =
+        currentQuestionIndex === shuffledQuestions.length - 1;
     const selectedOption = currentQuestion.options.find(
         option => option.id === selectedOptionId
     );
@@ -111,11 +124,16 @@ export function QuizInterface({ questions, userId, videoId }: QuizInterfaceProps
         <div className="space-y-6">
             {/* Progress */}
             <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
-                <span>Question {currentQuestionIndex + 1} of {shuffledQuestions.length}</span>
+                <span>
+                    Question {currentQuestionIndex + 1} of{" "}
+                    {shuffledQuestions.length}
+                </span>
                 <div className="w-32 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                    <div 
+                    <div
                         className="bg-blue-600 dark:bg-blue-500 h-2 rounded-full transition-all duration-300"
-                        style={{ width: `${((currentQuestionIndex + 1) / shuffledQuestions.length) * 100}%` }}
+                        style={{
+                            width: `${((currentQuestionIndex + 1) / shuffledQuestions.length) * 100}%`,
+                        }}
                     />
                 </div>
             </div>
@@ -128,7 +146,7 @@ export function QuizInterface({ questions, userId, videoId }: QuizInterfaceProps
 
                 {/* Options */}
                 <div className="space-y-3">
-                    {currentQuestion.options.map((option) => (
+                    {currentQuestion.options.map(option => (
                         <label
                             key={option.id}
                             className={`block p-3 border rounded-lg cursor-pointer transition-colors ${
@@ -139,9 +157,10 @@ export function QuizInterface({ questions, userId, videoId }: QuizInterfaceProps
                                 showResult
                                     ? option.is_correct
                                         ? "border-green-600 dark:border-green-500 bg-green-50 dark:bg-green-950/20"
-                                        : selectedOptionId === option.id && !option.is_correct
-                                        ? "border-red-600 dark:border-red-500 bg-red-50 dark:bg-red-950/20"
-                                        : "border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800"
+                                        : selectedOptionId === option.id &&
+                                            !option.is_correct
+                                          ? "border-red-600 dark:border-red-500 bg-red-50 dark:bg-red-950/20"
+                                          : "border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800"
                                     : ""
                             }`}
                         >
@@ -150,21 +169,28 @@ export function QuizInterface({ questions, userId, videoId }: QuizInterfaceProps
                                 name="option"
                                 value={option.id}
                                 checked={selectedOptionId === option.id}
-                                onChange={() => !showResult && setSelectedOptionId(option.id)}
+                                onChange={() =>
+                                    !showResult &&
+                                    setSelectedOptionId(option.id)
+                                }
                                 disabled={showResult}
                                 className="sr-only"
                             />
                             <div className="flex items-center">
-                                <div className={`w-4 h-4 rounded-full border-2 mr-3 flex items-center justify-center ${
-                                    selectedOptionId === option.id
-                                        ? "border-blue-600 dark:border-blue-500"
-                                        : "border-gray-300 dark:border-gray-600"
-                                }`}>
+                                <div
+                                    className={`w-4 h-4 rounded-full border-2 mr-3 flex items-center justify-center ${
+                                        selectedOptionId === option.id
+                                            ? "border-blue-600 dark:border-blue-500"
+                                            : "border-gray-300 dark:border-gray-600"
+                                    }`}
+                                >
                                     {selectedOptionId === option.id && (
                                         <div className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-500" />
                                     )}
                                 </div>
-                                <span className="text-gray-900 dark:text-white">{option.option_text}</span>
+                                <span className="text-gray-900 dark:text-white">
+                                    {option.option_text}
+                                </span>
                             </div>
                         </label>
                     ))}
@@ -173,16 +199,24 @@ export function QuizInterface({ questions, userId, videoId }: QuizInterfaceProps
 
             {/* Result */}
             {showResult && (
-                <div className={`p-4 rounded-lg ${
-                    selectedOption?.is_correct 
-                        ? "bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800" 
-                        : "bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800"
-                }`}>
+                <div
+                    className={`p-4 rounded-lg ${
+                        selectedOption?.is_correct
+                            ? "bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800"
+                            : "bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800"
+                    }`}
+                >
                     <div className="flex items-center mb-2">
-                        <span className={`font-medium ${
-                            selectedOption?.is_correct ? "text-green-800 dark:text-green-100" : "text-red-800 dark:text-red-100"
-                        }`}>
-                            {selectedOption?.is_correct ? "Correct!" : "Incorrect"}
+                        <span
+                            className={`font-medium ${
+                                selectedOption?.is_correct
+                                    ? "text-green-800 dark:text-green-100"
+                                    : "text-red-800 dark:text-red-100"
+                            }`}
+                        >
+                            {selectedOption?.is_correct
+                                ? "Correct!"
+                                : "Incorrect"}
                         </span>
                     </div>
                     {correctAnswer?.explanation && (

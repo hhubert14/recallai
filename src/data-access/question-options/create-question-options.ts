@@ -26,7 +26,9 @@ export async function createQuestionOptions(
 
         return data;
     } catch (error) {
-        logger.db.error("Error creating question options", error, { questionId: questionOptionsData.question_id });
+        logger.db.error("Error creating question options", error, {
+            questionId: questionOptionsData.question_id,
+        });
         throw error;
     }
 }

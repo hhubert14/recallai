@@ -9,16 +9,16 @@ interface BackButtonProps {
     children?: React.ReactNode;
 }
 
-export function BackButton({ 
-    fallbackUrl = "/dashboard", 
+export function BackButton({
+    fallbackUrl = "/dashboard",
     className = "",
-    children
+    children,
 }: BackButtonProps) {
     const router = useRouter();
 
     const handleBack = () => {
         // Check if there's history to go back to
-        if (typeof window !== 'undefined' && window.history.length > 1) {
+        if (typeof window !== "undefined" && window.history.length > 1) {
             router.back();
         } else {
             // Fallback to specified URL if no history

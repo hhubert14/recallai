@@ -12,7 +12,8 @@ export function VideoPlayer({ videoId, title }: VideoPlayerProps) {
                 <p className="text-white">Unable to load video</p>
             </div>
         );
-    }    return (
+    }
+    return (
         <div className="w-full h-full relative min-h-[300px] lg:min-h-[400px]">
             <iframe
                 src={`https://www.youtube.com/embed/${videoId}`}

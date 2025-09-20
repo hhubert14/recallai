@@ -26,7 +26,10 @@ export async function getVideoByUrl(
             .single();
 
         if (error) {
-            logger.db.error("Database query error", error, { videoUrl, userId });
+            logger.db.error("Database query error", error, {
+                videoUrl,
+                userId,
+            });
             throw error;
         }
 
@@ -37,7 +40,10 @@ export async function getVideoByUrl(
         const mappedVideo = toDtoMapper(data);
         return mappedVideo;
     } catch (error) {
-        logger.db.error("Error checking video existence", error, { videoUrl, userId });
+        logger.db.error("Error checking video existence", error, {
+            videoUrl,
+            userId,
+        });
         return undefined;
     }
 }

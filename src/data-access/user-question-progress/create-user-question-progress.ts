@@ -20,7 +20,9 @@ export async function createUserQuestionProgress(
 
         return true;
     } catch (error) {
-        logger.db.error("Error creating user question progress", error, { progressData });
+        logger.db.error("Error creating user question progress", error, {
+            progressData,
+        });
         return false;
     }
 }

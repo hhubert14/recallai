@@ -4,15 +4,19 @@ import { logger } from "@/lib/logger";
 
 // In a shared auth utility file
 export async function authenticateRequest(authToken: string) {
-    logger.extension.debug("Authenticating request", { tokenLength: authToken?.length });
+    logger.extension.debug("Authenticating request", {
+        tokenLength: authToken?.length,
+    });
     const supabase = await createClient();
 
     // Token validation
     const tokenData = await getExtensionTokenByToken(authToken);
-    logger.extension.debug("Token data retrieved", { 
+    logger.extension.debug("Token data retrieved", {
         hasToken: !!tokenData,
         userId: tokenData?.user_id,
-        isExpired: tokenData ? new Date(tokenData.expires_at) < new Date() : null
+        isExpired: tokenData
+            ? new Date(tokenData.expires_at) < new Date()
+            : null,
     });
     if (!tokenData || new Date(tokenData.expires_at) < new Date()) {
         return { error: "Invalid or expired token", status: 401 };

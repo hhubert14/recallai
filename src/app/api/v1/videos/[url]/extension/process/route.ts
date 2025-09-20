@@ -17,7 +17,9 @@ export async function POST(
     request: NextRequest,
     { params }: { params: Promise<{ url: string }> }
 ) {
-    logger.extension.debug("Processing video request", { videoUrl: (await params).url });
+    logger.extension.debug("Processing video request", {
+        videoUrl: (await params).url,
+    });
     const { videoId, authToken, processType } = await request.json();
     const { url: videoUrl } = await params;
     try {
@@ -45,7 +47,10 @@ export async function POST(
     } catch (error) {
         const errorMessage =
             error instanceof Error ? error.message : "Unknown error occurred";
-        logger.extension.error("Error processing video", error, { videoUrl, videoId });
+        logger.extension.error("Error processing video", error, {
+            videoUrl,
+            videoId,
+        });
         return NextResponse.json(
             { error: `Failed to process video: ${errorMessage}` },
             { status: 500 }

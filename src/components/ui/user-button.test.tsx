@@ -19,7 +19,6 @@ vi.mock("@/lib/auth-provider", () => ({
     }),
 }));
 
-
 // 2. --- The Test Suite ---
 describe("UserButton", () => {
     it("should display the user's email when logged in", async () => {

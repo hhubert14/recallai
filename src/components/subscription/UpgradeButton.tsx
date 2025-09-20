@@ -10,12 +10,13 @@ interface UpgradeButtonProps {
     className?: string;
 }
 
-export function UpgradeButton({ 
-    size = "default", 
+export function UpgradeButton({
+    size = "default",
     variant = "default",
-    className 
+    className,
 }: UpgradeButtonProps) {
-    const router = useRouter();    const handleUpgrade = () => {
+    const router = useRouter();
+    const handleUpgrade = () => {
         router.push("/dashboard/pricing");
     };
 

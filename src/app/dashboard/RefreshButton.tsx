@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useRouter } from 'next/navigation';
-import { RefreshCw } from 'lucide-react';
-import { useState } from 'react';
+import { useRouter } from "next/navigation";
+import { RefreshCw } from "lucide-react";
+import { useState } from "react";
 
 export function RefreshButton() {
     const router = useRouter();
@@ -22,8 +22,8 @@ export function RefreshButton() {
             className="p-1.5 text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 transition-colors disabled:opacity-50"
             title="Refresh videos"
         >
-            <RefreshCw 
-                className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} 
+            <RefreshCw
+                className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`}
             />
         </button>
     );
