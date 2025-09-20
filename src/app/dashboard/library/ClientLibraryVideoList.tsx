@@ -2,18 +2,18 @@
 
 import { useEffect } from "react";
 import { VideoDto } from "@/data-access/videos/types";
-import { getQuizCompletionStatus } from "@/data-access/user-stats/get-quiz-completion-status";
+// import { getQuizCompletionStatus } from "@/data-access/user-stats/get-quiz-completion-status";
 import { LibraryVideoCard } from "./LibraryVideoCard";
 import { useQuizCompletion } from "@/components/providers/QuizCompletionProvider";
 
 interface ClientLibraryVideoListProps {
     videos: (VideoDto & { quizCompleted: boolean })[];
-    userId: string;
+    // userId: string;
 }
 
 export function ClientLibraryVideoList({
     videos,
-    userId,
+    // userId,
 }: ClientLibraryVideoListProps) {
     const { markVideoAsCompleted } = useQuizCompletion(); // Initialize completed videos from server data
     useEffect(() => {
