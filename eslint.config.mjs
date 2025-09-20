@@ -16,10 +16,10 @@ const eslintConfig = [
         rules: {
             // "indent": ["error", 4],
             // "prettier/prettier": ["error", { "tabWidth": 4 }],
-            "@typescript-eslint/no-unused-vars": "off",
-            "@typescript-eslint/no-explicit-any": "off",
-            "@typescript-eslint/ban-ts-comment": "off",
-            "react/no-unescaped-entities": "off",
+            // "@typescript-eslint/no-unused-vars": "off",
+            // "@typescript-eslint/no-explicit-any": "off",
+            // "@typescript-eslint/ban-ts-comment": "off",
+            // "react/no-unescaped-entities": "off",
         },
     },
 ];
