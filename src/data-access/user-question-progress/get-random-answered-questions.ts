@@ -1,7 +1,7 @@
 import "server-only";
-import { createServiceRoleClient } from "@/lib/supabase/service-role";
-import { QuestionForReviewDto } from "./types";
-import { logger } from "@/lib/logger";
+import { createServiceRoleClient } from "@/lib/supabase/service-role.js";
+import { QuestionForReviewDto } from "./types.js";
+import { logger } from "@/lib/logger.js";
 
 export async function getRandomAnsweredQuestions(
     userId: string,
@@ -65,6 +65,7 @@ export async function getRandomAnsweredQuestions(
         }
 
         // Remove duplicates (since a user might have answered the same question multiple times)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const uniqueQuestions = data.reduce((acc: any[], current: any) => {
             const existing = acc.find(q => q.id === current.id);
             if (!existing) {
@@ -80,6 +81,7 @@ export async function getRandomAnsweredQuestions(
 
         // Transform to our DTO structure
         const randomQuestions: QuestionForReviewDto[] = shuffled.map(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (question: any) => {
                 const progress = question.user_question_progress?.[0]; // May or may not exist
 
@@ -91,6 +93,7 @@ export async function getRandomAnsweredQuestions(
                     video_title: question.videos.title,
                     box_level: progress?.box_level || 1,
                     next_review_date: progress?.next_review_date || null,
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     options: question.question_options.map((option: any) => ({
                         id: option.id,
                         option_text: option.option_text,

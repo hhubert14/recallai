@@ -1,7 +1,7 @@
 import "server-only";
-import { createServiceRoleClient } from "@/lib/supabase/service-role";
-import { QuestionForReviewDto } from "./types";
-import { logger } from "@/lib/logger";
+import { createServiceRoleClient } from "@/lib/supabase/service-role.js";
+import { QuestionForReviewDto } from "./types.js";
+import { logger } from "@/lib/logger.js";
 
 export async function getQuestionsDueForReview(
     userId: string
@@ -60,6 +60,7 @@ export async function getQuestionsDueForReview(
 
         // Transform the data to match our DTO structure
         const questionsForReview: QuestionForReviewDto[] = data.map(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (progress: any) => ({
                 id: progress.id,
                 question_id: progress.question_id,
@@ -69,6 +70,7 @@ export async function getQuestionsDueForReview(
                 box_level: progress.box_level,
                 next_review_date: progress.next_review_date,
                 options: progress.questions.question_options.map(
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     (option: any) => ({
                         id: option.id,
                         option_text: option.option_text,
