@@ -1,18 +1,18 @@
 import type { Metadata } from "next";
-import { Brain, ArrowLeft } from "lucide-react";
-import Link from "next/link";
-import { redirect } from "next/navigation";
-import { UserButton } from "@/components/ui/user-button";
-import { ThemeToggle } from "@/components/ui/theme-toggle";
-import { createClient } from "@/lib/supabase/server";
-import { getVideosByUserId } from "@/data-access/videos/get-videos-by-user-id";
-import { getUserSubscriptionStatus } from "@/data-access/subscriptions/get-user-subscription-status";
-import { UserSubscriptionStatus } from "@/data-access/subscriptions/types";
-import { LibraryVideoList } from "@/app/dashboard/library/LibraryVideoList";
-import { SubscriptionStatusBadge } from "@/components/subscription/SubscriptionStatusBadge";
-import { UpgradeButton } from "@/components/subscription/UpgradeButton";
-import { SupportBanner } from "@/components/ui/support-banner";
-import { TextRefreshButton } from "../TextRefreshButton";
+import { Brain } from "lucide-react";
+import Link from "next/link.js";
+import { redirect } from "next/navigation.js";
+import { UserButton } from "@/components/ui/user-button.js";
+import { ThemeToggle } from "@/components/ui/theme-toggle.js";
+import { createClient } from "@/lib/supabase/server.js";
+import { getVideosByUserId } from "@/data-access/videos/get-videos-by-user-id.js";
+import { getUserSubscriptionStatus } from "@/data-access/subscriptions/get-user-subscription-status.js";
+// import { UserSubscriptionStatus } from "@/data-access/subscriptions/types";
+import { LibraryVideoList } from "@/app/dashboard/library/LibraryVideoList.js";
+import { SubscriptionStatusBadge } from "@/components/subscription/SubscriptionStatusBadge.js";
+import { UpgradeButton } from "@/components/subscription/UpgradeButton.js";
+// import { SupportBanner } from "@/components/ui/support-banner";
+import { TextRefreshButton } from "../TextRefreshButton.js";
 
 export const metadata: Metadata = {
     title: "My Library | RecallAI",
@@ -86,9 +86,9 @@ export default async function LibraryPage() {
             </header>
 
             {/* Show support banner only for non-subscribed users */}
-            {!subscriptionStatus.isSubscribed && (
+            {/* {!subscriptionStatus.isSubscribed && (
                 <SupportBanner userId={user.id} />
-            )}
+            )} */}
 
             <main className="flex-1 container py-12 px-6 md:px-8 max-w-7xl mx-auto">
                 <div className="flex items-center justify-between mb-8">

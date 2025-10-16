@@ -1,23 +1,23 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { redirect } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import Link from "next/link.js";
+import { redirect } from "next/navigation.js";
+import { Button } from "@/components/ui/button.js";
 import { Brain, Play, Chrome } from "lucide-react";
-import { UserButton } from "@/components/ui/user-button";
-import { ThemeToggle } from "@/components/ui/theme-toggle";
-import { ExtensionConnectorButton } from "@/app/dashboard/ExtensionConnectorButton";
-import { createClient } from "@/lib/supabase/server";
-import { getVideosByUserId } from "@/data-access/videos/get-videos-by-user-id";
-import { getUserStatsByUserId } from "@/data-access/user-stats/get-user-stats-by-user-id";
-import { getUserSubscriptionStatus } from "@/data-access/subscriptions/get-user-subscription-status";
-import { getVideosThisMonthByUserId } from "@/data-access/user-stats/get-videos-this-month-by-user-id";
-import { UserSubscriptionStatus } from "@/data-access/subscriptions/types";
-import { VideoDto } from "@/data-access/videos/types";
-import { StatsCard } from "@/components/ui/stats-card";
-import { SubscriptionStatusBadge } from "@/components/subscription/SubscriptionStatusBadge";
-import { UpgradeButton } from "@/components/subscription/UpgradeButton";
-import { SupportBanner } from "@/components/ui/support-banner";
-import { RefreshButton } from "./RefreshButton";
+import { UserButton } from "@/components/ui/user-button.js";
+import { ThemeToggle } from "@/components/ui/theme-toggle.js";
+import { ExtensionConnectorButton } from "@/app/dashboard/ExtensionConnectorButton.js";
+import { createClient } from "@/lib/supabase/server.js";
+import { getVideosByUserId } from "@/data-access/videos/get-videos-by-user-id.js";
+import { getUserStatsByUserId } from "@/data-access/user-stats/get-user-stats-by-user-id.js";
+import { getUserSubscriptionStatus } from "@/data-access/subscriptions/get-user-subscription-status.js";
+import { getVideosThisMonthByUserId } from "@/data-access/user-stats/get-videos-this-month-by-user-id.js";
+import { UserSubscriptionStatus } from "@/data-access/subscriptions/types.js";
+import { VideoDto } from "@/data-access/videos/types.js";
+import { StatsCard } from "@/components/ui/stats-card.js";
+import { SubscriptionStatusBadge } from "@/components/subscription/SubscriptionStatusBadge.js";
+import { UpgradeButton } from "@/components/subscription/UpgradeButton.js";
+// import { SupportBanner } from "@/components/ui/support-banner";
+import { RefreshButton } from "./RefreshButton.js";
 
 export const metadata: Metadata = {
     title: "Dashboard | RecallAI",
@@ -106,9 +106,9 @@ export default async function DashboardPage() {
             </header>
 
             {/* Show support banner only for non-subscribed users */}
-            {!subscriptionStatus.isSubscribed && (
+            {/* {!subscriptionStatus.isSubscribed && (
                 <SupportBanner userId={user.id} />
-            )}
+            )} */}
 
             <main className="flex-1 container py-12 px-6 md:px-8 max-w-7xl mx-auto">
                 <div className="flex items-center justify-between mb-8">
