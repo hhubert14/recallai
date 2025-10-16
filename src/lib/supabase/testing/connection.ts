@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { createClient } from "../client";
+import { createClient } from "../client.js";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 export type ConnectionStatus = "untested" | "success" | "error";
@@ -7,7 +7,7 @@ export type ConnectionStatus = "untested" | "success" | "error";
 export interface ConnectionTestResult {
     status: ConnectionStatus;
     error?: string;
-    details?: any;
+    details?: string;
 }
 
 /**
@@ -41,13 +41,21 @@ export async function testSupabaseConnection(
 
         console.log("Supabase connection successful");
         return { status: "success" };
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Supabase connection test failed:", error);
-        return {
-            status: "error",
-            error: error.message || "Unknown error",
-            details: error,
-        };
+        if (error instanceof Error) {
+            return {
+                status: "error",
+                error: error.message,
+                details: error.stack,
+            }
+        } else {
+            return {
+                status: "error",
+                error: "Unknown error",
+                details: String(error),
+            }
+        }
     }
 }
 
