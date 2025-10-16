@@ -1,7 +1,7 @@
 import "server-only";
-import { createServiceRoleClient } from "@/lib/supabase/service-role";
-import { SubscriptionStatus } from "./types";
-import { logger } from "@/lib/logger";
+import { createServiceRoleClient } from "@/lib/supabase/service-role.js";
+import { SubscriptionStatus } from "./types.js";
+import { logger } from "@/lib/logger.js";
 
 export interface UpdateSubscriptionParams {
     stripeSubscriptionId: string;
@@ -15,14 +15,15 @@ export interface UpdateSubscriptionParams {
 export async function updateSubscriptionByStripeId(
     params: UpdateSubscriptionParams
 ): Promise<boolean> {
-    logger.subscription.debug("Updating subscription", {
-        stripeSubscriptionId: params.stripeSubscriptionId,
-        status: params.status,
-    });
+    // logger.subscription.debug("Updating subscription", {
+    //     stripeSubscriptionId: params.stripeSubscriptionId,
+    //     status: params.status,
+    // });
 
     const supabase = createServiceRoleClient();
 
     try {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const updateData: any = {
             updated_at: new Date().toISOString(),
         };

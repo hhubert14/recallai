@@ -1,7 +1,7 @@
 import "server-only";
-import { createServiceRoleClient } from "@/lib/supabase/service-role";
-import { QuestionForReviewDto } from "./types";
-import { logger } from "@/lib/logger";
+import { createServiceRoleClient } from "@/lib/supabase/service-role.js";
+import { QuestionForReviewDto } from "./types.js";
+import { logger } from "@/lib/logger.js";
 
 export async function getQuestionsForInitialReview(
     userId: string,
@@ -59,6 +59,7 @@ export async function getQuestionsForInitialReview(
         } // Remove duplicates and get unique questions
         const uniqueQuestions = new Map();
         for (const answer of answeredQuestions) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const question = answer.questions as any;
             if (question && question.id) {
                 if (!uniqueQuestions.has(question.id)) {
@@ -88,6 +89,7 @@ export async function getQuestionsForInitialReview(
         // Transform to our DTO structure
         const initialReviewQuestions: QuestionForReviewDto[] = questionsNotInSR
             .slice(0, limit)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             .map((question: any) => ({
                 id: 0, // No progress record yet
                 question_id: question.id,
@@ -96,6 +98,7 @@ export async function getQuestionsForInitialReview(
                 video_title: question.videos.title,
                 box_level: 1, // Will start at box 1
                 next_review_date: null, // Will be set after first review
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 options: question.question_options.map((option: any) => ({
                     id: option.id,
                     option_text: option.option_text,
