@@ -1,7 +1,7 @@
 type LogLevel = "debug" | "info" | "warn" | "error";
 
 interface LogContext {
-    [key: string]: any;
+    [key: string]: unknown;
 }
 
 class Logger {
@@ -100,9 +100,9 @@ class Logger {
 
     // Video processing logger with prefix
     video = {
-        debug: (message: string, context?: LogContext) => {
-            // Suppress most video debug logs
-        },
+        // debug: (message: string, context?: LogContext) => {
+        //     // Suppress most video debug logs
+        // },
         info: (message: string, context?: LogContext) => {
             // Only log important video milestones
             if (
@@ -124,9 +124,9 @@ class Logger {
 
     // Subscription logger with prefix
     subscription = {
-        debug: (message: string, context?: LogContext) => {
-            // Suppress debug logs
-        },
+        // debug: (message: string, context?: LogContext) => {
+        //     // Suppress debug logs
+        // },
         info: (message: string, context?: LogContext) => {
             // Only log subscription changes
             if (
@@ -148,12 +148,12 @@ class Logger {
 
     // Database logger with prefix
     db = {
-        debug: (message: string, context?: LogContext) => {
-            // Suppress all DB debug logs - they're too noisy
-        },
-        info: (message: string, context?: LogContext) => {
-            // Suppress most DB info logs
-        },
+        // debug: (message: string, context?: LogContext) => {
+        //     // Suppress all DB debug logs - they're too noisy
+        // },
+        // info: (message: string, context?: LogContext) => {
+        //     // Suppress most DB info logs
+        // },
         warn: (message: string, context?: LogContext) =>
             this.warn(`[DB] ${message}`, context),
         error: (
