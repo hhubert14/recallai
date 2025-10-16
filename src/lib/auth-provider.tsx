@@ -5,9 +5,9 @@ import React, {
     useEffect,
     ReactNode,
 } from "react";
-import { createClient } from "./supabase/client";
+import { createClient } from "./supabase/client.js";
 import type { User } from "@supabase/supabase-js";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation.js";
 
 // Create a Supabase client
 const supabase = createClient();
@@ -16,10 +16,10 @@ const supabase = createClient();
 type AuthContextType = {
     user: User | null;
     loading: boolean;
-    signIn: (email: string, password: string) => Promise<{ error: any }>;
-    signUp: (email: string, password: string) => Promise<{ error: any }>;
+    signIn: (email: string, password: string) => Promise<{ error: unknown }>;
+    signUp: (email: string, password: string) => Promise<{ error: unknown }>;
     signOut: () => Promise<void>;
-    resetPassword: (email: string) => Promise<{ error: any }>;
+    resetPassword: (email: string) => Promise<{ error: unknown }>;
 };
 
 // Create the auth context with a default value
