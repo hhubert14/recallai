@@ -2,9 +2,8 @@
 
 import "server-only";
 
-// @ts-ignore
-import TranscriptAPI from "youtube-transcript-api";
-import { logger } from "@/lib/logger";
+// import TranscriptAPI from "youtube-transcript-api";
+import { logger } from "@/lib/logger.js";
 // import { YoutubeTranscript } from "./types";
 
 export async function getYoutubeTranscript(
