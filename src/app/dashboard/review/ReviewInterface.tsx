@@ -97,7 +97,6 @@ export function ReviewInterface({
             return;
         }
 
-        // Process the answer for spaced repetition
         await processReviewAnswer({
             user_id: userId,
             question_id: currentQuestion.question_id,
