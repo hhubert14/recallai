@@ -145,7 +145,9 @@ export function SignUpForm() {
         } catch (error: unknown) {
             console.error("Sign up error:", error);
             setError(
-                String(error) || "Failed to create account. Please try again."
+                error instanceof Error
+                    ? error.message
+                    : "Failed to create account. Please try again."
             );
         } finally {
             setIsLoading(false);
