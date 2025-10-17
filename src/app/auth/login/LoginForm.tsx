@@ -44,7 +44,13 @@ export function LoginForm() {
             }
         } catch (error: unknown) {
             console.error("Sign in error:", error);
-            setError(String(error) || "Failed to sign in. Please try again.");
+            if (error instanceof Error) {
+                setError(error.message || "Failed to sign in. Please try again.");
+            } else if (typeof error === "string") {
+                setError(error);
+            } else {
+                setError("Failed to sign in. Please try again.");
+            }
         } finally {
             setIsLoading(false);
         }
