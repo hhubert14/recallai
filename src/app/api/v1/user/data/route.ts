@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { softDeleteAllUserVideos } from "@/data-access/videos/soft-delete-all-user-videos";
 
-export async function DELETE(request: NextRequest) {
+export async function DELETE() {
     try {
         const supabase = await createClient();
         const {

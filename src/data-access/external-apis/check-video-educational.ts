@@ -3,7 +3,7 @@ import "server-only";
 import OpenAI from "openai";
 // import { YoutubeTranscript } from "./types";
 // import { extractTranscriptText } from "./utils";
-import { logger } from "@/lib/logger";
+// import { logger } from "@/lib/logger";
 
 export async function checkVideoEducational(
     title: string,
@@ -11,11 +11,11 @@ export async function checkVideoEducational(
     // transcript: YoutubeTranscript
     transcript: string
 ): Promise<boolean | undefined> {
-    logger.video.debug("Checking if video is educational", {
-        title,
-        hasDescription: !!description,
-        transcriptLength: transcript?.length || 0,
-    });
+    // logger.video.debug("Checking if video is educational", {
+    //     title,
+    //     hasDescription: !!description,
+    //     transcriptLength: transcript?.length || 0,
+    // });
 
     // Title and transcript are required, but description can be empty
     if (!title || !transcript) {
@@ -63,10 +63,10 @@ Respond with exactly "EDUCATIONAL" or "NOT_EDUCATIONAL" and nothing else.`,
 
     const answer = response.choices[0].message.content?.trim();
 
-    logger.video.debug("OpenAI educational classification response", {
-        answer,
-        isEducational: answer === "EDUCATIONAL",
-    });
+    // logger.video.debug("OpenAI educational classification response", {
+    //     answer,
+    //     isEducational: answer === "EDUCATIONAL",
+    // });
 
     if (!answer || typeof answer !== "string") {
         return undefined;

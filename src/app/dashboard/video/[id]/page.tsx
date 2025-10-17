@@ -1,17 +1,17 @@
 import type { Metadata } from "next";
-import Link from "next/link.js";
-import { notFound, redirect } from "next/navigation.js";
+import Link from "next/link";
+import { notFound, redirect } from "next/navigation";
 import { Brain } from "lucide-react";
-import { UserButton } from "@/components/ui/user-button.js";
-import { ThemeToggle } from "@/components/ui/theme-toggle.js";
-import { createClient } from "@/lib/supabase/server.js";
-import { getVideosByUserId } from "@/data-access/videos/get-videos-by-user-id.js";
-import { getSummaryByVideoId } from "@/data-access/summaries/get-summary-by-video-id.js";
-import { getQuestionsByVideoId } from "@/data-access/questions/get-questions-by-video-id.js";
-import { getUserSubscriptionStatus } from "@/data-access/subscriptions/get-user-subscription-status.js";
-import { VideoPlayer } from "./VideoPlayer.js";
-import { ContentTabs } from "./ContentTabs.js";
-import { BackButton } from "./BackButton.js";
+import { UserButton } from "@/components/ui/user-button";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { createClient } from "@/lib/supabase/server";
+import { getVideosByUserId } from "@/data-access/videos/get-videos-by-user-id";
+import { getSummaryByVideoId } from "@/data-access/summaries/get-summary-by-video-id";
+import { getQuestionsByVideoId } from "@/data-access/questions/get-questions-by-video-id";
+// import { getUserSubscriptionStatus } from "@/data-access/subscriptions/get-user-subscription-status";
+import { VideoPlayer } from "./VideoPlayer";
+import { ContentTabs } from "./ContentTabs";
+import { BackButton } from "./BackButton";
 // import { SupportBanner } from "@/components/ui/support-banner";
 
 export const metadata: Metadata = {
@@ -46,10 +46,10 @@ export default async function VideoDetailPage({
     }
 
     // Get summary and questions
-    const [summary, questions, subscriptionStatus] = await Promise.all([
+    const [summary, questions] = await Promise.all([
         getSummaryByVideoId(video.id),
         getQuestionsByVideoId(video.id),
-        getUserSubscriptionStatus(user.id),
+        // getUserSubscriptionStatus(user.id),
     ]);
 
     // Extract YouTube video ID from URL

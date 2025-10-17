@@ -5,9 +5,9 @@ import React, {
     useEffect,
     ReactNode,
 } from "react";
-import { createClient } from "./supabase/client.js";
+import { createClient } from "./supabase/client";
 import type { User } from "@supabase/supabase-js";
-import { useRouter } from "next/navigation.js";
+import { useRouter } from "next/navigation";
 
 // Create a Supabase client
 const supabase = createClient();

@@ -1,7 +1,7 @@
 import "server-only";
-import { createServiceRoleClient } from "@/lib/supabase/service-role.js";
-import { SubscriptionStatus } from "./types.js";
-import { logger } from "@/lib/logger.js";
+import { createServiceRoleClient } from "@/lib/supabase/service-role";
+import { SubscriptionStatus } from "./types";
+import { logger } from "@/lib/logger";
 
 export interface UpdateSubscriptionParams {
     stripeSubscriptionId: string;

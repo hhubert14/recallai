@@ -1,4 +1,4 @@
-import { ExtensionTokenDto } from "./types.js";
+import { ExtensionTokenDto } from "./types";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function toDtoMapper(token: any): ExtensionTokenDto {

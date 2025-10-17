@@ -1,18 +1,18 @@
 import type { Metadata } from "next";
 import { Brain } from "lucide-react";
-import Link from "next/link.js";
-import { redirect } from "next/navigation.js";
-import { UserButton } from "@/components/ui/user-button.js";
-import { ThemeToggle } from "@/components/ui/theme-toggle.js";
-import { createClient } from "@/lib/supabase/server.js";
-import { getVideosByUserId } from "@/data-access/videos/get-videos-by-user-id.js";
-import { getUserSubscriptionStatus } from "@/data-access/subscriptions/get-user-subscription-status.js";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { UserButton } from "@/components/ui/user-button";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { createClient } from "@/lib/supabase/server";
+import { getVideosByUserId } from "@/data-access/videos/get-videos-by-user-id";
+import { getUserSubscriptionStatus } from "@/data-access/subscriptions/get-user-subscription-status";
 // import { UserSubscriptionStatus } from "@/data-access/subscriptions/types";
-import { LibraryVideoList } from "@/app/dashboard/library/LibraryVideoList.js";
-import { SubscriptionStatusBadge } from "@/components/subscription/SubscriptionStatusBadge.js";
-import { UpgradeButton } from "@/components/subscription/UpgradeButton.js";
+import { LibraryVideoList } from "@/app/dashboard/library/LibraryVideoList";
+import { SubscriptionStatusBadge } from "@/components/subscription/SubscriptionStatusBadge";
+import { UpgradeButton } from "@/components/subscription/UpgradeButton";
 // import { SupportBanner } from "@/components/ui/support-banner";
-import { TextRefreshButton } from "../TextRefreshButton.js";
+import { TextRefreshButton } from "../TextRefreshButton";
 
 export const metadata: Metadata = {
     title: "My Library | RecallAI",

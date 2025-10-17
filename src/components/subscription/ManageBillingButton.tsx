@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button.js";
+import { Button } from "@/components/ui/button";
 import { ExternalLink, Loader2 } from "lucide-react";
-import { createBillingPortalSession } from "@/lib/actions/billing-portal.js";
+import { createBillingPortalSession } from "@/lib/actions/billing-portal";
 
 interface ManageBillingButtonProps {
     userId: string;

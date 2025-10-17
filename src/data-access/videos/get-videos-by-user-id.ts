@@ -8,7 +8,7 @@ export async function getVideosByUserId(
     userId: string,
     limit?: number
 ): Promise<VideoDto[]> {
-    logger.db.debug("Getting videos by user ID", { userId, limit });
+    // logger.db.debug("Getting videos by user ID", { userId, limit });
 
     if (!userId) {
         logger.db.warn("Invalid parameters - userId is empty");
@@ -18,7 +18,7 @@ export async function getVideosByUserId(
     const supabase = await createServiceRoleClient();
 
     try {
-        logger.db.debug("Querying database for videos", { userId });
+        // logger.db.debug("Querying database for videos", { userId });
         let query = supabase
             .from("videos")
             .select("*")
@@ -37,14 +37,14 @@ export async function getVideosByUserId(
         }
 
         if (!data || data.length === 0) {
-            logger.db.debug("No videos found for user", { userId });
+            // logger.db.debug("No videos found for user", { userId });
             return [];
         }
 
-        logger.db.info("Found videos for user", {
-            userId,
-            videoCount: data.length,
-        });
+        // logger.db.info("Found videos for user", {
+        //     userId,
+        //     videoCount: data.length,
+        // });
         const mappedVideos = data.map(video => toDtoMapper(video));
 
         return mappedVideos;

@@ -16,11 +16,11 @@ export interface CreateSubscriptionParams {
 export async function createSubscription(
     params: CreateSubscriptionParams
 ): Promise<boolean> {
-    logger.subscription.debug("Creating subscription", {
-        userId: params.userId,
-        stripeSubscriptionId: params.stripeSubscriptionId,
-        plan: params.plan,
-    });
+    // logger.subscription.debug("Creating subscription", {
+    //     userId: params.userId,
+    //     stripeSubscriptionId: params.stripeSubscriptionId,
+    //     plan: params.plan,
+    // });
 
     const supabase = createServiceRoleClient();
 
@@ -42,10 +42,10 @@ export async function createSubscription(
         }
 
         if (existingSubscription) {
-            logger.subscription.debug(
-                "Subscription already exists, skipping creation",
-                { stripeSubscriptionId: params.stripeSubscriptionId }
-            );
+            // logger.subscription.debug(
+            //     "Subscription already exists, skipping creation",
+            //     { stripeSubscriptionId: params.stripeSubscriptionId }
+            // );
             return true; // Return true since the subscription exists
         }
 

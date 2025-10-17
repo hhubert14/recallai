@@ -1,19 +1,19 @@
 "use server";
 
 import { NextRequest, NextResponse } from "next/server";
-import { getExtensionTokenByToken } from "@/data-access/extension/get-extension-token-by-token";
+// import { getExtensionTokenByToken } from "@/data-access/extension/get-extension-token-by-token";
 import { getVideoByUrl } from "@/data-access/videos/get-video-by-url";
 import { getYoutubeVideoData } from "@/data-access/external-apis/get-youtube-video-data";
 import { getYoutubeTranscript } from "@/data-access/external-apis/get-youtube-transcript";
 import { checkVideoEducational } from "@/data-access/external-apis/check-video-educational";
-import { createClient } from "@/lib/supabase/server";
+// import { createClient } from "@/lib/supabase/server";
 import { authenticateRequest } from "@/use-cases/extension/authenticate-request";
 
 export async function GET(
     request: NextRequest,
     { params }: { params: Promise<{ url: string }> }
 ) {
-    const supabase = await createClient();
+    // const supabase = await createClient();
 
     const searchParams = request.nextUrl.searchParams;
     const { url: videoUrl } = await params;

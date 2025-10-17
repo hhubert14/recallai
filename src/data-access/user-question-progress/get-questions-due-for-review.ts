@@ -1,7 +1,7 @@
 import "server-only";
-import { createServiceRoleClient } from "@/lib/supabase/service-role.js";
-import { QuestionForReviewDto } from "./types.js";
-import { logger } from "@/lib/logger.js";
+import { createServiceRoleClient } from "@/lib/supabase/service-role";
+import { QuestionForReviewDto } from "./types";
+import { logger } from "@/lib/logger";
 
 export async function getQuestionsDueForReview(
     userId: string

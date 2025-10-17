@@ -2,8 +2,8 @@ import Stripe from "stripe"
 import {
     getUserIdByStripeCustomerId,
     getUserIdByStripeSubscriptionId,
-} from "@/data-access/subscriptions/get-user-by-stripe-id.js";
-import { logger } from "@/lib/logger.js";
+} from "@/data-access/subscriptions/get-user-by-stripe-id";
+import { logger } from "@/lib/logger";
 
 /**
  * Extracts user ID from Stripe webhook events with fallback strategy

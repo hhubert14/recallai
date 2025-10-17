@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { createClient } from "../client.js";
+import { createClient } from "../client";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 export type ConnectionStatus = "untested" | "success" | "error";

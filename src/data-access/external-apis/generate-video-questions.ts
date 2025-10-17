@@ -50,7 +50,7 @@ export async function generateVideoQuestions(
     }
 
     const transcriptText = transcript; // Initialize ChatOpenAI with structured output
-    logger.video.debug("Initializing ChatOpenAI for question generation");
+    // logger.video.debug("Initializing ChatOpenAI for question generation");
     const llm = new ChatOpenAI({
         model: "gpt-4.1-nano-2025-04-14", // Note: using a more standard model name
         temperature: 0,

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Button } from "@/components/ui/button";
+// import { Button } from "@/components/ui/button";
 import { Brain, User, CreditCard, Chrome, Database, Clock } from "lucide-react";
 import { UserButton } from "@/components/ui/user-button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
@@ -184,7 +184,7 @@ export default async function SettingsPage() {
                                         </div>
                                         {usagePercentage >= 80 && (
                                             <p className="text-sm text-amber-600 mt-2">
-                                                You're approaching your storage
+                                                You`&apos;`re approaching your storage
                                                 limit. Consider upgrading for
                                                 unlimited access.
                                             </p>
@@ -249,7 +249,7 @@ export default async function SettingsPage() {
                             </p>
                             <RegenerateTokenButton />
                             <p className="text-sm text-gray-500 dark:text-gray-400">
-                                If you're having connection issues with the
+                                If you`&apos;`re having connection issues with the
                                 extension, generate a new token to refresh the
                                 connection.
                             </p>

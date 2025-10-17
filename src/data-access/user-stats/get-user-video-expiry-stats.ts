@@ -1,7 +1,7 @@
 import "server-only";
 
-import { createServiceRoleClient } from "@/lib/supabase/service-role.js";
-import { logger } from "@/lib/logger.js";
+import { createServiceRoleClient } from "@/lib/supabase/service-role";
+import { logger } from "@/lib/logger";
 
 export async function getUserVideoExpiryStats(userId: string) {
     const supabase = createServiceRoleClient();

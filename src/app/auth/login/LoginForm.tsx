@@ -42,9 +42,9 @@ export function LoginForm() {
                 router.push("/dashboard");
                 router.refresh();
             }
-        } catch (error: any) {
+        } catch (error:unknown) {
             console.error("Sign in error:", error);
-            setError(error.message || "Failed to sign in. Please try again.");
+            setError(String(error) || "Failed to sign in. Please try again.");
         } finally {
             setIsLoading(false);
         }

@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -142,10 +142,10 @@ export function SignUpForm() {
                 router.push("/auth/confirm");
                 router.refresh();
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Sign up error:", error);
             setError(
-                error.message || "Failed to create account. Please try again."
+                String(error) || "Failed to create account. Please try again."
             );
         } finally {
             setIsLoading(false);

@@ -2,7 +2,7 @@
 
 // import { useState, useEffect } from "react";
 // import { X, Coffee } from "lucide-react";
-// import Link from "next/link.js";
+// import Link from "next/link";
 
 // interface SupportBannerProps {
 //     userId: string;

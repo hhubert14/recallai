@@ -15,21 +15,21 @@ export async function createVideo(videoData: CreateVideoDto) {
             await getUserSubscriptionStatusWithServiceRole(videoData.user_id);
 
         // Add detailed logging to debug the subscription status
-        logger.db.debug("User subscription status for video creation", {
-            userId: videoData.user_id,
-            subscriptionStatus,
-            isSubscribed: subscriptionStatus.isSubscribed,
-        });
+        // logger.db.debug("User subscription status for video creation", {
+        //     userId: videoData.user_id,
+        //     subscriptionStatus,
+        //     isSubscribed: subscriptionStatus.isSubscribed,
+        // });
 
         // Set should_expire based on subscription status
         // Free users: should_expire = true, Premium users: should_expire = false
         const should_expire = !subscriptionStatus.isSubscribed;
 
-        logger.db.debug("Video should_expire value calculated", {
-            userId: videoData.user_id,
-            isSubscribed: subscriptionStatus.isSubscribed,
-            should_expire,
-        });
+        // logger.db.debug("Video should_expire value calculated", {
+        //     userId: videoData.user_id,
+        //     isSubscribed: subscriptionStatus.isSubscribed,
+        //     should_expire,
+        // });
 
         // // Check if video already exists for this user
         // const existingVideo = await getVideoByUrl(videoData.url, videoData.user_id);

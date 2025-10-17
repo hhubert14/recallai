@@ -3,7 +3,7 @@
 import "server-only";
 
 // import TranscriptAPI from "youtube-transcript-api";
-import { logger } from "@/lib/logger.js";
+import { logger } from "@/lib/logger";
 // import { YoutubeTranscript } from "./types";
 
 export async function getYoutubeTranscript(

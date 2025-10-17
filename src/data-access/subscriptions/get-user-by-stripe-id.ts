@@ -34,10 +34,10 @@ export async function getUserIdByStripeCustomerId(
             return null;
         }
 
-        logger.subscription.debug("Found user ID in subscriptions table", {
-            userId: subData.user_id,
-            stripeCustomerId,
-        });
+        // logger.subscription.debug("Found user ID in subscriptions table", {
+        //     userId: subData.user_id,
+        //     stripeCustomerId,
+        // });
         return subData.user_id;
     } catch (error) {
         logger.db.error("Exception getting user ID by customer ID", error, {
@@ -50,9 +50,9 @@ export async function getUserIdByStripeCustomerId(
 export async function getUserIdByStripeSubscriptionId(
     stripeSubscriptionId: string
 ): Promise<string | null> {
-    logger.subscription.debug("Getting user ID for Stripe subscription", {
-        stripeSubscriptionId,
-    });
+    // logger.subscription.debug("Getting user ID for Stripe subscription", {
+    //     stripeSubscriptionId,
+    // });
 
     const supabase = createServiceRoleClient();
 
@@ -69,10 +69,10 @@ export async function getUserIdByStripeSubscriptionId(
             return null;
         }
 
-        logger.subscription.debug("Found user ID", {
-            userId: data.user_id,
-            stripeSubscriptionId,
-        });
+        // logger.subscription.debug("Found user ID", {
+        //     userId: data.user_id,
+        //     stripeSubscriptionId,
+        // });
         return data.user_id;
     } catch (error) {
         logger.db.error("Exception getting user ID by subscription ID", error, {
