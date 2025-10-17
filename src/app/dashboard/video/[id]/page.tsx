@@ -8,11 +8,11 @@ import { createClient } from "@/lib/supabase/server";
 import { getVideosByUserId } from "@/data-access/videos/get-videos-by-user-id";
 import { getSummaryByVideoId } from "@/data-access/summaries/get-summary-by-video-id";
 import { getQuestionsByVideoId } from "@/data-access/questions/get-questions-by-video-id";
-import { getUserSubscriptionStatus } from "@/data-access/subscriptions/get-user-subscription-status";
+// import { getUserSubscriptionStatus } from "@/data-access/subscriptions/get-user-subscription-status";
 import { VideoPlayer } from "./VideoPlayer";
 import { ContentTabs } from "./ContentTabs";
 import { BackButton } from "./BackButton";
-import { SupportBanner } from "@/components/ui/support-banner";
+// import { SupportBanner } from "@/components/ui/support-banner";
 
 export const metadata: Metadata = {
     title: "Video Detail | RecallAI",
@@ -46,10 +46,10 @@ export default async function VideoDetailPage({
     }
 
     // Get summary and questions
-    const [summary, questions, subscriptionStatus] = await Promise.all([
+    const [summary, questions] = await Promise.all([
         getSummaryByVideoId(video.id),
         getQuestionsByVideoId(video.id),
-        getUserSubscriptionStatus(user.id),
+        // getUserSubscriptionStatus(user.id),
     ]);
 
     // Extract YouTube video ID from URL
@@ -112,9 +112,9 @@ export default async function VideoDetailPage({
             </header>
 
             {/* Show support banner only for non-subscribed users */}
-            {!subscriptionStatus.isSubscribed && (
+            {/* {!subscriptionStatus.isSubscribed && (
                 <SupportBanner userId={user.id} />
-            )}
+            )} */}
 
             <main className="flex-1 container py-4 px-6 md:px-8 max-w-7xl mx-auto">
                 <div className="mb-6">

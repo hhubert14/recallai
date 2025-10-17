@@ -2,8 +2,7 @@
 
 import "server-only";
 
-// @ts-ignore
-import TranscriptAPI from "youtube-transcript-api";
+// import TranscriptAPI from "youtube-transcript-api";
 import { logger } from "@/lib/logger";
 // import { YoutubeTranscript } from "./types";
 

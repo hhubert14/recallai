@@ -1,5 +1,6 @@
 import { VideoDto } from "./types";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function toDtoMapper(video: any): VideoDto {
     return {
         id: video.id,

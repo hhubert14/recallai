@@ -35,9 +35,9 @@ const SUBSCRIPTION_LIMITS: Record<string, SubscriptionLimits> = {
 export async function validateSubscriptionForExtension(
     userId: string
 ): Promise<SubscriptionValidationResult> {
-    logger.subscription.debug("Validating subscription for extension user", {
-        userId,
-    });
+    // logger.subscription.debug("Validating subscription for extension user", {
+    //     userId,
+    // });
 
     try {
         const supabase = createServiceRoleClient();
@@ -66,10 +66,10 @@ export async function validateSubscriptionForExtension(
         }
 
         const isSubscribed = userData.is_subscribed;
-        logger.subscription.debug("User subscription status from database", {
-            userId,
-            isSubscribed,
-        });
+        // logger.subscription.debug("User subscription status from database", {
+        //     userId,
+        //     isSubscribed,
+        // });
 
         // Calculate the start of current month to count videos
         const now = new Date();

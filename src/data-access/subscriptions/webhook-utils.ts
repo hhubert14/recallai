@@ -1,3 +1,4 @@
+import Stripe from "stripe";
 import {
     getUserIdByStripeCustomerId,
     getUserIdByStripeSubscriptionId,
@@ -10,40 +11,38 @@ import { logger } from "@/lib/logger";
  * 2. Fallback to database lookup by customer_id or subscription_id
  */
 export async function extractUserIdFromStripeEvent(
-    event: any
+    event: Stripe.Event
 ): Promise<string | null> {
-    logger.subscription.debug("Extracting user ID from Stripe event", {
-        eventType: event.type,
-    });
+    const object = event.data.object;
 
     // Strategy 1: Try metadata first (from checkout session)
-    if (event.data.object.metadata?.userId) {
-        logger.subscription.debug("Found user ID in metadata", {
-            userId: event.data.object.metadata.userId,
-        });
-        return event.data.object.metadata.userId;
+    if ("metadata" in object && object.metadata?.userId) {
+        return object.metadata.userId as string;
     }
 
     // Strategy 2: Try to get from customer ID
-    const customerId = event.data.object.customer;
-    if (customerId) {
-        logger.subscription.debug("Trying to find user by customer ID", {
-            customerId,
-        });
+    if ("customer" in object && object.customer) {
+        const customerId = typeof object.customer === 'string' ? object.customer : object.customer.id;
         const userId = await getUserIdByStripeCustomerId(customerId);
         if (userId) {
             return userId;
         }
     }
 
-    // Strategy 3: Try to get from subscription ID (for subscription events)
-    const subscriptionId =
-        event.data.object.subscription || event.data.object.id;
-    if (subscriptionId && subscriptionId.startsWith("sub_")) {
-        logger.subscription.debug("Trying to find user by subscription ID", {
-            subscriptionId,
-        });
-        const userId = await getUserIdByStripeSubscriptionId(subscriptionId);
+    // Strategy 3: Try to get from subscription ID
+    if ("subscription" in object && object.subscription) {
+        const subscriptionId = typeof object.subscription === 'string' ? object.subscription : object.subscription.id;
+        if (subscriptionId && subscriptionId.startsWith("sub_")) {
+            const userId = await getUserIdByStripeSubscriptionId(subscriptionId);
+            if (userId) {
+                return userId;
+            }
+        }
+    }
+
+    // Strategy 4: Check if the object itself is a subscription
+    if ("id" in object && typeof object.id === 'string' && object.id.startsWith("sub_")) {
+        const userId = await getUserIdByStripeSubscriptionId(object.id);
         if (userId) {
             return userId;
         }

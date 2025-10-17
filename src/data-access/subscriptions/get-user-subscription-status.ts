@@ -35,10 +35,10 @@ export async function getUserSubscriptionStatus(
 
         // If not subscribed according to users table, return early
         if (!userData?.is_subscribed) {
-            logger.subscription.debug(
-                "User not subscribed according to users table",
-                { userId, is_subscribed: userData?.is_subscribed }
-            );
+            // logger.subscription.debug(
+            //     "User not subscribed according to users table",
+            //     { userId, is_subscribed: userData?.is_subscribed }
+            // );
             return { isSubscribed: false };
         } // If subscribed, get detailed subscription info from subscriptions table
         const { data: subscriptionData, error: subscriptionError } =
@@ -54,10 +54,10 @@ export async function getUserSubscriptionStatus(
         if (subscriptionError || !subscriptionData) {
             // User might be marked as subscribed but no active subscription found
             // Return basic subscription status
-            logger.subscription.debug(
-                "User marked as subscribed but no active subscription found",
-                { userId, subscriptionError }
-            );
+            // logger.subscription.debug(
+            //     "User marked as subscribed but no active subscription found",
+            //     { userId, subscriptionError }
+            // );
             return { isSubscribed: userData.is_subscribed };
         }
         return {
@@ -104,10 +104,10 @@ export async function getUserSubscriptionStatusWithServiceRole(
 
         // If not subscribed according to users table, return early
         if (!userData?.is_subscribed) {
-            logger.subscription.debug(
-                "User not subscribed according to users table (service role)",
-                { userId, is_subscribed: userData?.is_subscribed }
-            );
+            // logger.subscription.debug(
+            //     "User not subscribed according to users table (service role)",
+            //     { userId, is_subscribed: userData?.is_subscribed }
+            // );
             return { isSubscribed: false };
         } // If subscribed, get detailed subscription info from subscriptions table
         const { data: subscriptionData, error: subscriptionError } =
@@ -123,10 +123,10 @@ export async function getUserSubscriptionStatusWithServiceRole(
         if (subscriptionError || !subscriptionData) {
             // User might be marked as subscribed but no active subscription found
             // Return basic subscription status
-            logger.subscription.debug(
-                "User marked as subscribed but no active subscription found (service role)",
-                { userId, subscriptionError }
-            );
+            // logger.subscription.debug(
+            //     "User marked as subscribed but no active subscription found (service role)",
+            //     { userId, subscriptionError }
+            // );
             return { isSubscribed: userData.is_subscribed };
         }
         return {

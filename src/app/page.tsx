@@ -16,13 +16,13 @@ import {
     Search,
     Youtube,
     Zap,
-    BarChart,
+    // BarChart,
     BookOpen,
     Layers,
     Shield,
 } from "lucide-react";
-import { Sub } from "@radix-ui/react-dropdown-menu";
-import SubscribeButton from "@/components/subscription/SubscribeButton";
+// import { Sub } from "@radix-ui/react-dropdown-menu";
+// import SubscribeButton from "@/components/subscription/SubscribeButton";
 
 export default function Home() {
     return (
@@ -160,7 +160,7 @@ export default function Home() {
                                     The Problem with Video Learning
                                 </h2>
                                 <p className="max-w-[900px] text-gray-500 dark:text-gray-400 md:text-xl/relaxed">
-                                    In today's information-rich world, people
+                                    In today`&apos;`s information-rich world, people
                                     consume massive amounts of educational video
                                     content but struggle with poor retention
                                     rates. Research shows learners forget 90% of
@@ -541,7 +541,7 @@ export default function Home() {
                         <div className="flex flex-col items-center justify-center space-y-4 text-center">
                             <div className="space-y-2">
                                 <div className="inline-block rounded-lg bg-blue-100 dark:bg-blue-900 px-3 py-1 text-sm text-blue-600 dark:text-blue-400">
-                                    Who It's For
+                                    Who It`&apos;`s For
                                 </div>
                                 <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight text-blue-900 dark:text-blue-100">
                                     Perfect for All Types of Learners
@@ -819,7 +819,7 @@ export default function Home() {
                                     Simple, Transparent Pricing
                                 </h2>
                                 <p className="max-w-[900px] text-gray-500 dark:text-gray-400 md:text-xl/relaxed">
-                                    Choose the plan that's right for you and
+                                    Choose the plan that`&apos;`s right for you and
                                     start transforming your learning experience
                                     today.
                                 </p>
@@ -1018,7 +1018,7 @@ export default function Home() {
                                     generated summaries and questions will be
                                     provided in English, and our web interface
                                     is currently only available in English.
-                                    We're working on adding translated outputs
+                                    We`&apos;`re working on adding translated outputs
                                     and interface language options in the
                                     future.
                                 </p>

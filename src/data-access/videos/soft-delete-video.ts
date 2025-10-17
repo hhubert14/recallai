@@ -6,7 +6,7 @@ export async function softDeleteVideo(
     videoId: number,
     userId: string
 ): Promise<boolean> {
-    logger.db.debug("Soft deleting video", { videoId, userId });
+    // logger.db.debug("Soft deleting video", { videoId, userId });
 
     if (!videoId || !userId) {
         logger.db.warn("Invalid parameters for soft delete", {
@@ -33,7 +33,7 @@ export async function softDeleteVideo(
             throw error;
         }
 
-        logger.db.info("Video soft deleted successfully", { videoId, userId });
+        // logger.db.info("Video soft deleted successfully", { videoId, userId });
         return true;
     } catch (error) {
         logger.db.error("Error soft deleting video", error, {

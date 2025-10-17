@@ -11,7 +11,7 @@ interface SubscriptionStatusBadgeProps {
 
 export function SubscriptionStatusBadge({
     isSubscribed,
-    status,
+    // status,
     planType,
     currentPeriodEnd,
     className,

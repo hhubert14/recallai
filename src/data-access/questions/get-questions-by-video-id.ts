@@ -50,6 +50,7 @@ export async function getQuestionsByVideoId(
             created_at: question.created_at,
             updated_at: question.updated_at,
             options: (question.question_options || []).sort(
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 (a: any, b: any) => (a.order_index || 0) - (b.order_index || 0)
             ),
         }));

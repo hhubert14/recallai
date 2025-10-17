@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SignUpForm } from "@/app/auth/sign-up/SignUpForm";
-import { Button } from "@/components/ui/button";
+// import { Button } from "@/components/ui/button";
 import { Brain } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 

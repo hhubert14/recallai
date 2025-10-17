@@ -1,7 +1,7 @@
 "use server";
 
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+// import { createClient } from "@/lib/supabase/server";
 import { generateVideoQuestions } from "@/data-access/external-apis/generate-video-questions";
 import { createQuestion } from "@/data-access/questions/create-question";
 import { createQuestionOptions } from "@/data-access/question-options/create-question-options";
@@ -12,17 +12,17 @@ export async function POST(
     request: NextRequest
     // { params }: { params: { url: string } }
 ) {
-    const supabase = await createClient();
+    // const supabase = await createClient();
 
     const { authToken, video_id, title, description, transcript } =
         await request.json();
 
-    logger.video.debug("Received question generation request", {
-        video_id,
-        title,
-        hasDescription: !!description,
-        transcriptLength: transcript?.length || 0,
-    });
+    // logger.video.debug("Received question generation request", {
+    //     video_id,
+    //     title,
+    //     hasDescription: !!description,
+    //     transcriptLength: transcript?.length || 0,
+    // });
 
     if (!authToken || !video_id || !title || !description || !transcript) {
         return NextResponse.json(

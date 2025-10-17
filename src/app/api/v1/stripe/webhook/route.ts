@@ -1,6 +1,6 @@
 "use server";
 
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { revalidatePath } from "next/cache";
 import { stripe } from "@/lib/stripe/stripe";
 import {
@@ -8,6 +8,7 @@ import {
     mapStripeStatusToDbStatus,
     shouldHaveSubscriptionAccess,
 } from "@/data-access/subscriptions/webhook-utils";
+import { SubscriptionStatus } from "@/data-access/subscriptions/types";
 import { createSubscription } from "@/data-access/subscriptions/create-subscription";
 import { updateSubscriptionByStripeId } from "@/data-access/subscriptions/update-subscription";
 import { updateUserSubscriptionStatus } from "@/data-access/users/update-user-subscription";
@@ -16,6 +17,7 @@ import {
     handleSubscriptionDowngrade,
     handleImmediateSubscriptionDowngrade,
 } from "@/data-access/videos/update-video-expiry-on-subscription-change";
+import Stripe from "stripe";
 
 // Simple in-memory cache to prevent duplicate processing
 const processedEvents = new Map<string, number>();
@@ -89,12 +91,12 @@ export async function POST(request: NextRequest) {
         console.log(
             `✅ Successfully verified event: ${event.type} (ID: ${event.id})`
         );
-        console.log("Event data preview:", {
-            type: event.type,
-            id: event.id,
-            object: (event.data.object as any)?.id || "N/A",
-            customer: (event.data.object as any)?.customer || "N/A",
-        });
+        // console.log("Event data preview:", {
+        //     type: event.type,
+        //     id: event.id,
+        //     object: (event.data.object as any)?.id || "N/A",
+        //     customer: (event.data.object as any)?.customer || "N/A",
+        // });
 
         // Check for duplicate events
         if (isEventAlreadyProcessed(event.id)) {
@@ -162,11 +164,14 @@ export async function POST(request: NextRequest) {
 }
 
 // Handle subscription creation (update period data)
-async function handleSubscriptionCreated(event: any) {
+async function handleSubscriptionCreated(event: Stripe.Event) {
     console.log("Processing subscription created");
 
     try {
-        const subscription = event.data.object;
+        const subscription = event.data.object as Stripe.Subscription & {
+            current_period_start?: number,
+            current_period_end?: number,
+        };
 
         console.log("Subscription created data:", {
             id: subscription.id,
@@ -185,9 +190,16 @@ async function handleSubscriptionCreated(event: any) {
             console.log("Updating subscription with period data");
 
             // Prepare update data with safe date conversion
-            const updateData: any = {
+            const updateData: {
+                stripeSubscriptionId: string;
+                status: SubscriptionStatus;
+                currentPeriodStart?: Date;
+                currentPeriodEnd?: Date;
+            } = {
                 stripeSubscriptionId: subscription.id,
-                status: mapStripeStatusToDbStatus(subscription.status),
+                status: mapStripeStatusToDbStatus(
+                    subscription.status
+                ) as SubscriptionStatus,
             };
 
             // Only add dates if they exist and are valid numbers
@@ -224,11 +236,11 @@ async function handleSubscriptionCreated(event: any) {
 }
 
 // Handle checkout session completion (now handles subscription creation)
-async function handleCheckoutSessionCompleted(event: any) {
+async function handleCheckoutSessionCompleted(event: Stripe.Event) {
     console.log("Processing checkout session completed");
 
     try {
-        const session = event.data.object;
+        const session = event.data.object as Stripe.Checkout.Session;
 
         // Only process paid sessions
         if (session.payment_status !== "paid") {
@@ -294,11 +306,13 @@ async function handleCheckoutSessionCompleted(event: any) {
 }
 
 // Handle successful renewal payments
-async function handleInvoicePaymentSucceeded(event: any) {
+async function handleInvoicePaymentSucceeded(event: Stripe.Event) {
     console.log("Processing invoice payment succeeded");
 
     try {
-        const invoice = event.data.object;
+        const invoice = event.data.object as Stripe.Invoice & {
+            subscription?: string;
+        };
         const subscriptionId = invoice.subscription;
 
         console.log("Invoice data:", {
@@ -331,9 +345,12 @@ async function handleInvoicePaymentSucceeded(event: any) {
 
         // Get subscription details from Stripe
         const stripeInstance = await stripe();
-        const subscriptionResponse =
-            await stripeInstance.subscriptions.retrieve(subscriptionId);
-        const subscription = subscriptionResponse as any; // Cast to bypass type issues
+        const subscription = (await stripeInstance.subscriptions.retrieve(
+            subscriptionId
+        )) as Stripe.Subscription & {
+            current_period_start?: number;
+            current_period_end?: number;
+        };
 
         console.log("Subscription from invoice:", {
             id: subscription.id,
@@ -345,12 +362,16 @@ async function handleInvoicePaymentSucceeded(event: any) {
 
         // Try to update existing subscription first
         const updateSuccess = await updateSubscriptionByStripeId({
-            stripeSubscriptionId: subscriptionId,
+            stripeSubscriptionId: subscriptionId as string,
             status: mapStripeStatusToDbStatus(subscription.status),
-            currentPeriodStart: new Date(
-                subscription.current_period_start * 1000
-            ),
-            currentPeriodEnd: new Date(subscription.current_period_end * 1000),
+            currentPeriodStart:
+                subscription.current_period_start !== undefined
+                    ? new Date(subscription.current_period_start * 1000)
+                    : undefined,
+            currentPeriodEnd:
+                subscription.current_period_end !== undefined
+                    ? new Date(subscription.current_period_end * 1000)
+                    : undefined,
         });
 
         // If update failed, log the issue but DON'T create a new subscription
@@ -379,13 +400,15 @@ async function handleInvoicePaymentSucceeded(event: any) {
 }
 
 // Handle failed renewal payments
-async function handleInvoicePaymentFailed(event: any) {
+async function handleInvoicePaymentFailed(event: Stripe.Event) {
     console.log(
         "Processing invoice payment failed - implementing immediate downgrade"
     );
 
     try {
-        const invoice = event.data.object;
+        const invoice = event.data.object as Stripe.Invoice & {
+            subscription?: string;
+        };
         const subscriptionId = invoice.subscription;
 
         if (!subscriptionId) {
@@ -404,7 +427,7 @@ async function handleInvoicePaymentFailed(event: any) {
 
         // Immediately cancel subscription and downgrade user to free plan
         const success = await updateSubscriptionByStripeId({
-            stripeSubscriptionId: subscriptionId,
+            stripeSubscriptionId: subscriptionId as string,
             status: "canceled", // Immediately cancel instead of past_due
         });
 
@@ -441,11 +464,15 @@ async function handleInvoicePaymentFailed(event: any) {
 }
 
 // Handle subscription updates (status changes, etc.)
-async function handleSubscriptionUpdated(event: any) {
+async function handleSubscriptionUpdated(event: Stripe.Event) {
     console.log("Processing subscription updated");
 
     try {
-        const subscription = event.data.object;
+        const subscription = event.data.object as Stripe.Subscription & {
+            current_period_start?: number;
+            current_period_end?: number;
+            canceled_at?: number;
+        };
         const userId = await extractUserIdFromStripeEvent(event);
 
         if (!userId) {
@@ -454,9 +481,18 @@ async function handleSubscriptionUpdated(event: any) {
         }
 
         // Prepare update data with safe date conversion
-        const updateData: any = {
+        const updateData: {
+            stripeSubscriptionId: string;
+            status: SubscriptionStatus;
+            currentPeriodStart?: Date;
+            currentPeriodEnd?: Date;
+            cancelAtPeriodEnd?: boolean;
+            canceledAt?: Date;
+        } = {
             stripeSubscriptionId: subscription.id,
-            status: mapStripeStatusToDbStatus(subscription.status),
+            status: mapStripeStatusToDbStatus(
+                subscription.status
+            ) as SubscriptionStatus,
         };
 
         // Only add dates if they exist and are valid
@@ -526,11 +562,11 @@ async function handleSubscriptionUpdated(event: any) {
 }
 
 // Handle subscription cancellation
-async function handleSubscriptionDeleted(event: any) {
+async function handleSubscriptionDeleted(event: Stripe.Event) {
     console.log("Processing subscription deleted");
 
     try {
-        const subscription = event.data.object;
+        const subscription = event.data.object as Stripe.Subscription;
         const userId = await extractUserIdFromStripeEvent(event);
 
         if (!userId) {
@@ -568,11 +604,11 @@ async function handleSubscriptionDeleted(event: any) {
 }
 
 // Handle billing portal session creation
-async function handleBillingPortalSessionCreated(event: any) {
+async function handleBillingPortalSessionCreated(event: Stripe.Event) {
     console.log("Processing billing portal session created");
 
     try {
-        const session = event.data.object;
+        const session = event.data.object as Stripe.BillingPortal.Session;
         console.log("Billing portal session created:", {
             id: session.id,
             customer: session.customer,

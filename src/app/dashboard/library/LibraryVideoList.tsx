@@ -41,6 +41,6 @@ export async function LibraryVideoList({
         }))
     );
     return (
-        <ClientLibraryVideoList videos={videosWithCompletion} userId={userId} />
+        <ClientLibraryVideoList videos={videosWithCompletion} />
     );
 }

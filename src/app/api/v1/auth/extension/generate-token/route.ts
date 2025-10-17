@@ -1,9 +1,9 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-export async function POST(request: NextRequest) {
+export async function POST() {
     try {
         const supabase = await createClient();
 
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
         await supabase.from("extension_tokens").delete().eq("user_id", user.id);
 
         // Create new extension token
-        const { data: tokenData, error: tokenError } = await supabase
+        const { error: tokenError } = await supabase
             .from("extension_tokens")
             .insert({
                 user_id: user.id,

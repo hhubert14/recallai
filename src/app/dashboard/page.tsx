@@ -16,7 +16,7 @@ import { VideoDto } from "@/data-access/videos/types";
 import { StatsCard } from "@/components/ui/stats-card";
 import { SubscriptionStatusBadge } from "@/components/subscription/SubscriptionStatusBadge";
 import { UpgradeButton } from "@/components/subscription/UpgradeButton";
-import { SupportBanner } from "@/components/ui/support-banner";
+// import { SupportBanner } from "@/components/ui/support-banner";
 import { RefreshButton } from "./RefreshButton";
 
 export const metadata: Metadata = {
@@ -106,9 +106,9 @@ export default async function DashboardPage() {
             </header>
 
             {/* Show support banner only for non-subscribed users */}
-            {!subscriptionStatus.isSubscribed && (
+            {/* {!subscriptionStatus.isSubscribed && (
                 <SupportBanner userId={user.id} />
-            )}
+            )} */}
 
             <main className="flex-1 container py-12 px-6 md:px-8 max-w-7xl mx-auto">
                 <div className="flex items-center justify-between mb-8">

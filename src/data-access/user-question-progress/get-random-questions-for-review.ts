@@ -69,6 +69,7 @@ export async function getRandomQuestionsForReview(
             .sort(() => Math.random() - 0.5)
             .slice(0, limit); // Transform to our DTO structure
         const randomQuestions: QuestionForReviewDto[] = shuffled.map(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (question: any) => {
                 const progress = question.user_question_progress[0]; // Should only be one due to unique constraint
 
@@ -80,6 +81,7 @@ export async function getRandomQuestionsForReview(
                     video_title: question.videos.title,
                     box_level: progress?.box_level || 1,
                     next_review_date: progress?.next_review_date || null,
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     options: question.question_options.map((option: any) => ({
                         id: option.id,
                         option_text: option.option_text,

@@ -11,9 +11,9 @@ export async function getUserVideoExpiryStats(userId: string) {
         const threeDaysFromNow = new Date(
             now.getTime() + 3 * 24 * 60 * 60 * 1000
         );
-        const sevenDaysFromNow = new Date(
-            now.getTime() + 7 * 24 * 60 * 60 * 1000
-        );
+        // const sevenDaysFromNow = new Date(
+        //     now.getTime() + 7 * 24 * 60 * 60 * 1000
+        // );
 
         const [
             { count: expiringVideos },

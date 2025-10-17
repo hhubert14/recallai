@@ -15,7 +15,7 @@ export const stripe = async () => {
     }
 
     return new Stripe(key, {
-        apiVersion: "2025-05-28.basil",
+        apiVersion: "2025-09-30.clover",
         typescript: true,
     });
 };

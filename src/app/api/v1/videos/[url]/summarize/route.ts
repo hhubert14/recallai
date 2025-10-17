@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 // import { getYoutubeVideoData } from "@/data-access/external-apis/get-youtube-video-data";
 // import { getYoutubeTranscript } from "@/data-access/external-apis/get-youtube-transcript";
 // import { checkVideoEducational } from "@/data-access/external-apis/check-video-educational";
-import { createClient } from "@/lib/supabase/server";
+// import { createClient } from "@/lib/supabase/server";
 import { generateVideoSummary } from "@/data-access/external-apis/generate-video-summary";
 import { createSummary } from "@/data-access/summaries/create-summary";
 import { authenticateRequest } from "@/use-cases/extension/authenticate-request";
@@ -16,7 +16,7 @@ export async function POST(
     request: NextRequest
     // { params }: { params: { url: string } }
 ) {
-    const supabase = await createClient();
+    // const supabase = await createClient();
 
     // const searchParams = request.nextUrl.searchParams;
     // // const { url: videoUrl } = await params;
@@ -26,12 +26,12 @@ export async function POST(
     const { authToken, video_id, title, description, transcript } =
         await request.json();
 
-    logger.video.debug("Processing video summary request", {
-        video_id,
-        hasTitle: !!title,
-        hasDescription: !!description,
-        hasTranscript: !!transcript,
-    });
+    // logger.video.debug("Processing video summary request", {
+    //     video_id,
+    //     hasTitle: !!title,
+    //     hasDescription: !!description,
+    //     hasTranscript: !!transcript,
+    // });
 
     if (!authToken || !video_id || !title || !description || !transcript) {
         return NextResponse.json(

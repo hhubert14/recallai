@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
+// import { Button } from "@/components/ui/button";
 import { SummaryDto } from "@/data-access/summaries/types";
 import { QuestionDto } from "@/data-access/questions/types";
 import { QuizInterface } from "./QuizInterface";

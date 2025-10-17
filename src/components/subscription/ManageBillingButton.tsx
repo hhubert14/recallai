@@ -29,14 +29,21 @@ export function ManageBillingButton({
             } else {
                 throw new Error("No billing portal URL received");
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error opening billing portal:", error);
 
             // Show user-friendly error message
-            const errorMessage =
-                error.message ||
-                "Failed to open billing portal. Please try again.";
-            alert(errorMessage);
+            if (error instanceof Error) {
+                const errorMessage =
+                    error.message ||
+                    "Failed to open billing portal. Please try again.";
+                alert(errorMessage);
+            } else {
+                const errorMessage =
+                    String(error) ||
+                    "Failed to open billing portal. Please try again.";
+                alert(errorMessage);
+            }
         } finally {
             setIsLoading(false);
         }

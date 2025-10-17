@@ -1,8 +1,9 @@
 import { Button } from "@/components/ui/button";
-import { Brain, ArrowLeft, Crown } from "lucide-react";
+// import { Brain, ArrowLeft, Crown } from "lucide-react";
 import Link from "next/link";
 import { UserButton } from "@/components/ui/user-button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { Brain, Crown } from "lucide-react";
 
 export function UpgradePrompt() {
     return (

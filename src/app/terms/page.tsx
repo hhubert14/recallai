@@ -68,9 +68,9 @@ export default function TermsOfServicePage() {
                                     Acceptance of Terms
                                 </h2>
                                 <p>
-                                    By accessing or using RecallAI ("the
-                                    Service"), you agree to be bound by these
-                                    Terms of Service ("Terms"). If you do not
+                                    By accessing or using RecallAI (`&quot;`the
+                                    Service`&quot;`), you agree to be bound by these
+                                    Terms of Service (`&quot;`Terms`&quot;`). If you do not
                                     agree to these Terms, please do not use the
                                     Service.
                                 </p>
@@ -249,7 +249,7 @@ export default function TermsOfServicePage() {
                                     Disclaimers
                                 </h2>
                                 <p>
-                                    THE SERVICE IS PROVIDED "AS IS" WITHOUT
+                                    THE SERVICE IS PROVIDED `&quot;`AS IS`&quot;` WITHOUT
                                     WARRANTIES OF ANY KIND. WE DISCLAIM ALL
                                     WARRANTIES, EXPRESS OR IMPLIED, INCLUDING
                                     WARRANTIES OF MERCHANTABILITY, FITNESS FOR A

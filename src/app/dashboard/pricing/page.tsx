@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Brain, ArrowLeft, CheckCircle, Crown } from "lucide-react";
+import { Brain, CheckCircle, Crown } from "lucide-react";
 import { UserButton } from "@/components/ui/user-button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { createClient } from "@/lib/supabase/server";
@@ -131,7 +131,7 @@ export default async function PricingPage() {
                             Choose Your Plan
                         </h1>
                         <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl">
-                            Choose the plan that's right for you and start
+                            Choose the plan that`&apos;`s right for you and start
                             transforming your learning experience today.
                         </p>
                     </div>
