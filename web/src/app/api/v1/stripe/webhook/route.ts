@@ -19,29 +19,29 @@ import {
 } from "@/data-access/videos/update-video-expiry-on-subscription-change";
 import Stripe from "stripe";
 
-// Simple in-memory cache to prevent duplicate processing
-const processedEvents = new Map<string, number>();
+// // Simple in-memory cache to prevent duplicate processing
+// const processedEvents = new Map<string, number>();
 
-function isEventAlreadyProcessed(eventId: string): boolean {
-    const now = Date.now();
-    const lastProcessed = processedEvents.get(eventId);
+// function isEventAlreadyProcessed(eventId: string): boolean {
+//     const now = Date.now();
+//     const lastProcessed = processedEvents.get(eventId);
 
-    // If processed within the last 5 minutes, consider it a duplicate
-    if (lastProcessed && now - lastProcessed < 5 * 60 * 1000) {
-        return true;
-    }
+//     // If processed within the last 5 minutes, consider it a duplicate
+//     if (lastProcessed && now - lastProcessed < 5 * 60 * 1000) {
+//         return true;
+//     }
 
-    // Clean up old entries (older than 10 minutes)
-    for (const [id, timestamp] of processedEvents.entries()) {
-        if (now - timestamp > 10 * 60 * 1000) {
-            processedEvents.delete(id);
-        }
-    }
+//     // Clean up old entries (older than 10 minutes)
+//     for (const [id, timestamp] of processedEvents.entries()) {
+//         if (now - timestamp > 10 * 60 * 1000) {
+//             processedEvents.delete(id);
+//         }
+//     }
 
-    // Mark as processed
-    processedEvents.set(eventId, now);
-    return false;
-}
+//     // Mark as processed
+//     processedEvents.set(eventId, now);
+//     return false;
+// }
 
 export async function POST(request: NextRequest) {
     console.log("🚀 Webhook received!");
@@ -99,16 +99,16 @@ export async function POST(request: NextRequest) {
         // });
 
         // Check for duplicate events
-        if (isEventAlreadyProcessed(event.id)) {
-            console.log(`Event ${event.id} already processed, skipping`);
-            return new Response(
-                JSON.stringify({ received: true, skipped: true }),
-                {
-                    status: 200,
-                    headers: { "Content-Type": "application/json" },
-                }
-            );
-        }
+        // if (isEventAlreadyProcessed(event.id)) {
+        //     console.log(`Event ${event.id} already processed, skipping`);
+        //     return new Response(
+        //         JSON.stringify({ received: true, skipped: true }),
+        //         {
+        //             status: 200,
+        //             headers: { "Content-Type": "application/json" },
+        //         }
+        //     );
+        // }
 
         // Handle the event
         console.log(`🎯 About to handle event: ${event.type}`);
