@@ -44,28 +44,28 @@ import Stripe from "stripe";
 // }
 
 export async function POST(request: NextRequest) {
-    console.log("🚀 Webhook received!");
-    console.log("📝 Environment check:");
-    console.log(
-        "- Has STRIPE_WEBHOOK_SECRET:",
-        !!process.env.STRIPE_WEBHOOK_SECRET
-    );
-    console.log(
-        "- Secret length:",
-        process.env.STRIPE_WEBHOOK_SECRET?.length || 0
-    );
-    console.log(
-        "- Secret preview:",
-        process.env.STRIPE_WEBHOOK_SECRET?.substring(0, 10) + "..."
-    );
+    // console.log("🚀 Webhook received!");
+    // console.log("📝 Environment check:");
+    // console.log(
+    //     "- Has STRIPE_WEBHOOK_SECRET:",
+    //     !!process.env.STRIPE_WEBHOOK_SECRET
+    // );
+    // console.log(
+    //     "- Secret length:",
+    //     process.env.STRIPE_WEBHOOK_SECRET?.length || 0
+    // );
+    // console.log(
+    //     "- Secret preview:",
+    //     process.env.STRIPE_WEBHOOK_SECRET?.substring(0, 10) + "..."
+    // );
 
     const body = await request.text();
     const signature = request.headers.get("Stripe-Signature") as string;
 
-    console.log("📦 Request details:");
-    console.log("- Body length:", body.length);
-    console.log("- Has signature:", !!signature);
-    console.log("- Signature preview:", signature?.substring(0, 50) + "...");
+    // console.log("📦 Request details:");
+    // console.log("- Body length:", body.length);
+    // console.log("- Has signature:", !!signature);
+    // console.log("- Signature preview:", signature?.substring(0, 50) + "...");
 
     if (!signature) {
         console.error("❌ Missing Stripe-Signature header");
@@ -88,9 +88,9 @@ export async function POST(request: NextRequest) {
             revalidatePath(`/dashboard`);
         }
         // Log the event for debugging purposes
-        console.log(
-            `✅ Successfully verified event: ${event.type} (ID: ${event.id})`
-        );
+        // console.log(
+        //     `✅ Successfully verified event: ${event.type} (ID: ${event.id})`
+        // );
         // console.log("Event data preview:", {
         //     type: event.type,
         //     id: event.id,
@@ -111,11 +111,11 @@ export async function POST(request: NextRequest) {
         // }
 
         // Handle the event
-        console.log(`🎯 About to handle event: ${event.type}`);
-        console.log(
-            "🔍 Full event data for debugging:",
-            JSON.stringify(event.data, null, 2)
-        );
+        // console.log(`🎯 About to handle event: ${event.type}`);
+        // console.log(
+        //     "🔍 Full event data for debugging:",
+        //     JSON.stringify(event.data, null, 2)
+        // );
 
         switch (event.type) {
             case "checkout.session.completed":
