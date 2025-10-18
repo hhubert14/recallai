@@ -5,6 +5,7 @@ import { AuthProviderWrapper } from "@/components/providers/AuthProviderWrapper"
 import { QuizCompletionProvider } from "@/components/providers/QuizCompletionProvider";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { Analytics } from "@vercel/analytics/next";
+import { StrictMode } from "react";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -32,14 +33,16 @@ export default function RootLayout({
             <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
-                <ThemeProvider>
-                    <AuthProviderWrapper>
-                        <QuizCompletionProvider>
-                            {children}
-                            <Analytics />
-                        </QuizCompletionProvider>
-                    </AuthProviderWrapper>
-                </ThemeProvider>
+                <StrictMode>
+                    <ThemeProvider>
+                        <AuthProviderWrapper>
+                            <QuizCompletionProvider>
+                                {children}
+                                <Analytics />
+                            </QuizCompletionProvider>
+                        </AuthProviderWrapper>
+                    </ThemeProvider>
+                </StrictMode>
             </body>
         </html>
     );
