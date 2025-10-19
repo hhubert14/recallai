@@ -118,6 +118,7 @@ export async function POST(request: NextRequest) {
         // );
 
         switch (event.type) {
+            // Subscription successful
             case "checkout.session.completed":
                 await handleCheckoutSessionCompleted(event);
                 break;
@@ -136,9 +137,9 @@ export async function POST(request: NextRequest) {
             case "customer.subscription.deleted":
                 await handleSubscriptionDeleted(event);
                 break;
-            case "billing_portal.session.created":
-                await handleBillingPortalSessionCreated(event);
-                break;
+            // case "billing_portal.session.created":
+            //     await handleBillingPortalSessionCreated(event);
+            //     break;
             default:
                 console.warn(`⚠️ Unhandled event type: ${event.type}`);
         }
@@ -604,21 +605,21 @@ async function handleSubscriptionDeleted(event: Stripe.Event) {
 }
 
 // Handle billing portal session creation
-async function handleBillingPortalSessionCreated(event: Stripe.Event) {
-    console.log("Processing billing portal session created");
+// async function handleBillingPortalSessionCreated(event: Stripe.Event) {
+//     console.log("Processing billing portal session created");
 
-    try {
-        const session = event.data.object as Stripe.BillingPortal.Session;
-        console.log("Billing portal session created:", {
-            id: session.id,
-            customer: session.customer,
-            url: session.url,
-        });
+//     try {
+//         const session = event.data.object as Stripe.BillingPortal.Session;
+//         console.log("Billing portal session created:", {
+//             id: session.id,
+//             customer: session.customer,
+//             url: session.url,
+//         });
 
-        // Log for analytics/tracking purposes
-        // Could also be used to track portal usage if needed
-        console.log("User accessed billing portal");
-    } catch (error) {
-        console.error("Error handling billing portal session created:", error);
-    }
-}
+//         // Log for analytics/tracking purposes
+//         // Could also be used to track portal usage if needed
+//         console.log("User accessed billing portal");
+//     } catch (error) {
+//         console.error("Error handling billing portal session created:", error);
+//     }
+// }
