@@ -15,7 +15,8 @@
         "db:migrate": "drizzle-kit migrate",
         "db:push": "dotenv -e .env.local -- drizzle-kit push",
         "db:push:test": "dotenv -e .env.test.local -- drizzle-kit push",
-        "db:studio": "drizzle-kit studio"
+        "db:studio": "dotenv -e .env.local -- drizzle-kit studio",
+        "db:studio:test": "dotenv -e .env.test.local -- drizzle-kit studio"
     },
     "dependencies": {
         "@langchain/core": "^0.3.57",
