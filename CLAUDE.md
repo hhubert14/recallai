@@ -4,9 +4,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-RecallAI is an AI-powered video learning platform that transforms video watching into active learning through intelligent summaries and spaced repetition quizzes. The platform uses the Leitner box system for optimal knowledge retention.
+RecallAI is an AI-powered video learning platform that transforms video watching into active learning through intelligent summaries and spaced repetition quizzes. The platform consists of two main components:
+
+1. **Chrome Extension** - Captures YouTube videos and communicates with the backend API
+2. **Web Application** - Backend API, user dashboard, and subscription management
+
+The platform uses the Leitner box system for optimal knowledge retention.
 
 **Tech Stack:**
+
+*Web Application:*
 - Next.js 15 (App Router, React Server Components)
 - TypeScript
 - Supabase (PostgreSQL + Auth) - currently migrating to Drizzle ORM
@@ -14,29 +21,58 @@ RecallAI is an AI-powered video learning platform that transforms video watching
 - OpenAI + LangChain (AI summarization & question generation)
 - Vitest + React Testing Library
 
+*Chrome Extension:*
+- Manifest V3
+- Vanilla JavaScript (ES Modules, no build process)
+- Chrome Storage API
+- Token-based authentication with web app
+
 ## Project Structure
 
 ```
-web/
-├── src/
-│   ├── app/                    # Next.js App Router
-│   │   ├── api/v1/            # API routes (versioned)
-│   │   ├── auth/              # Auth pages (login, signup, etc.)
-│   │   └── dashboard/         # Protected dashboard pages
-│   ├── components/            # React components
-│   │   ├── providers/         # Context providers
-│   │   ├── subscription/      # Subscription-related UI
-│   │   └── ui/                # Reusable UI components
-│   ├── data-access/           # Database queries (currently Supabase, migrating to Drizzle)
-│   ├── use-cases/             # Business logic layer
-│   ├── drizzle/               # Drizzle ORM schema & migrations
-│   └── lib/                   # Shared utilities
-│       ├── stripe/            # Stripe integration
-│       └── supabase/          # Supabase clients (auth only after migration)
-├── docs/                      # Project documentation
-│   ├── drizzle-migration-guide.md
-│   └── testing-priorities.md
-└── vitest.config.mts
+learnsync/
+├── web/                       # Next.js backend & web app
+│   ├── src/
+│   │   ├── app/                    # Next.js App Router
+│   │   │   ├── api/v1/            # API routes (versioned)
+│   │   │   ├── auth/              # Auth pages (login, signup, etc.)
+│   │   │   └── dashboard/         # Protected dashboard pages
+│   │   ├── components/            # React components
+│   │   │   ├── providers/         # Context providers
+│   │   │   ├── subscription/      # Subscription-related UI
+│   │   │   └── ui/                # Reusable UI components
+│   │   ├── data-access/           # Database queries (currently Supabase, migrating to Drizzle)
+│   │   ├── use-cases/             # Business logic layer
+│   │   ├── drizzle/               # Drizzle ORM schema & migrations
+│   │   └── lib/                   # Shared utilities
+│   │       ├── stripe/            # Stripe integration
+│   │       └── supabase/          # Supabase clients (auth only after migration)
+│   ├── docs/                      # Project documentation
+│   │   ├── drizzle-migration-guide.md
+│   │   └── testing-priorities.md
+│   └── vitest.config.mts
+│
+└── extension/                 # Chrome extension (Manifest V3)
+    ├── scripts/
+    │   ├── background.js          # Service worker
+    │   ├── content.js             # Content script (injected into YouTube)
+    │   └── popup.js               # Extension popup UI logic
+    ├── services/
+    │   ├── api.js                 # Backend API communication
+    │   ├── auth.js                # Authentication logic
+    │   └── storage.js             # Chrome storage wrapper
+    ├── ui/
+    │   └── templates.js           # UI templates
+    ├── utils/
+    │   ├── notifications.js       # In-page notifications
+    │   └── youtube-background.js  # YouTube-specific background logic
+    ├── config/
+    │   └── constants.js           # API endpoints & configuration
+    ├── css/
+    │   └── popup.css              # Popup styling
+    ├── icons/                     # Extension icons (16, 32, 48, 128)
+    ├── manifest.json              # Extension manifest
+    └── popup.html                 # Extension popup HTML
 ```
 
 ## Database Architecture
@@ -67,6 +103,78 @@ The project is **actively migrating** from Supabase client to Drizzle ORM:
 - `user_question_progress` - Spaced repetition tracking (Leitner boxes)
 - `subscriptions` - Stripe subscription data
 - `extension_tokens` - Chrome extension authentication
+
+## Chrome Extension Architecture
+
+The Chrome extension is a Manifest V3 extension written in vanilla JavaScript with ES modules. No build process required.
+
+### Key Components
+
+**1. Service Worker (`scripts/background.js`)**
+- Runs in the background
+- Handles long-running processes
+- Manages communication between content scripts and popup
+
+**2. Content Script (`scripts/content.js`)**
+- Injected into YouTube pages
+- Detects when users are watching educational videos
+- Communicates with background script to trigger video processing
+
+**3. Popup (`scripts/popup.js` + `popup.html`)**
+- Extension popup UI
+- Handles user authentication
+- Shows processing status and user info
+
+### Services Layer
+
+**API Service (`services/api.js`)**
+- Communicates with backend API at `https://www.recallai.io`
+- Key functions:
+  - `validateToken()` - Validates extension token with backend
+  - `processVideo()` - Sends video to backend for processing
+
+**API Endpoints Used:**
+- `POST /api/v1/auth/extension/validate-token` - Token validation
+- `POST /api/v1/videos/[url]/extension/process` - Video processing
+
+**Storage Service (`services/storage.js`)**
+- Wrapper around Chrome Storage API
+- Stores:
+  - `authToken` - Extension authentication token
+  - `pendingVideoData` - Videos queued for processing
+  - `email` - User email
+
+**Auth Service (`services/auth.js`)**
+- Handles authentication logic
+- Token management
+
+### Extension ↔ Web App Communication Flow
+
+1. User connects extension to web app via dashboard
+2. Web app generates unique extension token (stored in `extension_tokens` table)
+3. User copies token into extension popup
+4. Extension stores token in Chrome storage
+5. When user watches YouTube video, extension:
+   - Validates token with backend
+   - Checks subscription status
+   - Sends video URL + token to backend for processing
+6. Backend processes video and stores results
+7. User views summaries/questions in web dashboard
+
+### Configuration
+
+**Constants (`config/constants.js`):**
+- `API.BASE_URL` - Backend URL (https://www.recallai.io)
+- `API.ENDPOINTS` - API endpoint paths
+- `STORAGE_KEYS` - Chrome storage key names
+- `NOTIFICATION.TYPES` - Notification types (success, error, signin)
+
+### Development Notes
+
+- **No build process** - Extension uses native ES modules
+- **Manifest V3** - Uses service worker instead of background pages
+- **Externally connectable** - Only `https://www.recallai.io/*` can communicate with extension
+- **Permissions** - Requires `storage` and `tabs` permissions
 
 ## Critical Business Logic
 
@@ -146,7 +254,7 @@ Handles 7 webhook event types with complex business logic:
 
 ## Development Commands
 
-### Running the App
+### Web Application (from `web/` directory)
 
 ```bash
 npm run dev          # Start Next.js dev server with Turbopack
@@ -155,6 +263,27 @@ npm run start        # Start production server
 npm run lint         # Run ESLint
 npm run format       # Format with Prettier
 ```
+
+### Chrome Extension (from `extension/` directory)
+
+```bash
+npm run format       # Format with Prettier
+```
+
+**Loading Extension in Chrome:**
+1. Open Chrome and go to `chrome://extensions/`
+2. Enable "Developer mode" (toggle in top right)
+3. Click "Load unpacked"
+4. Select the `extension/` folder
+5. Extension will appear in Chrome toolbar
+
+**Testing Extension:**
+1. Load extension in Chrome (see above)
+2. Click extension icon to open popup
+3. Copy token from web dashboard (`/dashboard/settings`)
+4. Paste token into extension popup
+5. Navigate to any YouTube video
+6. Extension should detect video and show processing status
 
 ### Testing
 
@@ -344,12 +473,23 @@ See `docs/drizzle-migration-guide.md` for complete migration patterns.
 
 ## Common Pitfalls
 
+### Web Application
+
 1. **Don't use Transaction mode for DATABASE_URL** - Use Session mode (port 6543) or set `prepare: false`
 2. **Don't migrate Supabase auth** - Only migrate data queries, keep auth with Supabase
 3. **Don't skip webhook signature verification** - Always verify Stripe webhooks
 4. **Don't forget subscription status checks** - Only `active` and `trialing` are premium
 5. **Don't break spaced repetition logic** - Box calculations are critical for learning
 6. **Test Stripe webhooks thoroughly** - They handle real money and subscription state
+
+### Chrome Extension
+
+1. **Don't use build tools** - Extension uses native ES modules, no bundling needed
+2. **Don't forget `type: "module"` in manifest** - Required for ES module imports in service worker
+3. **Don't hardcode API URLs** - Use `config/constants.js` for all API endpoints
+4. **Remember Manifest V3 restrictions** - Service workers have limitations vs background pages
+5. **Test token expiry** - Extension tokens can expire, handle gracefully
+6. **Check `externally_connectable` matches** - Only whitelisted domains can message extension
 
 ## Useful Resources
 
