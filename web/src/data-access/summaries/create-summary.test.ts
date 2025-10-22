@@ -3,29 +3,16 @@ import { createSummary } from "./create-summary";
 import { db } from "@/drizzle";
 import { eq } from "drizzle-orm";
 import { users, videos, summaries } from "@/drizzle/schema";
+import { createTestUser, createTestVideo } from "@/test-helpers/factories";
 
 describe("create-summary", () => {
     let testUserId: string;
     let testVideoId: number;
     beforeEach(async () => {
-        const [user] = await db
-            .insert(users)
-            .values({
-                email: "test@example.com",
-            })
-            .returning()
-        testUserId = user.id
-
-        const [video] = await db
-            .insert(videos)
-            .values({
-                userId: testUserId,
-                title: "Test Title",
-                url: "test.com"
-            })
-            .returning()
-        testVideoId = video.id
-        
+        const user = await createTestUser();
+        const video = await createTestVideo(user.id);
+        testUserId = user.id;
+        testVideoId = video.id;
       });
 
     afterEach(async () => {
