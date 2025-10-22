@@ -10,7 +10,12 @@
         "lint": "next lint",
         "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
         "stripe": "stripe listen --forward-to localhost:3000/api/v1/stripe/webhook",
-        "test": "vitest"
+        "test": "vitest",
+        "db:generate": "drizzle-kit generate",
+        "db:migrate": "drizzle-kit migrate",
+        "db:push": "dotenv -e .env.local -- drizzle-kit push",
+        "db:push:test": "dotenv -e .env.test.local -- drizzle-kit push",
+        "db:studio": "drizzle-kit studio"
     },
     "dependencies": {
         "@langchain/core": "^0.3.57",
@@ -50,6 +55,7 @@
         "@types/react": "^19",
         "@types/react-dom": "^19",
         "@vitejs/plugin-react": "^5.0.2",
+        "dotenv-cli": "^10.0.0",
         "drizzle-kit": "^0.31.5",
         "eslint": "^9",
         "eslint-config-next": "15.3.2",
