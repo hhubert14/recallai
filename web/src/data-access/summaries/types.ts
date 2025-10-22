@@ -1,5 +1,5 @@
 export type CreateSummaryDto = {
-    video_id: number;
+    videoId: number;
     content: string;
 };
 
