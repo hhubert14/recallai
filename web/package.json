@@ -16,7 +16,10 @@
         "db:push": "dotenv -e .env.local -- drizzle-kit push",
         "db:push:test": "dotenv -e .env.test.local -- drizzle-kit push",
         "db:studio": "dotenv -e .env.local -- drizzle-kit studio",
-        "db:studio:test": "dotenv -e .env.test.local -- drizzle-kit studio"
+        "db:studio:test": "dotenv -e .env.test.local -- drizzle-kit studio",
+        "docker:up": "docker-compose up -d",
+        "docker:down": "docker-compose down",
+        "docker:status": "docker-compose ps"
     },
     "dependencies": {
         "@langchain/core": "^0.3.57",
