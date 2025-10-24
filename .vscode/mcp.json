@@ -1,0 +1,33 @@
+{
+    "inputs": [
+        {
+            "type": "promptString",
+            "id": "supabase-access-token",
+            "description": "Supabase personal access token",
+            "password": true
+        },
+        {
+            "id": "serverCommand",
+            "type": "promptString",
+            "description": "Enter the command to run the server"
+        }
+    ],
+    "servers": {
+        "supabase": {
+            "command": "cmd",
+            "args": ["/c", "npx", "-y", "@supabase/mcp-server-supabase@latest"],
+            "env": {
+                "SUPABASE_ACCESS_TOKEN": "${input:supabase-access-token}"
+            }
+        },
+        "supabase-mcp-server": {
+            "command": "${input:serverCommand}",
+            "args": [
+                "-y",
+                "@supabase/mcp-server-supabase@latest",
+                "--access-token=sbp_ff64e14690c326c3a33972cb03e56ba507c100bd"
+            ],
+            "env": {}
+        }
+    }
+}
