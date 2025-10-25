@@ -9,14 +9,8 @@ import { ExtensionConnectorButton } from "@/app/dashboard/ExtensionConnectorButt
 import { createClient } from "@/lib/supabase/server";
 import { getVideosByUserId } from "@/data-access/videos/get-videos-by-user-id";
 import { getUserStatsByUserId } from "@/data-access/user-stats/get-user-stats-by-user-id";
-import { getUserSubscriptionStatus } from "@/data-access/subscriptions/get-user-subscription-status";
-import { getVideosThisMonthByUserId } from "@/data-access/user-stats/get-videos-this-month-by-user-id";
-import { UserSubscriptionStatus } from "@/data-access/subscriptions/types";
 import { VideoDto } from "@/data-access/videos/types";
 import { StatsCard } from "@/components/ui/stats-card";
-import { SubscriptionStatusBadge } from "@/components/subscription/SubscriptionStatusBadge";
-import { UpgradeButton } from "@/components/subscription/UpgradeButton";
-// import { SupportBanner } from "@/components/ui/support-banner";
 import { RefreshButton } from "./RefreshButton";
 
 export const metadata: Metadata = {
@@ -43,19 +37,14 @@ export default async function DashboardPage() {
         videosThisWeek: 0,
         questionsThisWeek: 0,
     };
-    let subscriptionStatus: UserSubscriptionStatus = { isSubscribed: false };
-    let videosThisMonth = 0;
 
-    const [videos, stats, subscription, monthlyVideos] = await Promise.all([
+    const [videos, stats] = await Promise.all([
         getVideosByUserId(user.id, 5), // Get latest 5 videos
         getUserStatsByUserId(user.id),
-        getUserSubscriptionStatus(user.id),
-        getVideosThisMonthByUserId(user.id),
     ]);
     recentVideos = videos;
     userStats = stats;
-    subscriptionStatus = subscription;
-    videosThisMonth = monthlyVideos;
+
     return (
         <div className="flex min-h-screen flex-col bg-white dark:bg-gray-950">
             <header className="sticky top-0 z-50 w-full border-b border-gray-200 dark:border-gray-800 bg-white/95 dark:bg-gray-950/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-gray-950/60">
@@ -85,18 +74,6 @@ export default async function DashboardPage() {
                         >
                             Review
                         </Link>
-                        <Link
-                            href="/dashboard/pricing"
-                            className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600"
-                        >
-                            Premium
-                        </Link>
-                        {/* <Link
-                            href="/dashboard/settings"
-                            className="text-sm font-medium hover:text-blue-600"
-                        >
-                            Settings
-                        </Link> */}
                     </nav>
                     <div className="flex items-center gap-4">
                         <ThemeToggle />
@@ -104,76 +81,12 @@ export default async function DashboardPage() {
                     </div>
                 </div>
             </header>
-
-            {/* Show support banner only for non-subscribed users */}
-            {/* {!subscriptionStatus.isSubscribed && (
-                <SupportBanner userId={user.id} />
-            )} */}
-
             <main className="flex-1 container py-12 px-6 md:px-8 max-w-7xl mx-auto">
                 <div className="flex items-center justify-between mb-8">
                     <div>
                         <h1 className="text-4xl font-bold tracking-tight text-blue-900 dark:text-blue-100 mb-3">
                             Welcome to your Dashboard
                         </h1>
-                        {/* <p className="text-lg text-gray-600">
-                            This is a placeholder dashboard. You've successfully signed
-                            in with Supabase authentication.
-                        </p> */}
-                    </div>
-                    <div className="flex items-center gap-4">
-                        {!subscriptionStatus.isSubscribed && (
-                            <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg p-3 w-44">
-                                <div className="flex items-center gap-2 mb-2">
-                                    <svg
-                                        className="h-4 w-4 text-orange-600 dark:text-orange-400"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                                        />
-                                    </svg>
-                                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                        Video Usage
-                                    </span>
-                                    <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">
-                                        {videosThisMonth} / 5
-                                    </span>
-                                </div>
-                                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
-                                    <div
-                                        className="bg-orange-600 h-1.5 rounded-full transition-all duration-300"
-                                        style={{
-                                            width: `${Math.min((videosThisMonth / 5) * 100, 100)}%`,
-                                        }}
-                                    ></div>
-                                </div>
-                                {videosThisMonth >= 4 && (
-                                    <p className="text-xs text-amber-600 dark:text-amber-400 mt-1 leading-relaxed">
-                                        Approaching limit! Upgrade for unlimited
-                                        access.
-                                    </p>
-                                )}
-                            </div>
-                        )}
-                        <div className="flex flex-col items-end gap-3">
-                            <SubscriptionStatusBadge
-                                isSubscribed={subscriptionStatus.isSubscribed}
-                                status={subscriptionStatus.status}
-                                planType={subscriptionStatus.planType}
-                                currentPeriodEnd={
-                                    subscriptionStatus.currentPeriodEnd
-                                }
-                            />
-                            {!subscriptionStatus.isSubscribed && (
-                                <UpgradeButton size="sm" />
-                            )}
-                        </div>
                     </div>
                 </div>
 
@@ -314,9 +227,9 @@ export default async function DashboardPage() {
                                                 <h3 className="font-semibold truncate text-gray-900 dark:text-white text-sm mb-1">
                                                     {video.title}
                                                 </h3>
-                                                {video.channel_name && (
+                                                {video.channelName && (
                                                     <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
-                                                        {video.channel_name}
+                                                        {video.channelName}
                                                     </p>
                                                 )}
                                             </div>
