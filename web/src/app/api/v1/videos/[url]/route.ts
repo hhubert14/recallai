@@ -72,15 +72,15 @@ export async function POST(
         }
 
         const videoData = {
-            user_id: authenticatedUserId, // Use the authenticated user's ID
+            userId: authenticatedUserId, // Use the authenticated user's ID
             platform,
             title,
-            channel_name,
+            channelName: channel_name,
             duration,
             category,
             url,
             description,
-            video_id,
+            videoId: video_id,
         }; // Create the video using the authenticated user's ID
         const createdVideo = await createVideo(videoData);
         return NextResponse.json(createdVideo, { status: 201 });
