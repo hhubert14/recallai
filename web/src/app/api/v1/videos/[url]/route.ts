@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createVideo } from "@/data-access/videos/create-video";
-// import { createClient } from "@/lib/supabase/server";
 import { getVideoByUrl } from "@/data-access/videos/get-video-by-url";
 import { authenticateRequest } from "@/use-cases/extension/authenticate-request";
 import { logger } from "@/lib/logger";

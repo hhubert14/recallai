@@ -19,15 +19,4 @@ describe("create-video", () => {
         expect(video).toBeDefined()
         expect(video.shouldExpire).toBe(false)
     })
-    // it("subscribed user create video", async () => {
-    //     const user = await createTestUser()
-    //     user.isSubscribed = true
-    //     const video = await createVideo({
-    //         userId: user.id,
-    //         title: "Test title",
-    //         url: "Test url",
-    //     })
-    //     expect(video).toBeDefined()
-    //     expect(video.shouldExpire).toBe(false)
-    // })
 })
