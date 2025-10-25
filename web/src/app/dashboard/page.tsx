@@ -54,7 +54,7 @@ export default async function DashboardPage() {
                         <span className="text-xl font-bold text-gray-900 dark:text-white">
                             RecallAI
                         </span>
-                    </div>{" "}
+                    </div>
                     <nav className="hidden md:flex gap-6">
                         <Link
                             href="/dashboard"
@@ -83,11 +83,9 @@ export default async function DashboardPage() {
             </header>
             <main className="flex-1 container py-12 px-6 md:px-8 max-w-7xl mx-auto">
                 <div className="flex items-center justify-between mb-8">
-                    <div>
-                        <h1 className="text-4xl font-bold tracking-tight text-blue-900 dark:text-blue-100 mb-3">
-                            Welcome to your Dashboard
-                        </h1>
-                    </div>
+                    <h1 className="text-4xl font-bold tracking-tight text-blue-900 dark:text-blue-100 mb-3">
+                        Welcome to your Dashboard
+                    </h1>
                 </div>
 
                 <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
