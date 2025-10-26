@@ -106,10 +106,16 @@ export function SignUpForm() {
                 return;
             }
 
+            // const redirectUrl = `${window.location.origin}/auth/confirm`;
+            // console.log('Email redirect URL:', redirectUrl);
+
             const { data: authData, error: authError } =
                 await supabase.auth.signUp({
                     email,
                     password,
+                    options: {
+                        emailRedirectTo: "${window.location.origin}/auth/confirm"
+                    }
                 });
 
             if (authError) {

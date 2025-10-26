@@ -1,4 +1,4 @@
-import { pgTable, foreignKey, unique, pgPolicy, uuid, text, timestamp, bigint, boolean, integer, index, smallint, date, pgEnum } from "drizzle-orm/pg-core"
+import { pgTable, foreignKey, unique, uuid, text, timestamp, bigint, boolean, integer, index, smallint, date, pgEnum } from "drizzle-orm/pg-core"
 import { sql } from "drizzle-orm"
 
 export const plan = pgEnum("plan", ['free', 'premium', 'student'])

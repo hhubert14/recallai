@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm/relations";
-import { users, extensionTokens, subscriptions, videos, usersInAuth, summaries, questions, questionOptions, userQuestionProgress, userAnswers } from "./schema";
+import { users, extensionTokens, subscriptions, videos, summaries, questions, questionOptions, userQuestionProgress, userAnswers } from "./schema";
 
 export const extensionTokensRelations = relations(extensionTokens, ({one}) => ({
 	user: one(users, {
@@ -8,14 +8,10 @@ export const extensionTokensRelations = relations(extensionTokens, ({one}) => ({
 	}),
 }));
 
-export const usersRelations = relations(users, ({one, many}) => ({
+export const usersRelations = relations(users, ({many}) => ({
 	extensionTokens: many(extensionTokens),
 	subscriptions: many(subscriptions),
 	videos: many(videos),
-	usersInAuth: one(usersInAuth, {
-		fields: [users.id],
-		references: [usersInAuth.id]
-	}),
 	userQuestionProgresses: many(userQuestionProgress),
 	userAnswers: many(userAnswers),
 }));
@@ -34,10 +30,6 @@ export const videosRelations = relations(videos, ({one, many}) => ({
 	}),
 	summaries: many(summaries),
 	questions: many(questions),
-}));
-
-export const usersInAuthRelations = relations(usersInAuth, ({many}) => ({
-	users: many(users),
 }));
 
 export const summariesRelations = relations(summaries, ({one}) => ({

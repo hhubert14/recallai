@@ -88,7 +88,7 @@ export async function POST(
         });
 
         const createdSummary = await createSummary({
-            video_id,
+            videoId: video_id,
             content: summary.summary,
         });
 

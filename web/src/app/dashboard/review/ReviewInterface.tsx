@@ -168,7 +168,7 @@ export function ReviewInterface({
                             🎉 Session Complete!
                         </h2>
                         <p className="text-gray-600 dark:text-gray-300">
-                            Great job! You`&apos;`ve completed all available questions.
+                            Great job! You&apos;ve completed all available questions.
                             Reviewed questions will appear again based on their
                             spaced repetition schedule.
                         </p>
@@ -231,7 +231,7 @@ export function ReviewInterface({
                             No Questions Available
                         </h2>
                         <p className="text-gray-600 dark:text-gray-300">
-                            You don`&apos;`t have any questions due for review today.
+                            You don&apos;t have any questions due for review today.
                             Complete some video quizzes to add questions to your
                             spaced repetition system.
                         </p>

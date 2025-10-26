@@ -128,7 +128,7 @@ export default async function SettingsPage() {
                             </p>
                             <RegenerateTokenButton />
                             <p className="text-sm text-gray-500 dark:text-gray-400">
-                                If you`&apos;`re having connection issues with the
+                                If you&apos;re having connection issues with the
                                 extension, generate a new token to refresh the
                                 connection.
                             </p>

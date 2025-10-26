@@ -1,6 +1,5 @@
 import { NextRequest } from "next/server";
 import { authenticateRequest } from "./authenticate-request";
-import { validateSubscriptionForExtension } from "./validate-subscription";
 import { getVideoByUrl } from "@/data-access/videos/get-video-by-url";
 import { logger } from "@/lib/logger";
 
@@ -50,14 +49,6 @@ export const processVideo = async (
         };
     }
 
-    // 3. Validate subscription limits before processing
-    logger.extension.debug("Validating subscription limits");
-    const subscriptionValidation =
-        await validateSubscriptionForExtension(authenticatedUserId);
-    if (!subscriptionValidation.allowed && subscriptionValidation.error) {
-        const error = subscriptionValidation.error;
-        throw new Error(`${error.type}: ${error.message}`);
-    }
     if (processType === "automatic") {
         // Logic for automatic processing
         logger.extension.info("Starting automatic video processing", {

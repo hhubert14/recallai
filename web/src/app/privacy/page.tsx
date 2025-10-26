@@ -294,7 +294,7 @@ export default function PrivacyPolicyPage() {
                                     <span className="bg-yellow-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">
                                         9
                                     </span>
-                                    Children`&apos;`s Privacy
+                                    Children&apos;s Privacy
                                 </h2>
                                 <p>
                                     Our service is not intended for children
