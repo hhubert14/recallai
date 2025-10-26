@@ -5,7 +5,10 @@
     "description": "Transform educational YouTube videos into summaries and Q&As for better learning.",
     "permissions": ["storage", "tabs"],
     "externally_connectable": {
-        "matches": ["https://www.recallai.io/*"]
+        "matches": [
+            "https://www.recallai.io/*",
+            "http://localhost:3000/*"
+        ]
     },
     "background": {
         "service_worker": "scripts/background.js",
