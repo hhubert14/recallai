@@ -9,7 +9,7 @@ export const status = pgEnum("status", ['active', 'canceled', 'past_due', 'trial
 
 export const extensionTokens = pgTable("extension_tokens", {
 	id: uuid().defaultRandom().primaryKey().notNull(),
-	userId: uuid("user_id"),
+	userId: uuid("user_id").notNull(),
 	token: text().notNull(),
 	expiresAt: timestamp("expires_at", { withTimezone: true, mode: 'string' }).notNull(),
 	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
