@@ -13,12 +13,12 @@ export async function authenticateRequest(authToken: string) {
     const tokenData = await getExtensionTokenByToken(authToken);
     logger.extension.debug("Token data retrieved", {
         hasToken: !!tokenData,
-        userId: tokenData?.user_id,
+        userId: tokenData?.userId,
         isExpired: tokenData
-            ? new Date(tokenData.expires_at) < new Date()
+            ? new Date(tokenData.expiresAt) < new Date()
             : null,
     });
-    if (!tokenData || new Date(tokenData.expires_at) < new Date()) {
+    if (!tokenData || new Date(tokenData.expiresAt) < new Date()) {
         return { error: "Invalid or expired token", status: 401 };
     }
 
@@ -27,10 +27,10 @@ export async function authenticateRequest(authToken: string) {
         data: { user },
         error,
     } = await supabase.auth.getUser();
-    if (user && !error && tokenData.user_id !== user.id) {
+    if (user && !error && tokenData.userId !== user.id) {
         return { error: "Token doesn't match session user", status: 403 };
     }
 
     // Return authenticated user ID
-    return { userId: tokenData.user_id };
+    return { userId: tokenData.userId };
 }

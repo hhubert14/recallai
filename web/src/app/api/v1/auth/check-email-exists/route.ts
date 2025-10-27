@@ -1,8 +1,9 @@
 "use server";
 
-// import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
 import { NextResponse, type NextRequest } from "next/server";
+import { db } from "@/drizzle";
+import { users } from "@/drizzle/schema";
+import { eq } from "drizzle-orm";
 
 export async function GET(request: NextRequest) {
     try {
@@ -16,21 +17,10 @@ export async function GET(request: NextRequest) {
             );
         }
 
-        const supabase = await createAdminClient();
-
-        const { data, error } = await supabase
-            .from("users")
-            .select("id")
-            .eq("email", email)
-            .maybeSingle();
-
-        if (error) {
-            console.error("Error checking email:", error);
-            return NextResponse.json(
-                { error: "Failed to check email" },
-                { status: 500 }
-            );
-        }
+        const [data] = await db
+            .select({ id: users.id })
+            .from(users)
+            .where(eq(users.email, email));
 
         // If we found a profile with this email, it exists
         const exists = !!data;
