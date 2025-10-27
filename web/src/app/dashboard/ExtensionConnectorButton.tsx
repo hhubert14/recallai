@@ -4,9 +4,10 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { getExtensionId } from "@/config/extension";
 
 export function ExtensionConnectorButton() {
-    const editorExtensionId = "dkhdblpppokkcgpecjjncchhdlinfjcl";
+    const editorExtensionId = getExtensionId();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [cooldown, setCooldown] = useState(0);
