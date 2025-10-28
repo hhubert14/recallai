@@ -41,41 +41,6 @@ export function SignUpForm() {
                 return;
             }
 
-            // Validate email with server-side API endpoint
-            // try {
-            //     const validationResponse = await fetch(
-            //         `/api/v1/validate-email?email=${encodeURIComponent(email)}`,
-            //         {
-            //             method: "GET",
-            //             headers: {
-            //                 "Content-Type": "application/json",
-            //             },
-            //         }
-            //     );
-
-            //     if (!validationResponse.ok) {
-            //         console.error("Email validation request failed");
-            //         // Continue with signup process despite validation error
-            //     } else {
-            //         const data = await validationResponse.json();
-
-            //         if (data.status === "invalid") {
-            //             // Email is invalid according to ZeroBounce
-            //             setError(
-            //                 "This email address is not valid. Please use a different email."
-            //             );
-            //             setIsLoading(false);
-            //             return;
-            //         }
-            //     }
-            // } catch (error) {
-            //     console.error("Error validating email:", error);
-            //     // Continue with signup process despite validation error
-            //     // setError("Failed to validate email. Please proceed with caution.");
-            //     // setIsLoading(false);
-            //     // return;
-            // }
-
             // Check if email is already registered
             const checkEmailResponse = await fetch(
                 `/api/v1/auth/check-email-exists?email=${encodeURIComponent(email)}`,
