@@ -84,11 +84,6 @@ export const users = pgTable("users", {
 	stripeCustomerId: text("stripe_customer_id"),
 }, (table) => [
 	index("idx_users_stripe_customer_id").using("btree", table.stripeCustomerId.asc().nullsLast().op("text_ops")),
-	foreignKey({
-			columns: [table.id],
-			foreignColumns: [table.id],
-			name: "users_id_fkey"
-		}).onUpdate("cascade").onDelete("cascade"),
 	unique("users_stripe_customer_id_unique").on(table.stripeCustomerId),
 	// pgPolicy("Enable users to view their own data only", { as: "permissive", for: "select", to: ["authenticated"], using: sql`(( SELECT auth.uid() AS uid) = id)` }),
 ]);
