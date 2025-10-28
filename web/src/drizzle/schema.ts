@@ -80,7 +80,7 @@ export const users = pgTable("users", {
 	isSubscribed: boolean("is_subscribed").default(false).notNull(),
 	monthlyVideoCount: smallint("monthly_video_count").default(sql`'0'`).notNull(),
 	lastResetDate: timestamp("last_reset_date", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-	processsingMode: processingMode("processsing_mode").default('auto').notNull(),
+	processingMode: processingMode("processing_mode").default('auto').notNull(),
 	stripeCustomerId: text("stripe_customer_id"),
 }, (table) => [
 	index("idx_users_stripe_customer_id").using("btree", table.stripeCustomerId.asc().nullsLast().op("text_ops")),
