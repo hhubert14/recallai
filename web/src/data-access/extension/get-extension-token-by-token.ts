@@ -19,7 +19,9 @@ export async function getExtensionTokenByToken(
             .where(eq(extensionTokens.token, token))
 
         if (!data) {
-            logger.db.error("Error fetching token", token);
+            logger.db.error(
+                "Error fetching token (prefix: " + token.slice(0, 4) + "...)"
+            );
             return undefined;
         }
 
