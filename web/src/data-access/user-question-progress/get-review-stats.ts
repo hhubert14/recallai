@@ -1,6 +1,9 @@
-import "server-only";
-import { createServiceRoleClient } from "@/lib/supabase/service-role";
+// import "server-only";
+// import { createServiceRoleClient } from "@/lib/supabase/service-role";
 import { logger } from "@/lib/logger";
+import { db } from "@/drizzle";
+import { userQuestionProgress } from "@/drizzle/schema";
+import { eq, lte, isNotNull, and, count } from "drizzle-orm";
 
 export type ReviewStatsDto = {
     questionsDueToday: number;
@@ -25,51 +28,34 @@ export async function getReviewStats(userId: string): Promise<ReviewStatsDto> {
         };
     }
 
-    const supabase = await createServiceRoleClient();
+    // const supabase = await createServiceRoleClient();
 
     try {
         const today = new Date().toISOString().split("T")[0];
 
         // Get questions due today
-        const { count: questionsDueToday, error: dueTodayError } =
-            await supabase
-                .from("user_question_progress")
-                .select("*", { count: "exact", head: true })
-                .eq("user_id", userId)
-                .lte("next_review_date", today)
-                .not("next_review_date", "is", null);
-
-        if (dueTodayError) {
-            logger.db.error(
-                "Error fetching questions due today",
-                dueTodayError,
-                { userId }
+        const dueTodayResult = await db
+            .select({ count: count() })
+            .from(userQuestionProgress)
+            .where(
+                and(
+                    eq(userQuestionProgress.userId, userId),
+                    lte(userQuestionProgress.nextReviewDate, today),
+                    isNotNull(userQuestionProgress.nextReviewDate)
+                )
             );
-        }
 
         // Get total questions in system
-        const { count: totalQuestions, error: totalError } = await supabase
-            .from("user_question_progress")
-            .select("*", { count: "exact", head: true })
-            .eq("user_id", userId);
-
-        if (totalError) {
-            logger.db.error("Error fetching total questions", totalError, {
-                userId,
-            });
-        }
+        const totalResult = await db
+            .select({ count: count() })
+            .from(userQuestionProgress)
+            .where(eq(userQuestionProgress.userId, userId));
 
         // Get questions by box level
-        const { data: boxData, error: boxError } = await supabase
-            .from("user_question_progress")
-            .select("box_level")
-            .eq("user_id", userId);
-
-        if (boxError) {
-            logger.db.error("Error fetching box distribution", boxError, {
-                userId,
-            });
-        }
+        const boxData = await db
+            .select({ boxLevel: userQuestionProgress.boxLevel })
+            .from(userQuestionProgress)
+            .where(eq(userQuestionProgress.userId, userId));
 
         // Count questions by box
         const boxCounts = {
@@ -82,16 +68,16 @@ export async function getReviewStats(userId: string): Promise<ReviewStatsDto> {
 
         if (boxData) {
             boxData.forEach(row => {
-                const boxLevel = row.box_level;
-                if (boxLevel >= 1 && boxLevel <= 5) {
+                const boxLevel = row.boxLevel;
+                if (boxLevel && boxLevel >= 1 && boxLevel <= 5) {
                     boxCounts[boxLevel as keyof typeof boxCounts]++;
                 }
             });
         }
 
         return {
-            questionsDueToday: questionsDueToday || 0,
-            totalQuestionsInSystem: totalQuestions || 0,
+            questionsDueToday: dueTodayResult[0]?.count || 0,
+            totalQuestionsInSystem: totalResult[0]?.count || 0,
             questionsInBox1: boxCounts[1],
             questionsInBox2: boxCounts[2],
             questionsInBox3: boxCounts[3],

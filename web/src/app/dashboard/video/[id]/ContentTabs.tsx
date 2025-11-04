@@ -3,12 +3,12 @@
 import { useState } from "react";
 // import { Button } from "@/components/ui/button";
 import { SummaryDto } from "@/data-access/summaries/types";
-import { QuestionDto } from "@/data-access/questions/types";
+import { QuestionWithOptionsDto } from "@/data-access/questions/types";
 import { QuizInterface } from "./QuizInterface";
 
 interface ContentTabsProps {
     summary: SummaryDto | null;
-    questions: QuestionDto[];
+    questions: QuestionWithOptionsDto[];
     userId: string;
     videoId: number;
 }

@@ -1,4 +1,4 @@
-import "server-only";
+// import "server-only";
 import { UserStatsDto } from "./types";
 import { getTotalVideosByUserId } from "./get-total-videos-by-user-id";
 import { getTotalQuestionsAnsweredByUserId } from "./get-total-questions-answered-by-user-id";

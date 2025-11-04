@@ -39,14 +39,14 @@ export function calculateProgressUpdate(
     const nextReviewDate = getNextReviewDate(newBoxLevel);
 
     return {
-        box_level: newBoxLevel,
-        next_review_date: nextReviewDate,
-        times_correct: isCorrect
+        boxLevel: newBoxLevel,
+        nextReviewDate: nextReviewDate,
+        timesCorrect: isCorrect
             ? currentCorrectCount + 1
             : currentCorrectCount,
-        times_incorrect: isCorrect
+        timesIncorrect: isCorrect
             ? currentIncorrectCount
             : currentIncorrectCount + 1,
-        last_reviewed_at: new Date().toISOString(),
+        lastReviewedAt: new Date().toISOString(),
     };
 }

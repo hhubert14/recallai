@@ -13,8 +13,8 @@ export async function submitAnswer(
         return await createUserAnswer(userAnswer);
     } catch (error) {
         logger.db.error("Error submitting answer", error, {
-            questionId: userAnswer.question_id,
-            userId: userAnswer.user_id,
+            questionId: userAnswer.questionId,
+            userId: userAnswer.userId,
         });
         return false;
     }
