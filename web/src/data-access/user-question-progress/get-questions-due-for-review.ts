@@ -1,7 +1,10 @@
-import "server-only";
-import { createServiceRoleClient } from "@/lib/supabase/service-role";
+// import "server-only";
+// import { createServiceRoleClient } from "@/lib/supabase/service-role";
 import { QuestionForReviewDto } from "./types";
 import { logger } from "@/lib/logger";
+import { db } from "@/drizzle";
+import { userQuestionProgress, questions, videos, questionOptions } from "@/drizzle/schema";
+import { eq, lte, isNotNull, and, asc } from "drizzle-orm";
 
 export async function getQuestionsDueForReview(
     userId: string
@@ -10,76 +13,80 @@ export async function getQuestionsDueForReview(
         return [];
     }
 
-    const supabase = await createServiceRoleClient();
+    // const supabase = await createServiceRoleClient();
 
     try {
         const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD format
 
-        const { data, error } = await supabase
-            .from("user_question_progress")
-            .select(
-                `
-                id,
-                question_id,
-                box_level,
-                next_review_date,
-                questions!inner (
-                    id,
-                    question_text,
-                    video_id,
-                    videos!inner (
-                        id,
-                        title,
-                        user_id,
-                        deleted_at
-                    ),
-                    question_options (
-                        id,
-                        option_text,
-                        is_correct,
-                        explanation
-                    )
+        // Get all progress records with joins
+        const rows = await db
+            .select()
+            .from(userQuestionProgress)
+            .innerJoin(questions, eq(userQuestionProgress.questionId, questions.id))
+            .innerJoin(videos, eq(questions.videoId, videos.id))
+            .leftJoin(questionOptions, eq(questionOptions.questionId, questions.id))
+            .where(
+                and(
+                    eq(userQuestionProgress.userId, userId),
+                    lte(userQuestionProgress.nextReviewDate, today),
+                    isNotNull(userQuestionProgress.nextReviewDate),
+                    eq(videos.userId, userId)
                 )
-            `
             )
-            .eq("user_id", userId)
-            .lte("next_review_date", today)
-            .not("next_review_date", "is", null)
-            .eq("questions.videos.user_id", userId)
-            .is("questions.videos.deleted_at", null)
-            .order("next_review_date", { ascending: true });
+            .orderBy(asc(userQuestionProgress.nextReviewDate));
 
-        if (error) {
-            logger.db.error("Database query error", error, { userId });
-            throw error;
-        }
-
-        if (!data || data.length === 0) {
+        if (!rows || rows.length === 0) {
             return [];
         }
 
-        // Transform the data to match our DTO structure
-        const questionsForReview: QuestionForReviewDto[] = data.map(
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (progress: any) => ({
-                id: progress.id,
-                question_id: progress.question_id,
-                question_text: progress.questions.question_text,
-                video_id: progress.questions.video_id,
-                video_title: progress.questions.videos.title,
-                box_level: progress.box_level,
-                next_review_date: progress.next_review_date,
-                options: progress.questions.question_options.map(
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    (option: any) => ({
-                        id: option.id,
-                        option_text: option.option_text,
-                        is_correct: option.is_correct,
-                        explanation: option.explanation,
-                    })
-                ),
-            })
-        );
+        // Group by progress record and collect options
+        type QuestionData = {
+            id: number;
+            questionId: number;
+            questionText: string;
+            videoId: number;
+            videoTitle: string;
+            boxLevel: number | null;
+            nextReviewDate: string | null;
+            options: Array<{
+                id: number;
+                optionText: string;
+                isCorrect: boolean;
+                explanation: string | null;
+            }>;
+        };
+        const progressMap: Record<number, QuestionData> = {};
+
+        for (const row of rows) {
+            const progressId = row.user_question_progress.id;
+
+            if (!progressMap[progressId]) {
+                progressMap[progressId] = {
+                    id: row.user_question_progress.id,
+                    questionId: row.user_question_progress.questionId,
+                    questionText: row.questions.questionText,
+                    videoId: row.questions.videoId,
+                    videoTitle: row.videos.title,
+                    boxLevel: row.user_question_progress.boxLevel,
+                    nextReviewDate: row.user_question_progress.nextReviewDate,
+                    options: []
+                };
+            }
+
+            if (row.question_options) {
+                progressMap[progressId].options.push({
+                    id: row.question_options.id,
+                    optionText: row.question_options.optionText,
+                    isCorrect: row.question_options.isCorrect,
+                    explanation: row.question_options.explanation,
+                });
+            }
+        }
+
+        const questionsForReview: QuestionForReviewDto[] = Object.values(progressMap).map(q => ({
+            ...q,
+            boxLevel: q.boxLevel ?? 1, // Default to box 1 if somehow null
+        }));
 
         return questionsForReview;
     } catch (error) {
