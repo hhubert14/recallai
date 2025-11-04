@@ -1,9 +1,8 @@
-import "server-only";
-
-import { createServiceRoleClient } from "@/lib/supabase/service-role";
 import { VideoDto } from "./types";
-import { toDtoMapper } from "./utils";
 import { logger } from "@/lib/logger";
+import { db } from "@/drizzle";
+import { videos } from "@/drizzle/schema";
+import { eq, and } from "drizzle-orm";
 
 export async function getVideoByUrl(
     videoUrl: string,
@@ -13,32 +12,23 @@ export async function getVideoByUrl(
         return undefined;
     }
 
-    const supabase = await createServiceRoleClient();
-
     try {
-        const { data, error } = await supabase
-            .from("videos")
-            .select("*")
-            .eq("url", videoUrl)
-            .eq("user_id", userId)
-            .is("deleted_at", null)
+        const [data] = await db
+            .select()
+            .from(videos)
+            .where(
+                and(
+                    eq(videos.userId, userId),
+                    eq(videos.url, videoUrl),
+                )
+            )
             .limit(1)
-            .single();
-
-        if (error) {
-            logger.db.error("Database query error", error, {
-                videoUrl,
-                userId,
-            });
-            throw error;
-        }
 
         if (!data) {
             return undefined;
         }
 
-        const mappedVideo = toDtoMapper(data);
-        return mappedVideo;
+        return data;
     } catch (error) {
         logger.db.error("Error checking video existence", error, {
             videoUrl,
