@@ -27,8 +27,12 @@ export async function getQuestionsForInitialReview(
 
         // Get questions that have been answered by this user but not in spaced repetition
         // First get distinct question IDs from user answers (not in spaced repetition)
-        const answeredQuestionIds = await db
-            .selectDistinct({ questionId: userAnswers.questionId })
+        // Include createdAt in select so we can order by it
+        const answeredRows = await db
+            .selectDistinct({
+                questionId: userAnswers.questionId,
+                createdAt: userAnswers.createdAt
+            })
             .from(userAnswers)
             .where(
                 existingQuestionIds.length > 0
@@ -41,11 +45,11 @@ export async function getQuestionsForInitialReview(
             .orderBy(desc(userAnswers.createdAt))
             .limit(50);
 
-        if (answeredQuestionIds.length === 0) {
+        if (answeredRows.length === 0) {
             return [];
         }
 
-        const questionIds = answeredQuestionIds.map(a => a.questionId);
+        const questionIds = answeredRows.map(row => row.questionId);
 
         // Now get full question data with joins
         const rows = await db
