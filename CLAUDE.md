@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 RecallAI is an AI-powered video learning platform that transforms video watching into active learning through intelligent summaries and spaced repetition quizzes. The platform consists of two main components:
 
 1. **Chrome Extension** - Captures YouTube videos and communicates with the backend API
-2. **Web Application** - Backend API, user dashboard, and subscription management
+2. **Web Application** - Backend API and user dashboard
 
 The platform uses the Leitner box system for optimal knowledge retention.
 
@@ -16,8 +16,8 @@ The platform uses the Leitner box system for optimal knowledge retention.
 *Web Application:*
 - Next.js 15 (App Router, React Server Components)
 - TypeScript
-- Supabase (PostgreSQL + Auth) - currently migrating to Drizzle ORM
-- Stripe (payments & subscriptions)
+- Drizzle ORM (PostgreSQL via Supabase)
+- Supabase Auth (authentication only)
 - OpenAI + LangChain (AI summarization & question generation)
 - Vitest + React Testing Library
 
@@ -39,16 +39,15 @@ learnsync/
 │   │   │   └── dashboard/         # Protected dashboard pages
 │   │   ├── components/            # React components
 │   │   │   ├── providers/         # Context providers
-│   │   │   ├── subscription/      # Subscription-related UI
 │   │   │   └── ui/                # Reusable UI components
-│   │   ├── data-access/           # Database queries (currently Supabase, migrating to Drizzle)
+│   │   ├── data-access/           # Database queries (Drizzle ORM)
 │   │   ├── use-cases/             # Business logic layer
 │   │   ├── drizzle/               # Drizzle ORM schema & migrations
 │   │   └── lib/                   # Shared utilities
-│   │       ├── stripe/            # Stripe integration
-│   │       └── supabase/          # Supabase clients (auth only after migration)
+│   │       └── supabase/          # Supabase clients (auth only)
 │   ├── docs/                      # Project documentation
 │   │   ├── drizzle-migration-guide.md
+│   │   ├── complex-query-migrations.md
 │   │   └── testing-priorities.md
 │   └── vitest.config.mts
 │
@@ -77,13 +76,13 @@ learnsync/
 
 ## Database Architecture
 
-### Current State: Dual-Database Migration
+### Current State: Drizzle ORM
 
-The project is **actively migrating** from Supabase client to Drizzle ORM:
+The project uses Drizzle ORM for all database operations:
 
-- **Supabase client**: Keep for authentication only (`signIn`, `signUp`, `signOut`, etc.)
-- **Drizzle ORM**: Use for all data queries (CRUD operations)
-- **Schema location**: `src/drizzle/schema.ts` (auto-generated from existing Supabase tables)
+- **Supabase Auth**: Used exclusively for authentication (`signIn`, `signUp`, `signOut`, etc.)
+- **Drizzle ORM**: Used for all data queries (CRUD operations)
+- **Schema location**: `src/drizzle/schema.ts`
 - **Database**: PostgreSQL via Supabase (connection pooling with `prepare: false`)
 
 **Important:** When writing database queries:
@@ -101,7 +100,6 @@ The project is **actively migrating** from Supabase client to Drizzle ORM:
 - `question_options` - Multiple choice options
 - `user_answers` - User quiz responses
 - `user_question_progress` - Spaced repetition tracking (Leitner boxes)
-- `subscriptions` - Stripe subscription data
 - `extension_tokens` - Chrome extension authentication
 
 ## Chrome Extension Architecture
@@ -156,7 +154,6 @@ The Chrome extension is a Manifest V3 extension written in vanilla JavaScript wi
 4. Extension stores token in Chrome storage
 5. When user watches YouTube video, extension:
    - Validates token with backend
-   - Checks subscription status
    - Sends video URL + token to backend for processing
 6. Backend processes video and stores results
 7. User views summaries/questions in web dashboard
@@ -178,24 +175,7 @@ The Chrome extension is a Manifest V3 extension written in vanilla JavaScript wi
 
 ## Critical Business Logic
 
-### 1. Subscription Model
-
-**Free Tier:**
-- 5 videos per month
-- Monthly counter resets automatically
-- Videos expire after 7 days (`should_expire: true`)
-
-**Premium Tier (via Stripe):**
-- Unlimited videos
-- Videos never expire (`should_expire: false`)
-- Subscription statuses: `active`, `trialing`, `past_due`, `canceled`, `incomplete`
-- Only `active` and `trialing` count as premium access
-
-**Files:**
-- `src/use-cases/extension/validate-subscription.ts`
-- `src/app/api/v1/stripe/webhook/route.ts` (625 lines - critical!)
-
-### 2. Spaced Repetition System (Leitner Boxes)
+### 1. Spaced Repetition System (Leitner Boxes)
 
 Implements a 5-box spaced repetition system for optimal learning:
 
@@ -216,7 +196,7 @@ Box 5: Review in 30 days (mastered)
 - `src/data-access/user-question-progress/process-spaced-repetition-answer.ts`
 - `src/data-access/user-question-progress/utils.ts`
 
-### 3. Video Processing Pipeline
+### 2. Video Processing Pipeline
 
 4-step AI processing for YouTube videos:
 
@@ -228,29 +208,8 @@ Box 5: Review in 30 days (mastered)
 **Validation Steps:**
 - Authentication (extension token)
 - Duplicate detection
-- Subscription limit enforcement
 
 **File:** `src/use-cases/extension/process-video.ts`
-
-### 4. Stripe Webhook Handler ⚠️ MISSION CRITICAL
-
-Handles 7 webhook event types with complex business logic:
-
-- `checkout.session.completed` - Initial subscription
-- `customer.subscription.created` - Subscription created
-- `customer.subscription.updated` - Plan changes
-- `customer.subscription.deleted` - Cancellations
-- `invoice.payment_succeeded` - Successful payments
-- `invoice.payment_failed` - Payment failures (immediate downgrade)
-- `billing_portal.session.created` - Portal access
-
-**Critical Features:**
-- 4-step fallback strategy for user ID extraction
-- Event deduplication (5-minute window, in-memory)
-- Video expiry updates on subscription changes
-- Downgrade grace period (existing videos not immediately deleted)
-
-**File:** `src/app/api/v1/stripe/webhook/route.ts`
 
 ## Development Commands
 
@@ -300,7 +259,7 @@ npm run test -- <filename>      # Run specific test file
 - Setup file: `src/vitest-setup.ts`
 - Config: `vitest.config.mts`
 
-**Current Coverage:** Very minimal (only 1 test exists)
+**Current Coverage:** Minimal
 - See `docs/testing-priorities.md` for testing roadmap
 
 ### Database (Drizzle)
@@ -317,12 +276,6 @@ npm run db:studio    # Open Drizzle Studio (database GUI)
 npx tsx src/drizzle/test-connection.ts
 ```
 
-### Stripe Webhooks (Local Development)
-
-```bash
-npm run stripe       # Forward webhooks to localhost:3000/api/v1/stripe/webhook
-```
-
 ## Environment Variables
 
 Required in `.env.local`:
@@ -335,11 +288,6 @@ SUPABASE_SERVICE_ROLE_KEY=
 
 # Database (Drizzle) - Use Session mode (port 6543)
 DATABASE_URL="postgresql://postgres.xxxxx:[PASSWORD]@aws-0-us-west-1.pooler.supabase.com:6543/postgres"
-
-# Stripe
-STRIPE_SECRET_KEY=
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
-STRIPE_WEBHOOK_SECRET=
 
 # OpenAI
 OPENAI_API_KEY=
@@ -373,7 +321,7 @@ const [result] = await db
 ```typescript
 await db
   .update(users)
-  .set({ isSubscribed: true })
+  .set({ email: newEmail })
   .where(eq(users.id, userId));
 ```
 
@@ -426,27 +374,28 @@ try {
 
 ```
 src/use-cases/extension/
-├── validate-subscription.ts
-└── validate-subscription.test.ts
+├── process-video.ts
+└── process-video.test.ts
 ```
 
 **Critical Areas Requiring Tests (Priority Order):**
-1. Stripe webhook handler (`route.ts` - 625 lines)
-2. Spaced repetition engine (`process-spaced-repetition-answer.ts`, `utils.ts`)
-3. Subscription validation (`validate-subscription.ts`)
-4. Video processing pipeline (`process-video.ts`)
+1. Spaced repetition engine (`process-spaced-repetition-answer.ts`, `utils.ts`)
+2. Video processing pipeline (`process-video.ts`)
+3. Complex query functions (see `docs/complex-query-migrations.md`)
 
 See `docs/testing-priorities.md` for comprehensive testing roadmap.
 
 ## Migration Notes
 
-### Drizzle Migration (In Progress)
+### Drizzle Migration (Completed)
 
-**What to migrate:**
+The migration from Supabase client to Drizzle ORM is complete.
+
+**What was migrated:**
 - All data queries in `src/data-access/` modules
-- Any direct Supabase `.from()` calls for data operations
+- All direct Supabase `.from()` calls for data operations
 
-**What NOT to migrate:**
+**What was NOT migrated:**
 - Authentication (`signIn`, `signUp`, `signOut`, `getUser`, `getSession`)
 - Supabase auth middleware
 - Auth-related API routes
@@ -477,10 +426,8 @@ See `docs/drizzle-migration-guide.md` for complete migration patterns.
 
 1. **Don't use Transaction mode for DATABASE_URL** - Use Session mode (port 6543) or set `prepare: false`
 2. **Don't migrate Supabase auth** - Only migrate data queries, keep auth with Supabase
-3. **Don't skip webhook signature verification** - Always verify Stripe webhooks
-4. **Don't forget subscription status checks** - Only `active` and `trialing` are premium
-5. **Don't break spaced repetition logic** - Box calculations are critical for learning
-6. **Test Stripe webhooks thoroughly** - They handle real money and subscription state
+3. **Don't break spaced repetition logic** - Box calculations are critical for learning
+4. **Review complex queries carefully** - See `docs/complex-query-migrations.md` for high-risk files
 
 ### Chrome Extension
 
@@ -496,4 +443,3 @@ See `docs/drizzle-migration-guide.md` for complete migration patterns.
 - **Drizzle Docs:** https://orm.drizzle.team/docs/overview
 - **Next.js 15 Docs:** https://nextjs.org/docs
 - **Supabase Auth:** https://supabase.com/docs/guides/auth
-- **Stripe Webhooks:** https://stripe.com/docs/webhooks
