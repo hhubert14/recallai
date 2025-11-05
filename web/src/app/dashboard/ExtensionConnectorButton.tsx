@@ -4,9 +4,10 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { getExtensionId } from "@/config/extension";
 
 export function ExtensionConnectorButton() {
-    const editorExtensionId = "dciecdpjkhhagindacahojeiaeecblaa";
+    const editorExtensionId = getExtensionId();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [cooldown, setCooldown] = useState(0);
@@ -58,11 +59,24 @@ export function ExtensionConnectorButton() {
                         },
                     },
                     response => {
+                        // Check for Chrome runtime errors first
+                        if (chrome.runtime.lastError) {
+                            setError(`Extension error: ${chrome.runtime.lastError.message}`);
+                            return;
+                        }
+
+                        // Check if response exists
+                        if (!response) {
+                            setError("No response from extension. Is it installed and enabled?");
+                            return;
+                        }
+
                         if (!response.success) {
-                            throw new Error(
+                            setError(
                                 response.error ||
                                     "Failed to authenticate user in extension"
                             );
+                            return;
                         }
                         console.log(
                             "User authenticated successfully in extension"

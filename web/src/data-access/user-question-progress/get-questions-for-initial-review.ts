@@ -1,7 +1,10 @@
-import "server-only";
-import { createServiceRoleClient } from "@/lib/supabase/service-role";
+// import "server-only";
+// import { createServiceRoleClient } from "@/lib/supabase/service-role";
 import { QuestionForReviewDto } from "./types";
 import { logger } from "@/lib/logger";
+import { db } from "@/drizzle";
+import { userAnswers, questions, videos, questionOptions, userQuestionProgress } from "@/drizzle/schema";
+import { eq, desc, and, notInArray } from "drizzle-orm";
 
 export async function getQuestionsForInitialReview(
     userId: string,
@@ -11,100 +14,97 @@ export async function getQuestionsForInitialReview(
         return [];
     }
 
-    const supabase = await createServiceRoleClient();
+    // const supabase = await createServiceRoleClient();
 
     try {
-        // First get questions that have been answered by this user
-        const { data: answeredQuestions, error: answersError } = await supabase
-            .from("user_answers")
-            .select(
-                `
-                question_id,
-                questions (
-                    id,
-                    question_text,
-                    video_id,
-                    videos (
-                        id,
-                        title,
-                        user_id,
-                        deleted_at
-                    ),
-                    question_options (
-                        id,
-                        option_text,
-                        is_correct,
-                        explanation
+        // First get question IDs that are already in spaced repetition
+        const existingProgressList = await db
+            .select({ questionId: userQuestionProgress.questionId })
+            .from(userQuestionProgress)
+            .where(eq(userQuestionProgress.userId, userId));
+
+        const existingQuestionIds = existingProgressList.map(p => p.questionId);
+
+        // Get questions that have been answered by this user but not in spaced repetition
+        // First get distinct question IDs from user answers (not in spaced repetition)
+        const answeredQuestionIds = await db
+            .selectDistinct({ questionId: userAnswers.questionId })
+            .from(userAnswers)
+            .where(
+                existingQuestionIds.length > 0
+                    ? and(
+                        eq(userAnswers.userId, userId),
+                        notInArray(userAnswers.questionId, existingQuestionIds)
                     )
-                )
-            `
+                    : eq(userAnswers.userId, userId)
             )
-            .eq("user_id", userId)
-            .eq("questions.videos.user_id", userId)
-            .is("questions.videos.deleted_at", null)
-            .order("created_at", { ascending: false })
-            .limit(50); // Get more to filter from
+            .orderBy(desc(userAnswers.createdAt))
+            .limit(50);
 
-        if (answersError) {
-            logger.db.error(
-                "Database query error for answered questions",
-                answersError,
-                { userId }
-            );
-            throw answersError;
-        }
-
-        if (!answeredQuestions || answeredQuestions.length === 0) {
+        if (answeredQuestionIds.length === 0) {
             return [];
-        } // Remove duplicates and get unique questions
-        const uniqueQuestions = new Map();
-        for (const answer of answeredQuestions) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const question = answer.questions as any;
-            if (question && question.id) {
-                if (!uniqueQuestions.has(question.id)) {
-                    uniqueQuestions.set(question.id, question);
-                }
+        }
+
+        const questionIds = answeredQuestionIds.map(a => a.questionId);
+
+        // Now get full question data with joins
+        const rows = await db
+            .select()
+            .from(questions)
+            .innerJoin(videos, eq(questions.videoId, videos.id))
+            .leftJoin(questionOptions, eq(questionOptions.questionId, questions.id))
+            .where(eq(videos.userId, userId));
+
+        // Filter to only questions we want and group options
+        type QuestionData = {
+            id: number;
+            questionText: string;
+            videoId: number;
+            videoTitle: string;
+            options: Array<{
+                id: number;
+                optionText: string;
+                isCorrect: boolean;
+                explanation: string | null;
+            }>;
+        };
+        const questionsMap: Record<number, QuestionData> = {};
+
+        for (const row of rows) {
+            if (!questionIds.includes(row.questions.id)) continue;
+
+            if (!questionsMap[row.questions.id]) {
+                questionsMap[row.questions.id] = {
+                    id: row.questions.id,
+                    questionText: row.questions.questionText,
+                    videoId: row.questions.videoId,
+                    videoTitle: row.videos.title,
+                    options: []
+                };
+            }
+
+            if (row.question_options) {
+                questionsMap[row.questions.id].options.push({
+                    id: row.question_options.id,
+                    optionText: row.question_options.optionText,
+                    isCorrect: row.question_options.isCorrect,
+                    explanation: row.question_options.explanation,
+                });
             }
         }
 
-        // Filter out questions that are already in spaced repetition system
-        const questionsNotInSR = [];
-
-        for (const [questionId, question] of uniqueQuestions) {
-            // Check if this question is already in spaced repetition
-            const { data: existingProgress } = await supabase
-                .from("user_question_progress")
-                .select("id")
-                .eq("user_id", userId)
-                .eq("question_id", questionId)
-                .single();
-
-            // Only include if not in spaced repetition yet
-            if (!existingProgress) {
-                questionsNotInSR.push(question);
-            }
-        }
-
-        // Transform to our DTO structure
-        const initialReviewQuestions: QuestionForReviewDto[] = questionsNotInSR
+        // Transform to DTO structure and apply limit
+        const initialReviewQuestions: QuestionForReviewDto[] = Object.values(questionsMap)
             .slice(0, limit)
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            .map((question: any) => ({
+            .map((question) => ({
                 id: 0, // No progress record yet
-                question_id: question.id,
-                question_text: question.question_text,
-                video_id: question.video_id,
-                video_title: question.videos.title,
-                box_level: 1, // Will start at box 1
-                next_review_date: null, // Will be set after first review
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                options: question.question_options.map((option: any) => ({
-                    id: option.id,
-                    option_text: option.option_text,
-                    is_correct: option.is_correct,
-                    explanation: option.explanation,
-                })),
+                questionId: question.id,
+                questionText: question.questionText,
+                videoId: question.videoId,
+                videoTitle: question.videoTitle,
+                boxLevel: 1, // Will start at box 1
+                nextReviewDate: null, // Will be set after first review
+                options: question.options,
             }));
 
         return initialReviewQuestions;

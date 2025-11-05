@@ -2,6 +2,9 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
+import { db } from "@/drizzle";
+import { users, extensionTokens } from "@/drizzle/schema";
+import { eq } from "drizzle-orm";
 
 export async function POST() {
     try {
@@ -34,11 +37,10 @@ export async function POST() {
         expiresAt.setDate(expiresAt.getDate() + 30);
 
         // Check if user exists in our users table
-        const { data: existingUser } = await supabase
-            .from("users")
-            .select("id")
-            .eq("id", user.id)
-            .single();
+        const [existingUser] = await db
+            .select()
+            .from(users)
+            .where(eq(users.id, user.id))
 
         if (!existingUser) {
             console.error("User not found in users table:", user.id);
@@ -53,30 +55,16 @@ export async function POST() {
         }
 
         // Delete any existing extension tokens for this user
-        await supabase.from("extension_tokens").delete().eq("user_id", user.id);
+        await db.delete(extensionTokens).where(eq(extensionTokens.userId, user.id))
 
         // Create new extension token
-        const { error: tokenError } = await supabase
-            .from("extension_tokens")
-            .insert({
-                user_id: user.id,
+        await db
+            .insert(extensionTokens)
+            .values({
+                userId: user.id,
                 token: extensionToken,
-                expires_at: expiresAt.toISOString(),
+                expiresAt: expiresAt.toISOString(),
             })
-            .select()
-            .single();
-
-        if (tokenError) {
-            console.error("Error creating extension token:", tokenError);
-            return NextResponse.json(
-                {
-                    error: "Failed to create extension token",
-                },
-                {
-                    status: 500,
-                }
-            );
-        }
 
         return NextResponse.json(
             {

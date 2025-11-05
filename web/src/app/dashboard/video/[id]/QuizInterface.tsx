@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { QuestionDto, QuestionOptionDto } from "@/data-access/questions/types";
+import { QuestionWithOptionsDto, QuestionOptionDto } from "@/data-access/questions/types";
 import { submitAnswer } from "./actions";
 import { useQuizCompletion } from "@/components/providers/QuizCompletionProvider";
 
 interface QuizInterfaceProps {
-    questions: QuestionDto[];
+    questions: QuestionWithOptionsDto[];
     userId: string;
     videoId: number;
 }
@@ -25,11 +25,11 @@ function shuffleArray<T>(array: T[]): T[] {
 }
 
 // Function to shuffle questions and their options
-function shuffleQuestionsAndOptions(questions: QuestionDto[]): QuestionDto[] {
+function shuffleQuestionsAndOptions(questions: QuestionWithOptionsDto[]): QuestionWithOptionsDto[] {
     const shuffledQuestions = shuffleArray(questions);
     return shuffledQuestions.map(question => ({
         ...question,
-        options: shuffleArray(question.options),
+        options: shuffleArray(question.questionOptions),
     }));
 }
 
@@ -46,7 +46,7 @@ export function QuizInterface({
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [correctAnswer, setCorrectAnswer] =
         useState<QuestionOptionDto | null>(null);
-    const [shuffledQuestions, setShuffledQuestions] = useState<QuestionDto[]>(
+    const [shuffledQuestions, setShuffledQuestions] = useState<QuestionWithOptionsDto[]>(
         []
     );
 
@@ -72,22 +72,22 @@ export function QuizInterface({
 
         setIsSubmitting(true);
 
-        const selectedOption = currentQuestion.options.find(
+        const selectedOption = currentQuestion.questionOptions.find(
             option => option.id === selectedOptionId
         );
 
         if (!selectedOption) return;
 
         // Find the correct answer
-        const correctOption = currentQuestion.options.find(
-            option => option.is_correct
+        const correctOption = currentQuestion.questionOptions.find(
+            option => option.isCorrect
         );
         setCorrectAnswer(correctOption || null); // Save user answer
         await submitAnswer({
-            user_id: userId,
-            question_id: currentQuestion.id,
-            selected_option_id: selectedOptionId,
-            is_correct: selectedOption.is_correct,
+            userId: userId,
+            questionId: currentQuestion.id,
+            selectedOptionId: selectedOptionId,
+            isCorrect: selectedOption.isCorrect,
         });
         setShowResult(true);
         setIsSubmitting(false);
@@ -116,7 +116,7 @@ export function QuizInterface({
 
     const isLastQuestion =
         currentQuestionIndex === shuffledQuestions.length - 1;
-    const selectedOption = currentQuestion.options.find(
+    const selectedOption = currentQuestion.questionOptions.find(
         option => option.id === selectedOptionId
     );
 
@@ -141,12 +141,12 @@ export function QuizInterface({
             {/* Question */}
             <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700">
                 <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
-                    {currentQuestion.question_text}
+                    {currentQuestion.questionText}
                 </h3>
 
                 {/* Options */}
                 <div className="space-y-3">
-                    {currentQuestion.options.map(option => (
+                    {currentQuestion.questionOptions.map(option => (
                         <label
                             key={option.id}
                             className={`block p-3 border rounded-lg cursor-pointer transition-colors ${
@@ -155,10 +155,10 @@ export function QuizInterface({
                                     : "border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500"
                             } ${
                                 showResult
-                                    ? option.is_correct
+                                    ? option.isCorrect
                                         ? "border-green-600 dark:border-green-500 bg-green-50 dark:bg-green-950/20"
                                         : selectedOptionId === option.id &&
-                                            !option.is_correct
+                                            !option.isCorrect
                                           ? "border-red-600 dark:border-red-500 bg-red-50 dark:bg-red-950/20"
                                           : "border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800"
                                     : ""
@@ -189,7 +189,7 @@ export function QuizInterface({
                                     )}
                                 </div>
                                 <span className="text-gray-900 dark:text-white">
-                                    {option.option_text}
+                                    {option.optionText}
                                 </span>
                             </div>
                         </label>
@@ -201,7 +201,7 @@ export function QuizInterface({
             {showResult && (
                 <div
                     className={`p-4 rounded-lg ${
-                        selectedOption?.is_correct
+                        selectedOption?.isCorrect
                             ? "bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800"
                             : "bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800"
                     }`}
@@ -209,12 +209,12 @@ export function QuizInterface({
                     <div className="flex items-center mb-2">
                         <span
                             className={`font-medium ${
-                                selectedOption?.is_correct
+                                selectedOption?.isCorrect
                                     ? "text-green-800 dark:text-green-100"
                                     : "text-red-800 dark:text-red-100"
                             }`}
                         >
-                            {selectedOption?.is_correct
+                            {selectedOption?.isCorrect
                                 ? "Correct!"
                                 : "Incorrect"}
                         </span>

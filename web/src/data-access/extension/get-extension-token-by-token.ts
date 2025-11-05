@@ -1,9 +1,9 @@
-import "server-only";
-
-import { createServiceRoleClient } from "@/lib/supabase/service-role";
 import { ExtensionTokenDto } from "./types";
-import { toDtoMapper } from "./utils";
+// import { toDtoMapper } from "./utils";
 import { logger } from "@/lib/logger";
+import { db } from "@/drizzle";
+import { extensionTokens } from "@/drizzle/schema";
+import { eq } from "drizzle-orm";
 
 export async function getExtensionTokenByToken(
     token: string
@@ -12,21 +12,20 @@ export async function getExtensionTokenByToken(
         return undefined;
     }
 
-    const supabase = createServiceRoleClient();
-
     try {
-        const { data, error } = await supabase
-            .from("extension_tokens")
-            .select("*")
-            .eq("token", token)
-            .single();
+        const [data] = await db
+            .select()
+            .from(extensionTokens)
+            .where(eq(extensionTokens.token, token))
 
-        if (error) {
-            logger.db.error("Error fetching token", error);
+        if (!data) {
+            logger.db.error(
+                "Error fetching token (prefix: " + token.slice(0, 4) + "...)"
+            );
             return undefined;
         }
 
-        return toDtoMapper(data);
+        return data;
     } catch (error) {
         logger.db.error("Error validating token", error);
         return undefined;

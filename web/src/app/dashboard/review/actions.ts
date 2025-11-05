@@ -13,16 +13,16 @@ export async function processReviewAnswer(
         // We only need to process for spaced repetition
 
         const progressUpdated = await processSpacedRepetitionAnswer(
-            userAnswer.user_id,
-            userAnswer.question_id,
-            userAnswer.is_correct
+            userAnswer.userId,
+            userAnswer.questionId,
+            userAnswer.isCorrect
         );
 
         return progressUpdated;
     } catch (error) {
         logger.db.error("Error processing review answer", error, {
-            questionId: userAnswer.question_id,
-            userId: userAnswer.user_id,
+            questionId: userAnswer.questionId,
+            userId: userAnswer.userId,
         });
         return false;
     }

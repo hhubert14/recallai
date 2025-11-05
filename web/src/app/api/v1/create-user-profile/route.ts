@@ -1,11 +1,11 @@
 "use server";
 
 import { NextResponse } from "next/server";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { db } from "@/drizzle";
+import { users } from "@/drizzle/schema";
 
 export async function POST(request: Request) {
     const { userId, email } = await request.json();
-    const supabase = await createAdminClient();
     if (!userId || !email) {
         return NextResponse.json(
             { error: "User ID and email are required" },
@@ -13,13 +13,13 @@ export async function POST(request: Request) {
         );
     }
     try {
-        const { error } = await supabase.from("users").insert({
+        await db
+        .insert(users)
+        .values({
             id: userId,
             email,
-            is_subscribed: false,
-        });
-
-        if (error) throw error;
+            isSubscribed: false,
+        })
 
         return NextResponse.json({ success: true });
     } catch (error) {

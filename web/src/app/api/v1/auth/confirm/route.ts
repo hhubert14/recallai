@@ -36,8 +36,8 @@ export async function GET(request: NextRequest) {
                 );
             }
 
-            // Email confirmed successfully
-            return NextResponse.redirect(new URL("/auth/success", request.url));
+            // Email confirmed successfully - redirect to the 'next' param or success page
+            return NextResponse.redirect(new URL(next, request.url));
         }
 
         if (type === "recovery") {

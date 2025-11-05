@@ -8,11 +8,9 @@ import { createClient } from "@/lib/supabase/server";
 import { getVideosByUserId } from "@/data-access/videos/get-videos-by-user-id";
 import { getSummaryByVideoId } from "@/data-access/summaries/get-summary-by-video-id";
 import { getQuestionsByVideoId } from "@/data-access/questions/get-questions-by-video-id";
-// import { getUserSubscriptionStatus } from "@/data-access/subscriptions/get-user-subscription-status";
 import { VideoPlayer } from "./VideoPlayer";
 import { ContentTabs } from "./ContentTabs";
 import { BackButton } from "./BackButton";
-// import { SupportBanner } from "@/components/ui/support-banner";
 
 export const metadata: Metadata = {
     title: "Video Detail | RecallAI",
@@ -49,7 +47,6 @@ export default async function VideoDetailPage({
     const [summary, questions] = await Promise.all([
         getSummaryByVideoId(video.id),
         getQuestionsByVideoId(video.id),
-        // getUserSubscriptionStatus(user.id),
     ]);
 
     // Extract YouTube video ID from URL
@@ -91,18 +88,6 @@ export default async function VideoDetailPage({
                         >
                             Review
                         </Link>
-                        <Link
-                            href="/dashboard/pricing"
-                            className="text-sm font-medium text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400"
-                        >
-                            Premium
-                        </Link>
-                        {/* <Link
-                            href="/dashboard/settings"
-                            className="text-sm font-medium hover:text-blue-600"
-                        >
-                            Settings
-                        </Link> */}
                     </nav>
                     <div className="flex items-center gap-4">
                         <ThemeToggle />
@@ -111,20 +96,15 @@ export default async function VideoDetailPage({
                 </div>
             </header>
 
-            {/* Show support banner only for non-subscribed users */}
-            {/* {!subscriptionStatus.isSubscribed && (
-                <SupportBanner userId={user.id} />
-            )} */}
-
             <main className="flex-1 container py-4 px-6 md:px-8 max-w-7xl mx-auto">
                 <div className="mb-6">
                     <BackButton />
                     <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-3 mt-2">
                         {video.title}
                     </h1>
-                    {video.channel_name && (
+                    {video.channelName && (
                         <p className="text-lg text-gray-600 dark:text-gray-300">
-                            by {video.channel_name}
+                            by {video.channelName}
                         </p>
                     )}
                 </div>{" "}

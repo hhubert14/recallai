@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Play, Check, X, Clock, AlertTriangle } from "lucide-react";
+import { Play, Check, X } from "lucide-react";
 import { VideoDto } from "@/data-access/videos/types";
 import { useQuizCompletion } from "@/components/providers/QuizCompletionProvider";
 
@@ -25,51 +25,6 @@ export function LibraryVideoCard({ video }: LibraryVideoCardProps) {
         });
     };
 
-    // Calculate expiry status
-    const getExpiryStatus = () => {
-        if (!video.should_expire) {
-            return {
-                status: "permanent",
-                message: "Permanent",
-                color: "text-green-600",
-            };
-        }
-
-        const expiryDate = new Date(video.expiry_date);
-        const now = new Date();
-        const daysUntilExpiry = Math.ceil(
-            (expiryDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
-        );
-
-        if (daysUntilExpiry < 0) {
-            return {
-                status: "expired",
-                message: "Expired",
-                color: "text-red-600",
-            };
-        } else if (daysUntilExpiry <= 1) {
-            return {
-                status: "expires-soon",
-                message: "Expires today",
-                color: "text-orange-600",
-            };
-        } else if (daysUntilExpiry <= 3) {
-            return {
-                status: "expires-soon",
-                message: `Expires in ${daysUntilExpiry} days`,
-                color: "text-orange-600",
-            };
-        } else {
-            return {
-                status: "active",
-                message: `Expires ${formatDate(video.expiry_date)}`,
-                color: "text-gray-500",
-            };
-        }
-    };
-
-    const expiryStatus = getExpiryStatus();
-
     return (
         <Link
             href={`/dashboard/video/${video.id}`}
@@ -85,28 +40,11 @@ export function LibraryVideoCard({ video }: LibraryVideoCardProps) {
                         <h3 className="font-medium truncate text-gray-900 dark:text-white">
                             {video.title}
                         </h3>
-                        {video.channel_name && (
+                        {video.channelName && (
                             <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
-                                {video.channel_name}
+                                {video.channelName}
                             </p>
                         )}
-                        {/* Expiry status */}
-                        <div className="flex items-center gap-1 mt-1">
-                            {video.should_expire ? (
-                                expiryStatus.status === "expires-soon" ? (
-                                    <AlertTriangle className="h-3 w-3 text-orange-500" />
-                                ) : (
-                                    <Clock className="h-3 w-3 text-gray-400 dark:text-gray-500" />
-                                )
-                            ) : (
-                                <Check className="h-3 w-3 text-green-500" />
-                            )}
-                            <span
-                                className={`text-xs ${expiryStatus.color === "text-gray-500" ? "text-gray-500 dark:text-gray-400" : expiryStatus.color}`}
-                            >
-                                {expiryStatus.message}
-                            </span>
-                        </div>
                     </div>
                 </div>
 
@@ -114,7 +52,7 @@ export function LibraryVideoCard({ video }: LibraryVideoCardProps) {
                 <div className="flex items-center gap-4 flex-shrink-0 ml-4">
                     <div className="text-right">
                         <p className="text-sm text-gray-600 dark:text-gray-300">
-                            {formatDate(video.created_at)}
+                            {formatDate(video.createdAt)}
                         </p>
                         <div className="flex items-center justify-end gap-1 mt-1">
                             {isCompleted ? (

@@ -82,9 +82,9 @@ export async function POST(
         // Create each question and its options in the database
         for (const question of questionData.questions) {
             const createdQuestion = await createQuestion({
-                video_id,
-                question_text: question.question,
-                question_type: "multiple_choice",
+                videoId: video_id,
+                questionText: question.question,
+                questionType: "multiple_choice",
             });
 
             if (!createdQuestion) {
@@ -93,9 +93,9 @@ export async function POST(
 
             for (let i = 0; i < question.options.length; i++) {
                 await createQuestionOptions({
-                    question_id: createdQuestion.id,
-                    option_text: question.options[i],
-                    is_correct: i === question.correctAnswerIndex, // Assuming the correct answer is marked
+                    questionId: createdQuestion.id,
+                    optionText: question.options[i],
+                    isCorrect: i === question.correctAnswerIndex, // Assuming the correct answer is marked
                     explanation:
                         i === question.correctAnswerIndex
                             ? question.explanation

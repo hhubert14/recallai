@@ -1,19 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-// import { Button } from "@/components/ui/button";
-import { Brain, User, CreditCard, Chrome, Database, Clock } from "lucide-react";
+import { Brain, User, Chrome, Database } from "lucide-react";
 import { UserButton } from "@/components/ui/user-button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { RegenerateTokenButton } from "./RegenerateTokenButton";
 import { createClient } from "@/lib/supabase/server";
-import { getUserSubscriptionStatus } from "@/data-access/subscriptions/get-user-subscription-status";
 import { getUserStatsByUserId } from "@/data-access/user-stats/get-user-stats-by-user-id";
-import { getVideosThisMonthByUserId } from "@/data-access/user-stats/get-videos-this-month-by-user-id";
-import { SubscriptionStatusBadge } from "@/components/subscription/SubscriptionStatusBadge";
-import { UpgradeButton } from "@/components/subscription/UpgradeButton";
-import { ManageBillingButton } from "@/components/subscription/ManageBillingButton";
-import { getUserVideoExpiryStats } from "@/data-access/user-stats/get-user-video-expiry-stats";
 
 export const metadata: Metadata = {
     title: "Settings | RecallAI",
@@ -30,17 +23,10 @@ export default async function SettingsPage() {
     if (!user) {
         redirect("/auth/login");
     }
-    const [subscriptionStatus, userStats, videosThisMonth, videoExpiryStats] =
+    const [userStats] =
         await Promise.all([
-            getUserSubscriptionStatus(user.id),
             getUserStatsByUserId(user.id),
-            getVideosThisMonthByUserId(user.id),
-            getUserVideoExpiryStats(user.id),
-        ]); // Calculate usage percentage for free users
-    const monthlyLimit = subscriptionStatus.isSubscribed ? null : 5;
-    const usagePercentage = monthlyLimit
-        ? Math.min((videosThisMonth / monthlyLimit) * 100, 100)
-        : 0;
+        ]);
 
     // Format join date
     const joinDate = new Date(user.created_at).toLocaleDateString("en-US", {
@@ -78,18 +64,6 @@ export default async function SettingsPage() {
                         >
                             Review
                         </Link>
-                        <Link
-                            href="/dashboard/pricing"
-                            className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600"
-                        >
-                            Premium
-                        </Link>
-                        {/* <Link
-                            href="/dashboard/settings"
-                            className="text-sm font-medium text-blue-600"
-                        >
-                            Settings
-                        </Link> */}
                     </nav>
                     <div className="flex items-center gap-4">
                         <ThemeToggle />
@@ -136,103 +110,8 @@ export default async function SettingsPage() {
                                     </p>
                                 </div>
                             </div>
-                            <div className="pt-2">
-                                <label className="text-sm font-medium text-gray-700 dark:text-gray-300 block mb-2">
-                                    Current Plan
-                                </label>
-                                <SubscriptionStatusBadge
-                                    isSubscribed={
-                                        subscriptionStatus.isSubscribed
-                                    }
-                                    status={subscriptionStatus.status}
-                                    planType={subscriptionStatus.planType}
-                                    currentPeriodEnd={
-                                        subscriptionStatus.currentPeriodEnd
-                                    }
-                                />
-                            </div>
                         </div>
                     </div>
-                    {/* Subscription Section */}
-                    <div className="rounded-xl border border-gray-200 dark:border-gray-700 p-8 shadow-sm bg-white dark:bg-gray-800">
-                        <div className="flex items-center gap-3 mb-6">
-                            <CreditCard className="h-5 w-5 text-blue-600" />
-                            <h2 className="text-xl font-semibold text-blue-900 dark:text-blue-100">
-                                Subscription & Usage
-                            </h2>
-                        </div>
-                        <div className="space-y-4">
-                            {!subscriptionStatus.isSubscribed ? (
-                                <div>
-                                    <div className="mb-4">
-                                        <div className="flex justify-between items-center mb-2">
-                                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                Current Videos
-                                            </span>{" "}
-                                            <span className="text-sm text-gray-500 dark:text-gray-400">
-                                                {videosThisMonth} /{" "}
-                                                {monthlyLimit} active
-                                            </span>
-                                        </div>
-                                        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                                            <div
-                                                className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                                                style={{
-                                                    width: `${usagePercentage}%`,
-                                                }}
-                                            ></div>
-                                        </div>
-                                        {usagePercentage >= 80 && (
-                                            <p className="text-sm text-amber-600 mt-2">
-                                                You`&apos;`re approaching your storage
-                                                limit. Consider upgrading for
-                                                unlimited access.
-                                            </p>
-                                        )}
-                                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                                            Videos automatically expire after 7
-                                            days. You can have up to 5 videos
-                                            stored at a time.
-                                        </p>
-                                    </div>
-                                    <UpgradeButton />
-                                </div>
-                            ) : (
-                                <div className="space-y-3">
-                                    {" "}
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        {" "}
-                                        <div>
-                                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                Current Videos
-                                            </label>
-                                            <p className="text-2xl font-bold text-blue-900 dark:text-blue-100">
-                                                {videosThisMonth}
-                                            </p>
-                                            <p className="text-sm text-gray-500 dark:text-gray-400">
-                                                Unlimited storage
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                Total Videos
-                                            </label>
-                                            <p className="text-2xl font-bold text-blue-900 dark:text-blue-100">
-                                                {userStats.totalVideos}
-                                            </p>
-                                            <p className="text-sm text-gray-500 dark:text-gray-400">
-                                                All time
-                                            </p>
-                                        </div>{" "}
-                                    </div>
-                                    <ManageBillingButton
-                                        userId={user.id}
-                                        className="w-fit"
-                                    />
-                                </div>
-                            )}
-                        </div>
-                    </div>{" "}
                     {/* Chrome Extension Section */}
                     <div className="rounded-xl border border-gray-200 dark:border-gray-700 p-8 shadow-sm bg-white dark:bg-gray-800">
                         <div className="flex items-center gap-3 mb-6">
@@ -249,7 +128,7 @@ export default async function SettingsPage() {
                             </p>
                             <RegenerateTokenButton />
                             <p className="text-sm text-gray-500 dark:text-gray-400">
-                                If you`&apos;`re having connection issues with the
+                                If you&apos;re having connection issues with the
                                 extension, generate a new token to refresh the
                                 connection.
                             </p>
@@ -293,91 +172,6 @@ export default async function SettingsPage() {
                                 </div>{" "}
                             </div>
                         </div>{" "}
-                    </div>
-                    {/* Video Expiry Section */}
-                    <div className="rounded-xl border border-gray-200 dark:border-gray-700 p-8 shadow-sm bg-white dark:bg-gray-800">
-                        <div className="flex items-center gap-3 mb-6">
-                            <Clock className="h-5 w-5 text-blue-600" />
-                            <h2 className="text-xl font-semibold text-blue-900 dark:text-blue-100">
-                                Video Storage
-                            </h2>
-                        </div>
-                        <div className="space-y-4">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                                    <p className="text-2xl font-bold text-green-900 dark:text-green-100">
-                                        {videoExpiryStats.permanentVideos}
-                                    </p>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                                        Permanent Videos
-                                    </p>
-                                    <p className="text-xs text-green-600 dark:text-green-400">
-                                        Never expire
-                                    </p>
-                                </div>
-                                <div className="text-center p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
-                                    <p className="text-2xl font-bold text-orange-900 dark:text-orange-100">
-                                        {videoExpiryStats.expiringVideos}
-                                    </p>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                                        Expiring Videos
-                                    </p>
-                                    <p className="text-xs text-orange-600 dark:text-orange-400">
-                                        Will be deleted
-                                    </p>
-                                </div>
-                                <div className="text-center p-4 bg-red-50 dark:bg-red-900/20 rounded-lg">
-                                    <p className="text-2xl font-bold text-red-900 dark:text-red-100">
-                                        {videoExpiryStats.expiringSoon}
-                                    </p>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                                        Expiring Soon
-                                    </p>
-                                    <p className="text-xs text-red-600 dark:text-red-400">
-                                        Within 3 days
-                                    </p>
-                                </div>
-                            </div>
-
-                            {videoExpiryStats.nextExpiring && (
-                                <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
-                                    <h3 className="font-medium text-yellow-900 dark:text-yellow-100 mb-2">
-                                        Next Video Expiring
-                                    </h3>
-                                    <p className="text-sm text-gray-700 dark:text-gray-300">
-                                        <strong>
-                                            {
-                                                videoExpiryStats.nextExpiring
-                                                    .title
-                                            }
-                                        </strong>{" "}
-                                        will expire on{" "}
-                                        {new Date(
-                                            videoExpiryStats.nextExpiring.expiry_date
-                                        ).toLocaleDateString("en-US", {
-                                            year: "numeric",
-                                            month: "long",
-                                            day: "numeric",
-                                        })}
-                                    </p>
-                                </div>
-                            )}
-
-                            {!subscriptionStatus.isSubscribed &&
-                                videoExpiryStats.expiringVideos > 0 && (
-                                    <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-                                        <h3 className="font-medium text-blue-900 dark:text-blue-100 mb-2">
-                                            Upgrade to Keep Your Videos
-                                        </h3>
-                                        <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
-                                            Premium members keep their videos
-                                            permanently. Upgrade now to prevent
-                                            losing your content.
-                                        </p>
-                                        <UpgradeButton size="sm" />
-                                    </div>
-                                )}
-                        </div>
                     </div>
                     {/* Help & Support Section */}
                     <div className="rounded-xl border border-gray-200 dark:border-gray-700 p-8 shadow-sm bg-white dark:bg-gray-800">

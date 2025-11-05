@@ -22,7 +22,8 @@ export function ClientLibraryVideoList({
                 markVideoAsCompleted(video.id);
             }
         });
-    }, []); // Remove dependencies to run only once on mount
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []); // Run only once on mount to initialize from server data
 
     if (videos.length === 0) {
         return (

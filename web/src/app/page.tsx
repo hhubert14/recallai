@@ -21,8 +21,6 @@ import {
     Layers,
     Shield,
 } from "lucide-react";
-// import { Sub } from "@radix-ui/react-dropdown-menu";
-// import SubscribeButton from "@/components/subscription/SubscribeButton";
 
 export default function Home() {
     return (
@@ -48,12 +46,6 @@ export default function Home() {
                             className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
                         >
                             Features
-                        </Link>
-                        <Link
-                            href="#pricing"
-                            className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
-                        >
-                            Pricing
                         </Link>
                         <Link
                             href="#faq"
@@ -160,7 +152,7 @@ export default function Home() {
                                     The Problem with Video Learning
                                 </h2>
                                 <p className="max-w-[900px] text-gray-500 dark:text-gray-400 md:text-xl/relaxed">
-                                    In today`&apos;`s information-rich world, people
+                                    In today&apos;s information-rich world, people
                                     consume massive amounts of educational video
                                     content but struggle with poor retention
                                     rates. Research shows learners forget 90% of
@@ -541,7 +533,7 @@ export default function Home() {
                         <div className="flex flex-col items-center justify-center space-y-4 text-center">
                             <div className="space-y-2">
                                 <div className="inline-block rounded-lg bg-blue-100 dark:bg-blue-900 px-3 py-1 text-sm text-blue-600 dark:text-blue-400">
-                                    Who It`&apos;`s For
+                                    Who It&apos;s For
                                 </div>
                                 <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight text-blue-900 dark:text-blue-100">
                                     Perfect for All Types of Learners
@@ -804,134 +796,6 @@ export default function Home() {
                     </div>
                 </section> */}
 
-                {/* Pricing Section */}
-                <section
-                    id="pricing"
-                    className="w-full py-12 md:py-24 lg:py-32 bg-white dark:bg-gray-950"
-                >
-                    <div className="container px-4 md:px-6">
-                        <div className="flex flex-col items-center justify-center space-y-4 text-center">
-                            <div className="space-y-2">
-                                <div className="inline-block rounded-lg bg-blue-100 dark:bg-blue-900/50 px-3 py-1 text-sm text-blue-600 dark:text-blue-400">
-                                    Pricing
-                                </div>
-                                <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight text-blue-900 dark:text-blue-100">
-                                    Simple, Transparent Pricing
-                                </h2>
-                                <p className="max-w-[900px] text-gray-500 dark:text-gray-400 md:text-xl/relaxed">
-                                    Choose the plan that`&apos;`s right for you and
-                                    start transforming your learning experience
-                                    today.
-                                </p>
-                            </div>
-                        </div>
-                        <div className="mx-auto grid max-w-4xl gap-6 py-12 md:grid-cols-2">
-                            <div className="flex flex-col rounded-lg border border-blue-100 dark:border-blue-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
-                                <div className="space-y-2">
-                                    <h3 className="text-2xl font-bold text-blue-900 dark:text-white">
-                                        Free
-                                    </h3>
-                                    <p className="text-gray-500 dark:text-gray-400">
-                                        Perfect for trying out RecallAI.
-                                    </p>
-                                </div>
-                                <div className="mt-4 flex items-baseline">
-                                    <span className="text-4xl font-bold text-blue-900 dark:text-blue-100">
-                                        $0
-                                    </span>
-                                    <span className="ml-1 text-gray-500 dark:text-gray-400">
-                                        /month
-                                    </span>
-                                </div>
-                                <ul className="mt-6 space-y-3">
-                                    {[
-                                        "5 videos at a time",
-                                        "Auto-generated study questions",
-                                        "Smart study notes",
-                                        "Progress tracking",
-                                        // "Manual video categorization",
-                                        "7-day storage",
-                                    ].map(feature => (
-                                        <li
-                                            key={feature}
-                                            className="flex items-center gap-2"
-                                        >
-                                            <CheckCircle className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                                            <span className="text-gray-700 dark:text-gray-300">
-                                                {feature}
-                                            </span>
-                                        </li>
-                                    ))}
-                                </ul>
-                                <Button
-                                    className="mt-8 bg-blue-600 hover:bg-blue-700"
-                                    asChild
-                                >
-                                    <Link href="/auth/sign-up">
-                                        Get Started
-                                    </Link>
-                                </Button>
-                            </div>
-                            <div className="flex flex-col rounded-lg border-2 border-blue-600 dark:border-blue-500 bg-white dark:bg-gray-900 p-6 shadow-lg relative">
-                                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-blue-600 dark:bg-blue-500 text-white text-sm font-medium py-1 px-3 rounded-full">
-                                    Most Popular
-                                </div>
-                                <div className="space-y-2">
-                                    <h3 className="text-2xl font-bold text-blue-900 dark:text-white">
-                                        Premium
-                                    </h3>
-                                    <p className="text-gray-500 dark:text-gray-400">
-                                        For serious learners.
-                                    </p>
-                                </div>
-                                <div className="mt-4 flex items-baseline">
-                                    <span className="text-4xl font-bold text-blue-900 dark:text-blue-100">
-                                        $4.99
-                                    </span>
-                                    <span className="ml-1 text-gray-500 dark:text-gray-400">
-                                        /month
-                                    </span>
-                                </div>
-                                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                                    Just $0.16 per day
-                                </p>
-                                <ul className="mt-6 space-y-3">
-                                    {[
-                                        "Unlimited videos",
-                                        "Auto-generated study questions",
-                                        "Spaced repetition system",
-                                        "Smart study notes",
-                                        "Progress tracking",
-                                        "Unlimited storage",
-                                        "Keep all videos forever (existing + future videos)",
-                                    ].map(feature => (
-                                        <li
-                                            key={feature}
-                                            className="flex items-center gap-2"
-                                        >
-                                            <CheckCircle className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                                            <span className="text-gray-700 dark:text-gray-300">
-                                                {feature}
-                                            </span>
-                                        </li>
-                                    ))}
-                                </ul>
-                                <Button
-                                    className="mt-8 bg-blue-600 hover:bg-blue-700"
-                                    asChild
-                                >
-                                    <Link href="/auth/sign-up">
-                                        Get Started
-                                    </Link>
-                                </Button>
-                                {/* <SubscribeButton userId="your-user-id" /> */}
-                                {/* <Button className="mt-8 bg-blue-600 hover:bg-blue-700">
-                                    Get Started
-                                </Button> */}
-                            </div>
-                        </div>
-                    </div>
-                </section>
 
                 {/* FAQ Section */}
                 <section
@@ -1018,7 +882,7 @@ export default function Home() {
                                     generated summaries and questions will be
                                     provided in English, and our web interface
                                     is currently only available in English.
-                                    We`&apos;`re working on adding translated outputs
+                                    We&apos;re working on adding translated outputs
                                     and interface language options in the
                                     future.
                                 </p>
@@ -1183,14 +1047,6 @@ export default function Home() {
                                         className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
                                     >
                                         Features
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link
-                                        href="#pricing"
-                                        className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
-                                    >
-                                        Pricing
                                     </Link>
                                 </li>
                                 <li>

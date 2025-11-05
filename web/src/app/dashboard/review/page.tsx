@@ -1,12 +1,10 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { getUserSubscriptionStatus } from "@/data-access/subscriptions/get-user-subscription-status";
 import { getQuestionsDueForReview } from "@/data-access/user-question-progress/get-questions-due-for-review";
 import { getQuestionsForInitialReview } from "@/data-access/user-question-progress/get-questions-for-initial-review";
 import { getReviewStats } from "@/data-access/user-question-progress/get-review-stats";
 import { ReviewInterface } from "@/app/dashboard/review/ReviewInterface";
-import { UpgradePrompt } from "@/app/dashboard/review/UpgradePrompt";
 import { Brain } from "lucide-react";
 import Link from "next/link";
 import { UserButton } from "@/components/ui/user-button";
@@ -29,12 +27,6 @@ export default async function ReviewPage() {
         redirect("/auth/login");
     }
 
-    const subscriptionStatus = await getUserSubscriptionStatus(user.id);
-
-    // Only allow premium users to access review
-    if (!subscriptionStatus.isSubscribed) {
-        return <UpgradePrompt />;
-    }
     const [reviewStats, dueQuestions, initialQuestions] = await Promise.all([
         getReviewStats(user.id),
         getQuestionsDueForReview(user.id),
@@ -69,12 +61,6 @@ export default async function ReviewPage() {
                             className="text-sm font-medium text-blue-600 dark:text-blue-400"
                         >
                             Review
-                        </Link>
-                        <Link
-                            href="/dashboard/pricing"
-                            className="text-sm font-medium text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400"
-                        >
-                            Premium
                         </Link>
                     </nav>
                     <div className="flex items-center gap-4">

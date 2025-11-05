@@ -6,12 +6,7 @@ import { UserButton } from "@/components/ui/user-button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { createClient } from "@/lib/supabase/server";
 import { getVideosByUserId } from "@/data-access/videos/get-videos-by-user-id";
-import { getUserSubscriptionStatus } from "@/data-access/subscriptions/get-user-subscription-status";
-// import { UserSubscriptionStatus } from "@/data-access/subscriptions/types";
 import { LibraryVideoList } from "@/app/dashboard/library/LibraryVideoList";
-import { SubscriptionStatusBadge } from "@/components/subscription/SubscriptionStatusBadge";
-import { UpgradeButton } from "@/components/subscription/UpgradeButton";
-// import { SupportBanner } from "@/components/ui/support-banner";
 import { TextRefreshButton } from "../TextRefreshButton";
 
 export const metadata: Metadata = {
@@ -31,9 +26,8 @@ export default async function LibraryPage() {
     }
 
     // Get all user videos and subscription status
-    const [allVideos, subscriptionStatus] = await Promise.all([
+    const [allVideos] = await Promise.all([
         getVideosByUserId(user.id),
-        getUserSubscriptionStatus(user.id),
     ]);
 
     return (
@@ -65,18 +59,6 @@ export default async function LibraryPage() {
                         >
                             Review
                         </Link>
-                        <Link
-                            href="/dashboard/pricing"
-                            className="text-sm font-medium text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400"
-                        >
-                            Premium
-                        </Link>
-                        {/* <Link
-                            href="/dashboard/settings"
-                            className="text-sm font-medium hover:text-blue-600"
-                        >
-                            Settings
-                        </Link> */}
                     </nav>
                     <div className="flex items-center gap-4">
                         <ThemeToggle />
@@ -84,11 +66,6 @@ export default async function LibraryPage() {
                     </div>
                 </div>
             </header>
-
-            {/* Show support banner only for non-subscribed users */}
-            {/* {!subscriptionStatus.isSubscribed && (
-                <SupportBanner userId={user.id} />
-            )} */}
 
             <main className="flex-1 container py-12 px-6 md:px-8 max-w-7xl mx-auto">
                 <div className="flex items-center justify-between mb-8">
@@ -103,17 +80,6 @@ export default async function LibraryPage() {
                     </div>
                     <div className="flex items-center gap-3">
                         <div className="flex flex-col items-end gap-3">
-                            <SubscriptionStatusBadge
-                                isSubscribed={subscriptionStatus.isSubscribed}
-                                status={subscriptionStatus.status}
-                                planType={subscriptionStatus.planType}
-                                currentPeriodEnd={
-                                    subscriptionStatus.currentPeriodEnd
-                                }
-                            />
-                            {!subscriptionStatus.isSubscribed && (
-                                <UpgradeButton size="sm" />
-                            )}
                             <TextRefreshButton />
                         </div>
                     </div>

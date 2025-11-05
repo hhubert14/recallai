@@ -122,30 +122,6 @@ class Logger {
         ) => this.error(`[VIDEO] ${message}`, error, context),
     };
 
-    // Subscription logger with prefix
-    subscription = {
-        // debug: (message: string, context?: LogContext) => {
-        //     // Suppress debug logs
-        // },
-        info: (message: string, context?: LogContext) => {
-            // Only log subscription changes
-            if (
-                message.includes("upgraded") ||
-                message.includes("downgraded") ||
-                message.includes("limit")
-            ) {
-                this.info(`💳 Subscription: ${message}`, context);
-            }
-        },
-        warn: (message: string, context?: LogContext) =>
-            this.warn(`[SUBSCRIPTION] ${message}`, context),
-        error: (
-            message: string,
-            error?: Error | unknown,
-            context?: LogContext
-        ) => this.error(`[SUBSCRIPTION] ${message}`, error, context),
-    };
-
     // Database logger with prefix
     db = {
         // debug: (message: string, context?: LogContext) => {

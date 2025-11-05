@@ -77,17 +77,17 @@
 //                         <div className="min-w-0 flex-1">
 //                             <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
 //                                 <span className="font-medium text-blue-700 dark:text-blue-300">
-//                                     Hi! I`&apos;`m the college student behind RecallAI.
+//                                     Hi! I&apos;m the college student behind RecallAI.
 //                                 </span>{" "}
 //                                 I built this because I was tired of watching
 //                                 hours of educational content and retaining
 //                                 almost nothing. If you found this tool helpful,
 //                                 consider upgrading to a Premium subscription.
-//                                 Your Premium subscription doesn`&apos;`t just unlock
+//                                 Your Premium subscription doesn&apos;t just unlock
 //                                 unlimited videos and advanced features, it
-//                                 directly supports a solo developer who`&apos;`s
+//                                 directly supports a solo developer who&apos;s
 //                                 passionate about transforming how we learn.
-//                                 Let`&apos;`s build better study habits together!
+//                                 Let&apos;s build better study habits together!
 //                             </p>
 //                         </div>
 //                     </div>

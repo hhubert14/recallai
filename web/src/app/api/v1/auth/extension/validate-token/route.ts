@@ -1,7 +1,9 @@
 "use server";
 
-import { createServiceRoleClient } from "@/lib/supabase/service-role";
 import { NextRequest, NextResponse } from "next/server";
+import { db } from "@/drizzle";
+import { extensionTokens, users } from "@/drizzle/schema";
+import { eq } from "drizzle-orm";
 
 export async function OPTIONS() {
     return new NextResponse(null, {
@@ -34,16 +36,14 @@ export async function POST(request: NextRequest) {
         }
 
         const token = authHeader.substring(7); // Remove 'Bearer ' prefix
-        const supabase = await createServiceRoleClient();
 
         // Look up the token in our extension_tokens table
-        const { data: tokenData, error } = await supabase
-            .from("extension_tokens")
-            .select("user_id, expires_at")
-            .eq("token", token)
-            .single();
+        const [tokenData] = await db
+            .select({ userId: extensionTokens.userId, expiresAt: extensionTokens.expiresAt })
+            .from(extensionTokens)
+            .where(eq(extensionTokens.token, token));
 
-        if (error || !tokenData) {
+        if (!tokenData) {
             return NextResponse.json(
                 { error: "Invalid token" },
                 {
@@ -59,9 +59,9 @@ export async function POST(request: NextRequest) {
         }
 
         // Check if token is expired
-        if (new Date(tokenData.expires_at) < new Date()) {
+        if (new Date(tokenData.expiresAt) < new Date()) {
             // Clean up expired token
-            await supabase.from("extension_tokens").delete().eq("token", token);
+            await db.delete(extensionTokens).where(eq(extensionTokens.token, token));
 
             return NextResponse.json(
                 { error: "Token expired" },
@@ -78,19 +78,18 @@ export async function POST(request: NextRequest) {
         }
 
         // Update last_used_at (or updated_at if you kept that column name)
-        await supabase
-            .from("extension_tokens")
-            .update({ updated_at: new Date().toISOString() })
-            .eq("token", token);
+        await db
+            .update(extensionTokens)
+            .set({ updatedAt: new Date().toISOString() })
+            .where(eq(extensionTokens.token, token));
 
         // Get user info including subscription status
-        const { data: user, error: userError } = await supabase
-            .from("users")
-            .select("email, is_subscribed")
-            .eq("id", tokenData.user_id)
-            .single();
+        const [user] = await db
+            .select({ email: users.email, isSubscribed: users.isSubscribed })
+            .from(users)
+            .where(eq(users.id, tokenData.userId));
 
-        if (userError || !user) {
+        if (!user) {
             return NextResponse.json(
                 { error: "User not found" },
                 {
@@ -108,7 +107,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
             {
                 valid: true,
-                isSubscribed: user.is_subscribed,
+                isSubscribed: user.isSubscribed,
                 user: {
                     email: user.email,
                 },

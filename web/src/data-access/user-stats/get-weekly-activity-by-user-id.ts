@@ -1,6 +1,9 @@
-import "server-only";
-import { createServiceRoleClient } from "@/lib/supabase/service-role";
+// import "server-only";
+// import { createServiceRoleClient } from "@/lib/supabase/service-role";
 import { logger } from "@/lib/logger";
+import { db } from "@/drizzle";
+import { videos, userAnswers } from "@/drizzle/schema";
+import { eq, count, gte, and } from "drizzle-orm";
 
 export async function getWeeklyActivityByUserId(
     userId: string
@@ -9,7 +12,7 @@ export async function getWeeklyActivityByUserId(
         return { videosThisWeek: 0, questionsThisWeek: 0 };
     }
 
-    const supabase = await createServiceRoleClient();
+    // const supabase = await createServiceRoleClient();
 
     try {
         // Calculate start of this week (Monday)
@@ -21,76 +24,103 @@ export async function getWeeklyActivityByUserId(
         startOfWeek.setHours(0, 0, 0, 0);
 
         // Get videos added this week
-        const { count: videosCount, error: videosError } = await supabase
-            .from("videos")
-            .select("*", { count: "exact", head: true })
-            .eq("user_id", userId)
-            .is("deleted_at", null)
-            .gte("created_at", startOfWeek.toISOString());
-        if (videosError) {
-            logger.db.error("Database query error for videos", videosError, {
-                userId,
-            });
-            throw videosError;
-        } // Get questions answered this week (only from non-deleted videos)
-        // First, get valid video IDs
-        const { data: validVideos, error: validVideosError } = await supabase
-            .from("videos")
-            .select("id")
-            .is("deleted_at", null);
-        if (validVideosError) {
-            logger.db.error(
-                "Database query error for valid videos",
-                validVideosError,
-                { userId }
+        // const { count: videosCount, error: videosError } = await supabase
+        //     .from("videos")
+        //     .select("*", { count: "exact", head: true })
+        //     .eq("user_id", userId)
+        //     .is("deleted_at", null)
+        //     .gte("created_at", startOfWeek.toISOString());
+
+        const videosResult = await db
+            .select({ count: count() })
+            .from(videos)
+            .where(
+                and(
+                    eq(videos.userId, userId),
+                    gte(videos.createdAt, startOfWeek.toISOString())
+                )
             );
-            throw validVideosError;
-        }
 
-        let questionsCount = 0;
-        if (validVideos && validVideos.length > 0) {
-            const validVideoIds = validVideos.map(v => v.id);
+        // if (videosError) {
+        //     logger.db.error("Database query error for videos", videosError, {
+        //         userId,
+        //     });
+        //     throw videosError;
+        // }
 
-            // Get valid question IDs
-            const { data: validQuestions, error: validQuestionsError } =
-                await supabase
-                    .from("questions")
-                    .select("id")
-                    .in("video_id", validVideoIds);
-            if (validQuestionsError) {
-                logger.db.error(
-                    "Database query error for valid questions",
-                    validQuestionsError,
-                    { userId }
-                );
-                throw validQuestionsError;
-            }
+        // Get questions answered this week
+        // Since we removed soft-delete, we can simplify - just count all answers this week
 
-            if (validQuestions && validQuestions.length > 0) {
-                const validQuestionIds = validQuestions.map(q => q.id);
+        // Get questions answered this week (only from non-deleted videos)
+        // First, get valid video IDs
+        // const { data: validVideos, error: validVideosError } = await supabase
+        //     .from("videos")
+        //     .select("id")
+        //     .is("deleted_at", null);
+        // if (validVideosError) {
+        //     logger.db.error(
+        //         "Database query error for valid videos",
+        //         validVideosError,
+        //         { userId }
+        //     );
+        //     throw validVideosError;
+        // }
 
-                // Count answers to valid questions this week
-                const { count, error: questionsError } = await supabase
-                    .from("user_answers")
-                    .select("*", { count: "exact", head: true })
-                    .eq("user_id", userId)
-                    .in("question_id", validQuestionIds)
-                    .gte("created_at", startOfWeek.toISOString());
-                if (questionsError) {
-                    logger.db.error(
-                        "Database query error for questions",
-                        questionsError,
-                        { userId }
-                    );
-                    throw questionsError;
-                }
+        // let questionsCount = 0;
+        // if (validVideos && validVideos.length > 0) {
+        //     const validVideoIds = validVideos.map(v => v.id);
 
-                questionsCount = count || 0;
-            }
-        }
+        //     // Get valid question IDs
+        //     const { data: validQuestions, error: validQuestionsError } =
+        //         await supabase
+        //             .from("questions")
+        //             .select("id")
+        //             .in("video_id", validVideoIds);
+        //     if (validQuestionsError) {
+        //         logger.db.error(
+        //             "Database query error for valid questions",
+        //             validQuestionsError,
+        //             { userId }
+        //         );
+        //         throw validQuestionsError;
+        //     }
+
+        //     if (validQuestions && validQuestions.length > 0) {
+        //         const validQuestionIds = validQuestions.map(q => q.id);
+
+        //         // Count answers to valid questions this week
+        //         const { count, error: questionsError } = await supabase
+        //             .from("user_answers")
+        //             .select("*", { count: "exact", head: true })
+        //             .eq("user_id", userId)
+        //             .in("question_id", validQuestionIds)
+        //             .gte("created_at", startOfWeek.toISOString());
+        //         if (questionsError) {
+        //             logger.db.error(
+        //                 "Database query error for questions",
+        //                 questionsError,
+        //                 { userId }
+        //             );
+        //             throw questionsError;
+        //         }
+
+        //         questionsCount = count || 0;
+        //     }
+        // }
+
+        const questionsResult = await db
+            .select({ count: count() })
+            .from(userAnswers)
+            .where(
+                and(
+                    eq(userAnswers.userId, userId),
+                    gte(userAnswers.createdAt, startOfWeek.toISOString())
+                )
+            );
+
         const result = {
-            videosThisWeek: videosCount || 0,
-            questionsThisWeek: questionsCount || 0,
+            videosThisWeek: videosResult[0]?.count || 0,
+            questionsThisWeek: questionsResult[0]?.count || 0,
         };
 
         return result;

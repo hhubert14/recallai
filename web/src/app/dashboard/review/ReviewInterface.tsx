@@ -98,10 +98,10 @@ export function ReviewInterface({
         }
 
         await processReviewAnswer({
-            user_id: userId,
-            question_id: currentQuestion.question_id,
-            selected_option_id: selectedOptionId,
-            is_correct: selectedOption.is_correct,
+            userId: userId,
+            questionId: currentQuestion.questionId,
+            selectedOptionId: selectedOptionId,
+            isCorrect: selectedOption.isCorrect,
         });
 
         setShowResult(true);
@@ -168,7 +168,7 @@ export function ReviewInterface({
                             🎉 Session Complete!
                         </h2>
                         <p className="text-gray-600 dark:text-gray-300">
-                            Great job! You`&apos;`ve completed all available questions.
+                            Great job! You&apos;ve completed all available questions.
                             Reviewed questions will appear again based on their
                             spaced repetition schedule.
                         </p>
@@ -231,7 +231,7 @@ export function ReviewInterface({
                             No Questions Available
                         </h2>
                         <p className="text-gray-600 dark:text-gray-300">
-                            You don`&apos;`t have any questions due for review today.
+                            You don&apos;t have any questions due for review today.
                             Complete some video quizzes to add questions to your
                             spaced repetition system.
                         </p>
@@ -321,7 +321,7 @@ export function ReviewInterface({
             {/* Question */}
             <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700">
                 <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
-                    {currentQuestion.question_text}
+                    {currentQuestion.questionText}
                 </h3>
 
                 {/* Options */}
@@ -335,10 +335,10 @@ export function ReviewInterface({
                                     : "border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500"
                             } ${
                                 showResult
-                                    ? option.is_correct
+                                    ? option.isCorrect
                                         ? "border-green-600 dark:border-green-500 bg-green-50 dark:bg-green-950/20"
                                         : selectedOptionId === option.id &&
-                                            !option.is_correct
+                                            !option.isCorrect
                                           ? "border-red-600 dark:border-red-500 bg-red-50 dark:bg-red-950/20"
                                           : "border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800"
                                     : ""
@@ -369,7 +369,7 @@ export function ReviewInterface({
                                     )}
                                 </div>
                                 <span className="text-gray-900 dark:text-white">
-                                    {option.option_text}
+                                    {option.optionText}
                                 </span>
                             </div>
                         </label>
@@ -381,7 +381,7 @@ export function ReviewInterface({
             {showResult && (
                 <div
                     className={`p-4 rounded-lg ${
-                        selectedOption?.is_correct
+                        selectedOption?.isCorrect
                             ? "bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800"
                             : "bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800"
                     }`}
@@ -389,23 +389,23 @@ export function ReviewInterface({
                     <div className="flex items-center mb-2">
                         <span
                             className={`font-medium ${
-                                selectedOption?.is_correct
+                                selectedOption?.isCorrect
                                     ? "text-green-800 dark:text-green-100"
                                     : "text-red-800 dark:text-red-100"
                             }`}
                         >
-                            {selectedOption?.is_correct
+                            {selectedOption?.isCorrect
                                 ? "Correct!"
                                 : "Incorrect"}
                         </span>
                     </div>
                     {/* Show explanation if available */}
-                    {currentQuestion.options.find(opt => opt.is_correct)
+                    {currentQuestion.options.find(opt => opt.isCorrect)
                         ?.explanation && (
                         <p className="text-sm text-gray-700 dark:text-gray-300">
                             {
                                 currentQuestion.options.find(
-                                    opt => opt.is_correct
+                                    opt => opt.isCorrect
                                 )?.explanation
                             }
                         </p>
