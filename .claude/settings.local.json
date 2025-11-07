@@ -5,7 +5,8 @@
       "Bash(npm run dev:*)",
       "Bash(npm run test)",
       "Bash(gh pr view:*)",
-      "Bash(gh pr diff:*)"
+      "Bash(gh pr diff:*)",
+      "Bash(done)"
     ],
     "deny": [],
     "ask": []
