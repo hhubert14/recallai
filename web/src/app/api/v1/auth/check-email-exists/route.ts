@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { CheckEmailExistsUseCase } from "@/clean-architecture/use-cases/user/check-email-exists.use-case";
-import { DrizzleUserRepository } from "@/clean-architecture/infrastructure/repositories/user.repository.drizzle";
+import { createUserRepository } from "@/clean-architecture/infrastructure/factories/repository.factory";
 
 export async function GET(request: NextRequest) {
     try {
@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
                 { status: 400 }
             );
         }
-        const repo = new DrizzleUserRepository();
+        const repo = createUserRepository();
         const emailExists = await new CheckEmailExistsUseCase(repo).execute(email);
 
         return NextResponse.json({ emailExists });
