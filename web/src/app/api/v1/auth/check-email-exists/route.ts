@@ -1,9 +1,6 @@
-"use server";
-
 import { NextResponse, type NextRequest } from "next/server";
-import { db } from "@/drizzle";
-import { users } from "@/drizzle/schema";
-import { eq } from "drizzle-orm";
+import { CheckEmailExistsUseCase } from "@/clean-architecture/use-cases/user/check-email-exists.use-case";
+import { DrizzleUserRepository } from "@/clean-architecture/infrastructure/repositories/user.repository.drizzle";
 
 export async function GET(request: NextRequest) {
     try {
@@ -16,16 +13,10 @@ export async function GET(request: NextRequest) {
                 { status: 400 }
             );
         }
+        const repo = new DrizzleUserRepository();
+        const emailExists = await new CheckEmailExistsUseCase(repo).execute(email);
 
-        const [data] = await db
-            .select({ id: users.id })
-            .from(users)
-            .where(eq(users.email, email));
-
-        // If we found a profile with this email, it exists
-        const exists = !!data;
-
-        return NextResponse.json({ exists });
+        return NextResponse.json({ emailExists });
     } catch (error) {
         console.error("Unexpected error checking email:", error);
         return NextResponse.json(

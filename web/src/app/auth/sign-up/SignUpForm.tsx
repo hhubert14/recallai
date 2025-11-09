@@ -63,7 +63,7 @@ export function SignUpForm() {
 
             // Get the response data and check if email exists
             const emailCheckResult = await checkEmailResponse.json();
-            if (emailCheckResult.exists) {
+            if (emailCheckResult.emailExists) {
                 setError(
                     "This email is already registered. Please use a different email or try to log in."
                 );
