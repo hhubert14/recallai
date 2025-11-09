@@ -9,7 +9,7 @@ import { NextRequest, NextResponse } from "next/server";
 // import { createClient } from "@/lib/supabase/server";
 import { generateVideoSummary } from "@/data-access/external-apis/generate-video-summary";
 import { createSummary } from "@/data-access/summaries/create-summary";
-import { authenticateRequest } from "@/use-cases/extension/authenticate-request";
+import { authenticateRequest } from "@/clean-architecture/use-cases/extension/authenticate-request";
 import { logger } from "@/lib/logger";
 
 export async function POST(

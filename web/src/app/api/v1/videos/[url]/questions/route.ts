@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { generateVideoQuestions } from "@/data-access/external-apis/generate-video-questions";
 import { createQuestion } from "@/data-access/questions/create-question";
 import { createQuestionOptions } from "@/data-access/question-options/create-question-options";
-import { authenticateRequest } from "@/use-cases/extension/authenticate-request";
+import { authenticateRequest } from "@/clean-architecture/use-cases/extension/authenticate-request";
 import { logger } from "@/lib/logger";
 
 export async function POST(

@@ -7,7 +7,7 @@ import { getYoutubeVideoData } from "@/data-access/external-apis/get-youtube-vid
 import { getYoutubeTranscript } from "@/data-access/external-apis/get-youtube-transcript";
 import { checkVideoEducational } from "@/data-access/external-apis/check-video-educational";
 // import { createClient } from "@/lib/supabase/server";
-import { authenticateRequest } from "@/use-cases/extension/authenticate-request";
+import { authenticateRequest } from "@/clean-architecture/use-cases/extension/authenticate-request";
 
 export async function GET(
     request: NextRequest,
