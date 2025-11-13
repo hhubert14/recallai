@@ -10,7 +10,6 @@ export async function POST(
 ) {
     const { url: videoUrl } = await params;
     const body = await request.json();
-    // const { authToken } = await request.json();
 
     if (!videoUrl) {
         return NextResponse.json(
