@@ -15,7 +15,7 @@ export class DrizzleUserRepository implements IUserRepository {
         }
     }
 
-    async findById(id: string): Promise<UserEntity | null> {
+    async findUserById(id: string): Promise<UserEntity | null> {
         try {
             const [data] = await db.select().from(users).where(eq(users.id, id));
             if (!data) return null;
@@ -26,7 +26,7 @@ export class DrizzleUserRepository implements IUserRepository {
         }
     }
 
-    async findByEmail(email: string): Promise<UserEntity | null> {
+    async findUserByEmail(email: string): Promise<UserEntity | null> {
         try {
             const [data] = await db.select().from(users).where(eq(users.email, email));
             if (!data) return null;

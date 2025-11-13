@@ -4,7 +4,7 @@ export class CheckEmailExistsUseCase {
     constructor(private readonly userRepository: IUserRepository) {}
 
     async execute(email: string): Promise<boolean> {
-        const user = await this.userRepository.findByEmail(email);
+        const user = await this.userRepository.findUserByEmail(email);
         return user !== null;
     }
 }
