@@ -1,12 +1,13 @@
 "use server";
 
 import { NextRequest } from "next/server";
-import { getVideoByUrl } from "@/data-access/videos/get-video-by-url";
 import { getYoutubeVideoData } from "@/data-access/external-apis/get-youtube-video-data";
 import { getYoutubeTranscript } from "@/data-access/external-apis/get-youtube-transcript";
 import { checkVideoEducational } from "@/data-access/external-apis/check-video-educational";
 import { authenticateRequest } from "@/clean-architecture/use-cases/extension/authenticate-request";
 import { jsendSuccess, jsendFail, jsendError } from "@/lib/jsend";
+import { createVideoRepository } from "@/clean-architecture/infrastructure/factories/repository.factory";
+import { FindVideoByUserIdAndUrlUseCase } from "@/clean-architecture/use-cases/video/find-video-by-user-id-and-url.use-case";
 
 export async function GET(
     request: NextRequest,
@@ -40,7 +41,9 @@ export async function GET(
         if (!authenticatedUserId) {
             return jsendFail({ error: "User not authenticated" }, 401);
         }
-        const video = await getVideoByUrl(videoUrl, authenticatedUserId);
+
+        const videoRepo = createVideoRepository();
+        const video = await new FindVideoByUserIdAndUrlUseCase(videoRepo).execute(authenticatedUserId, videoUrl);
         if (video) {
             return jsendFail({ error: "Video already exists" }, 409);
         }
