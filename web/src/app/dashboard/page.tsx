@@ -7,11 +7,13 @@ import { UserButton } from "@/components/ui/user-button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { ExtensionConnectorButton } from "@/app/dashboard/ExtensionConnectorButton";
 import { createClient } from "@/lib/supabase/server";
-import { getVideosByUserId } from "@/data-access/videos/get-videos-by-user-id";
+// import { getVideosByUserId } from "@/data-access/videos/get-videos-by-user-id";
 import { getUserStatsByUserId } from "@/data-access/user-stats/get-user-stats-by-user-id";
-import { VideoDto } from "@/data-access/videos/types";
+// import { VideoDto } from "@/data-access/videos/types";
 import { StatsCard } from "@/components/ui/stats-card";
 import { RefreshButton } from "./RefreshButton";
+import { createVideoRepository } from "@/clean-architecture/infrastructure/factories/repository.factory";
+import { FindVideosByUserIdUseCase } from "@/clean-architecture/use-cases/video/find-videos-by-user-id.use-case";
 
 export const metadata: Metadata = {
     title: "Dashboard | RecallAI",
@@ -29,7 +31,7 @@ export default async function DashboardPage() {
         redirect("/auth/login");
     }
 
-    let recentVideos: VideoDto[] = [];
+    // let recentVideos: VideoEntity[] = [];
     let userStats = {
         totalVideos: 0,
         totalQuestionsAnswered: 0,
@@ -38,11 +40,14 @@ export default async function DashboardPage() {
         questionsThisWeek: 0,
     };
 
+    const videoRepo = createVideoRepository();
+
     const [videos, stats] = await Promise.all([
-        getVideosByUserId(user.id, 5), // Get latest 5 videos
+        // getVideosByUserId(user.id, 5), // Get latest 5 videos
+        new FindVideosByUserIdUseCase(videoRepo).execute(user.id, 5),
         getUserStatsByUserId(user.id),
     ]);
-    recentVideos = videos;
+    // recentVideos = videos;
     userStats = stats;
 
     return (
@@ -209,9 +214,9 @@ export default async function DashboardPage() {
                             <RefreshButton />
                         </div>
 
-                        {recentVideos.length > 0 ? (
+                        {videos.length > 0 ? (
                             <div className="space-y-2">
-                                {recentVideos.map(video => (
+                                {videos.map(video => (
                                     <Link
                                         key={video.id}
                                         href={`/dashboard/video/${video.id}`}
