@@ -1,9 +1,10 @@
 import { NextRequest } from "next/server";
-import { createVideo } from "@/data-access/videos/create-video";
-import { getVideoByUrl } from "@/data-access/videos/get-video-by-url";
 import { authenticateRequest } from "@/clean-architecture/use-cases/extension/authenticate-request";
 import { logger } from "@/lib/logger";
 import { jsendSuccess, jsendFail, jsendError } from "@/lib/jsend";
+import { createVideoRepository } from "@/clean-architecture/infrastructure/factories/repository.factory";
+import { FindVideoByUserIdAndUrlUseCase } from "@/clean-architecture/use-cases/video/find-video-by-user-id-and-url.use-case";
+import { CreateVideoUseCase } from "@/clean-architecture/use-cases/video/create-video.use-case";
 
 export async function POST(
     request: NextRequest,
@@ -32,12 +33,8 @@ export async function POST(
         const {
             platform,
             title,
-            channel_name,
-            duration,
-            category,
+            channelName,
             url,
-            description,
-            video_id,
         } = body;
 
         // Validate the incoming video data (user_id no longer required in body)
@@ -50,26 +47,25 @@ export async function POST(
                 },
             });
         }
-        const videoExists = await getVideoByUrl(videoUrl, authenticatedUserId);
-        if (videoExists) {
+
+        const repo = createVideoRepository()
+        const video = await new FindVideoByUserIdAndUrlUseCase(repo).execute(authenticatedUserId, videoUrl);
+        // const videoExists = await getVideoByUrl(videoUrl, authenticatedUserId);
+        if (video) {
             return jsendFail({
                 error: "Video already exists for this user",
-                video: videoExists,
+                video: video,
             }, 409);
         }
 
-        const videoData = {
-            userId: authenticatedUserId, // Use the authenticated user's ID
+        const createdVideo = await new CreateVideoUseCase(repo).execute(
+            authenticatedUserId,
             platform,
             title,
-            channelName: channel_name,
-            duration,
-            category,
             url,
-            description,
-            videoId: video_id,
-        }; // Create the video using the authenticated user's ID
-        const createdVideo = await createVideo(videoData);
+            channelName,
+            null,
+        )
         return jsendSuccess(createdVideo, 201);
     } catch (error) {
         logger.video.error("Error creating video", error, {

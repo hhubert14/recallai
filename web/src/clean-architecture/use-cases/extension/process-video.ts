@@ -100,10 +100,8 @@ export const processVideo = async (
                     authToken: authToken,
                     platform: "YouTube",
                     title: educationalData.videoData.snippet.title,
-                    channel_name: educationalData.videoData.snippet.channelTitle,
+                    channelName: educationalData.videoData.snippet.channelTitle,
                     url: videoUrl,
-                    description: educationalData.videoData.snippet.description,
-                    video_id: videoId,
                 }),
             }
         ); // First, get the raw response and log it to see its structure
@@ -127,9 +125,9 @@ export const processVideo = async (
         });
 
         // Check if createdVideo has videoId before using it
-        if (!createdVideo || !createdVideo.videoId) {
+        if (!createdVideo) {
             throw new Error(
-                "Invalid response: Missing videoId in created video data"
+                "Invalid response: Missing video data in response"
             );
         }
 
