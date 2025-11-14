@@ -1,16 +1,11 @@
 "use server";
 
-import { NextRequest, NextResponse } from "next/server";
-// import { getExtensionTokenByToken } from "@/data-access/extension-tokens/get-extension-token-by-token";
-// import { getVideoByUrl } from "@/data-access/videos/get-video-by-url";
-// import { getYoutubeVideoData } from "@/data-access/external-apis/get-youtube-video-data";
-// import { getYoutubeTranscript } from "@/data-access/external-apis/get-youtube-transcript";
-// import { checkVideoEducational } from "@/data-access/external-apis/check-video-educational";
-// import { createClient } from "@/lib/supabase/server";
+import { NextRequest } from "next/server";
 import { generateVideoSummary } from "@/data-access/external-apis/generate-video-summary";
 import { createSummary } from "@/data-access/summaries/create-summary";
 import { authenticateRequest } from "@/clean-architecture/use-cases/extension/authenticate-request";
 import { logger } from "@/lib/logger";
+import { jsendSuccess, jsendFail, jsendError } from "@/lib/jsend";
 
 export async function POST(
     request: NextRequest
@@ -34,10 +29,7 @@ export async function POST(
     // });
 
     if (!authToken || !video_id || !title || !description || !transcript) {
-        return NextResponse.json(
-            { error: "Missing required parameters" },
-            { status: 400 }
-        );
+        return jsendFail({ error: "Missing required parameters" });
     }
 
     try {
@@ -57,17 +49,14 @@ export async function POST(
         // }
         const tokenData = await authenticateRequest(authToken);
         if (tokenData.error) {
-            return NextResponse.json(tokenData, { status: tokenData.status });
+            return jsendFail({ error: tokenData.error }, tokenData.status || 401);
         }
 
         // Use the token's user_id as the authenticated user for this request
         const authenticatedUserId = tokenData.userId;
 
         if (!authenticatedUserId) {
-            return NextResponse.json(
-                { error: "User not authenticated" },
-                { status: 401 }
-            );
+            return jsendFail({ error: "User not authenticated" }, 401);
         }
 
         const summary = await generateVideoSummary(
@@ -76,10 +65,7 @@ export async function POST(
             transcript
         );
         if (!summary) {
-            return NextResponse.json(
-                { error: "Failed to generate video summary" },
-                { status: 500 }
-            );
+            return jsendError("Failed to generate video summary");
         }
 
         logger.video.info("Summary generated successfully", {
@@ -92,17 +78,12 @@ export async function POST(
             content: summary.summary,
         });
 
-        return NextResponse.json(
-            {
-                summary: createdSummary,
-            },
-            { status: 200 }
-        );
+        return jsendSuccess({ summary: createdSummary });
     } catch (error) {
         const errorMessage =
             error instanceof Error
                 ? error.message
                 : "An unknown error occurred";
-        return NextResponse.json({ error: errorMessage }, { status: 500 });
+        return jsendError(errorMessage);
     }
 }

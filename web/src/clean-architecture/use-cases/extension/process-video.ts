@@ -123,13 +123,13 @@ export const processVideo = async (
         const createdVideo = responseJson.data;
 
         logger.extension.info("Video created successfully", {
-            videoId: createdVideo?.video_id,
+            videoId: createdVideo?.videoId,
         });
 
-        // Check if createdVideo has video_id before using it
-        if (!createdVideo || !createdVideo.video_id) {
+        // Check if createdVideo has videoId before using it
+        if (!createdVideo || !createdVideo.videoId) {
             throw new Error(
-                "Invalid response: Missing video_id in created video data"
+                "Invalid response: Missing videoId in created video data"
             );
         }
 
@@ -160,11 +160,12 @@ export const processVideo = async (
 
         const summaryData = await response.json();
         if (!response.ok) {
-            throw new Error(
-                `Error generating summary: ${summaryData.error || "Unknown error"}`
-            );
+            const errorMsg = summaryData.data?.error || summaryData.message || "Unknown error";
+            throw new Error(`Error generating summary: ${errorMsg}`);
         }
-        const summary = summaryData.content || "No Summary";
+        // Extract data from JSend success response
+        const summaryResponse = summaryData.data;
+        const summary = summaryResponse.summary?.content || "No Summary";
         logger.extension.info("Summary generated successfully", {
             videoId: video_id_num,
             summaryLength: summary.length,
