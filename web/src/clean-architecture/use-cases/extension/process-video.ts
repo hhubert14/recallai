@@ -74,17 +74,18 @@ export const processVideo = async (
 
         const videoData = await response.json();
         if (!response.ok) {
-            throw new Error(
-                `Error processing video: ${videoData.error || "Unknown error"}`
-            );
+            const errorMsg = videoData.data?.error || videoData.message || "Unknown error";
+            throw new Error(`Error processing video: ${errorMsg}`);
         }
-        if (!videoData || !videoData.videoData) {
+        // Extract data from JSend success response
+        const educationalData = videoData.data;
+        if (!educationalData || !educationalData.videoData) {
             throw new Error("Invalid response from educational endpoint");
         }
 
         logger.extension.debug("Video educational check completed", {
             videoId,
-            isEducational: videoData.isEducational,
+            isEducational: educationalData.isEducational,
         });
 
         response = await fetch(
@@ -98,10 +99,10 @@ export const processVideo = async (
                 body: JSON.stringify({
                     authToken: authToken,
                     platform: "YouTube",
-                    title: videoData.videoData.snippet.title,
-                    channel_name: videoData.videoData.snippet.channelTitle,
+                    title: educationalData.videoData.snippet.title,
+                    channel_name: educationalData.videoData.snippet.channelTitle,
                     url: videoUrl,
-                    description: videoData.videoData.snippet.description,
+                    description: educationalData.videoData.snippet.description,
                     video_id: videoId,
                 }),
             }
@@ -134,10 +135,10 @@ export const processVideo = async (
 
         const video_id_num = createdVideo.id;
 
-        const title = videoData.videoData.snippet.title || "No Title";
+        const title = educationalData.videoData.snippet.title || "No Title";
         const description =
-            videoData.videoData.snippet.description || "No Description";
-        const transcript = videoData.transcript || "No Transcript";
+            educationalData.videoData.snippet.description || "No Description";
+        const transcript = educationalData.transcript || "No Transcript";
 
         response = await fetch(
             `${request.nextUrl.origin}/api/v1/videos/${encodedVideoUrl}/summarize`,

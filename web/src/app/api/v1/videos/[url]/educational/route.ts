@@ -1,13 +1,12 @@
 "use server";
 
-import { NextRequest, NextResponse } from "next/server";
-// import { getExtensionTokenByToken } from "@/data-access/extension/get-extension-token-by-token";
+import { NextRequest } from "next/server";
 import { getVideoByUrl } from "@/data-access/videos/get-video-by-url";
 import { getYoutubeVideoData } from "@/data-access/external-apis/get-youtube-video-data";
 import { getYoutubeTranscript } from "@/data-access/external-apis/get-youtube-transcript";
 import { checkVideoEducational } from "@/data-access/external-apis/check-video-educational";
-// import { createClient } from "@/lib/supabase/server";
 import { authenticateRequest } from "@/clean-architecture/use-cases/extension/authenticate-request";
+import { jsendSuccess, jsendFail, jsendError } from "@/lib/jsend";
 
 export async function GET(
     request: NextRequest,
@@ -22,17 +21,11 @@ export async function GET(
     const processType = searchParams.get("processType");
 
     if (!videoUrl || !videoId || !authToken || !processType) {
-        return NextResponse.json(
-            { error: "Missing required parameters" },
-            { status: 400 }
-        );
+        return jsendFail({ error: "Missing required parameters" });
     }
 
     if (processType !== "automatic") {
-        return NextResponse.json(
-            { error: "Invalid process type" },
-            { status: 400 }
-        );
+        return jsendFail({ error: "Invalid process type" });
     }
 
     try {
@@ -66,24 +59,18 @@ export async function GET(
         // }
         const tokenData = await authenticateRequest(authToken);
         if (tokenData.error) {
-            return NextResponse.json(tokenData, { status: tokenData.status });
+            return jsendFail({ error: tokenData.error }, tokenData.status || 401);
         }
 
         // Use the token's user_id as the authenticated user for this request
         const authenticatedUserId = tokenData.userId;
 
         if (!authenticatedUserId) {
-            return NextResponse.json(
-                { error: "User not authenticated" },
-                { status: 401 }
-            );
+            return jsendFail({ error: "User not authenticated" }, 401);
         }
         const video = await getVideoByUrl(videoUrl, authenticatedUserId);
         if (video) {
-            return NextResponse.json(
-                { error: "Video already exists" },
-                { status: 409 }
-            );
+            return jsendFail({ error: "Video already exists" }, 409);
         }
 
         const youtubeData = await getYoutubeVideoData(videoId);
@@ -93,10 +80,7 @@ export async function GET(
             !youtubeData.items ||
             youtubeData.items.length === 0
         ) {
-            return NextResponse.json(
-                { error: "YouTube video not found" },
-                { status: 404 }
-            );
+            return jsendFail({ error: "YouTube video not found" }, 404);
         }
 
         let transcript = await getYoutubeTranscript(videoId);
@@ -121,32 +105,22 @@ export async function GET(
         );
 
         if (isEducational === undefined) {
-            return NextResponse.json(
-                { error: "Failed to determine if the video is educational" },
-                { status: 500 }
-            );
+            return jsendError("Failed to determine if the video is educational");
         }
 
         if (!isEducational) {
-            return NextResponse.json(
-                { error: "Video is not educational" },
-                { status: 400 }
-            );
+            return jsendFail({ error: "Video is not educational" });
         }
-        return NextResponse.json(
-            {
-                videoData: youtubeData.items[0],
-                // transcript: transcript.transcript,
-                transcript: transcript,
-                isEducational: true,
-            },
-            { status: 200 }
-        );
+        return jsendSuccess({
+            videoData: youtubeData.items[0],
+            transcript: transcript,
+            isEducational: true,
+        });
     } catch (error) {
         const errorMessage =
             error instanceof Error
                 ? error.message
                 : "An unknown error occurred";
-        return NextResponse.json({ error: errorMessage }, { status: 500 });
+        return jsendError(errorMessage);
     }
 }
