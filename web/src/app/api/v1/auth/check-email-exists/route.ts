@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
             //     { error: "Email is required" },
             //     { status: 400 }
             // );
-            return jsendFail({error: "Email is required"})
+            return jsendFail({ error: "Email is required" })
         }
         const repo = createUserRepository();
         const emailExists = await new CheckEmailExistsUseCase(repo).execute(email);
