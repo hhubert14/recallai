@@ -190,20 +190,20 @@ export const processVideo = async (
 
         const questionsData = await response.json();
         if (!response.ok) {
-            throw new Error(
-                `Error generating questions: ${questionsData.error || "Unknown error"}`
-            );
+            const errorMsg = questionsData.data?.error || questionsData.message || "Unknown error";
+            throw new Error(`Error generating questions: ${errorMsg}`);
         }
+        // Extract data from JSend success response
+        const questions = questionsData.data;
         logger.extension.info("Questions generated successfully", {
             videoId: video_id_num,
-            questionCount: questionsData.questions?.length || 0,
+            questionCount: questions.questions?.length || 0,
         });
 
         return {
             video_id: video_id_num,
             summary,
-            questions: questionsData.questions || [],
-            // educational: videoData.educational,
+            questions: questions.questions || [],
         };
     }
 };
