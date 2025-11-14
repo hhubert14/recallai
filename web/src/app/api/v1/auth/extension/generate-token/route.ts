@@ -28,7 +28,7 @@ export async function POST() {
             //         status: 401,
             //     }
             // );
-            return jsendFail({error: "Not authenticated. Please sign in first."}, 401);
+            return jsendFail({ error: "Not authenticated. Please sign in first." }, 401);
         }
 
         // Generate a random token for the extension
