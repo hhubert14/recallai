@@ -112,15 +112,14 @@ export const processVideo = async (
             status: response.status,
         });
 
-        // Then extract createdVideo based on the actual structure
-        const createdVideo =
-            responseJson.videoData || responseJson.data || responseJson;
-
+        // Handle JSend response format
         if (!response.ok) {
-            throw new Error(
-                `Error creating video: ${JSON.stringify(responseJson.error || "Unknown error")}`
-            );
+            const errorMsg = responseJson.data?.error || responseJson.message || "Unknown error";
+            throw new Error(`Error creating video: ${errorMsg}`);
         }
+
+        // Extract video data from JSend success response
+        const createdVideo = responseJson.data;
 
         logger.extension.info("Video created successfully", {
             videoId: createdVideo?.video_id,
