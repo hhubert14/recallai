@@ -1,64 +1,32 @@
 "use server";
 
-import { NextRequest, NextResponse } from "next/server";
-// import { createClient } from "@/lib/supabase/server";
+import { NextRequest } from "next/server";
 import { generateVideoQuestions } from "@/data-access/external-apis/generate-video-questions";
 import { createQuestion } from "@/data-access/questions/create-question";
 import { createQuestionOptions } from "@/data-access/question-options/create-question-options";
 import { authenticateRequest } from "@/clean-architecture/use-cases/extension/authenticate-request";
 import { logger } from "@/lib/logger";
+import { jsendSuccess, jsendFail, jsendError } from "@/lib/jsend";
 
-export async function POST(
-    request: NextRequest
-    // { params }: { params: { url: string } }
-) {
-    // const supabase = await createClient();
-
+export async function POST(request: NextRequest) {
     const { authToken, video_id, title, description, transcript } =
         await request.json();
 
-    // logger.video.debug("Received question generation request", {
-    //     video_id,
-    //     title,
-    //     hasDescription: !!description,
-    //     transcriptLength: transcript?.length || 0,
-    // });
-
     if (!authToken || !video_id || !title || !description || !transcript) {
-        return NextResponse.json(
-            { error: "Missing required parameters" },
-            { status: 400 }
-        );
+        return jsendFail({ error: "Missing required parameters" });
     }
 
     try {
-        // const {
-        //     data: { user },
-        //     error,
-        // } = await supabase.auth.getUser();
-
-        // // If there's a valid user session, ensure it matches the token's user
-        // if (!user || error) {
-        //     return NextResponse.json(
-        //         {
-        //             error: "Unauthorized: No valid user session found",
-        //         },
-        //         { status: 403 }
-        //     );
-        // }
         const tokenData = await authenticateRequest(authToken);
         if (tokenData.error) {
-            return NextResponse.json(tokenData, { status: tokenData.status });
+            return jsendFail({ error: tokenData.error }, tokenData.status || 401);
         }
 
         // Use the token's user_id as the authenticated user for this request
         const authenticatedUserId = tokenData.userId;
 
         if (!authenticatedUserId) {
-            return NextResponse.json(
-                { error: "User not authenticated" },
-                { status: 401 }
-            );
+            return jsendFail({ error: "User not authenticated" }, 401);
         }
 
         const questionData = await generateVideoQuestions(
@@ -67,10 +35,7 @@ export async function POST(
             transcript
         );
         if (!questionData) {
-            return NextResponse.json(
-                { error: "Failed to generate video questions" },
-                { status: 500 }
-            );
+            return jsendError("Failed to generate video questions");
         }
 
         // Return the questions directly without additional nesting
@@ -104,13 +69,13 @@ export async function POST(
             }
         }
 
-        return NextResponse.json(questionData, { status: 200 });
+        return jsendSuccess(questionData);
     } catch (error) {
         logger.video.error("Failed to generate questions", error, { video_id });
         const errorMessage =
             error instanceof Error
                 ? error.message
                 : "An unknown error occurred";
-        return NextResponse.json({ error: errorMessage }, { status: 500 });
+        return jsendError(errorMessage);
     }
 }

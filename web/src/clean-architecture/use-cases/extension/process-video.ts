@@ -74,17 +74,18 @@ export const processVideo = async (
 
         const videoData = await response.json();
         if (!response.ok) {
-            throw new Error(
-                `Error processing video: ${videoData.error || "Unknown error"}`
-            );
+            const errorMsg = videoData.data?.error || videoData.message || "Unknown error";
+            throw new Error(`Error processing video: ${errorMsg}`);
         }
-        if (!videoData || !videoData.videoData) {
+        // Extract data from JSend success response
+        const educationalData = videoData.data;
+        if (!educationalData || !educationalData.videoData) {
             throw new Error("Invalid response from educational endpoint");
         }
 
         logger.extension.debug("Video educational check completed", {
             videoId,
-            isEducational: videoData.isEducational,
+            isEducational: educationalData.isEducational,
         });
 
         response = await fetch(
@@ -98,10 +99,10 @@ export const processVideo = async (
                 body: JSON.stringify({
                     authToken: authToken,
                     platform: "YouTube",
-                    title: videoData.videoData.snippet.title,
-                    channel_name: videoData.videoData.snippet.channelTitle,
+                    title: educationalData.videoData.snippet.title,
+                    channel_name: educationalData.videoData.snippet.channelTitle,
                     url: videoUrl,
-                    description: videoData.videoData.snippet.description,
+                    description: educationalData.videoData.snippet.description,
                     video_id: videoId,
                 }),
             }
@@ -112,33 +113,32 @@ export const processVideo = async (
             status: response.status,
         });
 
-        // Then extract createdVideo based on the actual structure
-        const createdVideo =
-            responseJson.videoData || responseJson.data || responseJson;
-
+        // Handle JSend response format
         if (!response.ok) {
-            throw new Error(
-                `Error creating video: ${JSON.stringify(responseJson.error || "Unknown error")}`
-            );
+            const errorMsg = responseJson.data?.error || responseJson.message || "Unknown error";
+            throw new Error(`Error creating video: ${errorMsg}`);
         }
 
+        // Extract video data from JSend success response
+        const createdVideo = responseJson.data;
+
         logger.extension.info("Video created successfully", {
-            videoId: createdVideo?.video_id,
+            videoId: createdVideo?.videoId,
         });
 
-        // Check if createdVideo has video_id before using it
-        if (!createdVideo || !createdVideo.video_id) {
+        // Check if createdVideo has videoId before using it
+        if (!createdVideo || !createdVideo.videoId) {
             throw new Error(
-                "Invalid response: Missing video_id in created video data"
+                "Invalid response: Missing videoId in created video data"
             );
         }
 
         const video_id_num = createdVideo.id;
 
-        const title = videoData.videoData.snippet.title || "No Title";
+        const title = educationalData.videoData.snippet.title || "No Title";
         const description =
-            videoData.videoData.snippet.description || "No Description";
-        const transcript = videoData.transcript || "No Transcript";
+            educationalData.videoData.snippet.description || "No Description";
+        const transcript = educationalData.transcript || "No Transcript";
 
         response = await fetch(
             `${request.nextUrl.origin}/api/v1/videos/${encodedVideoUrl}/summarize`,
@@ -160,11 +160,12 @@ export const processVideo = async (
 
         const summaryData = await response.json();
         if (!response.ok) {
-            throw new Error(
-                `Error generating summary: ${summaryData.error || "Unknown error"}`
-            );
+            const errorMsg = summaryData.data?.error || summaryData.message || "Unknown error";
+            throw new Error(`Error generating summary: ${errorMsg}`);
         }
-        const summary = summaryData.content || "No Summary";
+        // Extract data from JSend success response
+        const summaryResponse = summaryData.data;
+        const summary = summaryResponse.summary?.content || "No Summary";
         logger.extension.info("Summary generated successfully", {
             videoId: video_id_num,
             summaryLength: summary.length,
@@ -190,20 +191,20 @@ export const processVideo = async (
 
         const questionsData = await response.json();
         if (!response.ok) {
-            throw new Error(
-                `Error generating questions: ${questionsData.error || "Unknown error"}`
-            );
+            const errorMsg = questionsData.data?.error || questionsData.message || "Unknown error";
+            throw new Error(`Error generating questions: ${errorMsg}`);
         }
+        // Extract data from JSend success response
+        const questions = questionsData.data;
         logger.extension.info("Questions generated successfully", {
             videoId: video_id_num,
-            questionCount: questionsData.questions?.length || 0,
+            questionCount: questions.questions?.length || 0,
         });
 
         return {
             video_id: video_id_num,
             summary,
-            questions: questionsData.questions || [],
-            // educational: videoData.educational,
+            questions: questions.questions || [],
         };
     }
 };

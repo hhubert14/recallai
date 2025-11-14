@@ -43,12 +43,13 @@ export function SignUpForm() {
 
             // Check if email is already registered
             const checkEmailResponse = await fetch(
-                `/api/v1/auth/check-email-exists?email=${encodeURIComponent(email)}`,
+                `/api/v1/auth/check-email-exists`,
                 {
-                    method: "GET",
+                    method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                     },
+                    body: JSON.stringify({ email })
                 }
             );
             console.log("Checking email:", email);
@@ -63,7 +64,7 @@ export function SignUpForm() {
 
             // Get the response data and check if email exists
             const emailCheckResult = await checkEmailResponse.json();
-            if (emailCheckResult.emailExists) {
+            if (emailCheckResult.data.emailExists) {
                 setError(
                     "This email is already registered. Please use a different email or try to log in."
                 );
@@ -90,7 +91,7 @@ export function SignUpForm() {
 
             if (authData.user) {
                 // Create a server-side API endpoint to handle user creation with service role
-                const response = await fetch("/api/v1/create-user-profile", {
+                const response = await fetch("/api/v1/users", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
