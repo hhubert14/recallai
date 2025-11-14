@@ -6,6 +6,8 @@ export interface IVideoRepository {
         platform: "YouTube" | "Vimeo",
         title: string,
         url: string,
+        channelName: string,
+        duration: number | null,
     ): Promise<VideoEntity>;
 
     findVideoByUserIdAndUrl(userId: string, url: string): Promise<VideoEntity | null>;

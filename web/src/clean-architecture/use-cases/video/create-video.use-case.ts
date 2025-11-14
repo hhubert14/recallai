@@ -9,7 +9,9 @@ export class CreateVideoUseCase {
         platform: "YouTube" | "Vimeo",
         title: string,
         url: string,
+        channelName: string,
+        duration: number | null,
     ): Promise<VideoEntity> {
-        return await this.videoRepository.create(userId, platform, title, url);
+        return await this.videoRepository.create(userId, platform, title, url, channelName, duration);
     }
 }

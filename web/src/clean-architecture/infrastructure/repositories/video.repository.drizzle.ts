@@ -10,6 +10,8 @@ export class DrizzleVideoRepository implements IVideoRepository {
         platform: "YouTube" | "Vimeo",
         title: string,
         url: string,
+        channelName: string,
+        duration: number | null
     ): Promise<VideoEntity> {
         try {
             const [data] = await db
@@ -19,6 +21,8 @@ export class DrizzleVideoRepository implements IVideoRepository {
                     platform,
                     title,
                     url,
+                    channelName,
+                    duration,
                     shouldExpire: false,
                 })
                 .returning();
@@ -70,6 +74,8 @@ export class DrizzleVideoRepository implements IVideoRepository {
             data.platform,
             data.title,
             data.url,
+            data.channelName,
+            data.duration,
             data.createdAt,
         );
     }
