@@ -41,10 +41,10 @@ export function ExtensionConnectorButton() {
                 }
             );
 
-            const data = await response.json();
+            const res = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.error || "Failed to generate token");
+                throw new Error(res.data?.error || res.message || "Failed to generate token");
             }
 
             if (chrome && chrome.runtime) {
@@ -54,8 +54,8 @@ export function ExtensionConnectorButton() {
                     {
                         action: "authenticate",
                         data: {
-                            email: data.user.email,
-                            token: data.token,
+                            email: res.data.user.email,
+                            token: res.data.token,
                         },
                     },
                     response => {
