@@ -54,7 +54,7 @@ export async function POST() {
             //         status: 404,
             //     }
             // );
-            return jsendFail({error: "User not found in users table. Please create a profile first."}, 404);
+            return jsendFail({ error: "User not found in users table. Please create a profile first." }, 404);
         }
 
         // Delete any existing extension tokens for this user
