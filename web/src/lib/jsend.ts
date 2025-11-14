@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-export function jsendSuccess<T>(data: T, status = 200): NextResponse {
+export function jsendSuccess<T extends object>(data: T, status = 200): NextResponse {
     return NextResponse.json({
         status: "success",
         data
@@ -8,7 +8,7 @@ export function jsendSuccess<T>(data: T, status = 200): NextResponse {
     { status }
 )
 }
-export function jsendFail<T>(data: T, status = 400): NextResponse {
+export function jsendFail<T extends object>(data: T, status = 400): NextResponse {
     return NextResponse.json({
         status: "fail",
         data
@@ -16,7 +16,7 @@ export function jsendFail<T>(data: T, status = 400): NextResponse {
     { status }
 )
 }
-export function jsendError<T>(message: string, code?: number, data?: T, status = 500): NextResponse {
+export function jsendError<T extends object>(message: string, code?: number, data?: T, status = 500): NextResponse {
     return NextResponse.json({
         status: "error",
         message,
