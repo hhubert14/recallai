@@ -8,41 +8,15 @@ import { authenticateRequest } from "@/clean-architecture/use-cases/extension/au
 import { logger } from "@/lib/logger";
 import { jsendSuccess, jsendFail, jsendError } from "@/lib/jsend";
 
-export async function POST(
-    request: NextRequest
-    // { params }: { params: { url: string } }
-) {
-    // const supabase = await createClient();
-
+export async function POST(request: NextRequest) {
     const { authToken, video_id, title, description, transcript } =
         await request.json();
-
-    // logger.video.debug("Received question generation request", {
-    //     video_id,
-    //     title,
-    //     hasDescription: !!description,
-    //     transcriptLength: transcript?.length || 0,
-    // });
 
     if (!authToken || !video_id || !title || !description || !transcript) {
         return jsendFail({ error: "Missing required parameters" });
     }
 
     try {
-        // const {
-        //     data: { user },
-        //     error,
-        // } = await supabase.auth.getUser();
-
-        // // If there's a valid user session, ensure it matches the token's user
-        // if (!user || error) {
-        //     return NextResponse.json(
-        //         {
-        //             error: "Unauthorized: No valid user session found",
-        //         },
-        //         { status: 403 }
-        //     );
-        // }
         const tokenData = await authenticateRequest(authToken);
         if (tokenData.error) {
             return jsendFail({ error: tokenData.error }, tokenData.status || 401);

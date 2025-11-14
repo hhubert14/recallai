@@ -29,34 +29,6 @@ export async function GET(
     }
 
     try {
-        // const tokenData = authResult.tokenData;
-
-        // // Check if token is expired
-        // if (new Date(tokenData.expires_at) < new Date()) {
-        //     return NextResponse.json(
-        //         { error: "Authentication token expired" },
-        //         { status: 401 }
-        //     );
-        // }
-
-        // For extension requests, we can trust the token's user_id since it's validated
-        // But we still want to verify the current session user matches (if session exists)
-        // const {
-        //     data: { user },
-        //     error,
-        // } = await supabase.auth.getUser();
-
-        // // If there's a valid user session, ensure it matches the token's user
-        // if (user && !error) {
-        //     if (tokenData.user_id !== user.id) {
-        //         return NextResponse.json(
-        //             {
-        //                 error: "Authentication token does not match current user session",
-        //             },
-        //             { status: 403 }
-        //         );
-        //     }
-        // }
         const tokenData = await authenticateRequest(authToken);
         if (tokenData.error) {
             return jsendFail({ error: tokenData.error }, tokenData.status || 401);
@@ -85,16 +57,9 @@ export async function GET(
 
         let transcript = await getYoutubeTranscript(videoId);
         if (!transcript) {
-            // return NextResponse.json(
-            //     { error: "YouTube transcript not found" },
-            //     { status: 404 }
-            // );
             console.warn(
                 `Transcript not found for video ID: ${videoId}. Proceeding without transcript.`
             );
-            // transcript = {
-            //     transcript: [],
-            // };
             transcript = "";
         }
 

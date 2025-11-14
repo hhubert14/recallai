@@ -20,14 +20,6 @@ export async function POST() {
         console.log("User session:", user);
         console.log("Auth error:", error);
         if (error || !user) {
-            // return NextResponse.json(
-            //     {
-            //         error: "Not authenticated. Please sign in first.",
-            //     },
-            //     {
-            //         status: 401,
-            //     }
-            // );
             return jsendFail({ error: "Not authenticated. Please sign in first." }, 401);
         }
 
@@ -46,14 +38,6 @@ export async function POST() {
 
         if (!existingUser) {
             console.error("User not found in users table:", user.id);
-            // return NextResponse.json(
-            //     {
-            //         error: "User not found in users table. Please create a profile first.",
-            //     },
-            //     {
-            //         status: 404,
-            //     }
-            // );
             return jsendFail({ error: "User not found in users table. Please create a profile first." }, 404);
         }
 
@@ -69,20 +53,6 @@ export async function POST() {
                 expiresAt: expiresAt.toISOString(),
             })
 
-        // return NextResponse.json(
-        //     {
-                // success: true,
-                // token: extensionToken,
-                // user: {
-                //     // id: user.id,
-                //     email: user.email,
-                // },
-                // expiresAt: expiresAt.toISOString(),
-        //     },
-        //     {
-        //         status: 200,
-        //     }
-        // );
         return jsendSuccess({
             // success: true,
             token: extensionToken,
@@ -94,14 +64,6 @@ export async function POST() {
         });
     } catch (error) {
         console.error("Extension auth error:", error);
-        // return NextResponse.json(
-        //     {
-        //         error: "Authentication failed",
-        //     },
-        //     {
-        //         status: 500,
-        //     }
-        // );
         return jsendError("Authentication failed")
     }
 }
