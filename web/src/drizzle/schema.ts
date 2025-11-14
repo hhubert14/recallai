@@ -54,7 +54,7 @@ export const videos = pgTable("videos", {
 	userId: uuid("user_id").notNull(),
 	platform: platform().default('YouTube').notNull(),
 	title: text().notNull(),
-	channelName: text("channel_name"),
+	channelName: text("channel_name").notNull(),
 	duration: integer(),
 	category: text(),
 	url: text().notNull(),

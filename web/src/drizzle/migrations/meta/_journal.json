@@ -22,6 +22,13 @@
       "when": 1761660907125,
       "tag": "0002_fat_justice",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1763149335008,
+      "tag": "0003_breezy_karnak",
+      "breakpoints": true
     }
   ]
 }
