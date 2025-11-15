@@ -1,9 +1,9 @@
-import { VideoDto } from "@/data-access/videos/types";
+import { VideoEntity } from "@/clean-architecture/domain/entities/video.entity";
 import { getQuizCompletionStatus } from "@/data-access/user-stats/get-quiz-completion-status";
 import { ClientLibraryVideoList } from "@/app/dashboard/library/ClientLibraryVideoList";
 
 interface LibraryVideoListProps {
-    videos: VideoDto[];
+    videos: VideoEntity[];
     userId: string;
 }
 

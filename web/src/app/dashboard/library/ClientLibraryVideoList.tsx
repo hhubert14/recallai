@@ -1,14 +1,12 @@
 "use client";
 
 import { useEffect } from "react";
-import { VideoDto } from "@/data-access/videos/types";
-// import { getQuizCompletionStatus } from "@/data-access/user-stats/get-quiz-completion-status";
+import { VideoEntity } from "@/clean-architecture/domain/entities/video.entity";
 import { LibraryVideoCard } from "./LibraryVideoCard";
 import { useQuizCompletion } from "@/components/providers/QuizCompletionProvider";
 
 interface ClientLibraryVideoListProps {
-    videos: (VideoDto & { quizCompleted: boolean })[];
-    // userId: string;
+    videos: (VideoEntity & { quizCompleted: boolean })[];
 }
 
 export function ClientLibraryVideoList({

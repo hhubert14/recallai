@@ -2,11 +2,11 @@
 
 import Link from "next/link";
 import { Play, Check, X } from "lucide-react";
-import { VideoDto } from "@/data-access/videos/types";
+import { VideoEntity } from "@/clean-architecture/domain/entities/video.entity";
 import { useQuizCompletion } from "@/components/providers/QuizCompletionProvider";
 
 interface LibraryVideoCardProps {
-    video: VideoDto & { quizCompleted: boolean };
+    video: VideoEntity & { quizCompleted: boolean };
 }
 
 export function LibraryVideoCard({ video }: LibraryVideoCardProps) {

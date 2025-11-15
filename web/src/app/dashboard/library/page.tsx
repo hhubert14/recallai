@@ -5,9 +5,10 @@ import { redirect } from "next/navigation";
 import { UserButton } from "@/components/ui/user-button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { createClient } from "@/lib/supabase/server";
-import { getVideosByUserId } from "@/data-access/videos/get-videos-by-user-id";
 import { LibraryVideoList } from "@/app/dashboard/library/LibraryVideoList";
 import { TextRefreshButton } from "../TextRefreshButton";
+import { createVideoRepository } from "@/clean-architecture/infrastructure/factories/repository.factory";
+import { FindVideosByUserIdUseCase } from "@/clean-architecture/use-cases/video/find-videos-by-user-id.use-case";
 
 export const metadata: Metadata = {
     title: "My Library | RecallAI",
@@ -25,10 +26,9 @@ export default async function LibraryPage() {
         redirect("/auth/login");
     }
 
-    // Get all user videos and subscription status
-    const [allVideos] = await Promise.all([
-        getVideosByUserId(user.id),
-    ]);
+    // Get all user videos
+    const videoRepo = createVideoRepository();
+    const allVideos = await new FindVideosByUserIdUseCase(videoRepo).execute(user.id);
 
     return (
         <div className="flex min-h-screen flex-col bg-white dark:bg-gray-950">
