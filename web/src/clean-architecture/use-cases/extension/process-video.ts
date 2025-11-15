@@ -1,7 +1,8 @@
 import { NextRequest } from "next/server";
 import { authenticateRequest } from "./authenticate-request";
-import { getVideoByUrl } from "@/data-access/videos/get-video-by-url";
 import { logger } from "@/lib/logger";
+import { createVideoRepository } from "@/clean-architecture/infrastructure/factories/repository.factory";
+import { FindVideoByUserIdAndUrlUseCase } from "@/clean-architecture/use-cases/video/find-video-by-user-id-and-url.use-case";
 
 export const processVideo = async (
     videoUrl: string,
@@ -33,9 +34,12 @@ export const processVideo = async (
 
     if (!authenticatedUserId) {
         throw new Error("User not authenticated");
-    } // 2. Check if video already exists for this user
+    }
+
+    // 2. Check if video already exists for this user
     logger.extension.debug("Checking if video already exists");
-    const existingVideo = await getVideoByUrl(videoUrl, authenticatedUserId);
+    const videoRepo = createVideoRepository();
+    const existingVideo = await new FindVideoByUserIdAndUrlUseCase(videoRepo).execute(authenticatedUserId, videoUrl);
     if (existingVideo) {
         logger.extension.info("Video already exists, returning existing data", {
             videoId: existingVideo.id,
