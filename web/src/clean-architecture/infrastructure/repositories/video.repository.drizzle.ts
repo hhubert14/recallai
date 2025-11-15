@@ -5,7 +5,7 @@ import { videos } from "@/drizzle/schema";
 import { eq, and, isNull, desc } from "drizzle-orm";
 
 export class DrizzleVideoRepository implements IVideoRepository {
-    async create(
+    async createVideo(
         userId: string,
         platform: "YouTube" | "Vimeo",
         title: string,
@@ -30,6 +30,22 @@ export class DrizzleVideoRepository implements IVideoRepository {
             return this.toEntity(data);
         } catch (error) {
             console.error("Error creating video:", error);
+            throw error;
+        }
+    }
+
+    async findVideoById(id: number): Promise<VideoEntity | null> {
+        try {
+            const [data] = await db
+                .select()
+                .from(videos)
+                .where(eq(videos.id, id))
+                .limit(1);
+
+            if (!data) return null;
+            return this.toEntity(data);
+        } catch (error) {
+            console.error("Error finding video by ID:", error);
             throw error;
         }
     }

@@ -5,12 +5,13 @@ import { Brain } from "lucide-react";
 import { UserButton } from "@/components/ui/user-button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { createClient } from "@/lib/supabase/server";
-import { getVideosByUserId } from "@/data-access/videos/get-videos-by-user-id";
 import { getSummaryByVideoId } from "@/data-access/summaries/get-summary-by-video-id";
 import { getQuestionsByVideoId } from "@/data-access/questions/get-questions-by-video-id";
 import { VideoPlayer } from "./VideoPlayer";
 import { ContentTabs } from "./ContentTabs";
 import { BackButton } from "./BackButton";
+import { createVideoRepository } from "@/clean-architecture/infrastructure/factories/repository.factory";
+import { FindVideoByIdUseCase } from "@/clean-architecture/use-cases/video/find-video-by-id.use-case";
 
 export const metadata: Metadata = {
     title: "Video Detail | RecallAI",
@@ -32,24 +33,22 @@ export default async function VideoDetailPage({
         data: { user },
     } = await supabase.auth.getUser();
 
-    // Redirect to login if user is not authenticated
     if (!user) {
         redirect("/auth/login");
-    } // Get all user videos to find the specific one
-    const userVideos = await getVideosByUserId(user.id);
-    const video = userVideos.find(v => v.id === parseInt(id));
+    }
+
+    const videoRepo = createVideoRepository();
+    const video = await new FindVideoByIdUseCase(videoRepo).execute(parseInt(id), user.id);
 
     if (!video) {
         notFound();
     }
 
-    // Get summary and questions
     const [summary, questions] = await Promise.all([
         getSummaryByVideoId(video.id),
         getQuestionsByVideoId(video.id),
     ]);
 
-    // Extract YouTube video ID from URL
     const getYouTubeVideoId = (url: string): string | null => {
         const regex =
             /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/;

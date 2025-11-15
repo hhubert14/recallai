@@ -1,7 +1,7 @@
 import { VideoEntity } from "@/clean-architecture/domain/entities/video.entity";
 
 export interface IVideoRepository {
-    create(
+    createVideo(
         userId: string,
         platform: "YouTube" | "Vimeo",
         title: string,
@@ -9,6 +9,8 @@ export interface IVideoRepository {
         channelName: string,
         duration: number | null,
     ): Promise<VideoEntity>;
+
+    findVideoById(id: number): Promise<VideoEntity | null>;
 
     findVideoByUserIdAndUrl(userId: string, url: string): Promise<VideoEntity | null>;
 

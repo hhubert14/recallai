@@ -12,6 +12,6 @@ export class CreateVideoUseCase {
         channelName: string,
         duration: number | null,
     ): Promise<VideoEntity> {
-        return await this.videoRepository.create(userId, platform, title, url, channelName, duration);
+        return await this.videoRepository.createVideo(userId, platform, title, url, channelName, duration);
     }
 }
