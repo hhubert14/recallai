@@ -50,7 +50,6 @@ export async function POST(
 
         const repo = createVideoRepository()
         const video = await new FindVideoByUserIdAndUrlUseCase(repo).execute(authenticatedUserId, videoUrl);
-        // const videoExists = await getVideoByUrl(videoUrl, authenticatedUserId);
         if (video) {
             return jsendFail({
                 error: "Video already exists for this user",
