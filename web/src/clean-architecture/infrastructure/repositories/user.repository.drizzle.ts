@@ -5,7 +5,7 @@ import { eq } from "drizzle-orm";
 import { UserEntity } from "@/clean-architecture/domain/entities/user.entity";
 
 export class DrizzleUserRepository implements IUserRepository {
-    async create(email: string): Promise<UserEntity> {
+    async createUser(email: string): Promise<UserEntity> {
         try {
             const [data] = await db.insert(users).values({ email }).returning();
             return this.toEntity(data);
@@ -37,7 +37,7 @@ export class DrizzleUserRepository implements IUserRepository {
         }
     }
 
-    async delete(id: string): Promise<void> {
+    async deleteUser(id: string): Promise<void> {
         try {
             await db.delete(users).where(eq(users.id, id));
         } catch (error) {
