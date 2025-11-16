@@ -124,7 +124,7 @@ We've identified **6 core domains** for this application:
 **Order of domains to migrate:**
 1. ✅ **User** (completed)
 2. ✅ **Video** (completed)
-3. **Summary**
+3. ✅ **Summary** (completed)
 4. **Question**
 5. **Learning** (Answer + Progress entities)
 6. **Authentication** (Extension tokens)
@@ -169,12 +169,20 @@ We've identified **6 core domains** for this application:
   - ✅ Deleted old data-access/videos folder
 - Status: **COMPLETE** ✅
 
-### ⏳ Not Started
-
 **3. Summary Domain**
-- SummaryEntity
+- SummaryEntity (id, videoId, content)
 - ISummaryRepository + DrizzleSummaryRepository
-- Use cases: GenerateSummaryUseCase, FindSummaryByVideoIdUseCase
+- Methods: createSummary, findSummaryByVideoId
+- Use cases: CreateSummaryUseCase, FindSummaryByVideoIdUseCase
+- Factory: createSummaryRepository()
+- Migrated files:
+  - ✅ API route (videos/[url]/summarize/route.ts)
+  - ✅ Dashboard page (video/[id]/page.tsx)
+  - ✅ Client component type updated (ContentTabs.tsx)
+  - ✅ Deleted old data-access/summaries folder
+- Status: **COMPLETE** ✅
+
+### ⏳ Not Started
 
 **4. Question Domain**
 - QuestionEntity (+ options)
