@@ -1,13 +1,11 @@
 "use client";
 
 import { useState } from "react";
-// import { Button } from "@/components/ui/button";
-import { SummaryDto } from "@/data-access/summaries/types";
 import { QuestionWithOptionsDto } from "@/data-access/questions/types";
 import { QuizInterface } from "./QuizInterface";
 
 interface ContentTabsProps {
-    summary: SummaryDto | null;
+    summary: { id: number; videoId: number; content: string } | null;
     questions: QuestionWithOptionsDto[];
     userId: string;
     videoId: number;

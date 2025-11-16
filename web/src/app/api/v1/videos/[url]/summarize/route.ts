@@ -2,10 +2,11 @@
 
 import { NextRequest } from "next/server";
 import { generateVideoSummary } from "@/data-access/external-apis/generate-video-summary";
-import { createSummary } from "@/data-access/summaries/create-summary";
 import { authenticateRequest } from "@/clean-architecture/use-cases/authentication/authenticate-request";
 import { logger } from "@/lib/logger";
 import { jsendSuccess, jsendFail, jsendError } from "@/lib/jsend";
+import { createSummaryRepository } from "@/clean-architecture/infrastructure/factories/repository.factory";
+import { CreateSummaryUseCase } from "@/clean-architecture/use-cases/summary/create-summary.use-case";
 
 export async function POST(request: NextRequest) {
     const { authToken, video_id, title, description, transcript } =
@@ -21,31 +22,31 @@ export async function POST(request: NextRequest) {
             return jsendFail({ error: tokenData.error }, tokenData.status || 401);
         }
 
-        // Use the token's user_id as the authenticated user for this request
         const authenticatedUserId = tokenData.userId;
 
         if (!authenticatedUserId) {
             return jsendFail({ error: "User not authenticated" }, 401);
         }
 
-        const summary = await generateVideoSummary(
+        const summaryData = await generateVideoSummary(
             title,
             description,
             transcript
         );
-        if (!summary) {
+        if (!summaryData) {
             return jsendError("Failed to generate video summary");
         }
 
         logger.video.info("Summary generated successfully", {
             video_id,
-            summaryLength: summary.summary?.length || 0,
+            summaryLength: summaryData.summary?.length || 0,
         });
 
-        const createdSummary = await createSummary({
-            videoId: video_id,
-            content: summary.summary,
-        });
+        const summaryRepo = createSummaryRepository();
+        const createdSummary = await new CreateSummaryUseCase(summaryRepo).execute(
+            video_id,
+            summaryData.summary
+        );
 
         return jsendSuccess({ summary: createdSummary });
     } catch (error) {
