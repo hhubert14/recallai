@@ -81,114 +81,34 @@ Dependencies must point inward only:
 - Create and wire up dependencies
 - Example: `createVideoRepository()`, `createUserRepository()`
 
-## Migration Pattern
+## Migration Steps
 
-### Step 1: Create Domain Layer
-```typescript
-// domain/entities/example.entity.ts
-export class ExampleEntity {
-    constructor(
-        public readonly id: number,
-        public readonly userId: string,
-        public readonly name: string,
-        public readonly createdAt: string,
-    ) {}
-}
+1. **Create Domain Layer** - Entity class and repository interface
+2. **Create Infrastructure Layer** - Drizzle repository implementation and factory
+3. **Create Use Cases** - Business logic with dependency injection
+4. **Update Consumers** - Replace old data-access imports with new use cases
+5. **Delete Old Code** - Remove old data-access folder after all consumers migrated
 
-// domain/repositories/example.repository.interface.ts
-import { ExampleEntity } from "@/clean-architecture/domain/entities/example.entity";
+## Domain Architecture
 
-export interface IExampleRepository {
-    create(userId: string, name: string): Promise<ExampleEntity>;
-    findById(id: number): Promise<ExampleEntity | null>;
-    findByUserId(userId: string): Promise<ExampleEntity[]>;
-}
-```
+We've identified **6 core domains** for this application:
 
-### Step 2: Create Infrastructure Layer
-```typescript
-// infrastructure/repositories/example.repository.drizzle.ts
-import { IExampleRepository } from "@/clean-architecture/domain/repositories/example.repository.interface";
-import { ExampleEntity } from "@/clean-architecture/domain/entities/example.entity";
-import { db } from "@/drizzle";
-import { examples } from "@/drizzle/schema";
-import { eq } from "drizzle-orm";
+1. **User** - User profiles and preferences
+2. **Video** - Video catalog and metadata (lean - no summaries/questions)
+3. **Summary** - AI-generated summaries (optional, can be generated on-demand)
+4. **Question** - Quiz questions and options (optional, can be generated on-demand)
+5. **Learning** - User answers and progress tracking (Leitner boxes/spaced repetition)
+6. **Authentication** - Extension tokens and API authentication
 
-export class DrizzleExampleRepository implements IExampleRepository {
-    async create(userId: string, name: string): Promise<ExampleEntity> {
-        const [data] = await db
-            .insert(examples)
-            .values({ userId, name })
-            .returning();
-        return this.toEntity(data);
-    }
+**Services (not domains):**
+- **User Stats** - Computed from Learning/Video data, not stored separately
+- **Video Processing Pipeline** - Orchestrates multiple domains
+- **External APIs** - Infrastructure adapters (OpenAI, YouTube)
 
-    async findById(id: number): Promise<ExampleEntity | null> {
-        const [data] = await db
-            .select()
-            .from(examples)
-            .where(eq(examples.id, id))
-            .limit(1);
-        if (!data) return null;
-        return this.toEntity(data);
-    }
-
-    async findByUserId(userId: string): Promise<ExampleEntity[]> {
-        const data = await db
-            .select()
-            .from(examples)
-            .where(eq(examples.userId, userId));
-        return data.map(this.toEntity);
-    }
-
-    private toEntity(data: typeof examples.$inferSelect): ExampleEntity {
-        return new ExampleEntity(
-            data.id,
-            data.userId,
-            data.name,
-            data.createdAt,
-        );
-    }
-}
-
-// infrastructure/factories/repository.factory.ts
-export function createExampleRepository(): IExampleRepository {
-    return new DrizzleExampleRepository();
-}
-```
-
-### Step 3: Create Use Cases
-```typescript
-// use-cases/example/create-example.use-case.ts
-import { IExampleRepository } from "@/clean-architecture/domain/repositories/example.repository.interface";
-import { ExampleEntity } from "@/clean-architecture/domain/entities/example.entity";
-
-export class CreateExampleUseCase {
-    constructor(private readonly exampleRepository: IExampleRepository) {}
-
-    async execute(userId: string, name: string): Promise<ExampleEntity> {
-        return await this.exampleRepository.create(userId, name);
-    }
-}
-```
-
-### Step 4: Update Consumers
-```typescript
-// BEFORE
-import { createExample } from "@/data-access/examples/create-example";
-const example = await createExample(userId, name);
-
-// AFTER
-import { CreateExampleUseCase } from "@/clean-architecture/use-cases/example/create-example.use-case";
-import { createExampleRepository } from "@/clean-architecture/infrastructure/factories/repository.factory";
-
-const exampleRepo = createExampleRepository();
-const createExampleUseCase = new CreateExampleUseCase(exampleRepo);
-const example = await createExampleUseCase.execute(userId, name);
-```
-
-### Step 5: Delete Old Code
-After all consumers are migrated, delete the old `data-access/examples/` folder.
+**Design Decisions:**
+- Video, Summary, and Question are **loosely coupled** (user can generate summaries/questions independently)
+- Learning domain contains both Answer and Progress entities (they work together for spaced repetition)
+- Authorization logic lives in **use case layer** (not repository layer)
 
 ## Migration Strategy
 
@@ -202,38 +122,75 @@ After all consumers are migrated, delete the old `data-access/examples/` folder.
 6. Move to next domain
 
 **Order of domains to migrate:**
-1. Videos (in progress)
-2. Summaries
-3. Questions
-4. User Answers
-5. User Question Progress (spaced repetition)
-6. Extension Tokens
-7. User Stats
-8. External APIs (OpenAI, YouTube, etc.)
+1. ✅ **User** (completed)
+2. ✅ **Video** (completed)
+3. **Summary**
+4. **Question**
+5. **Learning** (Answer + Progress entities)
+6. **Authentication** (Extension tokens)
+
+## Naming Conventions
+
+**Repository Methods:**
+- `createEntity()` - Create entity (e.g., `createVideo`, `createUser`)
+- `findEntityById()` - Find by ID only (e.g., `findVideoById`)
+- `findEntityByXAndY()` - Find by multiple criteria (e.g., `findVideoByUserIdAndUrl`)
+- `findEntitiesByX()` - Find multiple (e.g., `findVideosByUserId`)
+- `updateEntity()` - Update entity
+- `deleteEntity()` - Delete entity
+
+**Authorization Pattern:**
+- Repository methods do **pure data access** (no authorization)
+- Use cases handle **authorization explicitly**
+- Example: `FindVideoByIdUseCase` checks if `video.userId === requestingUserId`
 
 ## Current Progress
 
-### ✅ Completed
-- Clean architecture structure created
-- Video entity, repository, and use cases implemented
-- User entity, repository, and use cases implemented
+### ✅ Completed Domains
 
-### 🚧 In Progress
-**Videos Domain Migration:**
-- [ ] Update API route: `videos/[url]/route.ts`
-- [ ] Update API route: `videos/[url]/educational/route.ts`
-- [ ] Update extension use case: `process-video.ts`
-- [ ] Update dashboard pages (5 files)
-- [ ] Delete old `data-access/videos/` folder
+**1. User Domain**
+- UserEntity
+- IUserRepository + DrizzleUserRepository
+- Use cases: CheckEmailExistsUseCase
+- Factory: createUserRepository()
+- Status: All consumers migrated ✅
+
+**2. Video Domain**
+- VideoEntity (id, userId, platform, title, url, channelName, duration, createdAt)
+- IVideoRepository + DrizzleVideoRepository
+- Methods: createVideo, findVideoById, findVideoByUserIdAndUrl, findVideosByUserId
+- Use cases: CreateVideoUseCase, FindVideoByIdUseCase, FindVideoByUserIdAndUrlUseCase, FindVideosByUserIdUseCase
+- Factory: createVideoRepository()
+- Migrated files:
+  - ✅ API routes (videos/[url]/route.ts, videos/[url]/educational/route.ts)
+  - ✅ Extension use case (process-video.ts)
+  - ✅ Dashboard pages (page.tsx, video/[id]/page.tsx)
+  - ✅ Library components (4 files)
+  - ✅ Deleted old data-access/videos folder
+- Status: **COMPLETE** ✅
 
 ### ⏳ Not Started
-- Summaries domain
-- Questions domain
-- User Answers domain
-- User Question Progress domain
-- Extension Tokens domain
-- User Stats domain
-- External APIs domain
+
+**3. Summary Domain**
+- SummaryEntity
+- ISummaryRepository + DrizzleSummaryRepository
+- Use cases: GenerateSummaryUseCase, FindSummaryByVideoIdUseCase
+
+**4. Question Domain**
+- QuestionEntity (+ options)
+- IQuestionRepository + DrizzleQuestionRepository
+- Use cases: GenerateQuestionsUseCase, FindQuestionsByVideoIdUseCase
+
+**5. Learning Domain**
+- AnswerEntity + ProgressEntity
+- IAnswerRepository + IProgressRepository
+- Use cases: SubmitAnswerUseCase, UpdateProgressUseCase
+- Contains spaced repetition (Leitner box) logic
+
+**6. Authentication Domain**
+- ExtensionTokenEntity
+- IExtensionTokenRepository + DrizzleExtensionTokenRepository
+- Use cases: ValidateTokenUseCase, CreateTokenUseCase, RevokeTokenUseCase
 
 ## Testing Strategy
 
