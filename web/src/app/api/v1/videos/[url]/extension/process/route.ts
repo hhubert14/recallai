@@ -1,4 +1,4 @@
-import { processVideo } from "@/clean-architecture/use-cases/extension/process-video";
+import { processVideo } from "@/clean-architecture/use-cases/authentication/process-video";
 import { NextRequest, NextResponse } from "next/server";
 import { logger } from "@/lib/logger";
 

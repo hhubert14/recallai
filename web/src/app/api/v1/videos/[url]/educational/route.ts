@@ -4,7 +4,7 @@ import { NextRequest } from "next/server";
 import { getYoutubeVideoData } from "@/data-access/external-apis/get-youtube-video-data";
 import { getYoutubeTranscript } from "@/data-access/external-apis/get-youtube-transcript";
 import { checkVideoEducational } from "@/data-access/external-apis/check-video-educational";
-import { authenticateRequest } from "@/clean-architecture/use-cases/extension/authenticate-request";
+import { authenticateRequest } from "@/clean-architecture/use-cases/authentication/authenticate-request";
 import { jsendSuccess, jsendFail, jsendError } from "@/lib/jsend";
 import { createVideoRepository } from "@/clean-architecture/infrastructure/factories/repository.factory";
 import { FindVideoByUserIdAndUrlUseCase } from "@/clean-architecture/use-cases/video/find-video-by-user-id-and-url.use-case";

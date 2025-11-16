@@ -3,7 +3,7 @@
 import { NextRequest } from "next/server";
 import { generateVideoSummary } from "@/data-access/external-apis/generate-video-summary";
 import { createSummary } from "@/data-access/summaries/create-summary";
-import { authenticateRequest } from "@/clean-architecture/use-cases/extension/authenticate-request";
+import { authenticateRequest } from "@/clean-architecture/use-cases/authentication/authenticate-request";
 import { logger } from "@/lib/logger";
 import { jsendSuccess, jsendFail, jsendError } from "@/lib/jsend";
 

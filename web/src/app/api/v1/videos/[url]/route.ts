@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { authenticateRequest } from "@/clean-architecture/use-cases/extension/authenticate-request";
+import { authenticateRequest } from "@/clean-architecture/use-cases/authentication/authenticate-request";
 import { logger } from "@/lib/logger";
 import { jsendSuccess, jsendFail, jsendError } from "@/lib/jsend";
 import { createVideoRepository } from "@/clean-architecture/infrastructure/factories/repository.factory";
