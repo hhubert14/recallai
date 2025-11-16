@@ -92,8 +92,8 @@ export const summaries = pgTable("summaries", {
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
 	id: bigint({ mode: "number" }).primaryKey().generatedByDefaultAsIdentity({ name: "summaries_id_seq", startWith: 1, increment: 1, minValue: 1, cache: 1 }),
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
-	videoId: bigint("video_id", { mode: "number" }),
-	content: text().default('').notNull(),
+	videoId: bigint("video_id", { mode: "number" }).notNull(),
+	content: text().notNull(),
 	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 }, (table) => [
