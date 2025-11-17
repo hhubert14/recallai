@@ -1,12 +1,23 @@
 "use client";
 
 import { useState } from "react";
-import { QuestionWithOptionsDto } from "@/data-access/questions/types";
 import { QuizInterface } from "./QuizInterface";
 
 interface ContentTabsProps {
     summary: { id: number; videoId: number; content: string } | null;
-    questions: QuestionWithOptionsDto[];
+    questions: {
+        id: number;
+        videoId: number;
+        questionText: string;
+        questionType: string;
+        questionOptions: {
+            id: number;
+            optionText: string;
+            isCorrect: boolean;
+            orderIndex: number | null;
+            explanation: string | null;
+        }[];
+    }[];
     userId: string;
     videoId: number;
 }

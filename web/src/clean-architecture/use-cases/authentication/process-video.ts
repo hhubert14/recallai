@@ -174,7 +174,7 @@ export const processVideo = async (
         });
 
         response = await fetch(
-            `${request.nextUrl.origin}/api/v1/videos/${encodedVideoUrl}/questions`,
+            `${request.nextUrl.origin}/api/v1/questions`,
             {
                 method: "POST",
                 headers: {
@@ -183,7 +183,7 @@ export const processVideo = async (
                 },
                 body: JSON.stringify({
                     authToken: authToken,
-                    video_id: video_id_num,
+                    videoId: video_id_num,
                     title,
                     description,
                     transcript,

@@ -2,12 +2,33 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { QuestionWithOptionsDto, QuestionOptionDto } from "@/data-access/questions/types";
 import { submitAnswer } from "./actions";
 import { useQuizCompletion } from "@/components/providers/QuizCompletionProvider";
 
+type QuestionWithOptions = {
+    id: number;
+    videoId: number;
+    questionText: string;
+    questionType: string;
+    questionOptions: {
+        id: number;
+        optionText: string;
+        isCorrect: boolean;
+        orderIndex: number | null;
+        explanation: string | null;
+    }[];
+};
+
+type QuestionOption = {
+    id: number;
+    optionText: string;
+    isCorrect: boolean;
+    orderIndex: number | null;
+    explanation: string | null;
+};
+
 interface QuizInterfaceProps {
-    questions: QuestionWithOptionsDto[];
+    questions: QuestionWithOptions[];
     userId: string;
     videoId: number;
 }
@@ -25,11 +46,11 @@ function shuffleArray<T>(array: T[]): T[] {
 }
 
 // Function to shuffle questions and their options
-function shuffleQuestionsAndOptions(questions: QuestionWithOptionsDto[]): QuestionWithOptionsDto[] {
+function shuffleQuestionsAndOptions(questions: QuestionWithOptions[]): QuestionWithOptions[] {
     const shuffledQuestions = shuffleArray(questions);
     return shuffledQuestions.map(question => ({
         ...question,
-        options: shuffleArray(question.questionOptions),
+        questionOptions: shuffleArray(question.questionOptions),
     }));
 }
 
@@ -45,8 +66,8 @@ export function QuizInterface({
     const [showResult, setShowResult] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [correctAnswer, setCorrectAnswer] =
-        useState<QuestionOptionDto | null>(null);
-    const [shuffledQuestions, setShuffledQuestions] = useState<QuestionWithOptionsDto[]>(
+        useState<QuestionOption | null>(null);
+    const [shuffledQuestions, setShuffledQuestions] = useState<QuestionWithOptions[]>(
         []
     );
 

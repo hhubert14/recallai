@@ -2,17 +2,17 @@
 
 import { NextRequest } from "next/server";
 import { generateVideoQuestions } from "@/data-access/external-apis/generate-video-questions";
-import { createQuestion } from "@/data-access/questions/create-question";
-import { createQuestionOptions } from "@/data-access/question-options/create-question-options";
 import { authenticateRequest } from "@/clean-architecture/use-cases/authentication/authenticate-request";
 import { logger } from "@/lib/logger";
 import { jsendSuccess, jsendFail, jsendError } from "@/lib/jsend";
+import { createQuestionRepository } from "@/clean-architecture/infrastructure/factories/repository.factory";
+import { CreateMultipleChoiceQuestionUseCase } from "@/clean-architecture/use-cases/question/create-multiple-choice-question.use-case";
 
 export async function POST(request: NextRequest) {
-    const { authToken, video_id, title, description, transcript } =
+    const { authToken, videoId, title, description, transcript } =
         await request.json();
 
-    if (!authToken || !video_id || !title || !description || !transcript) {
+    if (!authToken || !videoId || !title || !description || !transcript) {
         return jsendFail({ error: "Missing required parameters" });
     }
 
@@ -38,40 +38,33 @@ export async function POST(request: NextRequest) {
             return jsendError("Failed to generate video questions");
         }
 
-        // Return the questions directly without additional nesting
         logger.video.info("Questions generated successfully", {
-            video_id,
+            videoId,
             questionCount: questionData.questions.length,
         });
 
         // Create each question and its options in the database
+        const questionRepo = createQuestionRepository();
+        const createQuestionUseCase = new CreateMultipleChoiceQuestionUseCase(questionRepo);
+
         for (const question of questionData.questions) {
-            const createdQuestion = await createQuestion({
-                videoId: video_id,
-                questionText: question.question,
-                questionType: "multiple_choice",
-            });
+            const options = question.options.map((optionText, i) => ({
+                optionText,
+                isCorrect: i === question.correctAnswerIndex,
+                orderIndex: i,
+                explanation: i === question.correctAnswerIndex ? question.explanation : null,
+            }));
 
-            if (!createdQuestion) {
-                throw new Error("Failed to create question in the database");
-            }
-
-            for (let i = 0; i < question.options.length; i++) {
-                await createQuestionOptions({
-                    questionId: createdQuestion.id,
-                    optionText: question.options[i],
-                    isCorrect: i === question.correctAnswerIndex, // Assuming the correct answer is marked
-                    explanation:
-                        i === question.correctAnswerIndex
-                            ? question.explanation
-                            : undefined,
-                });
-            }
+            await createQuestionUseCase.execute(
+                videoId,
+                question.question,
+                options
+            );
         }
 
         return jsendSuccess(questionData);
     } catch (error) {
-        logger.video.error("Failed to generate questions", error, { video_id });
+        logger.video.error("Failed to generate questions", error, { videoId });
         const errorMessage =
             error instanceof Error
                 ? error.message

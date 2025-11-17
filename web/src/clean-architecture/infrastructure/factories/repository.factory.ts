@@ -4,6 +4,8 @@ import { IVideoRepository } from "@/clean-architecture/domain/repositories/video
 import { DrizzleVideoRepository } from "@/clean-architecture/infrastructure/repositories/video.repository.drizzle";
 import { ISummaryRepository } from "@/clean-architecture/domain/repositories/summary.repository.interface";
 import { DrizzleSummaryRepository } from "@/clean-architecture/infrastructure/repositories/summary.repository.drizzle";
+import { IQuestionRepository } from "@/clean-architecture/domain/repositories/question.repository.interface";
+import { DrizzleQuestionRepository } from "@/clean-architecture/infrastructure/repositories/question.repository.drizzle";
 
 export function createUserRepository(): IUserRepository {
     return new DrizzleUserRepository();
@@ -15,4 +17,8 @@ export function createVideoRepository(): IVideoRepository {
 
 export function createSummaryRepository(): ISummaryRepository {
     return new DrizzleSummaryRepository();
+}
+
+export function createQuestionRepository(): IQuestionRepository {
+    return new DrizzleQuestionRepository();
 }

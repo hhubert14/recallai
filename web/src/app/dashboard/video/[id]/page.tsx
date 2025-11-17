@@ -5,13 +5,13 @@ import { Brain } from "lucide-react";
 import { UserButton } from "@/components/ui/user-button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { createClient } from "@/lib/supabase/server";
-import { getQuestionsByVideoId } from "@/data-access/questions/get-questions-by-video-id";
 import { VideoPlayer } from "./VideoPlayer";
 import { ContentTabs } from "./ContentTabs";
 import { BackButton } from "./BackButton";
-import { createVideoRepository, createSummaryRepository } from "@/clean-architecture/infrastructure/factories/repository.factory";
+import { createVideoRepository, createSummaryRepository, createQuestionRepository } from "@/clean-architecture/infrastructure/factories/repository.factory";
 import { FindVideoByIdUseCase } from "@/clean-architecture/use-cases/video/find-video-by-id.use-case";
 import { FindSummaryByVideoIdUseCase } from "@/clean-architecture/use-cases/summary/find-summary-by-video-id.use-case";
+import { FindQuestionsByVideoIdUseCase } from "@/clean-architecture/use-cases/question/find-questions-by-video-id.use-case";
 
 export const metadata: Metadata = {
     title: "Video Detail | RecallAI",
@@ -45,17 +45,33 @@ export default async function VideoDetailPage({
     }
 
     const summaryRepo = createSummaryRepository();
-    const [summaryEntity, questions] = await Promise.all([
+    const questionRepo = createQuestionRepository();
+
+    const [summaryEntity, questionEntities] = await Promise.all([
         new FindSummaryByVideoIdUseCase(summaryRepo).execute(video.id),
-        getQuestionsByVideoId(video.id),
+        new FindQuestionsByVideoIdUseCase(questionRepo).execute(video.id),
     ]);
 
-    // Convert entity to plain object for client component
+    // Convert entities to plain objects for client components
     const summary = summaryEntity ? {
         id: summaryEntity.id,
         videoId: summaryEntity.videoId,
         content: summaryEntity.content,
     } : null;
+
+    const questions = questionEntities.map(q => ({
+        id: q.id,
+        videoId: q.videoId,
+        questionText: q.questionText,
+        questionType: q.questionType,
+        questionOptions: q.options.map(opt => ({
+            id: opt.id,
+            optionText: opt.optionText,
+            isCorrect: opt.isCorrect,
+            orderIndex: opt.orderIndex,
+            explanation: opt.explanation,
+        })),
+    }));
 
     const getYouTubeVideoId = (url: string): string | null => {
         const regex =
