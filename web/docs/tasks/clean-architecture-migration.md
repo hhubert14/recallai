@@ -125,7 +125,7 @@ We've identified **6 core domains** for this application:
 1. ✅ **User** (completed)
 2. ✅ **Video** (completed)
 3. ✅ **Summary** (completed)
-4. **Question**
+4. ✅ **Question** (completed)
 5. **Learning** (Answer + Progress entities)
 6. **Authentication** (Extension tokens)
 
@@ -182,12 +182,27 @@ We've identified **6 core domains** for this application:
   - ✅ Deleted old data-access/summaries folder
 - Status: **COMPLETE** ✅
 
-### ⏳ Not Started
-
 **4. Question Domain**
-- QuestionEntity (+ options)
+- QuestionEntity (discriminated union: MultipleChoiceQuestion)
+- MultipleChoiceOption (value object, embedded in question)
 - IQuestionRepository + DrizzleQuestionRepository
-- Use cases: GenerateQuestionsUseCase, FindQuestionsByVideoIdUseCase
+- Methods: createMultipleChoiceQuestion, findQuestionsByVideoId
+- Use cases: CreateMultipleChoiceQuestionUseCase, FindQuestionsByVideoIdUseCase
+- Factory: createQuestionRepository()
+- **API Refactoring:** Moved from `/api/v1/videos/[url]/questions` to `/api/v1/questions` (cleaner REST design)
+- Migrated files:
+  - ✅ API route (questions/route.ts - new location)
+  - ✅ Dashboard page (video/[id]/page.tsx)
+  - ✅ ContentTabs + QuizInterface (type updates)
+  - ✅ Video processing pipeline (process-video.ts - endpoint update)
+  - ✅ Deleted old nested route and data-access folders (questions + question-options)
+- Design decisions:
+  - Used aggregate root pattern (Question contains Options as embedded value objects)
+  - Discriminated union for future extensibility (flashcards, true/false, etc.)
+  - Removed dead sorting code (options are shuffled randomly in UI)
+- Status: **COMPLETE** ✅
+
+### ⏳ Not Started
 
 **5. Learning Domain**
 - AnswerEntity + ProgressEntity
