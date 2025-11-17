@@ -1,5 +1,5 @@
 import { IQuestionRepository } from "@/clean-architecture/domain/repositories/question.repository.interface";
-import { MultipleChoiceQuestion, MultipleChoiceOption } from "@/clean-architecture/domain/entities/question.entity";
+import { MultipleChoiceQuestionEntity, MultipleChoiceOption } from "@/clean-architecture/domain/entities/question.entity";
 import { db } from "@/drizzle";
 import { questions, questionOptions } from "@/drizzle/schema";
 import { eq, asc } from "drizzle-orm";
@@ -14,7 +14,7 @@ export class DrizzleQuestionRepository implements IQuestionRepository {
             orderIndex: number;
             explanation: string | null;
         }[]
-    ): Promise<MultipleChoiceQuestion> {
+    ): Promise<MultipleChoiceQuestionEntity> {
         try {
             // Create the question first
             const [questionData] = await db
@@ -50,7 +50,7 @@ export class DrizzleQuestionRepository implements IQuestionRepository {
         }
     }
 
-    async findQuestionsByVideoId(videoId: number): Promise<MultipleChoiceQuestion[]> {
+    async findQuestionsByVideoId(videoId: number): Promise<MultipleChoiceQuestionEntity[]> {
         try {
             // Join questions with their options
             const rows = await db
@@ -93,7 +93,7 @@ export class DrizzleQuestionRepository implements IQuestionRepository {
     private toEntity(
         questionData: typeof questions.$inferSelect,
         optionsData: typeof questionOptions.$inferSelect[]
-    ): MultipleChoiceQuestion {
+    ): MultipleChoiceQuestionEntity {
         const options = optionsData.map(
             (opt) => new MultipleChoiceOption(
                 opt.id,
@@ -104,7 +104,7 @@ export class DrizzleQuestionRepository implements IQuestionRepository {
             )
         );
 
-        return new MultipleChoiceQuestion(
+        return new MultipleChoiceQuestionEntity(
             questionData.id,
             questionData.videoId,
             questionData.questionText,

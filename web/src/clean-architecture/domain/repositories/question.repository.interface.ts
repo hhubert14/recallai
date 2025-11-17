@@ -1,4 +1,4 @@
-import { MultipleChoiceQuestion } from "@/clean-architecture/domain/entities/question.entity";
+import { MultipleChoiceQuestionEntity } from "@/clean-architecture/domain/entities/question.entity";
 
 export interface IQuestionRepository {
     /**
@@ -17,12 +17,12 @@ export interface IQuestionRepository {
             orderIndex: number;
             explanation: string | null;
         }[]
-    ): Promise<MultipleChoiceQuestion>;
+    ): Promise<MultipleChoiceQuestionEntity>;
 
     /**
      * Finds all questions for a video, including their options
      * @param videoId - The video ID
      * @returns Array of questions with options, sorted by creation date
      */
-    findQuestionsByVideoId(videoId: number): Promise<MultipleChoiceQuestion[]>;
+    findQuestionsByVideoId(videoId: number): Promise<MultipleChoiceQuestionEntity[]>;
 }

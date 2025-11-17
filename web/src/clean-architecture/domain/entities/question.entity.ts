@@ -16,7 +16,7 @@ export class MultipleChoiceOption {
 }
 
 // Multiple choice question (only type we support now)
-export class MultipleChoiceQuestion implements BaseQuestion {
+export class MultipleChoiceQuestionEntity implements BaseQuestion {
     readonly questionType = "multiple_choice" as const;
 
     constructor(
@@ -28,4 +28,4 @@ export class MultipleChoiceQuestion implements BaseQuestion {
 }
 
 // Union type for all question types (future-proof for flashcards, etc.)
-export type QuestionEntity = MultipleChoiceQuestion;
+export type QuestionEntity = MultipleChoiceQuestionEntity;

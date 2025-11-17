@@ -1,5 +1,5 @@
 import { IQuestionRepository } from "@/clean-architecture/domain/repositories/question.repository.interface";
-import { MultipleChoiceQuestion } from "@/clean-architecture/domain/entities/question.entity";
+import { MultipleChoiceQuestionEntity } from "@/clean-architecture/domain/entities/question.entity";
 
 export class CreateMultipleChoiceQuestionUseCase {
     constructor(private readonly questionRepository: IQuestionRepository) {}
@@ -13,7 +13,7 @@ export class CreateMultipleChoiceQuestionUseCase {
             orderIndex: number;
             explanation: string | null;
         }[]
-    ): Promise<MultipleChoiceQuestion> {
+    ): Promise<MultipleChoiceQuestionEntity> {
         return await this.questionRepository.createMultipleChoiceQuestion(
             videoId,
             questionText,

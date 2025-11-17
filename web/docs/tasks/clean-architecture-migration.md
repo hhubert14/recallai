@@ -183,7 +183,7 @@ We've identified **6 core domains** for this application:
 - Status: **COMPLETE** ✅
 
 **4. Question Domain**
-- QuestionEntity (discriminated union: MultipleChoiceQuestion)
+- QuestionEntity (discriminated union: MultipleChoiceQuestionEntity)
 - MultipleChoiceOption (value object, embedded in question)
 - IQuestionRepository + DrizzleQuestionRepository
 - Methods: createMultipleChoiceQuestion, findQuestionsByVideoId
