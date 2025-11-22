@@ -295,7 +295,62 @@ OPENAI_API_KEY=
 
 ## Code Patterns & Conventions
 
-### 1. Database Queries (Drizzle)
+### 1. Use Cases - Return Types
+
+Use cases orchestrate business logic and coordinate between repositories.
+
+**Default approach: Return domain entities**
+```typescript
+export type QuestionForReview = {
+  progress: ProgressEntity;
+  question: MultipleChoiceQuestionEntity;
+};
+
+export class GetQuestionsForReviewUseCase {
+  async execute(userId: string): Promise<QuestionForReview[]> {
+    const progress = await progressRepo.findProgressDueForReview(userId);
+    const questions = await questionRepo.findQuestionsByIds(...);
+    return progress.map(p => ({ progress: p, question: questions[p.questionId] }));
+  }
+}
+```
+
+**Benefits:**
+- Type safety flows from domain → use case → UI
+- Changes to entities automatically propagate
+- Simpler code, fewer data structures
+
+**When to create DTOs instead:**
+- **Security/Privacy** - Entity contains sensitive fields (passwords, tokens, internal IDs)
+- **Performance** - Entity is very large, consumer only needs a few fields
+- **API boundaries** - External APIs shouldn't expose internal domain structure
+- **Complex transformations** - Need to heavily reshape/combine data
+
+**Example - DTO for security:**
+```typescript
+// ❌ Don't expose full UserEntity (has hashedPassword, etc.)
+export class GetUserProfileUseCase {
+  async execute(userId: string): Promise<UserEntity> { ... }
+}
+
+// ✅ Create DTO with only safe fields
+export type UserProfileDto = {
+  id: string;
+  email: string;
+  name: string;
+};
+
+export class GetUserProfileUseCase {
+  async execute(userId: string): Promise<UserProfileDto> {
+    const user = await userRepo.findById(userId);
+    return { id: user.id, email: user.email, name: user.name };
+  }
+}
+```
+
+**Rule of thumb:** Prefer entities by default. Create DTOs only when there's a clear reason (security, performance, etc.).
+
+### 2. Database Queries (Drizzle)
 
 **Select:**
 ```typescript
@@ -339,15 +394,39 @@ const data = await db.query.questions.findMany({
 
 ### 2. API Routes
 
-All API routes are versioned under `/api/v1/`:
+All API routes are versioned under `/api/v1/` and use JSend response format.
 
+**JSend Format:**
 ```typescript
-// Example: src/app/api/v1/videos/[url]/route.ts
-export async function GET(
-  request: Request,
-  { params }: { params: { url: string } }
-) {
-  // Implementation
+import { jsendSuccess, jsendFail, jsendError } from "@/lib/jsend";
+
+// Success (200-299)
+return jsendSuccess({ data: result });
+
+// Fail (400-499) - Client error
+return jsendFail({ error: "Missing required fields" }, 400);
+
+// Error (500-599) - Server error
+return jsendError("Internal server error");
+```
+
+**Example Route:**
+```typescript
+// src/app/api/v1/videos/[url]/route.ts
+export async function GET(request: Request, { params }: { params: { url: string } }) {
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return jsendFail({ error: "Unauthorized" }, 401);
+    }
+
+    // Implementation
+    return jsendSuccess({ video });
+  } catch (error) {
+    return jsendError("Failed to fetch video");
+  }
 }
 ```
 
