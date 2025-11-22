@@ -126,7 +126,7 @@ We've identified **6 core domains** for this application:
 2. ✅ **Video** (completed)
 3. ✅ **Summary** (completed)
 4. ✅ **Question** (completed)
-5. **Learning** (Answer + Progress entities)
+5. ✅ **Learning** (completed - Answer + Progress entities)
 6. **Authentication** (Extension tokens)
 
 ## Naming Conventions
@@ -202,13 +202,30 @@ We've identified **6 core domains** for this application:
   - Removed dead sorting code (options are shuffled randomly in UI)
 - Status: **COMPLETE** ✅
 
-### ⏳ Not Started
-
 **5. Learning Domain**
-- AnswerEntity + ProgressEntity
-- IAnswerRepository + IProgressRepository
-- Use cases: SubmitAnswerUseCase, UpdateProgressUseCase
-- Contains spaced repetition (Leitner box) logic
+- AnswerEntity (discriminated union: MultipleChoiceAnswerEntity) + ProgressEntity
+- IAnswerRepository + IProgressRepository + DrizzleAnswerRepository + DrizzleProgressRepository
+- Use cases:
+  - Answer: CreateMultipleChoiceAnswerUseCase, FindAnsweredQuestionIdsByVideoIdUseCase
+  - Progress: CreateProgressForVideoUseCase, ProcessSpacedRepetitionAnswerUseCase, GetQuestionsForReviewUseCase, GetProgressStatsUseCase
+- Contains spaced repetition (Leitner box) logic (moved to use-cases/progress/spaced-repetition.utils.ts)
+- Factory: createAnswerRepository(), createProgressRepository()
+- **Key Improvements:**
+  - Simplified spaced repetition flow (removed "initial review" concept)
+  - User-controlled opt-in per video (not yet implemented in UI)
+  - Removed cross-domain queries from repositories
+  - Extracted ReviewStats component
+  - Simplified ReviewInterface (removed shuffling, ~449 → ~258 lines)
+  - API routes: /api/v1/answers, /api/v1/reviews/submit-answer (RPC-style)
+- Migrated files:
+  - ✅ API routes (answers/route.ts, reviews/submit-answer/route.ts)
+  - ✅ Review page (page.tsx, ReviewInterface.tsx, ReviewStats.tsx)
+  - ✅ Quiz interface (QuizInterface.tsx)
+  - ✅ Deleted old server actions (review/actions.ts, video/[id]/actions.ts)
+  - ✅ Deleted old data-access folders (user-answers, user-question-progress)
+- Status: **COMPLETE** ✅
+
+### ⏳ Not Started
 
 **6. Authentication Domain**
 - ExtensionTokenEntity
