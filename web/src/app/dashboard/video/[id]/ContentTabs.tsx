@@ -18,14 +18,14 @@ interface ContentTabsProps {
             explanation: string | null;
         }[];
     }[];
-    userId: string;
+    // userId: string;
     videoId: number;
 }
 
 export function ContentTabs({
     summary,
     questions,
-    userId,
+    // userId,
     videoId,
 }: ContentTabsProps) {
     const [activeTab, setActiveTab] = useState<"summary" | "qa">("summary");
@@ -79,7 +79,7 @@ export function ContentTabs({
                         {questions.length > 0 ? (
                             <QuizInterface
                                 questions={questions}
-                                userId={userId}
+                                // userId={userId}
                                 videoId={videoId}
                             />
                         ) : (

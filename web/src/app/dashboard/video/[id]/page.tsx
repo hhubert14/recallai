@@ -145,7 +145,7 @@ export default async function VideoDetailPage({
                         <ContentTabs
                             summary={summary}
                             questions={questions}
-                            userId={user.id}
+                            // userId={user.id}
                             videoId={video.id}
                         />
                     </div>

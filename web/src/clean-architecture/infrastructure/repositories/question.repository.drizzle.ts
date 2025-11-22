@@ -50,9 +50,30 @@ export class DrizzleQuestionRepository implements IQuestionRepository {
         }
     }
 
+    async findQuestionById(questionId: number): Promise<MultipleChoiceQuestionEntity | null> {
+        try {
+            const rows = await db
+                .select()
+                .from(questions)
+                .innerJoin(questionOptions, eq(questionOptions.questionId, questions.id))
+                .where(eq(questions.id, questionId));
+
+            if (rows.length === 0) {
+                return null;
+            }
+
+            const question = rows[0].questions;
+            const options = rows.map(row => row.question_options);
+
+            return this.toEntity(question, options);
+        } catch (error) {
+            console.error("Error finding question by ID:", error);
+            throw error;
+        }
+    }
+
     async findQuestionsByVideoId(videoId: number): Promise<MultipleChoiceQuestionEntity[]> {
         try {
-            // Join questions with their options
             const rows = await db
                 .select()
                 .from(questions)
@@ -60,7 +81,6 @@ export class DrizzleQuestionRepository implements IQuestionRepository {
                 .where(eq(questions.videoId, videoId))
                 .orderBy(asc(questions.createdAt));
 
-            // Group options by question
             const questionsMap: {
                 [key: number]: {
                     question: typeof questions.$inferSelect;
@@ -80,7 +100,6 @@ export class DrizzleQuestionRepository implements IQuestionRepository {
                 }
             }
 
-            // Convert to entities
             return Object.values(questionsMap).map(({ question, options }) =>
                 this.toEntity(question, options)
             );

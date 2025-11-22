@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { submitAnswer } from "./actions";
 import { useQuizCompletion } from "@/components/providers/QuizCompletionProvider";
 
 type QuestionWithOptions = {
@@ -29,7 +28,7 @@ type QuestionOption = {
 
 interface QuizInterfaceProps {
     questions: QuestionWithOptions[];
-    userId: string;
+    // userId: string;
     videoId: number;
 }
 
@@ -56,7 +55,7 @@ function shuffleQuestionsAndOptions(questions: QuestionWithOptions[]): QuestionW
 
 export function QuizInterface({
     questions,
-    userId,
+    // userId,
     videoId,
 }: QuizInterfaceProps) {
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -99,17 +98,21 @@ export function QuizInterface({
 
         if (!selectedOption) return;
 
-        // Find the correct answer
         const correctOption = currentQuestion.questionOptions.find(
             option => option.isCorrect
         );
-        setCorrectAnswer(correctOption || null); // Save user answer
-        await submitAnswer({
-            userId: userId,
-            questionId: currentQuestion.id,
-            selectedOptionId: selectedOptionId,
-            isCorrect: selectedOption.isCorrect,
+        setCorrectAnswer(correctOption || null);
+
+        await fetch("/api/v1/answers", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                questionId: currentQuestion.id,
+                selectedOptionId: selectedOptionId,
+                isCorrect: selectedOption.isCorrect,
+            }),
         });
+
         setShowResult(true);
         setIsSubmitting(false);
 

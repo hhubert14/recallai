@@ -6,6 +6,10 @@ import { ISummaryRepository } from "@/clean-architecture/domain/repositories/sum
 import { DrizzleSummaryRepository } from "@/clean-architecture/infrastructure/repositories/summary.repository.drizzle";
 import { IQuestionRepository } from "@/clean-architecture/domain/repositories/question.repository.interface";
 import { DrizzleQuestionRepository } from "@/clean-architecture/infrastructure/repositories/question.repository.drizzle";
+import { IAnswerRepository } from "@/clean-architecture/domain/repositories/answer.repository.interface";
+import { DrizzleAnswerRepository } from "@/clean-architecture/infrastructure/repositories/answer.repository.drizzle";
+import { IProgressRepository } from "@/clean-architecture/domain/repositories/progress.repository.interface";
+import { DrizzleProgressRepository } from "@/clean-architecture/infrastructure/repositories/progress.repository.drizzle";
 
 export function createUserRepository(): IUserRepository {
     return new DrizzleUserRepository();
@@ -21,4 +25,12 @@ export function createSummaryRepository(): ISummaryRepository {
 
 export function createQuestionRepository(): IQuestionRepository {
     return new DrizzleQuestionRepository();
+}
+
+export function createAnswerRepository(): IAnswerRepository {
+    return new DrizzleAnswerRepository();
+}
+
+export function createProgressRepository(): IProgressRepository {
+    return new DrizzleProgressRepository();
 }

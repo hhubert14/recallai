@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { getQuestionsDueForReview } from "@/data-access/user-question-progress/get-questions-due-for-review";
-import { getQuestionsForInitialReview } from "@/data-access/user-question-progress/get-questions-for-initial-review";
-import { getReviewStats } from "@/data-access/user-question-progress/get-review-stats";
+import { GetQuestionsForReviewUseCase } from "@/clean-architecture/use-cases/progress/get-questions-for-review.use-case";
+import { GetProgressStatsUseCase } from "@/clean-architecture/use-cases/progress/get-progress-stats.use-case";
+import { createProgressRepository, createQuestionRepository } from "@/clean-architecture/infrastructure/factories/repository.factory";
 import { ReviewInterface } from "@/app/dashboard/review/ReviewInterface";
 import { Brain } from "lucide-react";
 import Link from "next/link";
@@ -27,10 +27,15 @@ export default async function ReviewPage() {
         redirect("/auth/login");
     }
 
-    const [reviewStats, dueQuestions, initialQuestions] = await Promise.all([
-        getReviewStats(user.id),
-        getQuestionsDueForReview(user.id),
-        getQuestionsForInitialReview(user.id, 5),
+    const progressRepo = createProgressRepository();
+    const questionRepo = createQuestionRepository();
+
+    const getStatsUseCase = new GetProgressStatsUseCase(progressRepo);
+    const getQuestionsUseCase = new GetQuestionsForReviewUseCase(progressRepo, questionRepo);
+
+    const [reviewStats, questionsForReview] = await Promise.all([
+        getStatsUseCase.execute(user.id),
+        getQuestionsUseCase.execute(user.id),
     ]);
 
     return (
@@ -84,10 +89,8 @@ export default async function ReviewPage() {
                     </div>
                 </div>{" "}
                 <ReviewInterface
-                    userId={user.id}
                     reviewStats={reviewStats}
-                    dueQuestions={dueQuestions}
-                    initialQuestions={initialQuestions}
+                    questionsForReview={questionsForReview}
                 />
             </main>
         </div>
