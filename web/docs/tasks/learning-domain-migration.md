@@ -101,14 +101,16 @@ Migrating the Learning domain (Answer + Progress entities) to clean architecture
 
 1. ✅ Create domain entities (Answer, Progress)
 2. ✅ Create repository interfaces
-3. ⏳ Create infrastructure implementations (Drizzle repos + factories)
-4. ⏳ Create use cases
-5. ⏳ Update consumers:
-   - Video quiz page (submit answer)
-   - Review page (get due questions + stats)
-   - Review actions (process answer)
-   - Add "Add to review schedule" feature
-6. ⏳ Delete old data-access folders (user-answers, user-question-progress)
+3. ✅ Create infrastructure implementations (Drizzle repos + factories)
+4. ✅ Create use cases
+5. ✅ Update consumers:
+   - Video quiz page → API route `/api/v1/answers`
+   - Review page → Use cases for questions + stats
+   - Review interface → API route `/api/v1/reviews/submit-answer`
+   - Simplified ReviewInterface (removed shuffling, extracted ReviewStats component)
+6. ✅ Delete old data-access folders (user-answers, user-question-progress)
+
+**Status:** COMPLETE ✅
 
 ## Files to Update
 
