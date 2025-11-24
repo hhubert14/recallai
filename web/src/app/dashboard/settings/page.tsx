@@ -4,7 +4,6 @@ import { redirect } from "next/navigation";
 import { Brain, User, Chrome, Database } from "lucide-react";
 import { UserButton } from "@/components/ui/user-button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
-import { RegenerateTokenButton } from "./RegenerateTokenButton";
 import { createClient } from "@/lib/supabase/server";
 import { getUserStatsByUserId } from "@/data-access/user-stats/get-user-stats-by-user-id";
 
@@ -119,18 +118,22 @@ export default async function SettingsPage() {
                             <h2 className="text-xl font-semibold text-blue-900 dark:text-blue-100">
                                 Chrome Extension
                             </h2>
-                        </div>{" "}
+                        </div>
                         <div className="space-y-4">
-                            <p className="text-sm text-gray-500 dark:text-gray-400">
-                                Generate a new connection token for your Chrome
-                                extension. This will allow the extension to
-                                securely communicate with your account.
+                            <p className="text-gray-600 dark:text-gray-400">
+                                Install the RecallAI Chrome extension to automatically process educational YouTube videos. Once installed, simply sign in to RecallAI in your browser, and the extension will automatically connect.
                             </p>
-                            <RegenerateTokenButton />
+                            <a
+                                href="https://chrome.google.com/webstore"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                            >
+                                <Chrome className="h-4 w-4" />
+                                Install Chrome Extension
+                            </a>
                             <p className="text-sm text-gray-500 dark:text-gray-400">
-                                If you&apos;re having connection issues with the
-                                extension, generate a new token to refresh the
-                                connection.
+                                After installing, sign in to RecallAI and the extension will automatically work with your account. No manual token configuration needed!
                             </p>
                         </div>
                     </div>

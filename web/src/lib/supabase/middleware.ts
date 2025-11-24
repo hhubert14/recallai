@@ -58,7 +58,7 @@ export async function updateSession(request: NextRequest) {
         !user &&
         !request.nextUrl.pathname.startsWith("/auth/sign-up") &&
         !request.nextUrl.pathname.startsWith("/auth/login") &&
-        !request.nextUrl.pathname.startsWith("/auth/confirm") &&
+        !request.nextUrl.pathname.startsWith("/auth/confirm-email") &&
         !request.nextUrl.pathname.startsWith("/auth/error") &&
         !request.nextUrl.pathname.startsWith("/auth/forgot-password") &&
         !request.nextUrl.pathname.startsWith("/auth/success") &&

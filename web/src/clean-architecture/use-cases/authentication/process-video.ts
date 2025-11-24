@@ -1,5 +1,4 @@
 import { NextRequest } from "next/server";
-import { authenticateRequest } from "./authenticate-request";
 import { logger } from "@/lib/logger";
 import { createVideoRepository } from "@/clean-architecture/infrastructure/factories/repository.factory";
 import { FindVideoByUserIdAndUrlUseCase } from "@/clean-architecture/use-cases/video/find-video-by-user-id-and-url.use-case";
@@ -7,7 +6,7 @@ import { FindVideoByUserIdAndUrlUseCase } from "@/clean-architecture/use-cases/v
 export const processVideo = async (
     videoUrl: string,
     videoId: string,
-    authToken: string,
+    userId: string,
     processType: "automatic" | "manual",
     request: NextRequest
 ) => {
@@ -15,31 +14,21 @@ export const processVideo = async (
         videoUrl,
         videoId,
         processType,
+        userId,
     });
     const encodedVideoUrl = encodeURIComponent(videoUrl);
 
     // Implementation for processing the video
-    if (!videoUrl || !videoId || !authToken || !processType) {
+    if (!videoUrl || !videoId || !userId || !processType) {
         throw new Error("Missing required parameters");
     }
 
     // EARLY CHECKS - Do these before any expensive API calls
 
-    // 1. Authenticate the request first
-    const tokenData = await authenticateRequest(authToken);
-    if (tokenData.error) {
-        throw new Error(`Authentication failed: ${tokenData.error}`);
-    }
-    const authenticatedUserId = tokenData.userId;
-
-    if (!authenticatedUserId) {
-        throw new Error("User not authenticated");
-    }
-
-    // 2. Check if video already exists for this user
+    // 1. Check if video already exists for this user
     logger.extension.debug("Checking if video already exists");
     const videoRepo = createVideoRepository();
-    const existingVideo = await new FindVideoByUserIdAndUrlUseCase(videoRepo).execute(authenticatedUserId, videoUrl);
+    const existingVideo = await new FindVideoByUserIdAndUrlUseCase(videoRepo).execute(userId, videoUrl);
     if (existingVideo) {
         logger.extension.info("Video already exists, returning existing data", {
             videoId: existingVideo.id,
@@ -62,7 +51,6 @@ export const processVideo = async (
         // Now proceed with the expensive API calls since checks passed
         const queryParams = new URLSearchParams();
         queryParams.append("videoId", videoId);
-        queryParams.append("authToken", authToken);
         queryParams.append("processType", processType);
 
         let response = await fetch(
@@ -101,7 +89,6 @@ export const processVideo = async (
                     Cookie: request.headers.get("cookie") || "",
                 },
                 body: JSON.stringify({
-                    authToken: authToken,
                     platform: "YouTube",
                     title: educationalData.videoData.snippet.title,
                     channelName: educationalData.videoData.snippet.channelTitle,
@@ -151,7 +138,6 @@ export const processVideo = async (
                     Cookie: request.headers.get("cookie") || "",
                 },
                 body: JSON.stringify({
-                    authToken: authToken,
                     video_id: video_id_num,
                     title,
                     description,
@@ -182,7 +168,6 @@ export const processVideo = async (
                     Cookie: request.headers.get("cookie") || "",
                 },
                 body: JSON.stringify({
-                    authToken: authToken,
                     videoId: video_id_num,
                     title,
                     description,
