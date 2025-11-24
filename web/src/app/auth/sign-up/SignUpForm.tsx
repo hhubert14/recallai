@@ -43,7 +43,7 @@ export function SignUpForm() {
 
             // Check if email is already registered
             const checkEmailResponse = await fetch(
-                `/api/v1/auth/check-email-exists`,
+                `/api/v1/users/check-email-exists`,
                 {
                     method: "POST",
                     headers: {
@@ -80,7 +80,7 @@ export function SignUpForm() {
                     email,
                     password,
                     options: {
-                        emailRedirectTo: `${window.location.origin}/auth/confirm`
+                        emailRedirectTo: `${window.location.origin}/auth/confirm-email`
                     }
                 });
 
@@ -111,7 +111,7 @@ export function SignUpForm() {
                 }
 
                 // Email confirmation might be required
-                router.push("/auth/confirm");
+                router.push("/auth/confirm-email");
                 router.refresh();
             }
         } catch (error: unknown) {
