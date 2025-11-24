@@ -350,7 +350,68 @@ export class GetUserProfileUseCase {
 
 **Rule of thumb:** Prefer entities by default. Create DTOs only when there's a clear reason (security, performance, etc.).
 
-### 2. Database Queries (Drizzle)
+### 2. Component Organization
+
+**Decision Rule:**
+- Component used in **1 place only** → Co-locate with the page/feature
+- Component used in **2+ places** → Move to `components/` directory
+
+**Current Structure:**
+```
+src/
+├── components/
+│   ├── ui/              # Reusable UI primitives (buttons, dropdowns, forms, etc.)
+│   └── providers/       # React context providers (AuthProvider, etc.)
+└── app/
+    ├── auth/
+    │   ├── login/
+    │   │   ├── page.tsx
+    │   │   └── LoginForm.tsx      # ✅ Only used by login page
+    │   └── sign-up/
+    │       ├── page.tsx
+    │       └── SignUpForm.tsx     # ✅ Only used by sign-up page
+    └── dashboard/
+        ├── video/[id]/
+        │   ├── page.tsx
+        │   ├── VideoPlayer.tsx    # ✅ Only used by this page
+        │   ├── ContentTabs.tsx    # ✅ Only used by this page
+        │   └── QuizInterface.tsx  # ✅ Only used by this page
+        └── library/
+            ├── page.tsx
+            └── LibraryVideoCard.tsx  # ✅ Only used by library page
+```
+
+**Examples:**
+
+✅ **Keep co-located** (single use):
+```typescript
+// app/dashboard/video/[id]/VideoPlayer.tsx
+// Only used in app/dashboard/video/[id]/page.tsx
+export function VideoPlayer({ url }: { url: string }) { ... }
+```
+
+❌ **Move to components/** (multi-use):
+```typescript
+// If a component is imported in 2+ pages:
+// app/dashboard/page.tsx:  import { RefreshButton } from "@/components/ui/refresh-button"
+// app/library/page.tsx:     import { RefreshButton } from "@/components/ui/refresh-button"
+//
+// Then it belongs in components/ui/refresh-button.tsx
+```
+
+**When to move a component:**
+1. You import it in a second location → Move to `components/`
+2. You anticipate reuse across features → Move to `components/`
+3. It's a generic UI primitive (button variant, modal, etc.) → Move to `components/ui/`
+4. It's a shared provider/context → Move to `components/providers/`
+
+**Benefits of this approach:**
+- **Performance** - Next.js App Router optimizes co-located components automatically
+- **Developer experience** - Easy to find components (check the page first, then `components/`)
+- **Scalability** - Clear rule prevents confusion as codebase grows
+- **Maintenance** - Feature-specific code stays together, easier to refactor/delete
+
+### 3. Database Queries (Drizzle)
 
 **Select:**
 ```typescript
@@ -392,7 +453,7 @@ const data = await db.query.questions.findMany({
 });
 ```
 
-### 2. API Routes
+### 4. API Routes
 
 All API routes are versioned under `/api/v1/` and use JSend response format.
 
@@ -430,13 +491,13 @@ export async function GET(request: Request, { params }: { params: { url: string 
 }
 ```
 
-### 3. Type Safety
+### 5. Type Safety
 
 - Use Drizzle-inferred types: `typeof tableName.$inferSelect`
 - Export types from `src/drizzle/schema.ts`
 - Prefer type-safe queries over raw SQL
 
-### 4. Error Handling
+### 6. Error Handling
 
 ```typescript
 try {
