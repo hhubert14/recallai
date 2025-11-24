@@ -457,6 +457,28 @@ const data = await db.query.questions.findMany({
 
 All API routes are versioned under `/api/v1/` and use JSend response format.
 
+**API Design Pattern: Hybrid RPC/RESTful**
+
+This project uses a pragmatic mix of RPC-style (action-based) and RESTful (resource-based) patterns:
+
+**RPC-style (action-based)** - Use for operations/commands:
+```
+/api/v1/users/check-email-exists    [POST] - Action: check if email exists
+/api/v1/videos/[url]/summarize      [POST] - Action: generate summary
+/api/v1/reviews/submit-answer       [POST] - Action: submit answer
+```
+
+**RESTful (resource-based)** - Use for resource access:
+```
+/api/v1/users/me                    [GET]  - Resource: get current user
+/api/v1/videos/[url]                [GET]  - Resource: get video
+/api/v1/questions                   [GET]  - Resource: list questions
+```
+
+**When to use each:**
+- Use **RPC-style** when the operation doesn't map cleanly to CRUD (create/read/update/delete)
+- Use **RESTful** when working with standard resource operations (get, list, create, update, delete)
+
 **JSend Format:**
 ```typescript
 import { jsendSuccess, jsendFail, jsendError } from "@/lib/jsend";
