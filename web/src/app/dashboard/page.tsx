@@ -2,13 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Brain, Play, Chrome } from "lucide-react";
+import { Brain, Play, Chrome, Video } from "lucide-react";
 import { UserButton } from "@/components/ui/user-button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
-import { ExtensionConnectorButton } from "@/app/dashboard/ExtensionConnectorButton";
 import { createClient } from "@/lib/supabase/server";
 import { getUserStatsByUserId } from "@/data-access/user-stats/get-user-stats-by-user-id";
-import { StatsCard } from "@/components/ui/stats-card";
+import { StatsCard } from "./StatsCard";
 import { RefreshButton } from "./RefreshButton";
 import { createVideoRepository } from "@/clean-architecture/infrastructure/factories/repository.factory";
 import { FindVideosByUserIdUseCase } from "@/clean-architecture/use-cases/video/find-videos-by-user-id.use-case";
@@ -180,13 +179,27 @@ export default async function DashboardPage() {
                                         3
                                     </div>
                                     <h3 className="font-semibold text-gray-900 dark:text-white text-sm">
-                                        Connect Account
+                                        Start Learning
                                     </h3>
                                 </div>
                                 <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">
-                                    Link extension to dashboard for sync
+                                    Watch YouTube videos and they&apos;ll be automatically captured
                                 </p>
-                                <ExtensionConnectorButton />
+                                <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="w-full border-green-200 dark:border-green-700 text-green-700 dark:text-green-300 hover:bg-green-50 dark:hover:bg-green-900/20"
+                                    asChild
+                                >
+                                    <a
+                                        href="https://www.youtube.com"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        <Video className="h-4 w-4 mr-2" />
+                                        Go to YouTube
+                                    </a>
+                                </Button>
                             </div>
                         </div>
                     </div>

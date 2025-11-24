@@ -9,7 +9,7 @@ import { Brain } from "lucide-react";
 import Link from "next/link";
 import { UserButton } from "@/components/ui/user-button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
-import { BackButton } from "@/components/ui/back-button";
+import { BackButton } from "./BackButton";
 
 export const metadata: Metadata = {
     title: "Review | RecallAI",
