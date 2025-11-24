@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { authenticateRequest } from "@/clean-architecture/use-cases/authentication/authenticate-request";
+import { getAuthenticatedUser } from "@/lib/auth-helpers";
 import { logger } from "@/lib/logger";
 import { jsendSuccess, jsendFail, jsendError } from "@/lib/jsend";
 import { createVideoRepository } from "@/clean-architecture/infrastructure/factories/repository.factory";
@@ -17,19 +17,15 @@ export async function POST(
         return jsendFail({ error: "Video URL is required" });
     }
 
-    const tokenData = await authenticateRequest(body.authToken);
-    if (tokenData.error) {
-        return jsendFail({ error: tokenData.error }, tokenData.status || 401);
+    // Authenticate using session cookie
+    const { user, error: authError } = await getAuthenticatedUser();
+    if (authError || !user) {
+        return jsendFail({ error: "Unauthorized" }, 401);
     }
 
-    // Use the token's user_id as the authenticated user for this request
-    const authenticatedUserId = tokenData.userId;
+    const authenticatedUserId = user.id;
 
-    if (!authenticatedUserId) {
-        return jsendFail({ error: "User not authenticated" }, 401);
-    }
     try {
-        // Remove user_id from the request body since we'll use the authenticated user's ID
         const {
             platform,
             title,

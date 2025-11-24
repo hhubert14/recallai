@@ -2,30 +2,25 @@
 
 import { NextRequest } from "next/server";
 import { generateVideoSummary } from "@/data-access/external-apis/generate-video-summary";
-import { authenticateRequest } from "@/clean-architecture/use-cases/authentication/authenticate-request";
+import { getAuthenticatedUser } from "@/lib/auth-helpers";
 import { logger } from "@/lib/logger";
 import { jsendSuccess, jsendFail, jsendError } from "@/lib/jsend";
 import { createSummaryRepository } from "@/clean-architecture/infrastructure/factories/repository.factory";
 import { CreateSummaryUseCase } from "@/clean-architecture/use-cases/summary/create-summary.use-case";
 
 export async function POST(request: NextRequest) {
-    const { authToken, video_id, title, description, transcript } =
+    const { video_id, title, description, transcript } =
         await request.json();
 
-    if (!authToken || !video_id || !title || !description || !transcript) {
+    if (!video_id || !title || !description || !transcript) {
         return jsendFail({ error: "Missing required parameters" });
     }
 
     try {
-        const tokenData = await authenticateRequest(authToken);
-        if (tokenData.error) {
-            return jsendFail({ error: tokenData.error }, tokenData.status || 401);
-        }
-
-        const authenticatedUserId = tokenData.userId;
-
-        if (!authenticatedUserId) {
-            return jsendFail({ error: "User not authenticated" }, 401);
+        // Authenticate using session cookie
+        const { user, error: authError } = await getAuthenticatedUser();
+        if (authError || !user) {
+            return jsendFail({ error: "Unauthorized" }, 401);
         }
 
         const summaryData = await generateVideoSummary(

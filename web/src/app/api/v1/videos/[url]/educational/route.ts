@@ -4,7 +4,7 @@ import { NextRequest } from "next/server";
 import { getYoutubeVideoData } from "@/data-access/external-apis/get-youtube-video-data";
 import { getYoutubeTranscript } from "@/data-access/external-apis/get-youtube-transcript";
 import { checkVideoEducational } from "@/data-access/external-apis/check-video-educational";
-import { authenticateRequest } from "@/clean-architecture/use-cases/authentication/authenticate-request";
+import { getAuthenticatedUser } from "@/lib/auth-helpers";
 import { jsendSuccess, jsendFail, jsendError } from "@/lib/jsend";
 import { createVideoRepository } from "@/clean-architecture/infrastructure/factories/repository.factory";
 import { FindVideoByUserIdAndUrlUseCase } from "@/clean-architecture/use-cases/video/find-video-by-user-id-and-url.use-case";
@@ -13,15 +13,12 @@ export async function GET(
     request: NextRequest,
     { params }: { params: Promise<{ url: string }> }
 ) {
-    // const supabase = await createClient();
-
     const searchParams = request.nextUrl.searchParams;
     const { url: videoUrl } = await params;
     const videoId = searchParams.get("videoId");
-    const authToken = searchParams.get("authToken");
     const processType = searchParams.get("processType");
 
-    if (!videoUrl || !videoId || !authToken || !processType) {
+    if (!videoUrl || !videoId || !processType) {
         return jsendFail({ error: "Missing required parameters" });
     }
 
@@ -30,17 +27,13 @@ export async function GET(
     }
 
     try {
-        const tokenData = await authenticateRequest(authToken);
-        if (tokenData.error) {
-            return jsendFail({ error: tokenData.error }, tokenData.status || 401);
+        // Authenticate using session cookie
+        const { user, error: authError } = await getAuthenticatedUser();
+        if (authError || !user) {
+            return jsendFail({ error: "Unauthorized" }, 401);
         }
 
-        // Use the token's user_id as the authenticated user for this request
-        const authenticatedUserId = tokenData.userId;
-
-        if (!authenticatedUserId) {
-            return jsendFail({ error: "User not authenticated" }, 401);
-        }
+        const authenticatedUserId = user.id;
 
         const videoRepo = createVideoRepository();
         const video = await new FindVideoByUserIdAndUrlUseCase(videoRepo).execute(authenticatedUserId, videoUrl);

@@ -1,6 +1,8 @@
 import { processVideo } from "@/clean-architecture/use-cases/authentication/process-video";
 import { NextRequest, NextResponse } from "next/server";
 import { logger } from "@/lib/logger";
+import { getAuthenticatedUser } from "@/lib/auth-helpers";
+import { jsendFail } from "@/lib/jsend";
 
 export async function OPTIONS() {
     return new NextResponse(null, {
@@ -20,10 +22,16 @@ export async function POST(
     logger.extension.debug("Processing video request", {
         videoUrl: (await params).url,
     });
-    const { videoId, authToken, processType } = await request.json();
+    const { videoId, processType } = await request.json();
     const { url: videoUrl } = await params;
     try {
-        if (!videoUrl || !videoId || !authToken || !processType) {
+        // Authenticate using session cookie
+        const { user, error: authError } = await getAuthenticatedUser();
+        if (authError || !user) {
+            return jsendFail({ error: "Unauthorized" }, 401);
+        }
+
+        if (!videoUrl || !videoId || !processType) {
             return NextResponse.json(
                 { error: "Missing required parameters" },
                 { status: 400 }
@@ -33,7 +41,7 @@ export async function POST(
         const result = await processVideo(
             videoUrl,
             videoId,
-            authToken,
+            user.id,
             processType,
             request
         );

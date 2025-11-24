@@ -2,31 +2,25 @@
 
 import { NextRequest } from "next/server";
 import { generateVideoQuestions } from "@/data-access/external-apis/generate-video-questions";
-import { authenticateRequest } from "@/clean-architecture/use-cases/authentication/authenticate-request";
+import { getAuthenticatedUser } from "@/lib/auth-helpers";
 import { logger } from "@/lib/logger";
 import { jsendSuccess, jsendFail, jsendError } from "@/lib/jsend";
 import { createQuestionRepository } from "@/clean-architecture/infrastructure/factories/repository.factory";
 import { CreateMultipleChoiceQuestionUseCase } from "@/clean-architecture/use-cases/question/create-multiple-choice-question.use-case";
 
 export async function POST(request: NextRequest) {
-    const { authToken, videoId, title, description, transcript } =
+    const { videoId, title, description, transcript } =
         await request.json();
 
-    if (!authToken || !videoId || !title || !description || !transcript) {
+    if (!videoId || !title || !description || !transcript) {
         return jsendFail({ error: "Missing required parameters" });
     }
 
     try {
-        const tokenData = await authenticateRequest(authToken);
-        if (tokenData.error) {
-            return jsendFail({ error: tokenData.error }, tokenData.status || 401);
-        }
-
-        // Use the token's user_id as the authenticated user for this request
-        const authenticatedUserId = tokenData.userId;
-
-        if (!authenticatedUserId) {
-            return jsendFail({ error: "User not authenticated" }, 401);
+        // Authenticate using session cookie
+        const { user, error: authError } = await getAuthenticatedUser();
+        if (authError || !user) {
+            return jsendFail({ error: "Unauthorized" }, 401);
         }
 
         const questionData = await generateVideoQuestions(
