@@ -2,7 +2,7 @@ import { checkAuthStatus } from "/services/api.js";
 
 // NOTE: Change to "https://www.recallai.io" for production
 // For local development, use "http://localhost:3000"
-const API_BASE_URL = "http://localhost:3000";
+const API_BASE_URL = "https://www.recallai.io";
 
 document.addEventListener("DOMContentLoaded", function () {
     const contentElement = document.getElementById("content");
