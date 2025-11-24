@@ -35,25 +35,22 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
                 processedVideos.delete(currentVideoId);
             }, 30000);
 
-            chrome.storage.local.get(["authToken", "processType"], function (result) {
-                const authToken = result.authToken;
+            chrome.storage.local.get(["processType"], function (result) {
                 const processType = result.processType || "automatic";
 
-                if (!authToken) {
-                    console.warn("No auth token found, skipping video processing");
-                    return;
-                }
                 if (processType !== "automatic") {
                     console.warn("Process type is not set to automatic, skipping video processing");
                     return;
                 }
                 console.log(`Processing video with ID: ${currentVideoId}`);
-                processVideo(tab.url, currentVideoId, authToken, processType);
+                processVideo(tab.url, currentVideoId, processType);
             });
         }
     }
 });
 
+// Simplified external message listener
+// No longer need to handle token authentication from web app
 chrome.runtime.onMessageExternal.addListener(
     function (request, sender, sendResponse) {
         if (!request.action) {
@@ -61,29 +58,9 @@ chrome.runtime.onMessageExternal.addListener(
             return;
         }
         console.log("Received external message:", request);
-        switch (request.action) {
-            case "authenticate":
-                if (!request.data.email || !request.data.token) {
-                    console.error("Email or token not provided in request");
-                    return;
-                }
 
-                // Store email and auth token
-                chrome.storage.local.set(
-                    {
-                        email: request.data.email,
-                        authToken: request.data.token,
-                    },
-                    function () {
-                        console.log("User authenticated successfully!");
-                        sendResponse({ success: true });
-                    }
-                );
-                return true; // Indicate that we will send a response asynchronously
-            default:
-                console.error(`Unknown action: ${request.action}`);
-                sendResponse({ success: false, error: "Unknown action" });
-                return false; // Indicate that we did not handle the request
-        }
+        // Future actions can be added here if needed
+        sendResponse({ success: true });
+        return true;
     }
 );

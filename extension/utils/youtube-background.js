@@ -1,10 +1,3 @@
-// YouTube specific utilities
-
-// export function detectEducationalContent(pageContent) {
-//     // Implement proper educational content detection logic
-//     // Consider using keywords, video metadata, and other signals
-// }
-
 export function extractVideoId(url) {
     const youtubeRegex =
         /^https:\/\/www\.youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/;
