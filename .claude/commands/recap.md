@@ -5,9 +5,11 @@ Analyze my git state and provide a structured status report to help me resume wo
 ## Instructions
 
 1. Check the current branch and any uncommitted changes
-2. Review recent commits (last 10)
-3. Identify what I was likely working on
-4. Suggest what to pick up next
+2. Run `git diff` to see the actual uncommitted code changes
+3. Run `git diff HEAD~10` to see the actual code changes from recent commits
+4. Review recent commit messages for additional context
+5. Identify what I was working on based on the actual code diffs
+6. Suggest what to pick up next
 
 ## Response Format
 
