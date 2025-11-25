@@ -530,6 +530,27 @@ try {
 }
 ```
 
+### 7. Comment Task Markers
+
+Use these standard task markers in code comments:
+
+| Marker | When to use |
+|--------|-------------|
+| `TODO` | Work that needs to be done |
+| `FIXME` | Broken code that needs fixing |
+| `HACK` | Temporary workaround or ugly solution |
+| `NOTE` | Important context or explanation |
+| `REVIEW` | Needs discussion or second opinion |
+
+**Examples:**
+```typescript
+// TODO: Add input validation
+// FIXME: This crashes when userId is null
+// HACK: Workaround for API bug, remove after v2.0
+// NOTE: This must run before database initialization
+// REVIEW: Is this the right approach for error handling?
+```
+
 ## Testing Strategy
 
 **Co-located Tests:** Place test files next to source files with `.test.ts` suffix
