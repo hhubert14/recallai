@@ -10,24 +10,11 @@ export async function getTotalVideosByUserId(userId: string): Promise<number> {
         return 0;
     }
 
-    // const supabase = await createServiceRoleClient();
-
     try {
-        // const { count, error } = await supabase
-        //     .from("videos")
-        //     .select("*", { count: "exact", head: true })
-        //     .eq("user_id", userId)
-        //     .is("deleted_at", null);
-
         const result = await db
             .select({ count: count() })
             .from(videos)
             .where(eq(videos.userId, userId));
-
-        // if (error) {
-        //     logger.db.error("Database query error", error, { userId });
-        //     throw error;
-        // }
 
         return result[0]?.count || 0;
     } catch (error) {

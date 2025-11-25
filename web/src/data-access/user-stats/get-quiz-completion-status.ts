@@ -13,27 +13,11 @@ export async function getQuizCompletionStatus(
         return false;
     }
 
-    // const supabase = await createServiceRoleClient();
-
     try {
-        // Get all questions for this video
-        // const { data: questions, error: questionsError } = await supabase
-        //     .from("questions")
-        //     .select("id")
-        //     .eq("video_id", videoId);
-
         const questionsList = await db
             .select({ id: questions.id })
             .from(questions)
             .where(eq(questions.videoId, videoId));
-
-        // if (questionsError) {
-        //     logger.db.error("Error fetching questions", questionsError, {
-        //         userId,
-        //         videoId,
-        //     });
-        //     return false;
-        // }
 
         if (!questionsList || questionsList.length === 0) {
             return false; // No questions = can't be completed
@@ -41,11 +25,6 @@ export async function getQuizCompletionStatus(
 
         // Get user answers for this video
         const questionIds = questionsList.map(q => q.id);
-        // const { data: userAnswers, error: answersError } = await supabase
-        //     .from("user_answers")
-        //     .select("question_id")
-        //     .eq("user_id", userId)
-        //     .in("question_id", questionIds);
 
         const userAnswersList = await db
             .select({ questionId: userAnswers.questionId })
@@ -56,14 +35,6 @@ export async function getQuizCompletionStatus(
                     inArray(userAnswers.questionId, questionIds)
                 )
             );
-
-        // if (answersError) {
-        //     logger.db.error("Error fetching user answers", answersError, {
-        //         userId,
-        //         videoId,
-        //     });
-        //     return false;
-        // }
 
         if (!userAnswersList) {
             return false;

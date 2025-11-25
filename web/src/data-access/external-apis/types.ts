@@ -1,13 +1,3 @@
-// export type YoutubeTranscript = {
-//     transcript:
-//         | {
-//               start: string;
-//               text: string;
-//               duration: string;
-//           }[]
-//         | null;
-// };
-
 export type YouTubeData = {
     kind: string;
     etag: string;

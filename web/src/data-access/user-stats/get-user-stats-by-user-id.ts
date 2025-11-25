@@ -9,7 +9,6 @@ import { logger } from "@/lib/logger";
 export async function getUserStatsByUserId(
     userId: string
 ): Promise<UserStatsDto> {
-    // logger.db.debug("Getting user stats", { userId });
     if (!userId) {
         logger.db.warn("Invalid parameters - userId is empty");
         return {
@@ -22,7 +21,6 @@ export async function getUserStatsByUserId(
     }
 
     try {
-        // Fetch all stats in parallel
         const [
             totalVideos,
             totalQuestionsAnswered,
@@ -43,7 +41,6 @@ export async function getUserStatsByUserId(
             questionsThisWeek: weeklyActivity.questionsThisWeek,
         };
 
-        // logger.db.info("User stats retrieved", { userId, stats });
         return stats;
     } catch (error) {
         logger.db.error("Error fetching user stats", error, { userId });

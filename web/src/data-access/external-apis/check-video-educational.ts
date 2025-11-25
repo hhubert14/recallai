@@ -63,11 +63,6 @@ Respond with exactly "EDUCATIONAL" or "NOT_EDUCATIONAL" and nothing else.`,
 
     const answer = response.choices[0].message.content?.trim();
 
-    // logger.video.debug("OpenAI educational classification response", {
-    //     answer,
-    //     isEducational: answer === "EDUCATIONAL",
-    // });
-
     if (!answer || typeof answer !== "string") {
         return undefined;
     }

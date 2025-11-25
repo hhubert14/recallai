@@ -38,7 +38,6 @@ export async function generateVideoSummary(
 
     const transcriptText = transcript;
 
-    // Initialize ChatOpenAI with structured output
     const llm = new ChatOpenAI({
         model: "gpt-4.1-nano-2025-04-14", // Note: using a more standard model name
         temperature: 0,
