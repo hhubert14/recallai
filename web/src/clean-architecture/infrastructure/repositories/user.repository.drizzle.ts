@@ -5,9 +5,9 @@ import { eq } from "drizzle-orm";
 import { UserEntity } from "@/clean-architecture/domain/entities/user.entity";
 
 export class DrizzleUserRepository implements IUserRepository {
-    async createUser(email: string): Promise<UserEntity> {
+    async createUser(id: string, email: string): Promise<UserEntity> {
         try {
-            const [data] = await db.insert(users).values({ email }).returning();
+            const [data] = await db.insert(users).values({ id, email }).returning();
             return this.toEntity(data);
         } catch (error) {
             console.error("Error creating user:", error);
