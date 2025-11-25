@@ -9,7 +9,13 @@
       "Bash(done)",
       "Bash(gh pr list:*)",
       "WebSearch",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(git status)",
+      "Bash(git log:*)",
+      "Bash(git diff:*)",
+      "Bash(git branch:*)",
+      "Bash(npm run lint)",
+      "Bash(ls:*)"
     ],
     "deny": [],
     "ask": []
