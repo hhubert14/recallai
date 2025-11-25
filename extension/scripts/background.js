@@ -6,14 +6,6 @@ console.log("Background script loaded successfully");
 // Track processed videos to avoid duplicates
 const processedVideos = new Set();
 
-chrome.storage.local.get("processType", function(result) {
-    if (!result.processType) {
-        chrome.storage.local.set({ processType: "automatic" }, function() {
-            console.log("Process type set to automatic");
-        });
-    }
-});
-
 // Listen for tab updates to detect when user is on YouTube video
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (changeInfo.status === "complete" && tab.url) {
@@ -26,25 +18,17 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
                 console.log(`Video ${currentVideoId} already processed, skipping`);
                 return;
             }
-            
+
             // Add to processed set
             processedVideos.add(currentVideoId);
-            
+
             // Clear the processed video after 30 seconds to allow reprocessing if user revisits
             setTimeout(() => {
                 processedVideos.delete(currentVideoId);
             }, 30000);
 
-            chrome.storage.local.get(["processType"], function (result) {
-                const processType = result.processType || "automatic";
-
-                if (processType !== "automatic") {
-                    console.warn("Process type is not set to automatic, skipping video processing");
-                    return;
-                }
-                console.log(`Processing video with ID: ${currentVideoId}`);
-                processVideo(tab.url, currentVideoId, processType);
-            });
+            console.log(`Processing video with ID: ${currentVideoId}`);
+            processVideo(tab.url);
         }
     }
 });

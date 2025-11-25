@@ -5,6 +5,7 @@ import { Brain } from "lucide-react";
 import { UserButton } from "@/components/ui/user-button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { createClient } from "@/lib/supabase/server";
+import { extractYouTubeVideoId } from "@/lib/youtube";
 import { VideoPlayer } from "./VideoPlayer";
 import { ContentTabs } from "./ContentTabs";
 import { BackButton } from "./BackButton";
@@ -73,14 +74,7 @@ export default async function VideoDetailPage({
         })),
     }));
 
-    const getYouTubeVideoId = (url: string): string | null => {
-        const regex =
-            /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/;
-        const match = url.match(regex);
-        return match ? match[1] : null;
-    };
-
-    const youtubeVideoId = getYouTubeVideoId(video.url);
+    const youtubeVideoId = extractYouTubeVideoId(video.url);
 
     return (
         <div className="flex min-h-screen flex-col bg-white dark:bg-gray-950">

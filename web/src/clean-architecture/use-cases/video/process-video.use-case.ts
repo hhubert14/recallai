@@ -1,197 +1,151 @@
-import { NextRequest } from "next/server";
 import { logger } from "@/lib/logger";
-import { createVideoRepository } from "@/clean-architecture/infrastructure/factories/repository.factory";
-import { FindVideoByUserIdAndUrlUseCase } from "@/clean-architecture/use-cases/video/find-video-by-user-id-and-url.use-case";
+import { extractYouTubeVideoId } from "@/lib/youtube";
+import { IVideoRepository } from "@/clean-architecture/domain/repositories/video.repository.interface";
+import { ISummaryRepository } from "@/clean-architecture/domain/repositories/summary.repository.interface";
+import { IQuestionRepository } from "@/clean-architecture/domain/repositories/question.repository.interface";
+import { VideoEntity } from "@/clean-architecture/domain/entities/video.entity";
+import { SummaryEntity } from "@/clean-architecture/domain/entities/summary.entity";
+import { MultipleChoiceQuestionEntity } from "@/clean-architecture/domain/entities/question.entity";
 
-export const processVideo = async (
-    videoUrl: string,
-    videoId: string,
-    userId: string,
-    processType: "automatic" | "manual",
-    request: NextRequest
-) => {
-    logger.extension.info("Processing video request", {
-        videoUrl,
-        videoId,
-        processType,
-        userId,
-    });
-    const encodedVideoUrl = encodeURIComponent(videoUrl);
+// External API services
+import { getYoutubeVideoData } from "@/data-access/external-apis/get-youtube-video-data";
+import { getYoutubeTranscript } from "@/data-access/external-apis/get-youtube-transcript";
+import { checkVideoEducational } from "@/data-access/external-apis/check-video-educational";
+import { generateVideoSummary } from "@/data-access/external-apis/generate-video-summary";
+import { generateVideoQuestions } from "@/data-access/external-apis/generate-video-questions";
 
-    // Implementation for processing the video
-    if (!videoUrl || !videoId || !userId || !processType) {
-        throw new Error("Missing required parameters");
-    }
-
-    // EARLY CHECKS - Do these before any expensive API calls
-
-    // 1. Check if video already exists for this user
-    logger.extension.debug("Checking if video already exists");
-    const videoRepo = createVideoRepository();
-    const existingVideo = await new FindVideoByUserIdAndUrlUseCase(videoRepo).execute(userId, videoUrl);
-    if (existingVideo) {
-        logger.extension.info("Video already exists, returning existing data", {
-            videoId: existingVideo.id,
-        });
-        return {
-            video_id: existingVideo.id,
-            summary: "Video already processed",
-            questions: [],
-            message: "Video already exists in your library",
-            alreadyExists: true,
-        };
-    }
-
-    if (processType === "automatic") {
-        // Logic for automatic processing
-        logger.extension.info("Starting automatic video processing", {
-            videoId,
-        });
-
-        // Now proceed with the expensive API calls since checks passed
-        const queryParams = new URLSearchParams();
-        queryParams.append("videoId", videoId);
-        queryParams.append("processType", processType);
-
-        let response = await fetch(
-            `${request.nextUrl.origin}/api/v1/videos/${encodedVideoUrl}/educational?${queryParams.toString()}`,
-            {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    Cookie: request.headers.get("cookie") || "",
-                },
-            }
-        );
-
-        const videoData = await response.json();
-        if (!response.ok) {
-            const errorMsg = videoData.data?.error || videoData.message || "Unknown error";
-            throw new Error(`Error processing video: ${errorMsg}`);
-        }
-        // Extract data from JSend success response
-        const educationalData = videoData.data;
-        if (!educationalData || !educationalData.videoData) {
-            throw new Error("Invalid response from educational endpoint");
-        }
-
-        logger.extension.debug("Video educational check completed", {
-            videoId,
-            isEducational: educationalData.isEducational,
-        });
-
-        response = await fetch(
-            `${request.nextUrl.origin}/api/v1/videos/${encodedVideoUrl}`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Cookie: request.headers.get("cookie") || "",
-                },
-                body: JSON.stringify({
-                    platform: "YouTube",
-                    title: educationalData.videoData.snippet.title,
-                    channelName: educationalData.videoData.snippet.channelTitle,
-                    url: videoUrl,
-                }),
-            }
-        ); // First, get the raw response and log it to see its structure
-        const responseJson = await response.json();
-        logger.extension.debug("Video creation API response received", {
-            success: response.ok,
-            status: response.status,
-        });
-
-        // Handle JSend response format
-        if (!response.ok) {
-            const errorMsg = responseJson.data?.error || responseJson.message || "Unknown error";
-            throw new Error(`Error creating video: ${errorMsg}`);
-        }
-
-        // Extract video data from JSend success response
-        const createdVideo = responseJson.data;
-
-        logger.extension.info("Video created successfully", {
-            videoId: createdVideo?.videoId,
-        });
-
-        // Check if createdVideo has videoId before using it
-        if (!createdVideo) {
-            throw new Error(
-                "Invalid response: Missing video data in response"
-            );
-        }
-
-        const video_id_num = createdVideo.id;
-
-        const title = educationalData.videoData.snippet.title || "No Title";
-        const description =
-            educationalData.videoData.snippet.description || "No Description";
-        const transcript = educationalData.transcript || "No Transcript";
-
-        response = await fetch(
-            `${request.nextUrl.origin}/api/v1/videos/${encodedVideoUrl}/summarize`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Cookie: request.headers.get("cookie") || "",
-                },
-                body: JSON.stringify({
-                    video_id: video_id_num,
-                    title,
-                    description,
-                    transcript,
-                }),
-            }
-        );
-
-        const summaryData = await response.json();
-        if (!response.ok) {
-            const errorMsg = summaryData.data?.error || summaryData.message || "Unknown error";
-            throw new Error(`Error generating summary: ${errorMsg}`);
-        }
-        // Extract data from JSend success response
-        const summaryResponse = summaryData.data;
-        const summary = summaryResponse.summary?.content || "No Summary";
-        logger.extension.info("Summary generated successfully", {
-            videoId: video_id_num,
-            summaryLength: summary.length,
-        });
-
-        response = await fetch(
-            `${request.nextUrl.origin}/api/v1/questions`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Cookie: request.headers.get("cookie") || "",
-                },
-                body: JSON.stringify({
-                    videoId: video_id_num,
-                    title,
-                    description,
-                    transcript,
-                }),
-            }
-        );
-
-        const questionsData = await response.json();
-        if (!response.ok) {
-            const errorMsg = questionsData.data?.error || questionsData.message || "Unknown error";
-            throw new Error(`Error generating questions: ${errorMsg}`);
-        }
-        // Extract data from JSend success response
-        const questions = questionsData.data;
-        logger.extension.info("Questions generated successfully", {
-            videoId: video_id_num,
-            questionCount: questions.questions?.length || 0,
-        });
-
-        return {
-            video_id: video_id_num,
-            summary,
-            questions: questions.questions || [],
-        };
-    }
+export type ProcessVideoResult = {
+    video: VideoEntity;
+    summary: SummaryEntity;
+    questions: MultipleChoiceQuestionEntity[];
+    alreadyExists?: boolean;
 };
+
+export class ProcessVideoUseCase {
+    constructor(
+        private readonly videoRepository: IVideoRepository,
+        private readonly summaryRepository: ISummaryRepository,
+        private readonly questionRepository: IQuestionRepository
+    ) {}
+
+    async execute(userId: string, videoUrl: string): Promise<ProcessVideoResult> {
+        logger.extension.info("Processing video request", { videoUrl, userId });
+
+        // 1. Extract YouTube video ID from URL
+        const youtubeVideoId = extractYouTubeVideoId(videoUrl);
+        if (!youtubeVideoId) {
+            throw new Error("Invalid YouTube URL - could not extract video ID");
+        }
+
+        // 2. Check if video already exists for this user
+        logger.extension.debug("Checking if video already exists");
+        const existingVideo = await this.videoRepository.findVideoByUserIdAndUrl(userId, videoUrl);
+        if (existingVideo) {
+            logger.extension.info("Video already exists, returning existing data", {
+                videoId: existingVideo.id,
+            });
+
+            // Fetch existing summary and questions
+            const [existingSummary, existingQuestions] = await Promise.all([
+                this.summaryRepository.findSummaryByVideoId(existingVideo.id),
+                this.questionRepository.findQuestionsByVideoId(existingVideo.id),
+            ]);
+
+            if (!existingSummary) {
+                throw new Error("Video exists but summary not found");
+            }
+
+            return {
+                video: existingVideo,
+                summary: existingSummary,
+                questions: existingQuestions,
+                alreadyExists: true,
+            };
+        }
+
+        // 3. Fetch YouTube data and transcript
+        logger.extension.debug("Fetching YouTube video data");
+        const videoData = await getYoutubeVideoData(youtubeVideoId);
+        if (!videoData || !videoData.items?.[0]?.snippet) {
+            throw new Error("Failed to fetch YouTube video data");
+        }
+
+        const snippet = videoData.items[0].snippet;
+        const title = snippet.title || "Untitled";
+        const description = snippet.description || "";
+        const channelName = snippet.channelTitle || "Unknown Channel";
+
+        logger.extension.debug("Fetching transcript");
+        const transcript = await getYoutubeTranscript(youtubeVideoId);
+        if (!transcript) {
+            throw new Error("Failed to fetch video transcript - captions may be disabled");
+        }
+
+        // 4. Check if video is educational
+        logger.extension.debug("Checking if video is educational");
+        const isEducational = await checkVideoEducational(title, description, transcript);
+        if (!isEducational) {
+            throw new Error("Video does not appear to be educational content");
+        }
+
+        // 5. Create video record
+        logger.extension.debug("Creating video record");
+        const video = await this.videoRepository.createVideo(
+            userId,
+            "YouTube",
+            title,
+            videoUrl,
+            channelName,
+            null // duration - could be extracted from YouTube API if needed
+        );
+        logger.extension.info("Video created successfully", { videoId: video.id });
+
+        // 6. Generate and save summary
+        logger.extension.debug("Generating summary");
+        const summaryResult = await generateVideoSummary(title, description, transcript);
+        if (!summaryResult) {
+            throw new Error("Failed to generate video summary");
+        }
+
+        const summary = await this.summaryRepository.createSummary(video.id, summaryResult.summary);
+        logger.extension.info("Summary created successfully", {
+            videoId: video.id,
+            summaryLength: summary.content.length,
+        });
+
+        // 7. Generate and save questions
+        logger.extension.debug("Generating questions");
+        const questionsResult = await generateVideoQuestions(title, description, transcript);
+        if (!questionsResult || !questionsResult.questions) {
+            throw new Error("Failed to generate video questions");
+        }
+
+        const questions: MultipleChoiceQuestionEntity[] = [];
+        for (const q of questionsResult.questions) {
+            const options = q.options.map((optionText, index) => ({
+                optionText,
+                isCorrect: index === q.correctAnswerIndex,
+                orderIndex: index,
+                explanation: index === q.correctAnswerIndex ? q.explanation : null,
+            }));
+
+            const question = await this.questionRepository.createMultipleChoiceQuestion(
+                video.id,
+                q.question,
+                options
+            );
+            questions.push(question);
+        }
+
+        logger.extension.info("Questions created successfully", {
+            videoId: video.id,
+            questionCount: questions.length,
+        });
+
+        return {
+            video,
+            summary,
+            questions,
+        };
+    }
+}

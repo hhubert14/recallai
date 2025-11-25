@@ -5,6 +5,6 @@ export const API = {
     BASE_URL: "https://www.recallai.io",
     ENDPOINTS: {
         CHECK_AUTH: "/api/v1/users/me",
-        PROCESS_VIDEO: "/api/v1/videos/[url]/extension/process",
+        PROCESS_VIDEO: "/api/v1/videos/[url]/process",
     },
 };

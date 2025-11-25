@@ -16,7 +16,7 @@ export async function checkAuthStatus() {
     }
 }
 
-export async function processVideo(videoUrl, videoId, processType) {
+export async function processVideo(videoUrl) {
     try {
         const endpoint = API.ENDPOINTS.PROCESS_VIDEO.replace('[url]', encodeURIComponent(videoUrl));
         const response = await fetch(
@@ -24,13 +24,6 @@ export async function processVideo(videoUrl, videoId, processType) {
             {
                 method: "POST",
                 credentials: "include",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    videoId,
-                    processType,
-                }),
             }
         );
         return response.ok;
