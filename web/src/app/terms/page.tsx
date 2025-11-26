@@ -152,41 +152,10 @@ export default function TermsOfServicePage() {
                                 </ul>
                             </section>
 
-                            <section className="mb-10 p-6 bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-950/30 dark:to-amber-950/30 rounded-xl border border-orange-200 dark:border-orange-800">
-                                <h2 className="text-2xl font-semibold mb-4 text-orange-900 dark:text-orange-100 flex items-center">
-                                    <span className="bg-orange-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">
-                                        5
-                                    </span>
-                                    Subscription and Payment
-                                </h2>
-                                <ul className="list-disc pl-6 mb-4">
-                                    <li>
-                                        Some features require a paid
-                                        subscription
-                                    </li>
-                                    <li>
-                                        Subscription fees are billed in advance
-                                        and are non-refundable
-                                    </li>
-                                    <li>
-                                        You may cancel your subscription at any
-                                        time
-                                    </li>
-                                    <li>
-                                        Price changes will be communicated with
-                                        30 days notice
-                                    </li>
-                                    <li>
-                                        Failed payments may result in service
-                                        suspension
-                                    </li>
-                                </ul>
-                            </section>
-
                             <section className="mb-10 p-6 bg-gradient-to-r from-rose-50 to-pink-50 dark:from-rose-950/30 dark:to-pink-950/30 rounded-xl border border-rose-200 dark:border-rose-800">
                                 <h2 className="text-2xl font-semibold mb-4 text-rose-900 dark:text-rose-100 flex items-center">
                                     <span className="bg-rose-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">
-                                        6
+                                        5
                                     </span>
                                     Intellectual Property
                                 </h2>
@@ -202,7 +171,7 @@ export default function TermsOfServicePage() {
                             <section className="mb-10 p-6 bg-gradient-to-r from-cyan-50 to-blue-50 dark:from-cyan-950/30 dark:to-blue-950/30 rounded-xl border border-cyan-200 dark:border-cyan-800">
                                 <h2 className="text-2xl font-semibold mb-4 text-cyan-900 dark:text-cyan-100 flex items-center">
                                     <span className="bg-cyan-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">
-                                        7
+                                        6
                                     </span>
                                     User Content
                                 </h2>
@@ -229,7 +198,7 @@ export default function TermsOfServicePage() {
                             <section className="mb-10 p-6 bg-gradient-to-r from-violet-50 to-purple-50 dark:from-violet-950/30 dark:to-purple-950/30 rounded-xl border border-violet-200 dark:border-violet-800">
                                 <h2 className="text-2xl font-semibold mb-4 text-violet-900 dark:text-violet-100 flex items-center">
                                     <span className="bg-violet-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">
-                                        8
+                                        7
                                     </span>
                                     Privacy
                                 </h2>
@@ -244,7 +213,7 @@ export default function TermsOfServicePage() {
                             <section className="mb-10 p-6 bg-gradient-to-r from-red-50 to-rose-50 dark:from-red-950/30 dark:to-rose-950/30 rounded-xl border border-red-200 dark:border-red-800">
                                 <h2 className="text-2xl font-semibold mb-4 text-red-900 dark:text-red-100 flex items-center">
                                     <span className="bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">
-                                        9
+                                        8
                                     </span>
                                     Disclaimers
                                 </h2>
@@ -260,7 +229,7 @@ export default function TermsOfServicePage() {
                             <section className="mb-10 p-6 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-950/30 dark:to-orange-950/30 rounded-xl border border-yellow-200 dark:border-yellow-800">
                                 <h2 className="text-2xl font-semibold mb-4 text-yellow-900 dark:text-yellow-100 flex items-center">
                                     <span className="bg-yellow-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">
-                                        10
+                                        9
                                     </span>
                                     Limitation of Liability
                                 </h2>
@@ -275,7 +244,7 @@ export default function TermsOfServicePage() {
                             <section className="mb-10 p-6 bg-gradient-to-r from-slate-50 to-gray-50 dark:from-slate-950/30 dark:to-gray-950/30 rounded-xl border border-slate-200 dark:border-slate-800">
                                 <h2 className="text-2xl font-semibold mb-4 text-slate-900 dark:text-slate-100 flex items-center">
                                     <span className="bg-slate-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">
-                                        11
+                                        10
                                     </span>
                                     Termination
                                 </h2>
@@ -292,7 +261,7 @@ export default function TermsOfServicePage() {
                             <section className="mb-10 p-6 bg-gradient-to-r from-teal-50 to-cyan-50 dark:from-teal-950/30 dark:to-cyan-950/30 rounded-xl border border-teal-200 dark:border-teal-800">
                                 <h2 className="text-2xl font-semibold mb-4 text-teal-900 dark:text-teal-100 flex items-center">
                                     <span className="bg-teal-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">
-                                        12
+                                        11
                                     </span>
                                     Changes to Terms
                                 </h2>
@@ -307,7 +276,7 @@ export default function TermsOfServicePage() {
                             <section className="mb-10 p-6 bg-gradient-to-r from-lime-50 to-green-50 dark:from-lime-950/30 dark:to-green-950/30 rounded-xl border border-lime-200 dark:border-lime-800">
                                 <h2 className="text-2xl font-semibold mb-4 text-lime-900 dark:text-lime-100 flex items-center">
                                     <span className="bg-lime-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">
-                                        13
+                                        12
                                     </span>
                                     Governing Law
                                 </h2>
@@ -321,7 +290,7 @@ export default function TermsOfServicePage() {
 
                             <section className="mb-8">
                                 <h2 className="text-2xl font-semibold mb-4">
-                                    14. Contact Information
+                                    13. Contact Information
                                 </h2>
                                 <p>
                                     If you have any questions about these Terms,

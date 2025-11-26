@@ -66,7 +66,7 @@ export default function Home() {
                             asChild
                             className="bg-blue-600 hover:bg-blue-700"
                         >
-                            <Link href="/auth/sign-up">Get Started Free</Link>
+                            <Link href="/auth/sign-up">Get Started</Link>
                         </Button>
                     </div>
                 </div>
@@ -102,7 +102,7 @@ export default function Home() {
                                         className="bg-blue-600 hover:bg-blue-700 gap-1"
                                     >
                                         <Link href="/auth/sign-up">
-                                            Get Started Free{" "}
+                                            Get Started{" "}
                                             <ArrowRight className="h-4 w-4" />
                                         </Link>
                                     </Button>
@@ -123,11 +123,11 @@ export default function Home() {
                                 </div>
                                 <div className="flex items-center gap-2 text-sm text-gray-500">
                                     <CheckCircle className="h-4 w-4 text-blue-600" />
+                                    <span>100% free</span>
+                                    <CheckCircle className="ml-2 h-4 w-4 text-blue-600" />
                                     <span>No credit card required</span>
                                     <CheckCircle className="ml-2 h-4 w-4 text-blue-600" />
-                                    <span>Start free today</span>
-                                    <CheckCircle className="ml-2 h-4 w-4 text-blue-600" />
-                                    <span>Upgrade anytime</span>
+                                    <span>Unlimited videos</span>
                                 </div>
                             </div>
                             <div className="flex items-center justify-center">
@@ -887,18 +887,6 @@ export default function Home() {
                                     future.
                                 </p>
                             </div>
-                            {/* <div className="rounded-lg border border-blue-100 bg-white p-6 shadow-sm">
-                                <h3 className="text-lg font-bold text-blue-900">
-                                    Can I share my summaries with friends or
-                                    classmates?
-                                </h3>
-                                <p className="mt-2 text-gray-500">
-                                    Yes, Premium users can share summaries and
-                                    questions with others through a secure link.
-                                    The recipient doesn't need a RecallAI
-                                    account to view shared content.
-                                </p>
-                            </div> */}
                         </div>
                     </div>
                 </section>
@@ -924,7 +912,7 @@ export default function Home() {
                                     asChild
                                 >
                                     <Link href="/auth/sign-up">
-                                        Get Started Free{" "}
+                                        Get Started{" "}
                                         <ArrowRight className="h-4 w-4" />
                                     </Link>
                                 </Button>
@@ -944,8 +932,8 @@ export default function Home() {
                                 </Button>
                             </div>
                             <p className="text-sm text-blue-100 dark:text-blue-200">
-                                No credit card required. Start learning for
-                                free.
+                                RecallAI is completely free. No credit card
+                                required.
                             </p>
                         </div>
                     </div>
