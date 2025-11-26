@@ -530,7 +530,29 @@ try {
 }
 ```
 
-### 7. Comment Task Markers
+### 7. Git Branch Naming
+
+Use these prefixes when creating branches:
+
+| Prefix | When to use |
+|--------|-------------|
+| `feature/` | New features, user-facing changes, enhancements, UI changes |
+| `fix/` | Bug fixes (all types - regular bugs, hotfixes, etc.) |
+| `chore/` | Everything else: dependency updates, config changes, CI/CD tweaks, refactoring, documentation |
+| `release/` | Formal release branches (only if doing formal releases) |
+
+**Examples:**
+```
+feature/add-dark-mode
+feature/user-profile-settings
+fix/login-redirect-bug
+fix/quiz-score-calculation
+chore/update-dependencies
+chore/refactor-auth-service
+release/v1.2.0
+```
+
+### 8. Comment Task Markers
 
 Use these standard task markers in code comments:
 
