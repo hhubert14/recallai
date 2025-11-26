@@ -1,12 +1,12 @@
 "use server";
 
 import { NextRequest } from "next/server";
-import { generateVideoQuestions } from "@/data-access/external-apis/generate-video-questions";
 import { getAuthenticatedUser } from "@/lib/auth-helpers";
 import { logger } from "@/lib/logger";
 import { jsendSuccess, jsendFail, jsendError } from "@/lib/jsend";
 import { createQuestionRepository } from "@/clean-architecture/infrastructure/factories/repository.factory";
 import { CreateMultipleChoiceQuestionUseCase } from "@/clean-architecture/use-cases/question/create-multiple-choice-question.use-case";
+import { LangChainQuestionGeneratorService } from "@/clean-architecture/infrastructure/services/question-generator.service.langchain";
 
 export async function POST(request: NextRequest) {
     const { videoId, title, description, transcript } =
@@ -23,7 +23,8 @@ export async function POST(request: NextRequest) {
             return jsendFail({ error: "Unauthorized" }, 401);
         }
 
-        const questionData = await generateVideoQuestions(
+        const questionGeneratorService = new LangChainQuestionGeneratorService();
+        const questionData = await questionGeneratorService.generate(
             title,
             description,
             transcript

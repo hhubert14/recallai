@@ -1,13 +1,13 @@
 "use server";
 
 import { NextRequest } from "next/server";
-import { getYoutubeVideoData } from "@/data-access/external-apis/get-youtube-video-data";
-import { getYoutubeTranscript } from "@/data-access/external-apis/get-youtube-transcript";
-import { checkVideoEducational } from "@/data-access/external-apis/check-video-educational";
 import { getAuthenticatedUser } from "@/lib/auth-helpers";
 import { jsendSuccess, jsendFail, jsendError } from "@/lib/jsend";
 import { createVideoRepository } from "@/clean-architecture/infrastructure/factories/repository.factory";
 import { FindVideoByUserIdAndUrlUseCase } from "@/clean-architecture/use-cases/video/find-video-by-user-id-and-url.use-case";
+import { YouTubeVideoInfoService } from "@/clean-architecture/infrastructure/services/video-info.service.youtube";
+import { StrapiVideoTranscriptService } from "@/clean-architecture/infrastructure/services/video-transcript.service.strapi";
+import { OpenAIVideoClassifierService } from "@/clean-architecture/infrastructure/services/video-classifier.service.openai";
 
 export async function GET(
     request: NextRequest,
@@ -41,17 +41,15 @@ export async function GET(
             return jsendFail({ error: "Video already exists" }, 409);
         }
 
-        const youtubeData = await getYoutubeVideoData(videoId);
+        const videoInfoService = new YouTubeVideoInfoService();
+        const videoInfo = await videoInfoService.get(videoId);
 
-        if (
-            !youtubeData ||
-            !youtubeData.items ||
-            youtubeData.items.length === 0
-        ) {
+        if (!videoInfo) {
             return jsendFail({ error: "YouTube video not found" }, 404);
         }
 
-        let transcript = await getYoutubeTranscript(videoId);
+        const videoTranscriptService = new StrapiVideoTranscriptService();
+        let transcript = await videoTranscriptService.get(videoId);
         if (!transcript) {
             console.warn(
                 `Transcript not found for video ID: ${videoId}. Proceeding without transcript.`
@@ -59,9 +57,10 @@ export async function GET(
             transcript = "";
         }
 
-        const isEducational = await checkVideoEducational(
-            youtubeData.items[0].snippet.title,
-            youtubeData.items[0].snippet.description,
+        const videoClassifierService = new OpenAIVideoClassifierService();
+        const isEducational = await videoClassifierService.isEducational(
+            videoInfo.title,
+            videoInfo.description,
             transcript
         );
 
@@ -72,8 +71,15 @@ export async function GET(
         if (!isEducational) {
             return jsendFail({ error: "Video is not educational" });
         }
+
         return jsendSuccess({
-            videoData: youtubeData.items[0],
+            videoData: {
+                snippet: {
+                    title: videoInfo.title,
+                    description: videoInfo.description,
+                    channelTitle: videoInfo.channelName,
+                },
+            },
             transcript: transcript,
             isEducational: true,
         });

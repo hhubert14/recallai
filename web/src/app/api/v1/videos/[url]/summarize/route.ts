@@ -1,12 +1,12 @@
 "use server";
 
 import { NextRequest } from "next/server";
-import { generateVideoSummary } from "@/data-access/external-apis/generate-video-summary";
 import { getAuthenticatedUser } from "@/lib/auth-helpers";
 import { logger } from "@/lib/logger";
 import { jsendSuccess, jsendFail, jsendError } from "@/lib/jsend";
 import { createSummaryRepository } from "@/clean-architecture/infrastructure/factories/repository.factory";
 import { CreateSummaryUseCase } from "@/clean-architecture/use-cases/summary/create-summary.use-case";
+import { LangChainVideoSummarizerService } from "@/clean-architecture/infrastructure/services/video-summarizer.service.langchain";
 
 export async function POST(request: NextRequest) {
     const { video_id, title, description, transcript } =
@@ -23,7 +23,8 @@ export async function POST(request: NextRequest) {
             return jsendFail({ error: "Unauthorized" }, 401);
         }
 
-        const summaryData = await generateVideoSummary(
+        const videoSummarizerService = new LangChainVideoSummarizerService();
+        const summaryData = await videoSummarizerService.generate(
             title,
             description,
             transcript

@@ -8,6 +8,11 @@ import {
     createSummaryRepository,
     createQuestionRepository,
 } from "@/clean-architecture/infrastructure/factories/repository.factory";
+import { YouTubeVideoInfoService } from "@/clean-architecture/infrastructure/services/video-info.service.youtube";
+import { StrapiVideoTranscriptService } from "@/clean-architecture/infrastructure/services/video-transcript.service.strapi";
+import { OpenAIVideoClassifierService } from "@/clean-architecture/infrastructure/services/video-classifier.service.openai";
+import { LangChainVideoSummarizerService } from "@/clean-architecture/infrastructure/services/video-summarizer.service.langchain";
+import { LangChainQuestionGeneratorService } from "@/clean-architecture/infrastructure/services/question-generator.service.langchain";
 
 export async function OPTIONS() {
     return new NextResponse(null, {
@@ -43,7 +48,12 @@ export async function POST(
         const useCase = new ProcessVideoUseCase(
             createVideoRepository(),
             createSummaryRepository(),
-            createQuestionRepository()
+            createQuestionRepository(),
+            new YouTubeVideoInfoService(),
+            new StrapiVideoTranscriptService(),
+            new OpenAIVideoClassifierService(),
+            new LangChainVideoSummarizerService(),
+            new LangChainQuestionGeneratorService()
         );
 
         const result = await useCase.execute(user.id, videoUrl);

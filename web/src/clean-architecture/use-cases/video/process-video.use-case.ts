@@ -3,16 +3,14 @@ import { extractYouTubeVideoId } from "@/lib/youtube";
 import { IVideoRepository } from "@/clean-architecture/domain/repositories/video.repository.interface";
 import { ISummaryRepository } from "@/clean-architecture/domain/repositories/summary.repository.interface";
 import { IQuestionRepository } from "@/clean-architecture/domain/repositories/question.repository.interface";
+import { IVideoInfoService } from "@/clean-architecture/domain/services/video-info.interface";
+import { IVideoTranscriptService } from "@/clean-architecture/domain/services/video-transcript.interface";
+import { IVideoClassifierService } from "@/clean-architecture/domain/services/video-classifier.interface";
+import { IVideoSummarizerService } from "@/clean-architecture/domain/services/video-summarizer.interface";
+import { IQuestionGeneratorService } from "@/clean-architecture/domain/services/question-generator.interface";
 import { VideoEntity } from "@/clean-architecture/domain/entities/video.entity";
 import { SummaryEntity } from "@/clean-architecture/domain/entities/summary.entity";
 import { MultipleChoiceQuestionEntity } from "@/clean-architecture/domain/entities/question.entity";
-
-// External API services
-import { getYoutubeVideoData } from "@/data-access/external-apis/get-youtube-video-data";
-import { getYoutubeTranscript } from "@/data-access/external-apis/get-youtube-transcript";
-import { checkVideoEducational } from "@/data-access/external-apis/check-video-educational";
-import { generateVideoSummary } from "@/data-access/external-apis/generate-video-summary";
-import { generateVideoQuestions } from "@/data-access/external-apis/generate-video-questions";
 
 export type ProcessVideoResult = {
     video: VideoEntity;
@@ -25,7 +23,12 @@ export class ProcessVideoUseCase {
     constructor(
         private readonly videoRepository: IVideoRepository,
         private readonly summaryRepository: ISummaryRepository,
-        private readonly questionRepository: IQuestionRepository
+        private readonly questionRepository: IQuestionRepository,
+        private readonly videoInfoService: IVideoInfoService,
+        private readonly videoTranscriptService: IVideoTranscriptService,
+        private readonly videoClassifierService: IVideoClassifierService,
+        private readonly videoSummarizerService: IVideoSummarizerService,
+        private readonly questionGeneratorService: IQuestionGeneratorService
     ) {}
 
     async execute(userId: string, videoUrl: string): Promise<ProcessVideoResult> {
@@ -65,25 +68,22 @@ export class ProcessVideoUseCase {
 
         // 3. Fetch YouTube data and transcript
         logger.extension.debug("Fetching YouTube video data");
-        const videoData = await getYoutubeVideoData(youtubeVideoId);
-        if (!videoData || !videoData.items?.[0]?.snippet) {
+        const videoInfo = await this.videoInfoService.get(youtubeVideoId);
+        if (!videoInfo) {
             throw new Error("Failed to fetch YouTube video data");
         }
 
-        const snippet = videoData.items[0].snippet;
-        const title = snippet.title || "Untitled";
-        const description = snippet.description || "";
-        const channelName = snippet.channelTitle || "Unknown Channel";
+        const { title, description, channelName } = videoInfo;
 
         logger.extension.debug("Fetching transcript");
-        const transcript = await getYoutubeTranscript(youtubeVideoId);
+        const transcript = await this.videoTranscriptService.get(youtubeVideoId);
         if (!transcript) {
             throw new Error("Failed to fetch video transcript - captions may be disabled");
         }
 
         // 4. Check if video is educational
         logger.extension.debug("Checking if video is educational");
-        const isEducational = await checkVideoEducational(title, description, transcript);
+        const isEducational = await this.videoClassifierService.isEducational(title, description, transcript);
         if (!isEducational) {
             throw new Error("Video does not appear to be educational content");
         }
@@ -102,7 +102,7 @@ export class ProcessVideoUseCase {
 
         // 6. Generate and save summary
         logger.extension.debug("Generating summary");
-        const summaryResult = await generateVideoSummary(title, description, transcript);
+        const summaryResult = await this.videoSummarizerService.generate(title, description, transcript);
         if (!summaryResult) {
             throw new Error("Failed to generate video summary");
         }
@@ -115,7 +115,7 @@ export class ProcessVideoUseCase {
 
         // 7. Generate and save questions
         logger.extension.debug("Generating questions");
-        const questionsResult = await generateVideoQuestions(title, description, transcript);
+        const questionsResult = await this.questionGeneratorService.generate(title, description, transcript);
         if (!questionsResult || !questionsResult.questions) {
             throw new Error("Failed to generate video questions");
         }
