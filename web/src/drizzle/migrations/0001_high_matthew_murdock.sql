@@ -1,0 +1,1 @@
+ALTER TABLE "users" RENAME COLUMN "processsing_mode" TO "processing_mode";
