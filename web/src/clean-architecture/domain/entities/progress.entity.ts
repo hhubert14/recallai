@@ -1,11 +1,13 @@
-export type ProgressEntity = {
-  readonly id: number;
-  readonly userId: string;
-  readonly questionId: number;
-  readonly boxLevel: number;
-  readonly nextReviewDate: string | null;
-  readonly timesCorrect: number;
-  readonly timesIncorrect: number;
-  readonly lastReviewedAt: string | null;
-  readonly createdAt: string;
-};
+export class ProgressEntity {
+  constructor(
+    public readonly id: number,
+    public readonly userId: string,
+    public readonly questionId: number,
+    public readonly boxLevel: number,
+    public readonly nextReviewDate: string | null,
+    public readonly timesCorrect: number,
+    public readonly timesIncorrect: number,
+    public readonly lastReviewedAt: string | null,
+    public readonly createdAt: string,
+  ) {}
+}

@@ -7,15 +7,14 @@ import { eq, and } from "drizzle-orm";
 function toMultipleChoiceAnswerEntity(
   record: typeof userAnswers.$inferSelect
 ): MultipleChoiceAnswerEntity {
-  return {
-    type: "multiple-choice",
-    id: record.id,
-    userId: record.userId,
-    questionId: record.questionId,
-    selectedOptionId: record.selectedOptionId,
-    isCorrect: record.isCorrect,
-    createdAt: record.createdAt,
-  };
+  return new MultipleChoiceAnswerEntity(
+    record.id,
+    record.userId,
+    record.questionId,
+    record.selectedOptionId,
+    record.isCorrect,
+    record.createdAt,
+  );
 }
 
 export class DrizzleAnswerRepository implements IAnswerRepository {

@@ -7,17 +7,17 @@ import { eq, and, lte, isNotNull, count } from "drizzle-orm";
 function toProgressEntity(
   record: typeof userQuestionProgress.$inferSelect
 ): ProgressEntity {
-  return {
-    id: record.id,
-    userId: record.userId,
-    questionId: record.questionId,
-    boxLevel: record.boxLevel ?? 1,
-    nextReviewDate: record.nextReviewDate,
-    timesCorrect: record.timesCorrect ?? 0,
-    timesIncorrect: record.timesIncorrect ?? 0,
-    lastReviewedAt: record.lastReviewedAt,
-    createdAt: record.createdAt,
-  };
+  return new ProgressEntity(
+    record.id,
+    record.userId,
+    record.questionId,
+    record.boxLevel ?? 1,
+    record.nextReviewDate,
+    record.timesCorrect ?? 0,
+    record.timesIncorrect ?? 0,
+    record.lastReviewedAt,
+    record.createdAt,
+  );
 }
 
 export class DrizzleProgressRepository implements IProgressRepository {

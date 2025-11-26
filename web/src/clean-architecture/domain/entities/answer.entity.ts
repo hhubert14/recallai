@@ -1,11 +1,14 @@
-export type MultipleChoiceAnswerEntity = {
-  readonly type: "multiple-choice";
-  readonly id: number;
-  readonly userId: string;
-  readonly questionId: number;
-  readonly selectedOptionId: number;
-  readonly isCorrect: boolean;
-  readonly createdAt: string;
-};
+export class MultipleChoiceAnswerEntity {
+  readonly type = "multiple-choice" as const;
+
+  constructor(
+    public readonly id: number,
+    public readonly userId: string,
+    public readonly questionId: number,
+    public readonly selectedOptionId: number,
+    public readonly isCorrect: boolean,
+    public readonly createdAt: string,
+  ) {}
+}
 
 export type AnswerEntity = MultipleChoiceAnswerEntity;
