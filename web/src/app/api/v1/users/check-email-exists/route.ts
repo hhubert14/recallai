@@ -1,6 +1,6 @@
 import { type NextRequest } from "next/server";
 import { CheckEmailExistsUseCase } from "@/clean-architecture/use-cases/user/check-email-exists.use-case";
-import { createUserRepository } from "@/clean-architecture/infrastructure/factories/repository.factory";
+import { DrizzleUserRepository } from "@/clean-architecture/infrastructure/repositories/user.repository.drizzle";
 import { jsendFail, jsendSuccess, jsendError } from "@/lib/jsend";
 
 export async function POST(request: NextRequest) {
@@ -10,8 +10,7 @@ export async function POST(request: NextRequest) {
         if (!email) {
             return jsendFail({ error: "Email is required" })
         }
-        const repo = createUserRepository();
-        const emailExists = await new CheckEmailExistsUseCase(repo).execute(email);
+        const emailExists = await new CheckEmailExistsUseCase(new DrizzleUserRepository()).execute(email);
 
         return jsendSuccess({emailExists})
     } catch (error) {

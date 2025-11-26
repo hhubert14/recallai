@@ -3,11 +3,9 @@ import { logger } from "@/lib/logger";
 import { getAuthenticatedUser } from "@/lib/auth-helpers";
 import { jsendFail, jsendSuccess, jsendError } from "@/lib/jsend";
 import { ProcessVideoUseCase } from "@/clean-architecture/use-cases/video/process-video.use-case";
-import {
-    createVideoRepository,
-    createSummaryRepository,
-    createQuestionRepository,
-} from "@/clean-architecture/infrastructure/factories/repository.factory";
+import { DrizzleVideoRepository } from "@/clean-architecture/infrastructure/repositories/video.repository.drizzle";
+import { DrizzleSummaryRepository } from "@/clean-architecture/infrastructure/repositories/summary.repository.drizzle";
+import { DrizzleQuestionRepository } from "@/clean-architecture/infrastructure/repositories/question.repository.drizzle";
 import { YouTubeVideoInfoService } from "@/clean-architecture/infrastructure/services/video-info.service.youtube";
 import { StrapiVideoTranscriptService } from "@/clean-architecture/infrastructure/services/video-transcript.service.strapi";
 import { OpenAIVideoClassifierService } from "@/clean-architecture/infrastructure/services/video-classifier.service.openai";
@@ -46,9 +44,9 @@ export async function POST(
         }
 
         const useCase = new ProcessVideoUseCase(
-            createVideoRepository(),
-            createSummaryRepository(),
-            createQuestionRepository(),
+            new DrizzleVideoRepository(),
+            new DrizzleSummaryRepository(),
+            new DrizzleQuestionRepository(),
             new YouTubeVideoInfoService(),
             new StrapiVideoTranscriptService(),
             new OpenAIVideoClassifierService(),

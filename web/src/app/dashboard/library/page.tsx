@@ -7,7 +7,7 @@ import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { createClient } from "@/lib/supabase/server";
 import { LibraryVideoList } from "@/app/dashboard/library/LibraryVideoList";
 import { TextRefreshButton } from "../TextRefreshButton";
-import { createVideoRepository } from "@/clean-architecture/infrastructure/factories/repository.factory";
+import { DrizzleVideoRepository } from "@/clean-architecture/infrastructure/repositories/video.repository.drizzle";
 import { FindVideosByUserIdUseCase } from "@/clean-architecture/use-cases/video/find-videos-by-user-id.use-case";
 
 export const metadata: Metadata = {
@@ -27,8 +27,7 @@ export default async function LibraryPage() {
     }
 
     // Get all user videos
-    const videoRepo = createVideoRepository();
-    const allVideos = await new FindVideosByUserIdUseCase(videoRepo).execute(user.id);
+    const allVideos = await new FindVideosByUserIdUseCase(new DrizzleVideoRepository()).execute(user.id);
 
     return (
         <div className="flex min-h-screen flex-col bg-white dark:bg-gray-950">

@@ -9,7 +9,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getUserStatsByUserId } from "@/data-access/user-stats/get-user-stats-by-user-id";
 import { StatsCard } from "./StatsCard";
 import { RefreshButton } from "./RefreshButton";
-import { createVideoRepository } from "@/clean-architecture/infrastructure/factories/repository.factory";
+import { DrizzleVideoRepository } from "@/clean-architecture/infrastructure/repositories/video.repository.drizzle";
 import { FindVideosByUserIdUseCase } from "@/clean-architecture/use-cases/video/find-videos-by-user-id.use-case";
 
 export const metadata: Metadata = {
@@ -35,10 +35,8 @@ export default async function DashboardPage() {
         questionsThisWeek: 0,
     };
 
-    const videoRepo = createVideoRepository();
-
     const [videos, stats] = await Promise.all([
-        new FindVideosByUserIdUseCase(videoRepo).execute(user.id, 5),
+        new FindVideosByUserIdUseCase(new DrizzleVideoRepository()).execute(user.id, 5),
         getUserStatsByUserId(user.id),
     ]);
     // recentVideos = videos;

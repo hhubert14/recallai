@@ -2,7 +2,7 @@ import { NextRequest } from "next/server";
 import { getAuthenticatedUser } from "@/lib/auth-helpers";
 import { logger } from "@/lib/logger";
 import { jsendSuccess, jsendFail, jsendError } from "@/lib/jsend";
-import { createVideoRepository } from "@/clean-architecture/infrastructure/factories/repository.factory";
+import { DrizzleVideoRepository } from "@/clean-architecture/infrastructure/repositories/video.repository.drizzle";
 import { FindVideoByUserIdAndUrlUseCase } from "@/clean-architecture/use-cases/video/find-video-by-user-id-and-url.use-case";
 import { CreateVideoUseCase } from "@/clean-architecture/use-cases/video/create-video.use-case";
 
@@ -44,7 +44,7 @@ export async function POST(
             });
         }
 
-        const repo = createVideoRepository()
+        const repo = new DrizzleVideoRepository();
         const video = await new FindVideoByUserIdAndUrlUseCase(repo).execute(authenticatedUserId, videoUrl);
         if (video) {
             return jsendFail({

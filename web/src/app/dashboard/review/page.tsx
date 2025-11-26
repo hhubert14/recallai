@@ -3,7 +3,8 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { GetQuestionsForReviewUseCase } from "@/clean-architecture/use-cases/progress/get-questions-for-review.use-case";
 import { GetProgressStatsUseCase } from "@/clean-architecture/use-cases/progress/get-progress-stats.use-case";
-import { createProgressRepository, createQuestionRepository } from "@/clean-architecture/infrastructure/factories/repository.factory";
+import { DrizzleProgressRepository } from "@/clean-architecture/infrastructure/repositories/progress.repository.drizzle";
+import { DrizzleQuestionRepository } from "@/clean-architecture/infrastructure/repositories/question.repository.drizzle";
 import { ReviewInterface } from "@/app/dashboard/review/ReviewInterface";
 import { Brain } from "lucide-react";
 import Link from "next/link";
@@ -27,8 +28,8 @@ export default async function ReviewPage() {
         redirect("/auth/login");
     }
 
-    const progressRepo = createProgressRepository();
-    const questionRepo = createQuestionRepository();
+    const progressRepo = new DrizzleProgressRepository();
+    const questionRepo = new DrizzleQuestionRepository();
 
     const getStatsUseCase = new GetProgressStatsUseCase(progressRepo);
     const getQuestionsUseCase = new GetQuestionsForReviewUseCase(progressRepo, questionRepo);

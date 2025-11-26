@@ -4,7 +4,7 @@ import { NextRequest } from "next/server";
 import { getAuthenticatedUser } from "@/lib/auth-helpers";
 import { logger } from "@/lib/logger";
 import { jsendSuccess, jsendFail, jsendError } from "@/lib/jsend";
-import { createSummaryRepository } from "@/clean-architecture/infrastructure/factories/repository.factory";
+import { DrizzleSummaryRepository } from "@/clean-architecture/infrastructure/repositories/summary.repository.drizzle";
 import { CreateSummaryUseCase } from "@/clean-architecture/use-cases/summary/create-summary.use-case";
 import { LangChainVideoSummarizerService } from "@/clean-architecture/infrastructure/services/video-summarizer.service.langchain";
 
@@ -38,8 +38,7 @@ export async function POST(request: NextRequest) {
             summaryLength: summaryData.summary?.length || 0,
         });
 
-        const summaryRepo = createSummaryRepository();
-        const createdSummary = await new CreateSummaryUseCase(summaryRepo).execute(
+        const createdSummary = await new CreateSummaryUseCase(new DrizzleSummaryRepository()).execute(
             video_id,
             summaryData.summary
         );

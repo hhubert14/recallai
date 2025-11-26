@@ -9,7 +9,9 @@ import { extractYouTubeVideoId } from "@/lib/youtube";
 import { VideoPlayer } from "./VideoPlayer";
 import { ContentTabs } from "./ContentTabs";
 import { BackButton } from "./BackButton";
-import { createVideoRepository, createSummaryRepository, createQuestionRepository } from "@/clean-architecture/infrastructure/factories/repository.factory";
+import { DrizzleVideoRepository } from "@/clean-architecture/infrastructure/repositories/video.repository.drizzle";
+import { DrizzleSummaryRepository } from "@/clean-architecture/infrastructure/repositories/summary.repository.drizzle";
+import { DrizzleQuestionRepository } from "@/clean-architecture/infrastructure/repositories/question.repository.drizzle";
 import { FindVideoByIdUseCase } from "@/clean-architecture/use-cases/video/find-video-by-id.use-case";
 import { FindSummaryByVideoIdUseCase } from "@/clean-architecture/use-cases/summary/find-summary-by-video-id.use-case";
 import { FindQuestionsByVideoIdUseCase } from "@/clean-architecture/use-cases/question/find-questions-by-video-id.use-case";
@@ -38,19 +40,15 @@ export default async function VideoDetailPage({
         redirect("/auth/login");
     }
 
-    const videoRepo = createVideoRepository();
-    const video = await new FindVideoByIdUseCase(videoRepo).execute(parseInt(id), user.id);
+    const video = await new FindVideoByIdUseCase(new DrizzleVideoRepository()).execute(parseInt(id), user.id);
 
     if (!video) {
         notFound();
     }
 
-    const summaryRepo = createSummaryRepository();
-    const questionRepo = createQuestionRepository();
-
     const [summaryEntity, questionEntities] = await Promise.all([
-        new FindSummaryByVideoIdUseCase(summaryRepo).execute(video.id),
-        new FindQuestionsByVideoIdUseCase(questionRepo).execute(video.id),
+        new FindSummaryByVideoIdUseCase(new DrizzleSummaryRepository()).execute(video.id),
+        new FindQuestionsByVideoIdUseCase(new DrizzleQuestionRepository()).execute(video.id),
     ]);
 
     // Convert entities to plain objects for client components

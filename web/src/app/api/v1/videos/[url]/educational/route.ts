@@ -3,7 +3,7 @@
 import { NextRequest } from "next/server";
 import { getAuthenticatedUser } from "@/lib/auth-helpers";
 import { jsendSuccess, jsendFail, jsendError } from "@/lib/jsend";
-import { createVideoRepository } from "@/clean-architecture/infrastructure/factories/repository.factory";
+import { DrizzleVideoRepository } from "@/clean-architecture/infrastructure/repositories/video.repository.drizzle";
 import { FindVideoByUserIdAndUrlUseCase } from "@/clean-architecture/use-cases/video/find-video-by-user-id-and-url.use-case";
 import { YouTubeVideoInfoService } from "@/clean-architecture/infrastructure/services/video-info.service.youtube";
 import { StrapiVideoTranscriptService } from "@/clean-architecture/infrastructure/services/video-transcript.service.strapi";
@@ -35,8 +35,7 @@ export async function GET(
 
         const authenticatedUserId = user.id;
 
-        const videoRepo = createVideoRepository();
-        const video = await new FindVideoByUserIdAndUrlUseCase(videoRepo).execute(authenticatedUserId, videoUrl);
+        const video = await new FindVideoByUserIdAndUrlUseCase(new DrizzleVideoRepository()).execute(authenticatedUserId, videoUrl);
         if (video) {
             return jsendFail({ error: "Video already exists" }, 409);
         }

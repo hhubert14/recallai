@@ -4,7 +4,7 @@ import { NextRequest } from "next/server";
 import { getAuthenticatedUser } from "@/lib/auth-helpers";
 import { logger } from "@/lib/logger";
 import { jsendSuccess, jsendFail, jsendError } from "@/lib/jsend";
-import { createQuestionRepository } from "@/clean-architecture/infrastructure/factories/repository.factory";
+import { DrizzleQuestionRepository } from "@/clean-architecture/infrastructure/repositories/question.repository.drizzle";
 import { CreateMultipleChoiceQuestionUseCase } from "@/clean-architecture/use-cases/question/create-multiple-choice-question.use-case";
 import { LangChainQuestionGeneratorService } from "@/clean-architecture/infrastructure/services/question-generator.service.langchain";
 
@@ -39,8 +39,7 @@ export async function POST(request: NextRequest) {
         });
 
         // Create each question and its options in the database
-        const questionRepo = createQuestionRepository();
-        const createQuestionUseCase = new CreateMultipleChoiceQuestionUseCase(questionRepo);
+        const createQuestionUseCase = new CreateMultipleChoiceQuestionUseCase(new DrizzleQuestionRepository());
 
         for (const question of questionData.questions) {
             const options = question.options.map((optionText, i) => ({
