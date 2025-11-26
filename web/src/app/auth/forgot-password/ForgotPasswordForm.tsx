@@ -55,6 +55,9 @@ export function ForgotPasswordForm({
                             If you registered using your email and password, you
                             will receive a password reset email.
                         </p>
+                        <p className="text-sm text-blue-600 dark:text-blue-400 mt-2">
+                            Can&apos;t find it? Check your spam or junk folder.
+                        </p>
                     </div>
                 </div>
             ) : (
