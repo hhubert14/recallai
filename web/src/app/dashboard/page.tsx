@@ -2,9 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Brain, Play, Chrome, Video } from "lucide-react";
-import { UserButton } from "@/components/ui/user-button";
-import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { Play, Chrome, Video } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getUserStatsByUserId } from "@/data-access/user-stats/get-user-stats-by-user-id";
 import { StatsCard } from "./StatsCard";
@@ -44,40 +42,6 @@ export default async function DashboardPage() {
 
     return (
         <div className="flex min-h-screen flex-col bg-white dark:bg-gray-950">
-            <header className="sticky top-0 z-50 w-full border-b border-gray-200 dark:border-gray-800 bg-white/95 dark:bg-gray-950/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-gray-950/60">
-                <div className="container flex h-16 items-center justify-between px-6 md:px-8">
-                    <div className="flex items-center gap-2">
-                        <Brain className="h-6 w-6 text-blue-600" />
-                        <span className="text-xl font-bold text-gray-900 dark:text-white">
-                            RecallAI
-                        </span>
-                    </div>
-                    <nav className="hidden md:flex gap-6">
-                        <Link
-                            href="/dashboard"
-                            className="text-sm font-medium text-blue-600"
-                        >
-                            Dashboard
-                        </Link>
-                        <Link
-                            href="/dashboard/library"
-                            className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600"
-                        >
-                            My Library
-                        </Link>
-                        <Link
-                            href="/dashboard/review"
-                            className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600"
-                        >
-                            Review
-                        </Link>
-                    </nav>
-                    <div className="flex items-center gap-4">
-                        <ThemeToggle />
-                        <UserButton />
-                    </div>
-                </div>
-            </header>
             <main className="flex-1 container py-12 px-6 md:px-8 max-w-7xl mx-auto">
                 <div className="flex items-center justify-between mb-8">
                     <h1 className="text-4xl font-bold tracking-tight text-blue-900 dark:text-blue-100 mb-3">
