@@ -1,4 +1,4 @@
-import { pgTable, foreignKey, unique, uuid, text, timestamp, bigint, boolean, integer, index, smallint, date, pgEnum } from "drizzle-orm/pg-core"
+import { pgTable, foreignKey, unique, uuid, text, timestamp, bigint, boolean, integer, index, smallint, date, pgEnum, jsonb } from "drizzle-orm/pg-core"
 import { sql } from "drizzle-orm"
 
 export const plan = pgEnum("plan", ['free', 'premium', 'student'])
@@ -194,4 +194,18 @@ export const userAnswers = pgTable("user_answers", {
 			foreignColumns: [users.id],
 			name: "user_answers_user_id_fkey"
 		}).onUpdate("cascade").onDelete("cascade"),
+]);
+
+export const onboardingSurveys = pgTable("onboarding_surveys", {
+	id: uuid().defaultRandom().primaryKey().notNull(),
+	userId: uuid("user_id").notNull(),
+	answers: jsonb().notNull(),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+}, (table) => [
+	foreignKey({
+			columns: [table.userId],
+			foreignColumns: [users.id],
+			name: "onboarding_surveys_user_id_fkey"
+		}).onUpdate("cascade").onDelete("cascade"),
+	unique("onboarding_surveys_user_id_key").on(table.userId),
 ]);
