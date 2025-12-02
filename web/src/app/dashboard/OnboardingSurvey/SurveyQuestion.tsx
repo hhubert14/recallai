@@ -103,6 +103,7 @@ export function SurveyQuestion({
                             value={otherValue}
                             onChange={(e) => onOtherChange?.(e.target.value)}
                             className="mt-1"
+                            maxLength={500}
                         />
                     </div>
                 )}

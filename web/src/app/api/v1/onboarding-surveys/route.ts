@@ -13,6 +13,11 @@ export async function POST(request: Request) {
         }
 
         const body = await request.json();
+
+        if (JSON.stringify(body).length > 10000) {
+            return jsendFail({ error: "Payload too large" }, 400);
+        }
+
         const answers: SurveyAnswers = body.answers || {};
 
         const useCase = new SubmitSurveyUseCase(
