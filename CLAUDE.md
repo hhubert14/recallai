@@ -350,7 +350,25 @@ export class GetUserProfileUseCase {
 
 **Rule of thumb:** Prefer entities by default. Create DTOs only when there's a clear reason (security, performance, etc.).
 
-### 2. Component Organization
+### 2. Repository Method Naming
+
+Repository methods should include the entity name for clarity and to avoid ambiguity:
+
+```typescript
+// ✅ Good - entity name included
+findVideoById(id: number)
+findVideoByUserIdAndUrl(userId: string, url: string)
+findSurveyByUserId(userId: string)
+createVideo(userId: string, ...)
+createSurvey(userId: string, answers: SurveyAnswers)
+
+// ❌ Bad - ambiguous without entity name
+findById(id: number)
+findByUserId(userId: string)
+create(userId: string, ...)
+```
+
+### 3. Component Organization
 
 **Decision Rule:**
 - Component used in **1 place only** → Co-locate with the page/feature
@@ -411,7 +429,7 @@ export function VideoPlayer({ url }: { url: string }) { ... }
 - **Scalability** - Clear rule prevents confusion as codebase grows
 - **Maintenance** - Feature-specific code stays together, easier to refactor/delete
 
-### 3. Database Queries (Drizzle)
+### 4. Database Queries (Drizzle)
 
 **Select:**
 ```typescript
@@ -453,7 +471,7 @@ const data = await db.query.questions.findMany({
 });
 ```
 
-### 4. API Routes
+### 5. API Routes
 
 All API routes are versioned under `/api/v1/` and use JSend response format.
 
@@ -513,22 +531,11 @@ export async function GET(request: Request, { params }: { params: { url: string 
 }
 ```
 
-### 5. Type Safety
+### 6. Type Safety
 
 - Use Drizzle-inferred types: `typeof tableName.$inferSelect`
 - Export types from `src/drizzle/schema.ts`
 - Prefer type-safe queries over raw SQL
-
-### 6. Error Handling
-
-```typescript
-try {
-  // Database operation
-} catch (error) {
-  console.error("Error description:", error);
-  return null; // or throw appropriate error
-}
-```
 
 ### 7. Git Branch Naming
 
