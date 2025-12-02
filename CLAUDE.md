@@ -537,15 +537,26 @@ export async function GET(request: Request, { params }: { params: { url: string 
 - Export types from `src/drizzle/schema.ts`
 - Prefer type-safe queries over raw SQL
 
-### 7. Error Handling
+### 7. Git Branch Naming
 
-```typescript
-try {
-  // Database operation
-} catch (error) {
-  console.error("Error description:", error);
-  return null; // or throw appropriate error
-}
+Use these prefixes when creating branches:
+
+| Prefix | When to use |
+|--------|-------------|
+| `feature/` | New features, user-facing changes, enhancements, UI changes |
+| `fix/` | Bug fixes (all types - regular bugs, hotfixes, etc.) |
+| `chore/` | Everything else: dependency updates, config changes, CI/CD tweaks, refactoring, documentation |
+| `release/` | Formal release branches (only if doing formal releases) |
+
+**Examples:**
+```
+feature/add-dark-mode
+feature/user-profile-settings
+fix/login-redirect-bug
+fix/quiz-score-calculation
+chore/update-dependencies
+chore/refactor-auth-service
+release/v1.2.0
 ```
 
 ### 8. Comment Task Markers

@@ -80,7 +80,7 @@ export function SignUpForm() {
                     email,
                     password,
                     options: {
-                        emailRedirectTo: `${window.location.origin}/auth/confirm-email`
+                        emailRedirectTo: `${window.location.origin}/auth/success`
                     }
                 });
 

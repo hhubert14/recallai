@@ -94,10 +94,6 @@ export default function PrivacyPolicyPage() {
                                         authentication)
                                     </li>
                                     <li>Username and profile information</li>
-                                    <li>
-                                        Subscription and billing information
-                                        (processed securely through Stripe)
-                                    </li>
                                 </ul>
 
                                 <h3 className="text-xl font-medium mb-3">
@@ -145,10 +141,6 @@ export default function PrivacyPolicyPage() {
                                     <li>
                                         Track your learning progress and provide
                                         personalized recommendations
-                                    </li>
-                                    <li>
-                                        Process payments and manage
-                                        subscriptions
                                     </li>
                                     <li>
                                         Send important service updates and
@@ -210,14 +202,9 @@ export default function PrivacyPolicyPage() {
                                         summaries and quiz questions
                                     </li>
                                     <li>
-                                        <strong>Stripe:</strong> For secure
-                                        payment processing
-                                    </li>
-                                    <li>
                                         <strong>Supabase:</strong> For database
                                         and authentication services
                                     </li>
-                                    {/* <li><strong>ZeroBounce:</strong> For email validation</li> */}
                                 </ul>
                                 <p>
                                     Each service has its own privacy policy, and

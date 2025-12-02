@@ -29,6 +29,10 @@ export default function ConfirmEmailPage() {
                                 Please click the link in that email to activate
                                 your account.
                             </p>
+                            <p className="mt-2 text-sm">
+                                Can&apos;t find it? Check your spam or junk
+                                folder.
+                            </p>
                         </div>
                     </div>
 

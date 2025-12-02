@@ -25,7 +25,7 @@ export function ForgotPasswordForm({
 
         try {
             const { error } = await supabase.auth.resetPasswordForEmail(email, {
-                redirectTo: `${window.location.origin}/api/v1/auth/update-password`,
+                redirectTo: `${window.location.origin}/auth/update-password`,
             });
             if (error) throw error;
             setSuccess(true);
@@ -54,6 +54,9 @@ export function ForgotPasswordForm({
                         <p className="text-sm text-blue-600 dark:text-blue-400">
                             If you registered using your email and password, you
                             will receive a password reset email.
+                        </p>
+                        <p className="text-sm text-blue-600 dark:text-blue-400 mt-2">
+                            Can&apos;t find it? Check your spam or junk folder.
                         </p>
                     </div>
                 </div>
