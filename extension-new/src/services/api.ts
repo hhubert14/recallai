@@ -1,4 +1,3 @@
-// import { API } from '@/lib/constants';
 import { BASE_URL } from '@/lib/constants';
 
 /**
