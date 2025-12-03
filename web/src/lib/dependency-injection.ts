@@ -3,6 +3,25 @@
  * 
  * Creates instances of repositories and services with proper dependencies.
  * This reduces code duplication in API routes and makes testing easier.
+ * 
+ * @example
+ * ```ts
+ * // In API routes - before
+ * const useCase = new ProcessVideoUseCase(
+ *   new DrizzleVideoRepository(),
+ *   new DrizzleSummaryRepository(),
+ *   new DrizzleQuestionRepository(),
+ *   new YouTubeVideoInfoService(),
+ *   // ... 4 more dependencies
+ * );
+ * 
+ * // After - much cleaner
+ * const result = await useCases.processVideo().execute(userId, videoUrl);
+ * 
+ * // Or use individual factories
+ * const videoRepo = repositories.video();
+ * const summaryService = services.videoSummarizer();
+ * ```
  */
 
 import { DrizzleVideoRepository } from "@/clean-architecture/infrastructure/repositories/video.repository.drizzle";
