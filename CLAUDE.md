@@ -22,10 +22,11 @@ The platform uses the Leitner box system for optimal knowledge retention.
 - Vitest + React Testing Library
 
 *Chrome Extension:*
+- WXT (https://wxt.dev) - Modern extension framework
 - Manifest V3
-- Vanilla JavaScript (ES Modules, no build process)
-- Chrome Storage API
-- Token-based authentication with web app
+- TypeScript + React
+- Tailwind CSS
+- Session-based authentication (cookie-based, no tokens)
 
 ## Project Structure
 
@@ -51,27 +52,29 @@ learnsync/
 │   │   └── testing-priorities.md
 │   └── vitest.config.mts
 │
-└── extension/                 # Chrome extension (Manifest V3)
-    ├── scripts/
-    │   ├── background.js          # Service worker
-    │   ├── content.js             # Content script (injected into YouTube)
-    │   └── popup.js               # Extension popup UI logic
-    ├── services/
-    │   ├── api.js                 # Backend API communication
-    │   ├── auth.js                # Authentication logic
-    │   └── storage.js             # Chrome storage wrapper
-    ├── ui/
-    │   └── templates.js           # UI templates
-    ├── utils/
-    │   ├── notifications.js       # In-page notifications
-    │   └── youtube-background.js  # YouTube-specific background logic
-    ├── config/
-    │   └── constants.js           # API endpoints & configuration
-    ├── css/
-    │   └── popup.css              # Popup styling
-    ├── icons/                     # Extension icons (16, 32, 48, 128)
-    ├── manifest.json              # Extension manifest
-    └── popup.html                 # Extension popup HTML
+└── extension/                 # Chrome extension (WXT + React)
+    ├── src/
+    │   ├── entrypoints/
+    │   │   ├── background.ts      # Service worker (YouTube detection, video processing)
+    │   │   └── popup/             # Extension popup (React)
+    │   │       ├── App.tsx        # Main popup component
+    │   │       ├── main.tsx       # React entry point
+    │   │       ├── index.html     # Popup HTML template
+    │   │       └── style.css      # Tailwind import
+    │   ├── hooks/
+    │   │   └── useAuth.ts         # Authentication state hook
+    │   ├── services/
+    │   │   └── api.ts             # Backend API communication
+    │   ├── lib/
+    │   │   ├── constants.ts       # BASE_URL configuration
+    │   │   └── youtube.ts         # YouTube URL parsing utilities
+    │   ├── assets/
+    │   │   └── tailwind.css       # Tailwind base styles
+    │   └── public/
+    │       └── icons/             # Extension icons (16, 32, 48, 128)
+    ├── wxt.config.ts              # WXT configuration (manifest, plugins)
+    ├── tsconfig.json              # TypeScript config
+    └── package.json               # Dependencies (WXT, React, Tailwind)
 ```
 
 ## Database Architecture
@@ -104,74 +107,73 @@ The project uses Drizzle ORM for all database operations:
 
 ## Chrome Extension Architecture
 
-The Chrome extension is a Manifest V3 extension written in vanilla JavaScript with ES modules. No build process required.
+The Chrome extension is built with WXT (https://wxt.dev), a modern framework for building browser extensions with TypeScript, React, and hot module reloading.
 
 ### Key Components
 
-**1. Service Worker (`scripts/background.js`)**
-- Runs in the background
-- Handles long-running processes
-- Manages communication between content scripts and popup
+**1. Service Worker (`src/entrypoints/background.ts`)**
+- Listens for tab updates to detect YouTube navigation
+- Extracts video IDs using URL pattern matching
+- Triggers video processing via backend API
+- Implements deduplication (skips recently processed videos)
+- Handles external messages from web app
 
-**2. Content Script (`scripts/content.js`)**
-- Injected into YouTube pages
-- Detects when users are watching educational videos
-- Communicates with background script to trigger video processing
-
-**3. Popup (`scripts/popup.js` + `popup.html`)**
-- Extension popup UI
-- Handles user authentication
-- Shows processing status and user info
+**2. Popup (`src/entrypoints/popup/`)**
+- React-based popup UI with Tailwind CSS styling
+- Shows authentication state (loading/authenticated/unauthenticated)
+- Provides links to dashboard and sign in/out actions
+- Uses `useAuth` hook for state management
 
 ### Services Layer
 
-**API Service (`services/api.js`)**
-- Communicates with backend API at `https://www.recallai.io`
+**API Service (`src/services/api.ts`)**
+- Communicates with backend API using session cookies (`credentials: 'include'`)
 - Key functions:
-  - `validateToken()` - Validates extension token with backend
-  - `processVideo()` - Sends video to backend for processing
+  - `checkAuthStatus()` - Checks if user is authenticated via `/api/v1/users/me`
+  - `processVideo(url)` - Sends video to backend for processing
 
 **API Endpoints Used:**
-- `POST /api/v1/auth/extension/validate-token` - Token validation
-- `POST /api/v1/videos/[url]/extension/process` - Video processing
+- `GET /api/v1/users/me` - Check authentication status
+- `POST /api/v1/videos/[url]/process` - Video processing
 
-**Storage Service (`services/storage.js`)**
-- Wrapper around Chrome Storage API
-- Stores:
-  - `authToken` - Extension authentication token
-  - `pendingVideoData` - Videos queued for processing
-  - `email` - User email
+### Authentication Flow
 
-**Auth Service (`services/auth.js`)**
-- Handles authentication logic
-- Token management
+The extension uses **session-based authentication** (cookies) instead of tokens:
 
-### Extension ↔ Web App Communication Flow
+1. User signs into RecallAI web app (session cookie set)
+2. Extension checks auth status via `checkAuthStatus()` (cookie sent automatically)
+3. When user watches YouTube video, extension:
+   - Sends video URL to backend with session cookie
+   - Backend processes video if user is authenticated
+4. User views summaries/questions in web dashboard
 
-1. User connects extension to web app via dashboard
-2. Web app generates unique extension token (stored in `extension_tokens` table)
-3. User copies token into extension popup
-4. Extension stores token in Chrome storage
-5. When user watches YouTube video, extension:
-   - Validates token with backend
-   - Sends video URL + token to backend for processing
-6. Backend processes video and stores results
-7. User views summaries/questions in web dashboard
+**Benefits of cookie-based auth:**
+- No token management or storage required
+- Automatic session sharing with web app
+- Simpler authentication flow
 
 ### Configuration
 
-**Constants (`config/constants.js`):**
-- `API.BASE_URL` - Backend URL (https://www.recallai.io)
-- `API.ENDPOINTS` - API endpoint paths
-- `STORAGE_KEYS` - Chrome storage key names
-- `NOTIFICATION.TYPES` - Notification types (success, error, signin)
+**Constants (`src/lib/constants.ts`):**
+```typescript
+export const BASE_URL = import.meta.env.DEV
+  ? 'http://localhost:3000'
+  : 'https://www.recallai.io'
+```
+
+**WXT Config (`wxt.config.ts`):**
+- Manifest settings (name, version, permissions, icons)
+- Vite plugins (Tailwind CSS)
+- Dev server port (4000)
 
 ### Development Notes
 
-- **No build process** - Extension uses native ES modules
-- **Manifest V3** - Uses service worker instead of background pages
-- **Externally connectable** - Only `https://www.recallai.io/*` can communicate with extension
-- **Permissions** - Requires `storage` and `tabs` permissions
+- **WXT Framework** - Provides hot reload, TypeScript support, and modern tooling
+- **Manifest V3** - Configured via `wxt.config.ts` (not a separate manifest.json)
+- **React + Tailwind** - Popup UI uses React components with Tailwind styling
+- **Path aliases** - Use `@/` prefix for imports (e.g., `@/services/api`)
+- **Externally connectable** - `https://www.recallai.io/*` and `http://localhost:3000/*`
+- **Permissions** - `storage`, `tabs`, and host permissions for API domains
 
 ## Critical Business Logic
 
@@ -226,23 +228,34 @@ npm run format       # Format with Prettier
 ### Chrome Extension (from `extension/` directory)
 
 ```bash
-npm run format       # Format with Prettier
+npm run dev          # Start dev server with hot reload (port 4000)
+npm run dev:firefox  # Start dev server for Firefox
+npm run build        # Production build (outputs to .output/)
+npm run build:firefox # Production build for Firefox
+npm run zip          # Create distributable zip file
+npm run compile      # TypeScript type checking (no emit)
 ```
 
-**Loading Extension in Chrome:**
-1. Open Chrome and go to `chrome://extensions/`
-2. Enable "Developer mode" (toggle in top right)
-3. Click "Load unpacked"
-4. Select the `extension/` folder
-5. Extension will appear in Chrome toolbar
+**Development Workflow:**
+1. Run `npm run dev` from `extension/` directory
+2. WXT automatically loads extension in Chrome with hot reload
+3. Make changes to code → extension updates automatically
+4. Check console in background service worker for logs
+
+**Manual Loading (Production Build):**
+1. Run `npm run build` to create production build
+2. Open Chrome and go to `chrome://extensions/`
+3. Enable "Developer mode" (toggle in top right)
+4. Click "Load unpacked"
+5. Select the `extension/.output/chrome-mv3` folder
+6. Extension will appear in Chrome toolbar
 
 **Testing Extension:**
-1. Load extension in Chrome (see above)
-2. Click extension icon to open popup
-3. Copy token from web dashboard (`/dashboard/settings`)
-4. Paste token into extension popup
-5. Navigate to any YouTube video
-6. Extension should detect video and show processing status
+1. Start extension in dev mode (`npm run dev`)
+2. Sign into RecallAI web app at `http://localhost:3000` (or production)
+3. Click extension icon to verify authenticated state
+4. Navigate to any YouTube video
+5. Check background service worker console for processing logs
 
 ### Testing
 
@@ -643,15 +656,17 @@ See `docs/drizzle-migration-guide.md` for complete migration patterns.
 
 ### Chrome Extension
 
-1. **Don't use build tools** - Extension uses native ES modules, no bundling needed
-2. **Don't forget `type: "module"` in manifest** - Required for ES module imports in service worker
-3. **Don't hardcode API URLs** - Use `config/constants.js` for all API endpoints
+1. **Use WXT conventions** - Entrypoints go in `src/entrypoints/`, use `defineBackground()` for service workers
+2. **Don't edit manifest.json directly** - Configure manifest in `wxt.config.ts`
+3. **Don't hardcode API URLs** - Use `BASE_URL` from `src/lib/constants.ts`
 4. **Remember Manifest V3 restrictions** - Service workers have limitations vs background pages
-5. **Test token expiry** - Extension tokens can expire, handle gracefully
+5. **Use path aliases** - Import with `@/` prefix (e.g., `@/services/api`)
 6. **Check `externally_connectable` matches** - Only whitelisted domains can message extension
+7. **Test both environments** - Dev uses localhost:3000, production uses recallai.io
 
 ## Useful Resources
 
 - **Drizzle Docs:** https://orm.drizzle.team/docs/overview
 - **Next.js 15 Docs:** https://nextjs.org/docs
 - **Supabase Auth:** https://supabase.com/docs/guides/auth
+- **WXT Docs:** https://wxt.dev
