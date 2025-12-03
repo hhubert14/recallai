@@ -3,6 +3,7 @@ import { users } from "@/drizzle/schema";
 import { db } from "@/drizzle";
 import { eq } from "drizzle-orm";
 import { UserEntity } from "@/clean-architecture/domain/entities/user.entity";
+import { logger } from "@/lib/logger";
 
 export class DrizzleUserRepository implements IUserRepository {
     async createUser(id: string, email: string): Promise<UserEntity> {
@@ -10,7 +11,7 @@ export class DrizzleUserRepository implements IUserRepository {
             const [data] = await db.insert(users).values({ id, email }).returning();
             return this.toEntity(data);
         } catch (error) {
-            console.error("Error creating user:", error);
+            logger.db.error("Error creating user", error);
             throw error;
         }
     }
@@ -21,7 +22,7 @@ export class DrizzleUserRepository implements IUserRepository {
             if (!data) return null;
             return this.toEntity(data);
         } catch (error) {
-            console.error("Error finding user by id:", error);
+            logger.db.error("Error finding user by id", error);
             throw error;
         }
     }
@@ -32,7 +33,7 @@ export class DrizzleUserRepository implements IUserRepository {
             if (!data) return null;
             return this.toEntity(data);
         } catch (error) {
-            console.error("Error finding user by email:", error);
+            logger.db.error("Error finding user by email", error);
             throw error;
         }
     }
@@ -41,7 +42,7 @@ export class DrizzleUserRepository implements IUserRepository {
         try {
             await db.delete(users).where(eq(users.id, id));
         } catch (error) {
-            console.error("Error deleting user:", error);
+            logger.db.error("Error deleting user", error);
             throw error;
         }
     }

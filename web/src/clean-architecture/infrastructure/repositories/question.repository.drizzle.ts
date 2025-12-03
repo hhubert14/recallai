@@ -3,6 +3,7 @@ import { MultipleChoiceQuestionEntity, MultipleChoiceOption } from "@/clean-arch
 import { db } from "@/drizzle";
 import { questions, questionOptions } from "@/drizzle/schema";
 import { eq, asc } from "drizzle-orm";
+import { logger } from "@/lib/logger";
 
 export class DrizzleQuestionRepository implements IQuestionRepository {
     async createMultipleChoiceQuestion(
@@ -45,7 +46,7 @@ export class DrizzleQuestionRepository implements IQuestionRepository {
 
             return this.toEntity(questionData, createdOptions);
         } catch (error) {
-            console.error("Error creating multiple choice question:", error);
+            logger.db.error("Error creating multiple choice question", error);
             throw error;
         }
     }
@@ -67,7 +68,7 @@ export class DrizzleQuestionRepository implements IQuestionRepository {
 
             return this.toEntity(question, options);
         } catch (error) {
-            console.error("Error finding question by ID:", error);
+            logger.db.error("Error finding question by ID", error);
             throw error;
         }
     }
@@ -104,7 +105,7 @@ export class DrizzleQuestionRepository implements IQuestionRepository {
                 this.toEntity(question, options)
             );
         } catch (error) {
-            console.error("Error finding questions by video ID:", error);
+            logger.db.error("Error finding questions by video ID", error);
             throw error;
         }
     }

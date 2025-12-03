@@ -3,6 +3,7 @@ import { VideoEntity } from "@/clean-architecture/domain/entities/video.entity";
 import { db } from "@/drizzle";
 import { videos } from "@/drizzle/schema";
 import { eq, and, isNull, desc } from "drizzle-orm";
+import { logger } from "@/lib/logger";
 
 export class DrizzleVideoRepository implements IVideoRepository {
     async createVideo(
@@ -29,7 +30,7 @@ export class DrizzleVideoRepository implements IVideoRepository {
 
             return this.toEntity(data);
         } catch (error) {
-            console.error("Error creating video:", error);
+            logger.db.error("Error creating video", error);
             throw error;
         }
     }
@@ -45,7 +46,7 @@ export class DrizzleVideoRepository implements IVideoRepository {
             if (!data) return null;
             return this.toEntity(data);
         } catch (error) {
-            console.error("Error finding video by ID:", error);
+            logger.db.error("Error finding video by ID", error);
             throw error;
         }
     }
@@ -61,7 +62,7 @@ export class DrizzleVideoRepository implements IVideoRepository {
             if (!data) return null;
             return this.toEntity(data);
         } catch (error) {
-            console.error("Error finding video by user ID and URL:", error);
+            logger.db.error("Error finding video by user ID and URL", error);
             throw error;
         }
     }
@@ -78,7 +79,7 @@ export class DrizzleVideoRepository implements IVideoRepository {
 
             return data.map((video) => this.toEntity(video));
         } catch (error) {
-            console.error("Error finding videos by user ID:", error);
+            logger.db.error("Error finding videos by user ID", error);
             throw error;
         }
     }

@@ -251,9 +251,9 @@ export function SignUpForm() {
                                     },
                                 });
                             if (error) throw error;
-                        } catch (error: any) {
+                        } catch (error: unknown) {
                             setError(
-                                error.message ||
+                                error instanceof Error ? error.message :
                                     "Failed to sign in with Google. Please try again."
                             );
                         } finally {
