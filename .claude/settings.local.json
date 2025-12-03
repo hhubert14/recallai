@@ -16,7 +16,9 @@
       "Bash(git branch:*)",
       "Bash(npm run lint)",
       "Bash(ls:*)",
-      "Bash(gh issue view:*)"
+      "Bash(cat:*)",
+      "Bash(gh issue view:*)",
+      "Bash(npm run compile:*)"
     ],
     "deny": [],
     "ask": []
