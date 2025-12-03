@@ -3,7 +3,7 @@ import { VideoEntity } from "@/clean-architecture/domain/entities/video.entity";
 import { db } from "@/drizzle";
 import { videos } from "@/drizzle/schema";
 import { eq, and, isNull, desc } from "drizzle-orm";
-import { logger } from "@/lib/logger";
+import { withRepositoryErrorHandling } from "./base-repository-error-handler";
 
 export class DrizzleVideoRepository implements IVideoRepository {
     async createVideo(
@@ -14,74 +14,74 @@ export class DrizzleVideoRepository implements IVideoRepository {
         channelName: string,
         duration: number | null
     ): Promise<VideoEntity> {
-        try {
-            const [data] = await db
-                .insert(videos)
-                .values({
-                    userId,
-                    platform,
-                    title,
-                    url,
-                    channelName,
-                    duration,
-                    shouldExpire: false,
-                })
-                .returning();
+        return withRepositoryErrorHandling(
+            async () => {
+                const [data] = await db
+                    .insert(videos)
+                    .values({
+                        userId,
+                        platform,
+                        title,
+                        url,
+                        channelName,
+                        duration,
+                        shouldExpire: false,
+                    })
+                    .returning();
 
-            return this.toEntity(data);
-        } catch (error) {
-            logger.db.error("Error creating video", error);
-            throw error;
-        }
+                return this.toEntity(data);
+            },
+            "creating video"
+        );
     }
 
     async findVideoById(id: number): Promise<VideoEntity | null> {
-        try {
-            const [data] = await db
-                .select()
-                .from(videos)
-                .where(eq(videos.id, id))
-                .limit(1);
+        return withRepositoryErrorHandling(
+            async () => {
+                const [data] = await db
+                    .select()
+                    .from(videos)
+                    .where(eq(videos.id, id))
+                    .limit(1);
 
-            if (!data) return null;
-            return this.toEntity(data);
-        } catch (error) {
-            logger.db.error("Error finding video by ID", error);
-            throw error;
-        }
+                if (!data) return null;
+                return this.toEntity(data);
+            },
+            "finding video by ID"
+        );
     }
 
     async findVideoByUserIdAndUrl(userId: string, url: string): Promise<VideoEntity | null> {
-        try {
-            const [data] = await db
-                .select()
-                .from(videos)
-                .where(and(eq(videos.userId, userId), eq(videos.url, url)))
-                .limit(1);
+        return withRepositoryErrorHandling(
+            async () => {
+                const [data] = await db
+                    .select()
+                    .from(videos)
+                    .where(and(eq(videos.userId, userId), eq(videos.url, url)))
+                    .limit(1);
 
-            if (!data) return null;
-            return this.toEntity(data);
-        } catch (error) {
-            logger.db.error("Error finding video by user ID and URL", error);
-            throw error;
-        }
+                if (!data) return null;
+                return this.toEntity(data);
+            },
+            "finding video by user ID and URL"
+        );
     }
 
     async findVideosByUserId(userId: string, limit?: number): Promise<VideoEntity[]> {
-        try {
-            const baseQuery = db
-                .select()
-                .from(videos)
-                .where(and(eq(videos.userId, userId), isNull(videos.deletedAt)))
-                .orderBy(desc(videos.createdAt));
+        return withRepositoryErrorHandling(
+            async () => {
+                const baseQuery = db
+                    .select()
+                    .from(videos)
+                    .where(and(eq(videos.userId, userId), isNull(videos.deletedAt)))
+                    .orderBy(desc(videos.createdAt));
 
-            const data = limit ? await baseQuery.limit(limit) : await baseQuery;
+                const data = limit ? await baseQuery.limit(limit) : await baseQuery;
 
-            return data.map((video) => this.toEntity(video));
-        } catch (error) {
-            logger.db.error("Error finding videos by user ID", error);
-            throw error;
-        }
+                return data.map((video) => this.toEntity(video));
+            },
+            "finding videos by user ID"
+        );
     }
 
     private toEntity(data: typeof videos.$inferSelect): VideoEntity {

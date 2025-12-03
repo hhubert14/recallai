@@ -3,48 +3,48 @@ import { users } from "@/drizzle/schema";
 import { db } from "@/drizzle";
 import { eq } from "drizzle-orm";
 import { UserEntity } from "@/clean-architecture/domain/entities/user.entity";
-import { logger } from "@/lib/logger";
+import { withRepositoryErrorHandling } from "./base-repository-error-handler";
 
 export class DrizzleUserRepository implements IUserRepository {
     async createUser(id: string, email: string): Promise<UserEntity> {
-        try {
-            const [data] = await db.insert(users).values({ id, email }).returning();
-            return this.toEntity(data);
-        } catch (error) {
-            logger.db.error("Error creating user", error);
-            throw error;
-        }
+        return withRepositoryErrorHandling(
+            async () => {
+                const [data] = await db.insert(users).values({ id, email }).returning();
+                return this.toEntity(data);
+            },
+            "creating user"
+        );
     }
 
     async findUserById(id: string): Promise<UserEntity | null> {
-        try {
-            const [data] = await db.select().from(users).where(eq(users.id, id));
-            if (!data) return null;
-            return this.toEntity(data);
-        } catch (error) {
-            logger.db.error("Error finding user by id", error);
-            throw error;
-        }
+        return withRepositoryErrorHandling(
+            async () => {
+                const [data] = await db.select().from(users).where(eq(users.id, id));
+                if (!data) return null;
+                return this.toEntity(data);
+            },
+            "finding user by id"
+        );
     }
 
     async findUserByEmail(email: string): Promise<UserEntity | null> {
-        try {
-            const [data] = await db.select().from(users).where(eq(users.email, email));
-            if (!data) return null;
-            return this.toEntity(data);
-        } catch (error) {
-            logger.db.error("Error finding user by email", error);
-            throw error;
-        }
+        return withRepositoryErrorHandling(
+            async () => {
+                const [data] = await db.select().from(users).where(eq(users.email, email));
+                if (!data) return null;
+                return this.toEntity(data);
+            },
+            "finding user by email"
+        );
     }
 
     async deleteUser(id: string): Promise<void> {
-        try {
-            await db.delete(users).where(eq(users.id, id));
-        } catch (error) {
-            logger.db.error("Error deleting user", error);
-            throw error;
-        }
+        return withRepositoryErrorHandling(
+            async () => {
+                await db.delete(users).where(eq(users.id, id));
+            },
+            "deleting user"
+        );
     }
 
     private toEntity(data: typeof users.$inferSelect): UserEntity {

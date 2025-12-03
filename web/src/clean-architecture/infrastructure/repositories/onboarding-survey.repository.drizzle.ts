@@ -6,7 +6,7 @@ import {
 import { db } from "@/drizzle";
 import { onboardingSurveys } from "@/drizzle/schema";
 import { eq } from "drizzle-orm";
-import { logger } from "@/lib/logger";
+import { withRepositoryErrorHandling } from "./base-repository-error-handler";
 
 export class DrizzleOnboardingSurveyRepository
     implements IOnboardingSurveyRepository
@@ -14,39 +14,39 @@ export class DrizzleOnboardingSurveyRepository
     async findSurveyByUserId(
         userId: string
     ): Promise<OnboardingSurveyEntity | null> {
-        try {
-            const [data] = await db
-                .select()
-                .from(onboardingSurveys)
-                .where(eq(onboardingSurveys.userId, userId))
-                .limit(1);
+        return withRepositoryErrorHandling(
+            async () => {
+                const [data] = await db
+                    .select()
+                    .from(onboardingSurveys)
+                    .where(eq(onboardingSurveys.userId, userId))
+                    .limit(1);
 
-            if (!data) return null;
-            return this.toEntity(data);
-        } catch (error) {
-            logger.db.error("Error finding survey by user ID", error);
-            throw error;
-        }
+                if (!data) return null;
+                return this.toEntity(data);
+            },
+            "finding survey by user ID"
+        );
     }
 
     async createSurvey(
         userId: string,
         answers: SurveyAnswers
     ): Promise<OnboardingSurveyEntity> {
-        try {
-            const [data] = await db
-                .insert(onboardingSurveys)
-                .values({
-                    userId,
-                    answers,
-                })
-                .returning();
+        return withRepositoryErrorHandling(
+            async () => {
+                const [data] = await db
+                    .insert(onboardingSurveys)
+                    .values({
+                        userId,
+                        answers,
+                    })
+                    .returning();
 
-            return this.toEntity(data);
-        } catch (error) {
-            logger.db.error("Error creating survey", error);
-            throw error;
-        }
+                return this.toEntity(data);
+            },
+            "creating survey"
+        );
     }
 
     private toEntity(
