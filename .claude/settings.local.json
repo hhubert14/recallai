@@ -18,7 +18,8 @@
       "Bash(ls:*)",
       "Bash(cat:*)",
       "Bash(gh issue view:*)",
-      "Bash(npm run compile:*)"
+      "Bash(npm run compile:*)",
+      "WebFetch(domain:wxt.dev)"
     ],
     "deny": [],
     "ask": []
