@@ -3,6 +3,7 @@ import { SummaryEntity } from "@/clean-architecture/domain/entities/summary.enti
 import { db } from "@/drizzle";
 import { summaries } from "@/drizzle/schema";
 import { eq } from "drizzle-orm";
+import { logger } from "@/lib/logger";
 
 export class DrizzleSummaryRepository implements ISummaryRepository {
     async createSummary(videoId: number, content: string): Promise<SummaryEntity> {
@@ -10,7 +11,7 @@ export class DrizzleSummaryRepository implements ISummaryRepository {
             const [data] = await db.insert(summaries).values({videoId, content}).returning();
             return this.toEntity(data);
         } catch (error) {
-            console.error("Error creating summary:", error);
+            logger.db.error("Error creating summary", error);
             throw error;
         }
     }
@@ -20,7 +21,7 @@ export class DrizzleSummaryRepository implements ISummaryRepository {
             if (!data) return null;
             return this.toEntity(data);
         } catch (error) {
-            console.error("Error finding summary by video id:", error);
+            logger.db.error("Error finding summary by video id", error);
             throw error;
         }
     }

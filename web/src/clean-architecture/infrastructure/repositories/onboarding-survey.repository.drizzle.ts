@@ -6,6 +6,7 @@ import {
 import { db } from "@/drizzle";
 import { onboardingSurveys } from "@/drizzle/schema";
 import { eq } from "drizzle-orm";
+import { logger } from "@/lib/logger";
 
 export class DrizzleOnboardingSurveyRepository
     implements IOnboardingSurveyRepository
@@ -23,7 +24,7 @@ export class DrizzleOnboardingSurveyRepository
             if (!data) return null;
             return this.toEntity(data);
         } catch (error) {
-            console.error("Error finding survey by user ID:", error);
+            logger.db.error("Error finding survey by user ID", error);
             throw error;
         }
     }
@@ -43,7 +44,7 @@ export class DrizzleOnboardingSurveyRepository
 
             return this.toEntity(data);
         } catch (error) {
-            console.error("Error creating survey:", error);
+            logger.db.error("Error creating survey", error);
             throw error;
         }
     }

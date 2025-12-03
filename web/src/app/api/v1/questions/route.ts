@@ -4,9 +4,8 @@ import { NextRequest } from "next/server";
 import { getAuthenticatedUser } from "@/lib/auth-helpers";
 import { logger } from "@/lib/logger";
 import { jsendSuccess, jsendFail, jsendError } from "@/lib/jsend";
-import { DrizzleQuestionRepository } from "@/clean-architecture/infrastructure/repositories/question.repository.drizzle";
+import { repositories, services } from "@/lib/dependency-injection";
 import { CreateMultipleChoiceQuestionUseCase } from "@/clean-architecture/use-cases/question/create-multiple-choice-question.use-case";
-import { LangChainQuestionGeneratorService } from "@/clean-architecture/infrastructure/services/question-generator.service.langchain";
 
 export async function POST(request: NextRequest) {
     const { videoId, title, description, transcript } =
@@ -23,8 +22,7 @@ export async function POST(request: NextRequest) {
             return jsendFail({ error: "Unauthorized" }, 401);
         }
 
-        const questionGeneratorService = new LangChainQuestionGeneratorService();
-        const questionData = await questionGeneratorService.generate(
+        const questionData = await services.questionGenerator().generate(
             title,
             description,
             transcript
@@ -39,7 +37,9 @@ export async function POST(request: NextRequest) {
         });
 
         // Create each question and its options in the database
-        const createQuestionUseCase = new CreateMultipleChoiceQuestionUseCase(new DrizzleQuestionRepository());
+        const createQuestionUseCase = new CreateMultipleChoiceQuestionUseCase(
+            repositories.question()
+        );
 
         for (const question of questionData.questions) {
             const options = question.options.map((optionText, i) => ({

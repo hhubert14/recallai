@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { repositories } from "@/lib/dependency-injection";
 import { ProcessSpacedRepetitionAnswerUseCase } from "@/clean-architecture/use-cases/progress/process-spaced-repetition-answer.use-case";
-import { DrizzleProgressRepository } from "@/clean-architecture/infrastructure/repositories/progress.repository.drizzle";
 import { jsendSuccess, jsendFail, jsendError } from "@/lib/jsend";
 
 export async function POST(request: NextRequest) {
@@ -24,7 +24,9 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const useCase = new ProcessSpacedRepetitionAnswerUseCase(new DrizzleProgressRepository());
+    const useCase = new ProcessSpacedRepetitionAnswerUseCase(
+      repositories.progress()
+    );
 
     const progress = await useCase.execute(user.id, questionId, isCorrect);
 

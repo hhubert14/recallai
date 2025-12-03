@@ -2,15 +2,7 @@ import { NextRequest } from "next/server";
 import { logger } from "@/lib/logger";
 import { getAuthenticatedUser } from "@/lib/auth-helpers";
 import { jsendFail, jsendSuccess, jsendError } from "@/lib/jsend";
-import { ProcessVideoUseCase } from "@/clean-architecture/use-cases/video/process-video.use-case";
-import { DrizzleVideoRepository } from "@/clean-architecture/infrastructure/repositories/video.repository.drizzle";
-import { DrizzleSummaryRepository } from "@/clean-architecture/infrastructure/repositories/summary.repository.drizzle";
-import { DrizzleQuestionRepository } from "@/clean-architecture/infrastructure/repositories/question.repository.drizzle";
-import { YouTubeVideoInfoService } from "@/clean-architecture/infrastructure/services/video-info.service.youtube";
-import { StrapiVideoTranscriptService } from "@/clean-architecture/infrastructure/services/video-transcript.service.strapi";
-import { OpenAIVideoClassifierService } from "@/clean-architecture/infrastructure/services/video-classifier.service.openai";
-import { LangChainVideoSummarizerService } from "@/clean-architecture/infrastructure/services/video-summarizer.service.langchain";
-import { LangChainQuestionGeneratorService } from "@/clean-architecture/infrastructure/services/question-generator.service.langchain";
+import { useCases } from "@/lib/dependency-injection";
 
 export async function POST(
     request: NextRequest,
@@ -32,18 +24,7 @@ export async function POST(
             return jsendFail({ error: "Missing video URL" }, 400);
         }
 
-        const useCase = new ProcessVideoUseCase(
-            new DrizzleVideoRepository(),
-            new DrizzleSummaryRepository(),
-            new DrizzleQuestionRepository(),
-            new YouTubeVideoInfoService(),
-            new StrapiVideoTranscriptService(),
-            new OpenAIVideoClassifierService(),
-            new LangChainVideoSummarizerService(),
-            new LangChainQuestionGeneratorService()
-        );
-
-        const result = await useCase.execute(user.id, videoUrl);
+        const result = await useCases.processVideo().execute(user.id, videoUrl);
 
         return jsendSuccess({
             video_id: result.video.id,

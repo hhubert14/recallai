@@ -4,9 +4,8 @@ import { NextRequest } from "next/server";
 import { getAuthenticatedUser } from "@/lib/auth-helpers";
 import { logger } from "@/lib/logger";
 import { jsendSuccess, jsendFail, jsendError } from "@/lib/jsend";
-import { DrizzleSummaryRepository } from "@/clean-architecture/infrastructure/repositories/summary.repository.drizzle";
+import { repositories, services } from "@/lib/dependency-injection";
 import { CreateSummaryUseCase } from "@/clean-architecture/use-cases/summary/create-summary.use-case";
-import { LangChainVideoSummarizerService } from "@/clean-architecture/infrastructure/services/video-summarizer.service.langchain";
 
 export async function POST(request: NextRequest) {
     const { video_id, title, description, transcript } =
@@ -23,8 +22,7 @@ export async function POST(request: NextRequest) {
             return jsendFail({ error: "Unauthorized" }, 401);
         }
 
-        const videoSummarizerService = new LangChainVideoSummarizerService();
-        const summaryData = await videoSummarizerService.generate(
+        const summaryData = await services.videoSummarizer().generate(
             title,
             description,
             transcript
@@ -38,10 +36,9 @@ export async function POST(request: NextRequest) {
             summaryLength: summaryData.summary?.length || 0,
         });
 
-        const createdSummary = await new CreateSummaryUseCase(new DrizzleSummaryRepository()).execute(
-            video_id,
-            summaryData.summary
-        );
+        const createdSummary = await new CreateSummaryUseCase(
+            repositories.summary()
+        ).execute(video_id, summaryData.summary);
 
         return jsendSuccess({ summary: createdSummary });
     } catch (error) {
