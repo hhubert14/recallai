@@ -7,6 +7,7 @@ import { logger } from "@/lib/logger";
  * @param operation - A function that performs the repository operation
  * @param operationName - Human-readable name for logging (e.g., "creating user", "finding video")
  * @returns The result of the operation or throws the error after logging
+ * @throws Re-throws the original error after logging for upstream handling
  *
  * @example
  * ```typescript
@@ -28,7 +29,7 @@ export async function withRepositoryErrorHandling<T>(
   try {
     return await operation();
   } catch (error) {
-    logger.db.error(`Error ${operationName}`, error);
+    logger.db.error(`Error ${operationName}:`, error);
     throw error;
   }
 }
