@@ -42,6 +42,16 @@ import { ProcessVideoUseCase } from "@/clean-architecture/use-cases/video/proces
 /**
  * Repository Factory
  * Creates instances of data access layer repositories
+ * 
+ * Note: Factories create new instances on each call. This is intentional for:
+ * 1. Stateless repositories (no instance state to share)
+ * 2. Avoiding shared state between requests
+ * 3. Simplicity and predictability
+ * 
+ * If performance becomes an issue, consider:
+ * - Singleton pattern for truly stateless services
+ * - Request-scoped instances via dependency injection container
+ * - Caching strategies for expensive initialization
  */
 export const repositories = {
     video: () => new DrizzleVideoRepository(),

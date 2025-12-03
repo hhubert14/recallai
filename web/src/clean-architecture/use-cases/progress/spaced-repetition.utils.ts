@@ -21,6 +21,7 @@ import { SPACED_REPETITION } from "@/lib/constants";
  * 
  * @param boxLevel - Current box level (1-5)
  * @returns ISO date string (YYYY-MM-DD) for the next review
+ * @throws Error if boxLevel is not between 1-5
  * 
  * @example
  * ```ts
@@ -29,7 +30,12 @@ import { SPACED_REPETITION } from "@/lib/constants";
  * ```
  */
 export function getNextReviewDate(boxLevel: number): string {
-  const interval = SPACED_REPETITION.BOX_INTERVALS[boxLevel as keyof typeof SPACED_REPETITION.BOX_INTERVALS] || 1;
+  // Validate box level is within valid range
+  if (boxLevel < SPACED_REPETITION.MIN_BOX_LEVEL || boxLevel > SPACED_REPETITION.MAX_BOX_LEVEL) {
+    throw new Error(`Invalid box level: ${boxLevel}. Must be between ${SPACED_REPETITION.MIN_BOX_LEVEL} and ${SPACED_REPETITION.MAX_BOX_LEVEL}`);
+  }
+  
+  const interval = SPACED_REPETITION.BOX_INTERVALS[boxLevel as keyof typeof SPACED_REPETITION.BOX_INTERVALS];
   const nextDate = new Date();
   nextDate.setDate(nextDate.getDate() + interval);
   return nextDate.toISOString().split("T")[0];

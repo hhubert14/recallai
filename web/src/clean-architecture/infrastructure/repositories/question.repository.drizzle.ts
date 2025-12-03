@@ -17,6 +17,11 @@ export class DrizzleQuestionRepository implements IQuestionRepository {
         }[]
     ): Promise<MultipleChoiceQuestionEntity> {
         try {
+            // Validate options array
+            if (!options || options.length === 0) {
+                throw new Error("Cannot create question without options");
+            }
+
             // Create the question first
             const [questionData] = await db
                 .insert(questions)

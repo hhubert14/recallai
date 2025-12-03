@@ -55,12 +55,19 @@ export function getErrorMessage(error: unknown): string {
 
 /**
  * Checks if an error is a database constraint violation
+ * 
+ * Note: This implementation uses string matching which works for PostgreSQL
+ * but may need adjustment for other database systems.
+ * 
+ * @todo Consider using database-specific error codes for more reliable detection
  */
 export function isUniqueConstraintError(error: unknown): boolean {
     if (error instanceof Error) {
+        // PostgreSQL error messages
         return (
             error.message.includes("unique constraint") ||
-            error.message.includes("duplicate key")
+            error.message.includes("duplicate key") ||
+            error.message.includes("violates unique constraint")
         );
     }
     return false;
@@ -68,9 +75,15 @@ export function isUniqueConstraintError(error: unknown): boolean {
 
 /**
  * Checks if an error is a foreign key constraint violation
+ * 
+ * Note: This implementation uses string matching which works for PostgreSQL
+ * but may need adjustment for other database systems.
+ * 
+ * @todo Consider using database-specific error codes for more reliable detection
  */
 export function isForeignKeyError(error: unknown): boolean {
     if (error instanceof Error) {
+        // PostgreSQL error messages
         return (
             error.message.includes("foreign key constraint") ||
             error.message.includes("violates foreign key")
