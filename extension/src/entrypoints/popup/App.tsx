@@ -1,13 +1,17 @@
 import { useAuth } from '@/hooks/useAuth';
+import { useCurrentTab } from '@/hooks/useCurrentTab';
+import { useVideoProcessing } from '@/hooks/useVideoProcessing';
 import { BASE_URL } from '@/lib/constants';
 
 export default function App() {
   const { authState } = useAuth();
+  const tabState = useCurrentTab();
+  const processing = useVideoProcessing();
 
   return (
     <div className="w-[300px] p-4 font-sans">
       <Header />
-      <Content authState={authState} />
+      <Content authState={authState} tabState={tabState} processing={processing} />
     </div>
   );
 }
@@ -25,30 +29,45 @@ function Header() {
   );
 }
 
-function Content({ authState }: { authState: 'loading' | 'authenticated' | 'unauthenticated' }) {
+type TabState = ReturnType<typeof useCurrentTab>;
+type ProcessingState = ReturnType<typeof useVideoProcessing>;
+
+function Content({
+  authState,
+  tabState,
+  processing,
+}: {
+  authState: 'loading' | 'authenticated' | 'unauthenticated';
+  tabState: TabState;
+  processing: ProcessingState;
+}) {
   if (authState === 'loading') {
     return <p className="text-gray-500">Loading...</p>;
   }
 
   if (authState === 'authenticated') {
-    return <AuthenticatedView />;
+    return <AuthenticatedView tabState={tabState} processing={processing} />;
   }
 
   return <UnauthenticatedView />;
 }
 
-function AuthenticatedView() {
+function AuthenticatedView({
+  tabState,
+  processing,
+}: {
+  tabState: TabState;
+  processing: ProcessingState;
+}) {
   const handleSignOut = () => {
     window.open(`${BASE_URL}/auth/logout`, '_blank');
   };
 
   return (
     <>
-      <p className="mb-4 leading-relaxed text-sm">
-        You're connected to RecallAI. Educational videos you watch on YouTube
-        will be automatically processed and added to your learning library.
-      </p>
-      <div className="space-y-2">
+      <VideoProcessingSection tabState={tabState} processing={processing} />
+
+      <div className="mt-4 space-y-2">
         <a
           href={`${BASE_URL}/dashboard`}
           target="_blank"
@@ -68,6 +87,98 @@ function AuthenticatedView() {
   );
 }
 
+function VideoProcessingSection({
+  tabState,
+  processing,
+}: {
+  tabState: TabState;
+  processing: ProcessingState;
+}) {
+  if (tabState.isLoading) {
+    return (
+      <div className="p-3 bg-gray-50 rounded">
+        <p className="text-sm text-gray-500">Checking current page...</p>
+      </div>
+    );
+  }
+
+  if (!tabState.isYouTubeVideo) {
+    return (
+      <div className="p-3 bg-gray-50 rounded">
+        <p className="text-sm text-gray-500">
+          Navigate to a YouTube video to process it.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-3 bg-gray-50 rounded">
+      {processing.status === 'idle' && (
+        <button
+          onClick={() => tabState.url && processing.process(tabState.url)}
+          className="w-full px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors font-medium"
+        >
+          Process This Video
+        </button>
+      )}
+
+      {processing.status === 'processing' && (
+        <div className="flex items-center justify-center py-2">
+          <div className="animate-spin h-5 w-5 border-2 border-green-500 border-t-transparent rounded-full mr-2" />
+          <span className="text-sm text-gray-600">Processing video...</span>
+        </div>
+      )}
+
+      {processing.status === 'success' && (
+        <div className="text-center">
+          <p className="text-sm text-green-600 mb-2">
+            Video processed successfully!
+          </p>
+          <a
+            href={`${BASE_URL}/dashboard`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm text-blue-500 hover:underline"
+          >
+            View in Dashboard
+          </a>
+        </div>
+      )}
+
+      {processing.status === 'already_exists' && (
+        <div className="text-center">
+          <p className="text-sm text-blue-600 mb-2">
+            This video is already in your library.
+          </p>
+          <a
+            href={`${BASE_URL}/dashboard`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm text-blue-500 hover:underline"
+          >
+            View in Dashboard
+          </a>
+        </div>
+      )}
+
+      {processing.status === 'error' && (
+        <div className="text-center">
+          <p className="text-sm text-red-600 mb-2">
+            {processing.errorMessage || 'Failed to process video'}
+          </p>
+          <button
+            onClick={() => processing.reset()}
+            className="text-sm text-blue-500 hover:underline"
+          >
+            Try Again
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function UnauthenticatedView() {
   const handleSignIn = () => {
     window.open(`${BASE_URL}/auth/login`, '_blank');
@@ -76,8 +187,8 @@ function UnauthenticatedView() {
   return (
     <>
       <p className="mb-4 leading-relaxed text-sm">
-        Sign in to RecallAI to automatically process educational YouTube videos
-        and create summaries and study materials.
+        Sign in to RecallAI to process educational YouTube videos
+        and create summaries for your learning library.
       </p>
       <button
         onClick={handleSignIn}
