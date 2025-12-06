@@ -19,10 +19,15 @@ export async function checkAuthStatus(): Promise<boolean> {
   }
 }
 
+export type ProcessVideoResult = {
+  success: boolean;
+  alreadyExists: boolean;
+};
+
 /**
  * Send video URL to backend for processing
  */
-export async function processVideo(videoUrl: string): Promise<boolean> {
+export async function processVideo(videoUrl: string): Promise<ProcessVideoResult> {
   try {
     const endpoint = "/api/v1/videos/[url]/process".replace(
       '[url]',
@@ -32,9 +37,18 @@ export async function processVideo(videoUrl: string): Promise<boolean> {
       method: 'POST',
       credentials: 'include',
     });
-    return response.ok;
+
+    if (!response.ok) {
+      return { success: false, alreadyExists: false };
+    }
+
+    const data = await response.json();
+    return {
+      success: true,
+      alreadyExists: data.data.alreadyExists,
+    };
   } catch (error) {
     console.error('Video processing error:', error);
-    return false;
+    return { success: false, alreadyExists: false };
   }
 }
