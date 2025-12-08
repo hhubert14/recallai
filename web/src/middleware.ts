@@ -1,9 +1,9 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { updateSession } from "@/lib/supabase/middleware";
+import { handleAuth } from "@/lib/supabase/middleware";
 
 export async function middleware(request: NextRequest) {
     try {
-        const response = await updateSession(request);
+        const response = await handleAuth(request);
 
         // Add security headers to prevent clickjacking
         response.headers.set("X-Frame-Options", "DENY");

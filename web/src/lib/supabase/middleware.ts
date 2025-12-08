@@ -9,7 +9,7 @@ function isPublicPath(pathname: string): boolean {
     );
 }
 
-export async function updateSession(request: NextRequest) {
+export async function handleAuth(request: NextRequest) {
     let supabaseResponse = NextResponse.next({
         request,
     });
