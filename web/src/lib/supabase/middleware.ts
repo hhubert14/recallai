@@ -1,6 +1,14 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+function isPublicPath(pathname: string): boolean {
+    const publicPrefixes = ["/auth", "/privacy", "/terms", "/api"];
+    return (
+        pathname === "/" ||
+        publicPrefixes.some((prefix) => pathname.startsWith(prefix))
+    );
+}
+
 export async function updateSession(request: NextRequest) {
     let supabaseResponse = NextResponse.next({
         request,
@@ -50,26 +58,12 @@ export async function updateSession(request: NextRequest) {
     if (!user && request.nextUrl.pathname.startsWith("/dashboard")) {
         const url = request.nextUrl.clone();
         url.pathname = "/auth/login";
+        url.searchParams.set("returnTo", request.nextUrl.pathname);
         return NextResponse.redirect(url);
     }
 
-    // Redirect unauthenticated users from other protected routes to landing page
-    if (
-        !user &&
-        !request.nextUrl.pathname.startsWith("/auth/sign-up") &&
-        !request.nextUrl.pathname.startsWith("/auth/login") &&
-        !request.nextUrl.pathname.startsWith("/auth/confirm-email") &&
-        !request.nextUrl.pathname.startsWith("/auth/error") &&
-        !request.nextUrl.pathname.startsWith("/auth/forgot-password") &&
-        !request.nextUrl.pathname.startsWith("/auth/success") &&
-        !request.nextUrl.pathname.startsWith("/auth/update-password") &&
-        !request.nextUrl.pathname.startsWith("/auth/sign-up-success") &&
-        !request.nextUrl.pathname.startsWith("/auth/update-password-success") &&
-        !request.nextUrl.pathname.startsWith("/privacy") &&
-        !request.nextUrl.pathname.startsWith("/terms") &&
-        !request.nextUrl.pathname.startsWith("/") &&
-        !request.nextUrl.pathname.startsWith("/api")
-    ) {
+    // Redirect unauthenticated users from protected routes to landing page
+    if (!user && !isPublicPath(request.nextUrl.pathname)) {
         const url = request.nextUrl.clone();
         url.pathname = "/";
         return NextResponse.redirect(url);

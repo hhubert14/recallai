@@ -3,7 +3,7 @@
 import type React from "react";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,12 +11,27 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { createClient } from "@/lib/supabase/client";
 import { AlertCircle, Loader2 } from "lucide-react";
 
+function getSafeRedirectUrl(returnTo: string | null): string {
+    const defaultRedirect = "/dashboard";
+
+    if (!returnTo) return defaultRedirect;
+
+    // Only allow relative paths starting with /
+    // Block: "https://evil.com", "//evil.com", "javascript:alert(1)"
+    if (returnTo.startsWith("/") && !returnTo.startsWith("//")) {
+        return returnTo;
+    }
+
+    return defaultRedirect;
+}
+
 export function LoginForm() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
+    const searchParams = useSearchParams();
     const supabase = createClient()!;
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -38,8 +53,9 @@ export function LoginForm() {
             }
 
             if (data.user) {
-                // Refresh the page to update the auth state
-                router.push("/dashboard");
+                const returnTo = searchParams.get("returnTo");
+                const redirectUrl = getSafeRedirectUrl(returnTo);
+                router.push(redirectUrl);
                 router.refresh();
             }
         } catch (error: unknown) {
