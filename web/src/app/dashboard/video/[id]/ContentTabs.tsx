@@ -1,7 +1,12 @@
+// TODO: Refactor file to be less verbose
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { QuizInterface } from "./QuizInterface";
+
+const MAX_QUESTIONS = 20;
+const COUNT_OPTIONS = [5, 10, 20] as const;
 
 interface ContentTabsProps {
     summary: { id: number; videoId: number; content: string } | null;
@@ -10,7 +15,7 @@ interface ContentTabsProps {
         videoId: number;
         questionText: string;
         questionType: string;
-        questionOptions: {
+        options: {
             id: number;
             optionText: string;
             isCorrect: boolean;
@@ -18,17 +23,52 @@ interface ContentTabsProps {
             explanation: string | null;
         }[];
     }[];
-    // userId: string;
     videoId: number;
 }
 
 export function ContentTabs({
     summary,
-    questions,
-    // userId,
+    questions: initialQuestions,
     videoId,
 }: ContentTabsProps) {
+    const router = useRouter();
     const [activeTab, setActiveTab] = useState<"summary" | "qa">("summary");
+    const [questions, setQuestions] = useState(initialQuestions);
+    const [selectedCount, setSelectedCount] = useState<number>(5);
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    const remainingCapacity = MAX_QUESTIONS - questions.length;
+    const availableCountOptions = COUNT_OPTIONS.filter(
+        (count) => count <= remainingCapacity
+    );
+    const canGenerate = remainingCapacity > 0 && availableCountOptions.length > 0;
+
+    async function handleGenerate() {
+        setIsGenerating(true);
+        setError(null);
+
+        try {
+            const response = await fetch("/api/v1/questions/generate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ videoId, count: selectedCount }),
+            });
+
+            const data = await response.json();
+
+            if (data.status === "success") {
+                setQuestions((prev) => [...prev, ...data.data.questions]);
+                router.refresh();
+            } else {
+                setError(data.data?.error || "Failed to generate questions");
+            }
+        } catch {
+            setError("Failed to generate questions. Please try again.");
+        } finally {
+            setIsGenerating(false);
+        }
+    }
 
     return (
         <div className="flex flex-col h-full bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
@@ -75,18 +115,95 @@ export function ContentTabs({
                 )}
 
                 {activeTab === "qa" && (
-                    <div>
-                        {questions.length > 0 ? (
-                            <QuizInterface
-                                questions={questions}
-                                // userId={userId}
-                                videoId={videoId}
-                            />
-                        ) : (
-                            <div className="text-center py-12">
-                                <p className="text-gray-500 dark:text-gray-400 text-lg">
-                                    No questions available for this video yet.
+                    <div className="flex flex-col h-full">
+                        {isGenerating ? (
+                            <div className="flex-1 flex flex-col items-center justify-center py-12">
+                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
+                                <p className="text-gray-600 dark:text-gray-300">
+                                    Generating {selectedCount} questions...
                                 </p>
+                            </div>
+                        ) : questions.length > 0 ? (
+                            <>
+                                <QuizInterface
+                                    questions={questions}
+                                    videoId={videoId}
+                                />
+                                {canGenerate && (
+                                    <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                                        <div className="flex items-center justify-center gap-3">
+                                            <select
+                                                value={selectedCount}
+                                                onChange={(e) =>
+                                                    setSelectedCount(
+                                                        Number(e.target.value)
+                                                    )
+                                                }
+                                                className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm"
+                                            >
+                                                {availableCountOptions.map(
+                                                    (count) => (
+                                                        <option
+                                                            key={count}
+                                                            value={count}
+                                                        >
+                                                            {count} questions
+                                                        </option>
+                                                    )
+                                                )}
+                                            </select>
+                                            <button
+                                                onClick={handleGenerate}
+                                                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors"
+                                            >
+                                                Generate More
+                                            </button>
+                                        </div>
+                                        <p className="text-center text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                            {questions.length} of {MAX_QUESTIONS}{" "}
+                                            max
+                                        </p>
+                                        {error && (
+                                            <p className="text-center text-sm text-red-600 dark:text-red-400 mt-2">
+                                                {error}
+                                            </p>
+                                        )}
+                                    </div>
+                                )}
+                            </>
+                        ) : (
+                            <div className="flex-1 flex flex-col items-center justify-center py-12">
+                                <p className="text-gray-600 dark:text-gray-300 text-lg mb-6">
+                                    Generate practice questions
+                                </p>
+                                <div className="flex items-center gap-3">
+                                    <select
+                                        value={selectedCount}
+                                        onChange={(e) =>
+                                            setSelectedCount(
+                                                Number(e.target.value)
+                                            )
+                                        }
+                                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+                                    >
+                                        {COUNT_OPTIONS.map((count) => (
+                                            <option key={count} value={count}>
+                                                {count} questions
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <button
+                                        onClick={handleGenerate}
+                                        className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+                                    >
+                                        Generate
+                                    </button>
+                                </div>
+                                {error && (
+                                    <p className="text-sm text-red-600 dark:text-red-400 mt-4">
+                                        {error}
+                                    </p>
+                                )}
                             </div>
                         )}
                     </div>

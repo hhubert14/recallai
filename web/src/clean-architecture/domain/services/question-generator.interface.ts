@@ -12,7 +12,7 @@ export type GeneratedQuestionsDto = {
 export interface IQuestionGeneratorService {
     generate(
         title: string,
-        description: string,
-        transcript: string
+        transcript: string,
+        count: number
     ): Promise<GeneratedQuestionsDto | undefined>;
 }

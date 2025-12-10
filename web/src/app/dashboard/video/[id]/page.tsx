@@ -63,7 +63,7 @@ export default async function VideoDetailPage({
         videoId: q.videoId,
         questionText: q.questionText,
         questionType: q.questionType,
-        questionOptions: q.options.map(opt => ({
+        options: q.options.map(opt => ({
             id: opt.id,
             optionText: opt.optionText,
             isCorrect: opt.isCorrect,

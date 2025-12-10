@@ -9,7 +9,7 @@ type QuestionWithOptions = {
     videoId: number;
     questionText: string;
     questionType: string;
-    questionOptions: {
+    options: {
         id: number;
         optionText: string;
         isCorrect: boolean;
@@ -49,7 +49,7 @@ function shuffleQuestionsAndOptions(questions: QuestionWithOptions[]): QuestionW
     const shuffledQuestions = shuffleArray(questions);
     return shuffledQuestions.map(question => ({
         ...question,
-        questionOptions: shuffleArray(question.questionOptions),
+        options: shuffleArray(question.options),
     }));
 }
 
@@ -92,13 +92,13 @@ export function QuizInterface({
 
         setIsSubmitting(true);
 
-        const selectedOption = currentQuestion.questionOptions.find(
+        const selectedOption = currentQuestion.options.find(
             option => option.id === selectedOptionId
         );
 
         if (!selectedOption) return;
 
-        const correctOption = currentQuestion.questionOptions.find(
+        const correctOption = currentQuestion.options.find(
             option => option.isCorrect
         );
         setCorrectAnswer(correctOption || null);
@@ -140,7 +140,7 @@ export function QuizInterface({
 
     const isLastQuestion =
         currentQuestionIndex === shuffledQuestions.length - 1;
-    const selectedOption = currentQuestion.questionOptions.find(
+    const selectedOption = currentQuestion.options.find(
         option => option.id === selectedOptionId
     );
 
@@ -170,7 +170,7 @@ export function QuizInterface({
 
                 {/* Options */}
                 <div className="space-y-3">
-                    {currentQuestion.questionOptions.map(option => (
+                    {currentQuestion.options.map(option => (
                         <label
                             key={option.id}
                             className={`block p-3 border rounded-lg cursor-pointer transition-colors ${

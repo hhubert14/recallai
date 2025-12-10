@@ -1,9 +1,18 @@
 import { IProgressRepository } from "@/clean-architecture/domain/repositories/progress.repository.interface";
 import { IQuestionRepository } from "@/clean-architecture/domain/repositories/question.repository.interface";
-import { ProgressEntity } from "@/clean-architecture/domain/entities/progress.entity";
 
 export type QuestionWithProgress = {
-  progress: ProgressEntity;
+  progress: {
+    id: number;
+    userId: string;
+    questionId: number;
+    boxLevel: number;
+    nextReviewDate: string | null;
+    timesCorrect: number;
+    timesIncorrect: number;
+    lastReviewedAt: string | null;
+    createdAt: string;
+  };
   question: {
     id: number;
     videoId: number;
@@ -37,7 +46,17 @@ export class GetQuestionsForReviewUseCase {
       const questionEntity = await this.questionRepository.findQuestionById(progress.questionId);
       if (questionEntity) {
         results.push({
-          progress,
+          progress: {
+            id: progress.id,
+            userId: progress.userId,
+            questionId: progress.questionId,
+            boxLevel: progress.boxLevel,
+            nextReviewDate: progress.nextReviewDate,
+            timesCorrect: progress.timesCorrect,
+            timesIncorrect: progress.timesIncorrect,
+            lastReviewedAt: progress.lastReviewedAt,
+            createdAt: progress.createdAt,
+          },
           question: {
             id: questionEntity.id,
             videoId: questionEntity.videoId,
