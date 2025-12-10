@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { handleAuth } from "@/lib/supabase/middleware";
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
     try {
         const response = await handleAuth(request);
 
