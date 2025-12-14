@@ -68,18 +68,18 @@ export class GenerateMultipleChoiceQuestionsUseCase {
         }
 
         // Fetch transcript
-        const transcript =
+        const transcriptResult =
             await this.videoTranscriptService.get(youtubeVideoId);
-        if (!transcript) {
+        if (!transcriptResult) {
             throw new Error(
                 "Failed to fetch video transcript - captions may be disabled"
             );
         }
 
-        // Generate questions
+        // Generate questions using full text (timestamps will be used when available)
         const generatedQuestions = await this.questionGeneratorService.generate(
             video.title,
-            transcript,
+            transcriptResult.fullText,
             count
         );
 

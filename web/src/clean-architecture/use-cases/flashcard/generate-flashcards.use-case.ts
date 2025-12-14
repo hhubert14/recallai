@@ -68,18 +68,18 @@ export class GenerateFlashcardsUseCase {
         }
 
         // Fetch transcript
-        const transcript =
+        const transcriptResult =
             await this.videoTranscriptService.get(youtubeVideoId);
-        if (!transcript) {
+        if (!transcriptResult) {
             throw new Error(
                 "Failed to fetch video transcript - captions may be disabled"
             );
         }
 
-        // Generate flashcards
+        // Generate flashcards using full text (timestamps will be used when available)
         const generatedFlashcards = await this.flashcardGeneratorService.generate(
             video.title,
-            transcript,
+            transcriptResult.fullText,
             count
         );
 

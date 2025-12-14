@@ -66,14 +66,14 @@ export class ProcessVideoUseCase {
         const { title, description, channelName } = videoInfo;
 
         logger.extension.debug("Fetching transcript");
-        const transcript = await this.videoTranscriptService.get(youtubeVideoId);
-        if (!transcript) {
+        const transcriptResult = await this.videoTranscriptService.get(youtubeVideoId);
+        if (!transcriptResult) {
             throw new Error("Failed to fetch video transcript - captions may be disabled");
         }
 
         // 4. Check if video is educational
         logger.extension.debug("Checking if video is educational");
-        const isEducational = await this.videoClassifierService.isEducational(title, description, transcript);
+        const isEducational = await this.videoClassifierService.isEducational(title, description, transcriptResult.fullText);
         if (!isEducational) {
             throw new Error("Video does not appear to be educational content");
         }
@@ -92,7 +92,7 @@ export class ProcessVideoUseCase {
 
         // 6. Generate and save summary
         logger.extension.debug("Generating summary");
-        const summaryResult = await this.videoSummarizerService.generate(title, description, transcript);
+        const summaryResult = await this.videoSummarizerService.generate(title, description, transcriptResult.fullText);
         if (!summaryResult) {
             throw new Error("Failed to generate video summary");
         }
