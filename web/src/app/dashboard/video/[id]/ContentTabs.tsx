@@ -1,11 +1,12 @@
-// TODO: Refactor file to be less verbose
+// TODO: Refactor file to be less verbose, we can potentially use layouts or parent containers
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { QuizInterface } from "./QuizInterface";
+import { FlashcardInterface } from "./FlashcardInterface";
 
 const MAX_QUESTIONS = 20;
+const MAX_FLASHCARDS = 20;
 const COUNT_OPTIONS = [5, 10, 20] as const;
 
 interface ContentTabsProps {
@@ -23,50 +24,90 @@ interface ContentTabsProps {
             explanation: string | null;
         }[];
     }[];
+    flashcards: {
+        id: number;
+        videoId: number;
+        front: string;
+        back: string;
+    }[];
     videoId: number;
 }
 
 export function ContentTabs({
     summary,
     questions: initialQuestions,
+    flashcards: initialFlashcards,
     videoId,
 }: ContentTabsProps) {
-    const router = useRouter();
-    const [activeTab, setActiveTab] = useState<"summary" | "qa">("summary");
+    const [activeTab, setActiveTab] = useState<"summary" | "qa" | "flashcards">("summary");
     const [questions, setQuestions] = useState(initialQuestions);
-    const [selectedCount, setSelectedCount] = useState<number>(5);
-    const [isGenerating, setIsGenerating] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const [flashcards, setFlashcards] = useState(initialFlashcards);
+    const [selectedQuestionCount, setSelectedQuestionCount] = useState<number>(5);
+    const [selectedFlashcardCount, setSelectedFlashcardCount] = useState<number>(5);
+    const [isGeneratingQuestions, setIsGeneratingQuestions] = useState(false);
+    const [isGeneratingFlashcards, setIsGeneratingFlashcards] = useState(false);
+    const [questionError, setQuestionError] = useState<string | null>(null);
+    const [flashcardError, setFlashcardError] = useState<string | null>(null);
 
-    const remainingCapacity = MAX_QUESTIONS - questions.length;
-    const availableCountOptions = COUNT_OPTIONS.filter(
-        (count) => count <= remainingCapacity
+    const remainingQuestionCapacity = MAX_QUESTIONS - questions.length;
+    const availableQuestionCountOptions = COUNT_OPTIONS.filter(
+        (count) => count <= remainingQuestionCapacity
     );
-    const canGenerate = remainingCapacity > 0 && availableCountOptions.length > 0;
+    const canGenerateQuestions = remainingQuestionCapacity > 0 && availableQuestionCountOptions.length > 0;
 
-    async function handleGenerate() {
-        setIsGenerating(true);
-        setError(null);
+    const remainingFlashcardCapacity = MAX_FLASHCARDS - flashcards.length;
+    const availableFlashcardCountOptions = COUNT_OPTIONS.filter(
+        (count) => count <= remainingFlashcardCapacity
+    );
+    const canGenerateFlashcards = remainingFlashcardCapacity > 0 && availableFlashcardCountOptions.length > 0;
+
+    async function handleGenerateQuestions() {
+        setIsGeneratingQuestions(true);
+        setQuestionError(null);
 
         try {
             const response = await fetch("/api/v1/questions/generate", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ videoId, count: selectedCount }),
+                body: JSON.stringify({ videoId, count: selectedQuestionCount }),
             });
 
             const data = await response.json();
 
             if (data.status === "success") {
                 setQuestions((prev) => [...prev, ...data.data.questions]);
-                router.refresh();
             } else {
-                setError(data.data?.error || "Failed to generate questions");
+                setQuestionError(data.data?.error || "Failed to generate questions");
             }
         } catch {
-            setError("Failed to generate questions. Please try again.");
+            setQuestionError("Failed to generate questions. Please try again.");
         } finally {
-            setIsGenerating(false);
+            setIsGeneratingQuestions(false);
+        }
+    }
+
+    async function handleGenerateFlashcards() {
+        setIsGeneratingFlashcards(true);
+        setFlashcardError(null);
+
+        try {
+            const response = await fetch("/api/v1/flashcards/generate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ videoId, count: selectedFlashcardCount }),
+            });
+
+            const data = await response.json();
+
+            if (data.status === "success") {
+                setFlashcards((prev) => [...prev, ...data.data.flashcards]);
+            } else {
+                setFlashcardError(data.data?.error || "Failed to generate flashcards");
+            }
+        } catch {
+            setFlashcardError("Failed to generate flashcards. Please try again.");
+        } finally {
+            setIsGeneratingFlashcards(false);
         }
     }
 
@@ -94,6 +135,16 @@ export function ContentTabs({
                 >
                     Q&A ({questions.length})
                 </button>
+                <button
+                    onClick={() => setActiveTab("flashcards")}
+                    className={`px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
+                        activeTab === "flashcards"
+                            ? "border-blue-600 dark:border-blue-500 text-blue-600 dark:text-blue-400 bg-white dark:bg-gray-900 -mb-px"
+                            : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                    }`}
+                >
+                    Flashcards ({flashcards.length})
+                </button>
             </div>
 
             {/* Tab Content */}
@@ -116,11 +167,11 @@ export function ContentTabs({
 
                 {activeTab === "qa" && (
                     <div className="flex flex-col h-full">
-                        {isGenerating ? (
+                        {isGeneratingQuestions ? (
                             <div className="flex-1 flex flex-col items-center justify-center py-12">
                                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
                                 <p className="text-gray-600 dark:text-gray-300">
-                                    Generating {selectedCount} questions...
+                                    Generating {selectedQuestionCount} questions...
                                 </p>
                             </div>
                         ) : questions.length > 0 ? (
@@ -129,19 +180,19 @@ export function ContentTabs({
                                     questions={questions}
                                     videoId={videoId}
                                 />
-                                {canGenerate && (
+                                {canGenerateQuestions && (
                                     <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
                                         <div className="flex items-center justify-center gap-3">
                                             <select
-                                                value={selectedCount}
+                                                value={selectedQuestionCount}
                                                 onChange={(e) =>
-                                                    setSelectedCount(
+                                                    setSelectedQuestionCount(
                                                         Number(e.target.value)
                                                     )
                                                 }
                                                 className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm"
                                             >
-                                                {availableCountOptions.map(
+                                                {availableQuestionCountOptions.map(
                                                     (count) => (
                                                         <option
                                                             key={count}
@@ -153,7 +204,7 @@ export function ContentTabs({
                                                 )}
                                             </select>
                                             <button
-                                                onClick={handleGenerate}
+                                                onClick={handleGenerateQuestions}
                                                 className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors"
                                             >
                                                 Generate More
@@ -163,9 +214,9 @@ export function ContentTabs({
                                             {questions.length} of {MAX_QUESTIONS}{" "}
                                             max
                                         </p>
-                                        {error && (
+                                        {questionError && (
                                             <p className="text-center text-sm text-red-600 dark:text-red-400 mt-2">
-                                                {error}
+                                                {questionError}
                                             </p>
                                         )}
                                     </div>
@@ -178,9 +229,9 @@ export function ContentTabs({
                                 </p>
                                 <div className="flex items-center gap-3">
                                     <select
-                                        value={selectedCount}
+                                        value={selectedQuestionCount}
                                         onChange={(e) =>
-                                            setSelectedCount(
+                                            setSelectedQuestionCount(
                                                 Number(e.target.value)
                                             )
                                         }
@@ -193,15 +244,107 @@ export function ContentTabs({
                                         ))}
                                     </select>
                                     <button
-                                        onClick={handleGenerate}
+                                        onClick={handleGenerateQuestions}
                                         className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
                                     >
                                         Generate
                                     </button>
                                 </div>
-                                {error && (
+                                {questionError && (
                                     <p className="text-sm text-red-600 dark:text-red-400 mt-4">
-                                        {error}
+                                        {questionError}
+                                    </p>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {activeTab === "flashcards" && (
+                    <div className="flex flex-col h-full">
+                        {isGeneratingFlashcards ? (
+                            <div className="flex-1 flex flex-col items-center justify-center py-12">
+                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
+                                <p className="text-gray-600 dark:text-gray-300">
+                                    Generating {selectedFlashcardCount} flashcards...
+                                </p>
+                            </div>
+                        ) : flashcards.length > 0 ? (
+                            <>
+                                <FlashcardInterface flashcards={flashcards} />
+                                {canGenerateFlashcards && (
+                                    <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                                        <div className="flex items-center justify-center gap-3">
+                                            <select
+                                                value={selectedFlashcardCount}
+                                                onChange={(e) =>
+                                                    setSelectedFlashcardCount(
+                                                        Number(e.target.value)
+                                                    )
+                                                }
+                                                className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm"
+                                            >
+                                                {availableFlashcardCountOptions.map(
+                                                    (count) => (
+                                                        <option
+                                                            key={count}
+                                                            value={count}
+                                                        >
+                                                            {count} flashcards
+                                                        </option>
+                                                    )
+                                                )}
+                                            </select>
+                                            <button
+                                                onClick={handleGenerateFlashcards}
+                                                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors"
+                                            >
+                                                Generate More
+                                            </button>
+                                        </div>
+                                        <p className="text-center text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                            {flashcards.length} of {MAX_FLASHCARDS}{" "}
+                                            max
+                                        </p>
+                                        {flashcardError && (
+                                            <p className="text-center text-sm text-red-600 dark:text-red-400 mt-2">
+                                                {flashcardError}
+                                            </p>
+                                        )}
+                                    </div>
+                                )}
+                            </>
+                        ) : (
+                            <div className="flex-1 flex flex-col items-center justify-center py-12">
+                                <p className="text-gray-600 dark:text-gray-300 text-lg mb-6">
+                                    Generate flashcards
+                                </p>
+                                <div className="flex items-center gap-3">
+                                    <select
+                                        value={selectedFlashcardCount}
+                                        onChange={(e) =>
+                                            setSelectedFlashcardCount(
+                                                Number(e.target.value)
+                                            )
+                                        }
+                                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+                                    >
+                                        {COUNT_OPTIONS.map((count) => (
+                                            <option key={count} value={count}>
+                                                {count} flashcards
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <button
+                                        onClick={handleGenerateFlashcards}
+                                        className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+                                    >
+                                        Generate
+                                    </button>
+                                </div>
+                                {flashcardError && (
+                                    <p className="text-sm text-red-600 dark:text-red-400 mt-4">
+                                        {flashcardError}
                                     </p>
                                 )}
                             </div>

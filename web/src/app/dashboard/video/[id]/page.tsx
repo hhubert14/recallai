@@ -12,9 +12,11 @@ import { BackButton } from "./BackButton";
 import { DrizzleVideoRepository } from "@/clean-architecture/infrastructure/repositories/video.repository.drizzle";
 import { DrizzleSummaryRepository } from "@/clean-architecture/infrastructure/repositories/summary.repository.drizzle";
 import { DrizzleQuestionRepository } from "@/clean-architecture/infrastructure/repositories/question.repository.drizzle";
+import { DrizzleFlashcardRepository } from "@/clean-architecture/infrastructure/repositories/flashcard.repository.drizzle";
 import { FindVideoByIdUseCase } from "@/clean-architecture/use-cases/video/find-video-by-id.use-case";
 import { FindSummaryByVideoIdUseCase } from "@/clean-architecture/use-cases/summary/find-summary-by-video-id.use-case";
 import { FindQuestionsByVideoIdUseCase } from "@/clean-architecture/use-cases/question/find-questions-by-video-id.use-case";
+import { FindFlashcardsByVideoIdUseCase } from "@/clean-architecture/use-cases/flashcard/find-flashcards-by-video-id.use-case";
 
 export const metadata: Metadata = {
     title: "Video Detail | RecallAI",
@@ -46,9 +48,10 @@ export default async function VideoDetailPage({
         notFound();
     }
 
-    const [summaryEntity, questionEntities] = await Promise.all([
+    const [summaryEntity, questionEntities, flashcardEntities] = await Promise.all([
         new FindSummaryByVideoIdUseCase(new DrizzleSummaryRepository()).execute(video.id),
         new FindQuestionsByVideoIdUseCase(new DrizzleQuestionRepository()).execute(video.id),
+        new FindFlashcardsByVideoIdUseCase(new DrizzleFlashcardRepository()).execute(video.id),
     ]);
 
     // Convert entities to plain objects for client components
@@ -70,6 +73,13 @@ export default async function VideoDetailPage({
             orderIndex: opt.orderIndex,
             explanation: opt.explanation,
         })),
+    }));
+
+    const flashcards = flashcardEntities.map(f => ({
+        id: f.id,
+        videoId: f.videoId,
+        front: f.front,
+        back: f.back,
     }));
 
     const youtubeVideoId = extractYouTubeVideoId(video.url);
@@ -137,7 +147,7 @@ export default async function VideoDetailPage({
                         <ContentTabs
                             summary={summary}
                             questions={questions}
-                            // userId={user.id}
+                            flashcards={flashcards}
                             videoId={video.id}
                         />
                     </div>
