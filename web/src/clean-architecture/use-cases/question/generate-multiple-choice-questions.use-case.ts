@@ -11,7 +11,6 @@ type ValidCount = (typeof VALID_COUNTS)[number];
 
 export type GenerateMultipleChoiceQuestionsResult = {
     questions: MultipleChoiceQuestionEntity[];
-    generated: number;
     total: number;
 };
 
@@ -110,7 +109,6 @@ export class GenerateMultipleChoiceQuestionsUseCase {
 
         return {
             questions: savedQuestions,
-            generated: savedQuestions.length,
             total: existingCount + savedQuestions.length,
         };
     }

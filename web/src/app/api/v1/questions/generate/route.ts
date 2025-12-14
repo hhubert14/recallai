@@ -43,7 +43,6 @@ export async function POST(request: NextRequest) {
 
         return jsendSuccess({
             questions: result.questions,
-            generated: result.generated,
             total: result.total,
         });
     } catch (error) {
