@@ -8,46 +8,51 @@ import {
     GeneratedQuestionsDto,
 } from "@/clean-architecture/domain/services/question-generator.interface";
 
-const MultipleChoiceQuestionsSchema = z.object({
-    questions: z
-        .array(
-            z.object({
-                question: z.string().describe("The question text"),
-                options: z
-                    .array(z.string())
-                    .length(4)
-                    .describe("Four possible answer options"),
-                correctAnswerIndex: z
-                    .number()
-                    .min(0)
-                    .max(3)
-                    .describe("Index of the correct answer (0-3)"),
-                explanation: z
-                    .string()
-                    .describe(
-                        "Brief explanation of why the correct answer is right"
-                    ),
-            })
-        )
-        .length(5)
-        .describe("Five multiple-choice questions based on the video content"),
-});
+function createQuestionsSchema(count: number) {
+    return z.object({
+        questions: z
+            .array(
+                z.object({
+                    question: z.string().describe("The question text"),
+                    options: z
+                        .array(z.string())
+                        .length(4)
+                        .describe("Four possible answer options"),
+                    correctAnswerIndex: z
+                        .number()
+                        .min(0)
+                        .max(3)
+                        .describe("Index of the correct answer (0-3)"),
+                    explanation: z
+                        .string()
+                        .describe(
+                            "Brief explanation of why the correct answer is right"
+                        ),
+                })
+            )
+            .length(count)
+            .describe(
+                `${count} multiple-choice questions based on the video content`
+            ),
+    });
+}
 
 export class LangChainQuestionGeneratorService
     implements IQuestionGeneratorService
 {
     async generate(
         title: string,
-        description: string,
-        transcript: string
+        // description: string,
+        transcript: string,
+        count: number
     ): Promise<GeneratedQuestionsDto | undefined> {
-        if (!title || !description || !transcript) {
+        if (!title || !transcript) {
             logger.video.warn(
                 "Missing required parameters for question generation",
                 {
-                    hasTitle: !!title,
-                    hasDescription: !!description,
-                    hasTranscript: !!transcript,
+                    hasTitle: Boolean(title),
+                    // hasDescription: Boolean(description),
+                    hasTranscript: Boolean(transcript),
                 }
             );
             return undefined;
@@ -58,9 +63,8 @@ export class LangChainQuestionGeneratorService
             temperature: 0,
         });
 
-        const structuredLlm = llm.withStructuredOutput(
-            MultipleChoiceQuestionsSchema
-        );
+        const schema = createQuestionsSchema(count);
+        const structuredLlm = llm.withStructuredOutput(schema);
 
         try {
             const result = await structuredLlm.invoke([
@@ -69,10 +73,9 @@ export class LangChainQuestionGeneratorService
                     content: `Generate meaningful multiple choice questions based on the following video:
 
 Title: ${title}
-Description: ${description}
 Transcript: ${transcript}
 
-Create exactly 5 multiple-choice questions that test TRANSFERABLE UNDERSTANDING of key concepts that extend beyond this specific video. Focus on:
+Create exactly ${count} multiple-choice questions that test TRANSFERABLE UNDERSTANDING of key concepts that extend beyond this specific video. Focus on:
 - Universal principles and best practices
 - Conceptual knowledge applicable to similar situations
 - Problem-solving approaches that generalize

@@ -209,3 +209,25 @@ export const onboardingSurveys = pgTable("onboarding_surveys", {
 		}).onUpdate("cascade").onDelete("cascade"),
 	unique("onboarding_surveys_user_id_key").on(table.userId),
 ]);
+
+export const flashcards = pgTable("flashcards", {
+	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
+	id: bigint({ mode: "number" }).primaryKey().generatedByDefaultAsIdentity({ name: "flashcards_id_seq", startWith: 1, increment: 1, minValue: 1, cache: 1 }),
+	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
+	videoId: bigint("video_id", { mode: "number" }).notNull(),
+	userId: uuid("user_id").notNull(),
+	front: text().notNull(),
+	back: text().notNull(),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+}, (table) => [
+	foreignKey({
+			columns: [table.videoId],
+			foreignColumns: [videos.id],
+			name: "flashcards_video_id_fkey"
+		}).onUpdate("cascade").onDelete("cascade"),
+	foreignKey({
+			columns: [table.userId],
+			foreignColumns: [users.id],
+			name: "flashcards_user_id_fkey"
+		}).onUpdate("cascade").onDelete("cascade"),
+]);
