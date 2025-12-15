@@ -21,7 +21,8 @@
       "Bash(npm run compile:*)",
       "WebFetch(domain:wxt.dev)",
       "Bash(grep:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(npx tsx:*)"
     ],
     "deny": [],
     "ask": []
