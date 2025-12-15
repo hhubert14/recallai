@@ -12,6 +12,26 @@ import { describe, it, expect, beforeAll } from "vitest";
 
 const API_KEY = process.env.YOUTUBE_TRANSCRIPT_API_KEY;
 
+// Mirrors the service's parsing logic
+function parseTranscriptResponse(data: {
+    text: string;
+    tracks: { transcript: { start: string; dur: string; text: string }[] }[];
+}) {
+    const segments = data.tracks[0].transcript.map((seg) => {
+        const startTime = parseFloat(seg.start);
+        const endTime = startTime + parseFloat(seg.dur);
+        return {
+            text: seg.text,
+            startTime: startTime.toFixed(2),
+            endTime: endTime.toFixed(2),
+        };
+    });
+    return {
+        fullText: data.text,
+        segments,
+    };
+}
+
 // Skip all tests if no API key is set
 const describeIntegration = API_KEY ? describe : describe.skip;
 
@@ -100,5 +120,32 @@ describeIntegration("YoutubeTranscriptVideoTranscriptService (integration)", () 
 
         expect(typeof fullText).toBe("string");
         expect(fullText.length).toBeGreaterThan(0);
+    });
+
+    it("shows parsed output", async () => {
+        const videoId = "uJbbtrx5M_E";
+
+        const response = await fetch("https://www.youtube-transcript.io/api/transcripts", {
+            method: "POST",
+            headers: {
+                Authorization: `Basic ${API_KEY}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ ids: [videoId] }),
+        });
+
+        const data = await response.json();
+        const parsed = parseTranscriptResponse(data[0]);
+
+        console.log("\n📊 Parsed Output:");
+        console.log(`   Full text length: ${parsed.fullText.length} chars`);
+        console.log(`   Segments count: ${parsed.segments.length}`);
+        console.log("\n📝 First 3 segments:");
+        parsed.segments.slice(0, 3).forEach((seg, i) => {
+            console.log(`   ${i + 1}. [${seg.startTime}s - ${seg.endTime}s] "${seg.text}"`);
+        });
+
+        expect(parsed.fullText.length).toBeGreaterThan(0);
+        expect(parsed.segments.length).toBeGreaterThan(0);
     });
 });

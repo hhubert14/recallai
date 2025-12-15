@@ -88,11 +88,11 @@ export class YoutubeTranscriptVideoTranscriptService implements IVideoTranscript
     ): TranscriptSegment[] {
         return trackSegments.map((segment) => {
             const startTime = parseFloat(segment.start);
-            const duration = parseFloat(segment.dur);
+            const endTime = startTime + parseFloat(segment.dur);
             return {
                 text: segment.text,
-                startTime,
-                endTime: startTime + duration,
+                startTime: Number(startTime.toFixed(2)),
+                endTime: Number(endTime.toFixed(2)),
             };
         });
     }
