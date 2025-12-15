@@ -20,7 +20,8 @@
       "Bash(gh issue view:*)",
       "Bash(npm run compile:*)",
       "WebFetch(domain:wxt.dev)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(npx tsc:*)"
     ],
     "deny": [],
     "ask": []
