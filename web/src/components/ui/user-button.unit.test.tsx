@@ -20,7 +20,7 @@ vi.mock("@/lib/auth-provider", () => ({
 }));
 
 // 2. --- The Test Suite ---
-describe("UserButton", () => {
+describe("UserButton (unit)", () => {
     it("should display the user's email when logged in", async () => {
         // We need an "async" function because user actions are asynchronous
         const user = userEvent.setup();
