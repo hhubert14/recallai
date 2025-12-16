@@ -22,7 +22,8 @@
       "WebFetch(domain:wxt.dev)",
       "Bash(grep:*)",
       "Bash(npx tsc:*)",
-      "Bash(npx tsx:*)"
+      "Bash(npx tsx:*)",
+      "Bash(git show:*)"
     ],
     "deny": [],
     "ask": []
