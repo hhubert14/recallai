@@ -111,6 +111,8 @@ export const questions = pgTable("questions", {
 	videoId: bigint("video_id", { mode: "number" }).notNull(),
 	questionText: text("question_text").notNull(),
 	questionType: text("question_type").notNull(),
+	sourceQuote: text("source_quote"),
+	sourceTimestamp: integer("source_timestamp"),
 	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 }, (table) => [
@@ -230,4 +232,23 @@ export const flashcards = pgTable("flashcards", {
 			foreignColumns: [users.id],
 			name: "flashcards_user_id_fkey"
 		}).onUpdate("cascade").onDelete("cascade"),
+]);
+
+export const transcriptWindows = pgTable("transcript_windows", {
+	id: bigint({ mode: "number" }).primaryKey().generatedByDefaultAsIdentity({ name: "transcript_windows_id_seq", startWith: 1, increment: 1, minValue: 1, cache: 1 }),
+	videoId: bigint("video_id", { mode: "number" }).notNull(),
+	windowIndex: integer("window_index").notNull(),
+	startTime: integer("start_time").notNull(),
+	endTime: integer("end_time").notNull(),
+	text: text().notNull(),
+	embedding: text().notNull(),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+}, (table) => [
+	foreignKey({
+			columns: [table.videoId],
+			foreignColumns: [videos.id],
+			name: "transcript_windows_video_id_fkey"
+		}).onUpdate("cascade").onDelete("cascade"),
+	index("idx_transcript_windows_video_id").using("btree", table.videoId.asc().nullsLast()),
+	unique("transcript_windows_video_id_window_index_key").on(table.videoId, table.windowIndex),
 ]);
