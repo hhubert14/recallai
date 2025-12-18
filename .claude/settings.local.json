@@ -23,7 +23,9 @@
       "Bash(grep:*)",
       "Bash(npx tsc:*)",
       "Bash(npx tsx:*)",
-      "Bash(git show:*)"
+      "Bash(git show:*)",
+      "mcp__supabase__list_projects",
+      "mcp__context7__resolve-library-id"
     ],
     "deny": [],
     "ask": []
