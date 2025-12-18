@@ -3,6 +3,7 @@ export type GeneratedQuestionDto = {
     options: string[];
     correctAnswerIndex: number;
     explanation: string;
+    sourceQuote: string;
 };
 
 export type GeneratedQuestionsDto = {

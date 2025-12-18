@@ -9,7 +9,9 @@ export interface IQuestionRepository {
             isCorrect: boolean;
             orderIndex: number;
             explanation: string | null;
-        }[]
+        }[],
+        sourceQuote: string | null,
+        sourceTimestamp: number | null
     ): Promise<MultipleChoiceQuestionEntity>;
 
     findQuestionById(questionId: number): Promise<MultipleChoiceQuestionEntity | null>;
