@@ -1,4 +1,4 @@
-import { pgTable, foreignKey, unique, uuid, text, timestamp, bigint, boolean, integer, index, smallint, date, pgEnum, jsonb } from "drizzle-orm/pg-core"
+import { pgTable, foreignKey, unique, uuid, text, timestamp, bigint, boolean, integer, index, smallint, date, pgEnum, jsonb, vector } from "drizzle-orm/pg-core"
 import { sql } from "drizzle-orm"
 
 export const plan = pgEnum("plan", ['free', 'premium', 'student'])
@@ -241,7 +241,7 @@ export const transcriptWindows = pgTable("transcript_windows", {
 	startTime: integer("start_time").notNull(),
 	endTime: integer("end_time").notNull(),
 	text: text().notNull(),
-	embedding: text().notNull(),
+	embedding: vector("embedding", { dimensions: 384 }).notNull(),
 	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 }, (table) => [
 	foreignKey({
