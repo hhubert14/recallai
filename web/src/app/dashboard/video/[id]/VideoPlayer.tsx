@@ -1,3 +1,9 @@
+// FIXME: The "Unhook - Remove YouTube Recommended" Chrome extension causes the
+// embedded video to flicker between the first frame and a black screen when
+// playing. Disabling the extension resolves the issue. Strangely, neetcode.io's
+// YouTube embeds work fine with Unhook enabled - possibly because they use the
+// YouTube Player API instead of a static iframe, or Unhook whitelists their domain.
+
 "use client";
 
 interface VideoPlayerProps {
