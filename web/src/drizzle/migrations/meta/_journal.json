@@ -57,6 +57,13 @@
       "when": 1765940953222,
       "tag": "0007_dizzy_rage",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1766198855326,
+      "tag": "0008_warm_annihilus",
+      "breakpoints": true
     }
   ]
 }

@@ -1,0 +1,1 @@
+ALTER TABLE "transcript_windows" ALTER COLUMN "embedding" SET DATA TYPE vector(384) USING embedding::vector(384);
