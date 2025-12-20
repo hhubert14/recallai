@@ -381,6 +381,21 @@ findByUserId(userId: string)
 create(userId: string, ...)
 ```
 
+**Batch Operations - Always Use "Batch" Suffix:**
+
+```typescript
+// Single item method (when it exists)
+createProgress(item) → ProgressEntity
+createWindow(item) → WindowEntity
+
+// Batch method (ALWAYS use "Batch" suffix, even if single doesn't exist)
+createProgressBatch(items[]) → ProgressEntity[]
+createWindowsBatch(items[]) → WindowEntity[]
+createFlashcardsBatch(items[]) → FlashcardEntity[]
+```
+
+**Why:** Clear differentiation between single and batch operations, works for all nouns (avoids awkward plurals like "progresses").
+
 ### 3. Component Organization
 
 **Decision Rule:**
