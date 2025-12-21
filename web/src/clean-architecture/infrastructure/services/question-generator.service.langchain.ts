@@ -28,6 +28,11 @@ function createQuestionsSchema(count: number) {
                         .describe(
                             "Brief explanation of why the correct answer is right"
                         ),
+                    sourceQuote: z
+                        .string()
+                        .describe(
+                            "Exact short quote from the transcript where this concept is explained (1-2 sentences max)"
+                        ),
                 })
             )
             .length(count)
@@ -59,7 +64,7 @@ export class LangChainQuestionGeneratorService
         }
 
         const llm = new ChatOpenAI({
-            model: "gpt-4.1-nano-2025-04-14",
+            model: "gpt-4o-mini",
             temperature: 0,
         });
 
@@ -91,6 +96,12 @@ ANSWER FORMAT REQUIREMENTS:
 - Create plausible but clearly incorrect distractors
 - Avoid making the correct answer obviously longer or more detailed
 - Ensure someone who understands the concept could answer without watching this specific video
+
+SOURCE QUOTE REQUIREMENTS:
+- For each question, include an exact quote from the transcript showing where the concept is discussed
+- Keep quotes SHORT (1-2 sentences max)
+- The quote should be verbatim from the transcript (not paraphrased)
+- Choose quotes that clearly relate to the question concept
 
 Each question should test whether someone truly grasps the underlying principle, not whether they remember specific details from this video.`,
                 },
