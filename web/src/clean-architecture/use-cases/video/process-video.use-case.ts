@@ -8,6 +8,7 @@ import { IVideoClassifierService } from "@/clean-architecture/domain/services/vi
 import { IVideoSummarizerService } from "@/clean-architecture/domain/services/video-summarizer.interface";
 import { VideoEntity } from "@/clean-architecture/domain/entities/video.entity";
 import { SummaryEntity } from "@/clean-architecture/domain/entities/summary.entity";
+import { ITranscriptWindowGeneratorService } from "@/clean-architecture/domain/services/transcript-window-generator.interface";
 
 export type ProcessVideoResult = {
     video: VideoEntity;
@@ -22,7 +23,8 @@ export class ProcessVideoUseCase {
         private readonly videoInfoService: IVideoInfoService,
         private readonly videoTranscriptService: IVideoTranscriptService,
         private readonly videoClassifierService: IVideoClassifierService,
-        private readonly videoSummarizerService: IVideoSummarizerService
+        private readonly videoSummarizerService: IVideoSummarizerService,
+        private readonly transcriptWindowGeneratorService: ITranscriptWindowGeneratorService
     ) {}
 
     async execute(userId: string, videoUrl: string): Promise<ProcessVideoResult> {
@@ -66,14 +68,14 @@ export class ProcessVideoUseCase {
         const { title, description, channelName } = videoInfo;
 
         logger.extension.debug("Fetching transcript");
-        const transcript = await this.videoTranscriptService.get(youtubeVideoId);
-        if (!transcript) {
+        const transcriptResult = await this.videoTranscriptService.get(youtubeVideoId);
+        if (!transcriptResult) {
             throw new Error("Failed to fetch video transcript - captions may be disabled");
         }
 
         // 4. Check if video is educational
         logger.extension.debug("Checking if video is educational");
-        const isEducational = await this.videoClassifierService.isEducational(title, description, transcript);
+        const isEducational = await this.videoClassifierService.isEducational(title, description, transcriptResult.fullText);
         if (!isEducational) {
             throw new Error("Video does not appear to be educational content");
         }
@@ -92,7 +94,7 @@ export class ProcessVideoUseCase {
 
         // 6. Generate and save summary
         logger.extension.debug("Generating summary");
-        const summaryResult = await this.videoSummarizerService.generate(title, description, transcript);
+        const summaryResult = await this.videoSummarizerService.generate(title, description, transcriptResult.fullText);
         if (!summaryResult) {
             throw new Error("Failed to generate video summary");
         }
@@ -102,6 +104,19 @@ export class ProcessVideoUseCase {
             videoId: video.id,
             summaryLength: summary.content.length,
         });
+
+        // 7. Generate transcript windows for timestamp matching (non-blocking)
+        try {
+            await this.transcriptWindowGeneratorService.generate(
+                video.id,
+                transcriptResult.segments
+            );
+        } catch (error) {
+            logger.extension.warn("Failed to generate transcript windows", {
+                videoId: video.id,
+                error: error instanceof Error ? error.message : String(error),
+            });
+        }
 
         return {
             video,

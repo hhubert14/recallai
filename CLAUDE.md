@@ -363,6 +363,29 @@ export class GetUserProfileUseCase {
 
 **Rule of thumb:** Prefer entities by default. Create DTOs only when there's a clear reason (security, performance, etc.).
 
+**Use Case Dependencies:**
+Use cases should only depend on **repositories** and **services**, never on other use cases.
+
+```typescript
+// ✅ Good - depends on repositories and services
+export class ProcessVideoUseCase {
+  constructor(
+    private readonly videoRepository: IVideoRepository,
+    private readonly summaryService: IVideoSummarizerService,
+    private readonly windowGeneratorService: ITranscriptWindowGeneratorService,
+  ) {}
+}
+
+// ❌ Bad - depends on another use case
+export class ProcessVideoUseCase {
+  constructor(
+    private readonly generateWindowsUseCase: GenerateTranscriptWindowsUseCase,
+  ) {}
+}
+```
+
+If you find yourself wanting to call one use case from another, extract the shared logic into a service instead.
+
 ### 2. Repository Method Naming
 
 Repository methods should include the entity name for clarity and to avoid ambiguity:
@@ -380,6 +403,21 @@ findById(id: number)
 findByUserId(userId: string)
 create(userId: string, ...)
 ```
+
+**Batch Operations - Always Use "Batch" Suffix:**
+
+```typescript
+// Single item method (when it exists)
+createProgress(item) → ProgressEntity
+createWindow(item) → WindowEntity
+
+// Batch method (ALWAYS use "Batch" suffix, even if single doesn't exist)
+createProgressBatch(items[]) → ProgressEntity[]
+createWindowsBatch(items[]) → WindowEntity[]
+createFlashcardsBatch(items[]) → FlashcardEntity[]
+```
+
+**Why:** Clear differentiation between single and batch operations, works for all nouns (avoids awkward plurals like "progresses").
 
 ### 3. Component Organization
 

@@ -8,6 +8,7 @@ import { createClient } from "@/lib/supabase/server";
 import { extractYouTubeVideoId } from "@/lib/youtube";
 import { VideoPlayer } from "./VideoPlayer";
 import { ContentTabs } from "./ContentTabs";
+import { VideoPlayerProvider } from "./VideoPlayerContext";
 import { BackButton } from "./BackButton";
 import { DrizzleVideoRepository } from "@/clean-architecture/infrastructure/repositories/video.repository.drizzle";
 import { DrizzleSummaryRepository } from "@/clean-architecture/infrastructure/repositories/summary.repository.drizzle";
@@ -66,6 +67,7 @@ export default async function VideoDetailPage({
         videoId: q.videoId,
         questionText: q.questionText,
         questionType: q.questionType,
+        sourceTimestamp: q.sourceTimestamp,
         options: q.options.map(opt => ({
             id: opt.id,
             optionText: opt.optionText,
@@ -133,25 +135,27 @@ export default async function VideoDetailPage({
                         </p>
                     )}
                 </div>{" "}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 min-h-[calc(100vh-200px)]">
-                    {/* Video Player - Left Side on Desktop, Top on Mobile */}
-                    <div className="bg-black rounded-xl overflow-hidden aspect-video lg:aspect-auto shadow-lg">
-                        <VideoPlayer
-                            videoId={youtubeVideoId}
-                            title={video.title}
-                        />
-                    </div>
+                <VideoPlayerProvider>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 min-h-[calc(100vh-200px)]">
+                        {/* Video Player - Left Side on Desktop, Top on Mobile */}
+                        <div className="bg-black rounded-xl overflow-hidden aspect-video lg:aspect-auto shadow-lg">
+                            <VideoPlayer
+                                videoId={youtubeVideoId}
+                                title={video.title}
+                            />
+                        </div>
 
-                    {/* Content Tabs - Right Side on Desktop, Bottom on Mobile */}
-                    <div className="flex flex-col min-h-[500px] lg:min-h-0">
-                        <ContentTabs
-                            summary={summary}
-                            questions={questions}
-                            flashcards={flashcards}
-                            videoId={video.id}
-                        />
+                        {/* Content Tabs - Right Side on Desktop, Bottom on Mobile */}
+                        <div className="flex flex-col min-h-[500px] lg:min-h-0">
+                            <ContentTabs
+                                summary={summary}
+                                questions={questions}
+                                flashcards={flashcards}
+                                videoId={video.id}
+                            />
+                        </div>
                     </div>
-                </div>
+                </VideoPlayerProvider>
             </main>
         </div>
     );

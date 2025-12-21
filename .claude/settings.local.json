@@ -20,7 +20,15 @@
       "Bash(gh issue view:*)",
       "Bash(npm run compile:*)",
       "WebFetch(domain:wxt.dev)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npx tsx:*)",
+      "Bash(git show:*)",
+      "mcp__supabase__list_projects",
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__get-library-docs",
+      "mcp__github__get_me",
+      "mcp__github__issue_write"
     ],
     "deny": [],
     "ask": []

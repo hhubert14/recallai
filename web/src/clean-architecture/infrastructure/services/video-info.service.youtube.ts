@@ -22,7 +22,7 @@ export class YouTubeVideoInfoService implements IVideoInfoService {
             return undefined;
         }
 
-        const apiKey = process.env.YOUTUBE_API_KEY;
+        const apiKey = process.env.YOUTUBE_INFO_API_KEY;
         if (!apiKey) {
             throw new Error(
                 "YouTube API key is not set in environment variables"

@@ -6,9 +6,12 @@ import { ProcessVideoUseCase } from "@/clean-architecture/use-cases/video/proces
 import { DrizzleVideoRepository } from "@/clean-architecture/infrastructure/repositories/video.repository.drizzle";
 import { DrizzleSummaryRepository } from "@/clean-architecture/infrastructure/repositories/summary.repository.drizzle";
 import { YouTubeVideoInfoService } from "@/clean-architecture/infrastructure/services/video-info.service.youtube";
-import { StrapiVideoTranscriptService } from "@/clean-architecture/infrastructure/services/video-transcript.service.strapi";
+import { YoutubeTranscriptVideoTranscriptService } from "@/clean-architecture/infrastructure/services/video-transcript.service.youtube-transcript";
 import { OpenAIVideoClassifierService } from "@/clean-architecture/infrastructure/services/video-classifier.service.openai";
 import { LangChainVideoSummarizerService } from "@/clean-architecture/infrastructure/services/video-summarizer.service.langchain";
+import { TranscriptWindowGeneratorService } from "@/clean-architecture/infrastructure/services/transcript-window-generator.service";
+import { SupabaseEmbeddingService } from "@/clean-architecture/infrastructure/services/embedding.service.supabase";
+import { DrizzleTranscriptWindowRepository } from "@/clean-architecture/infrastructure/repositories/transcript-window.repository.drizzle";
 
 export async function POST(
     request: NextRequest,
@@ -34,9 +37,10 @@ export async function POST(
             new DrizzleVideoRepository(),
             new DrizzleSummaryRepository(),
             new YouTubeVideoInfoService(),
-            new StrapiVideoTranscriptService(),
+            new YoutubeTranscriptVideoTranscriptService(),
             new OpenAIVideoClassifierService(),
-            new LangChainVideoSummarizerService()
+            new LangChainVideoSummarizerService(),
+            new TranscriptWindowGeneratorService(new SupabaseEmbeddingService(), new DrizzleTranscriptWindowRepository())
         );
 
         const result = await useCase.execute(user.id, videoUrl);

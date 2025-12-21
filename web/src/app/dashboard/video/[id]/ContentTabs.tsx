@@ -16,6 +16,7 @@ interface ContentTabsProps {
         videoId: number;
         questionText: string;
         questionType: string;
+        sourceTimestamp: number | null;
         options: {
             id: number;
             optionText: string;

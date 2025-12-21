@@ -1,14 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useQuizCompletion } from "@/components/providers/QuizCompletionProvider";
+import { useVideoPlayer } from "./VideoPlayerContext";
 
 type QuestionWithOptions = {
     id: number;
     videoId: number;
     questionText: string;
     questionType: string;
+    sourceTimestamp: number | null;
     options: {
         id: number;
         optionText: string;
@@ -30,6 +33,12 @@ interface QuizInterfaceProps {
     questions: QuestionWithOptions[];
     // userId: string;
     videoId: number;
+}
+
+function formatTimestamp(seconds: number): string {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
 }
 
 // Function to shuffle an array using Fisher-Yates algorithm
@@ -71,6 +80,7 @@ export function QuizInterface({
     );
 
     const { markVideoAsCompleted } = useQuizCompletion();
+    const { seekTo } = useVideoPlayer();
 
     // Shuffle questions and their options when component mounts or questions change
     useEffect(() => {
@@ -164,9 +174,21 @@ export function QuizInterface({
 
             {/* Question */}
             <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700">
-                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
-                    {currentQuestion.questionText}
-                </h3>
+                <div className="flex items-start gap-2 mb-4">
+                    <h3 className="text-lg font-medium text-gray-900 dark:text-white flex-1">
+                        {currentQuestion.questionText}
+                    </h3>
+                    {currentQuestion.sourceTimestamp !== null && (
+                        <button
+                            onClick={() => seekTo(currentQuestion.sourceTimestamp!)}
+                            className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/40 rounded cursor-pointer transition-colors"
+                            title={`Jump to ${formatTimestamp(currentQuestion.sourceTimestamp)}`}
+                        >
+                            <Clock className="h-3.5 w-3.5" />
+                            {formatTimestamp(currentQuestion.sourceTimestamp)}
+                        </button>
+                    )}
+                </div>
 
                 {/* Options */}
                 <div className="space-y-3">
