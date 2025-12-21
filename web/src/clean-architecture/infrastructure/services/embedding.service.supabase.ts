@@ -58,13 +58,17 @@ export class SupabaseEmbeddingService implements IEmbeddingService {
 	}
 
 	async embedBatch(texts: string[]): Promise<number[][]> {
-		const embeddings: number[][] = [];
+		const CONCURRENCY_LIMIT = 10;
+		const results: number[][] = [];
 
-		for (const text of texts) {
-			const embedding = await this.embed(text);
-			embeddings.push(embedding);
+		for (let i = 0; i < texts.length; i += CONCURRENCY_LIMIT) {
+			const batch = texts.slice(i, i + CONCURRENCY_LIMIT);
+			const batchResults = await Promise.all(
+				batch.map((text) => this.embed(text))
+			);
+			results.push(...batchResults);
 		}
 
-		return embeddings;
+		return results;
 	}
 }
