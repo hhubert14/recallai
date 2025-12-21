@@ -1,9 +1,12 @@
 import { extractYouTubeVideoId } from "@/lib/youtube";
 import { IVideoRepository } from "@/clean-architecture/domain/repositories/video.repository.interface";
 import { IQuestionRepository } from "@/clean-architecture/domain/repositories/question.repository.interface";
+import { ITranscriptWindowRepository } from "@/clean-architecture/domain/repositories/transcript-window.repository.interface";
 import { IVideoTranscriptService } from "@/clean-architecture/domain/services/video-transcript.interface";
 import { IQuestionGeneratorService } from "@/clean-architecture/domain/services/question-generator.interface";
+import { IEmbeddingService } from "@/clean-architecture/domain/services/embedding.interface";
 import { MultipleChoiceQuestionEntity } from "@/clean-architecture/domain/entities/question.entity";
+import { logger } from "@/lib/logger";
 
 const MAX_QUESTIONS_PER_VIDEO = 20;
 const VALID_COUNTS = [5, 10, 20] as const;
@@ -19,7 +22,9 @@ export class GenerateMultipleChoiceQuestionsUseCase {
         private readonly videoRepository: IVideoRepository,
         private readonly questionRepository: IQuestionRepository,
         private readonly videoTranscriptService: IVideoTranscriptService,
-        private readonly questionGeneratorService: IQuestionGeneratorService
+        private readonly questionGeneratorService: IQuestionGeneratorService,
+        private readonly embeddingService: IEmbeddingService,
+        private readonly transcriptWindowRepository: ITranscriptWindowRepository
     ) {}
 
     async execute(
@@ -87,7 +92,7 @@ export class GenerateMultipleChoiceQuestionsUseCase {
             throw new Error("Failed to generate questions");
         }
 
-        // Save questions to database
+        // Save questions to database with matched timestamps
         const savedQuestions: MultipleChoiceQuestionEntity[] = [];
         for (const q of generatedQuestions.questions) {
             const options = q.options.map((optionText, index) => ({
@@ -98,11 +103,29 @@ export class GenerateMultipleChoiceQuestionsUseCase {
                     index === q.correctAnswerIndex ? q.explanation : null,
             }));
 
+            let sourceTimestamp: number | null = null;
+            try {
+                const quoteEmbedding = await this.embeddingService.embed(q.sourceQuote);
+                const match = await this.transcriptWindowRepository.findMostSimilarWindow(videoId, quoteEmbedding);
+                if (match) {
+                    sourceTimestamp = match.window.startTime;
+                    logger.video.info(
+                        `Matched quote to timestamp ${sourceTimestamp}s (similarity: ${match.similarity.toFixed(3)})`
+                    );
+                }
+            } catch (error) {
+                logger.video.warn(
+                    `Failed to match source quote to timestamp: ${error}`
+                );
+            }
+
             const savedQuestion =
                 await this.questionRepository.createMultipleChoiceQuestion(
                     videoId,
                     q.question,
-                    options
+                    options,
+                    q.sourceQuote,
+                    sourceTimestamp
                 );
             savedQuestions.push(savedQuestion);
         }

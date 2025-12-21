@@ -8,6 +8,7 @@ import { IVideoClassifierService } from "@/clean-architecture/domain/services/vi
 import { IVideoSummarizerService } from "@/clean-architecture/domain/services/video-summarizer.interface";
 import { VideoEntity } from "@/clean-architecture/domain/entities/video.entity";
 import { SummaryEntity } from "@/clean-architecture/domain/entities/summary.entity";
+import { ITranscriptWindowGeneratorService } from "@/clean-architecture/domain/services/transcript-window-generator.interface";
 
 export type ProcessVideoResult = {
     video: VideoEntity;
@@ -22,7 +23,8 @@ export class ProcessVideoUseCase {
         private readonly videoInfoService: IVideoInfoService,
         private readonly videoTranscriptService: IVideoTranscriptService,
         private readonly videoClassifierService: IVideoClassifierService,
-        private readonly videoSummarizerService: IVideoSummarizerService
+        private readonly videoSummarizerService: IVideoSummarizerService,
+        private readonly transcriptWindowGeneratorService: ITranscriptWindowGeneratorService
     ) {}
 
     async execute(userId: string, videoUrl: string): Promise<ProcessVideoResult> {
@@ -102,6 +104,19 @@ export class ProcessVideoUseCase {
             videoId: video.id,
             summaryLength: summary.content.length,
         });
+
+        // 7. Generate transcript windows for timestamp matching (non-blocking)
+        try {
+            await this.transcriptWindowGeneratorService.generate(
+                video.id,
+                transcriptResult.segments
+            );
+        } catch (error) {
+            logger.extension.warn("Failed to generate transcript windows", {
+                videoId: video.id,
+                error: error instanceof Error ? error.message : String(error),
+            });
+        }
 
         return {
             video,

@@ -4,8 +4,10 @@ import { jsendSuccess, jsendFail, jsendError } from "@/lib/jsend";
 import { GenerateMultipleChoiceQuestionsUseCase } from "@/clean-architecture/use-cases/question/generate-multiple-choice-questions.use-case";
 import { DrizzleVideoRepository } from "@/clean-architecture/infrastructure/repositories/video.repository.drizzle";
 import { DrizzleQuestionRepository } from "@/clean-architecture/infrastructure/repositories/question.repository.drizzle";
-import { StrapiVideoTranscriptService } from "@/clean-architecture/infrastructure/services/video-transcript.service.strapi";
+import { YoutubeTranscriptVideoTranscriptService } from "@/clean-architecture/infrastructure/services/video-transcript.service.youtube-transcript";
 import { LangChainQuestionGeneratorService } from "@/clean-architecture/infrastructure/services/question-generator.service.langchain";
+import { SupabaseEmbeddingService } from "@/clean-architecture/infrastructure/services/embedding.service.supabase";
+import { DrizzleTranscriptWindowRepository } from "@/clean-architecture/infrastructure/repositories/transcript-window.repository.drizzle";
 
 const VALID_COUNTS = [5, 10, 20];
 
@@ -35,8 +37,10 @@ export async function POST(request: NextRequest) {
         const useCase = new GenerateMultipleChoiceQuestionsUseCase(
             new DrizzleVideoRepository(),
             new DrizzleQuestionRepository(),
-            new StrapiVideoTranscriptService(),
-            new LangChainQuestionGeneratorService()
+            new YoutubeTranscriptVideoTranscriptService(),
+            new LangChainQuestionGeneratorService(),
+            new SupabaseEmbeddingService(),
+            new DrizzleTranscriptWindowRepository()
         );
 
         const result = await useCase.execute(user.id, videoId, count);
