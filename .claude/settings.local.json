@@ -29,7 +29,8 @@
       "mcp__context7__get-library-docs",
       "mcp__github__get_me",
       "mcp__github__issue_write",
-      "Bash(git remote:*)"
+      "Bash(git remote:*)",
+      "mcp__github__list_issues"
     ],
     "deny": [],
     "ask": []
