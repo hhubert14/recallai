@@ -22,7 +22,9 @@
     "db:studio:test": "dotenv -e .env.test.local -- drizzle-kit studio",
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",
-    "docker:status": "docker-compose ps"
+    "docker:status": "docker-compose ps",
+    "keep-alive": "dotenv -e .env.local -- tsx scripts/keep-alive.ts",
+    "test:db": "dotenv -e .env.local -- tsx scripts/test-db-connection.ts"
   },
   "dependencies": {
     "@langchain/core": "^0.3.57",

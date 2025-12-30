@@ -286,7 +286,7 @@ npm run db:studio    # Open Drizzle Studio (database GUI)
 
 **Testing Drizzle Connection:**
 ```bash
-npx tsx src/drizzle/test-connection.ts
+npm run test:db
 ```
 
 ## Environment Variables
