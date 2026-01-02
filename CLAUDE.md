@@ -599,13 +599,20 @@ Use these prefixes when creating branches:
 | `chore/` | Everything else: dependency updates, config changes, CI/CD tweaks, refactoring, documentation |
 | `release/` | Formal release branches (only if doing formal releases) |
 
+**Issue Number (Optional):**
+
+When a branch relates to a GitHub issue, include the issue number after the prefix:
+- Pattern: `type/issue-number-description`
+- Helps with traceability and GitHub auto-linking
+- Not required, but encouraged when an issue exists
+
 **Examples:**
 ```
-feature/add-dark-mode
-feature/user-profile-settings
-fix/login-redirect-bug
+feature/123-add-dark-mode        # With issue number
+feature/user-profile-settings   # Without issue number (still valid)
+fix/456-login-redirect-bug
 fix/quiz-score-calculation
-chore/update-dependencies
+chore/789-update-dependencies
 chore/refactor-auth-service
 release/v1.2.0
 ```
