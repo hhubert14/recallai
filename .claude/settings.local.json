@@ -31,7 +31,8 @@
       "mcp__github__issue_write",
       "Bash(git remote:*)",
       "mcp__github__list_issues",
-      "mcp__github__issue_read"
+      "mcp__github__issue_read",
+      "Bash(dir \"C:\\\\Users\\\\huang\\\\repos\\\\Personal\\\\recallai\\\\web\\\\src\" /s /b)"
     ],
     "deny": [],
     "ask": []
