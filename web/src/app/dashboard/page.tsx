@@ -308,7 +308,7 @@ export default async function DashboardPage() {
                                 subtitle="Overall performance"
                             />
                             <StatsCard
-                                title="This Week"
+                                title="Last 7 Days"
                                 value={`${userStats.videosThisWeek + userStats.questionsThisWeek}`}
                                 iconName="Calendar"
                                 subtitle={`${userStats.videosThisWeek} videos, ${userStats.questionsThisWeek} questions`}
