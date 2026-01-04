@@ -1,5 +1,7 @@
 import { VideoEntity } from "@/clean-architecture/domain/entities/video.entity";
-import { getQuizCompletionStatus } from "@/data-access/user-stats/get-quiz-completion-status";
+import { GetQuizCompletionStatusUseCase } from "@/clean-architecture/use-cases/user-stats/get-quiz-completion-status.use-case";
+import { DrizzleQuestionRepository } from "@/clean-architecture/infrastructure/repositories/question.repository.drizzle";
+import { DrizzleAnswerRepository } from "@/clean-architecture/infrastructure/repositories/answer.repository.drizzle";
 import { ClientLibraryVideoList } from "@/app/dashboard/library/ClientLibraryVideoList";
 
 interface LibraryVideoListProps {
@@ -33,12 +35,16 @@ export async function LibraryVideoList({
                 </div>
             </div>
         );
-    } // Get quiz completion status for all videos
+    }
+
+    const useCase = new GetQuizCompletionStatusUseCase(new DrizzleQuestionRepository(), new DrizzleAnswerRepository())
+
+    // Get quiz completion status for all videos
     const videosWithCompletion = await Promise.all(
         videos.map(async video => ({
             ...video,
-            quizCompleted: await getQuizCompletionStatus(userId, video.id),
-        }))
+            quizCompleted: await useCase.execute(userId, video.id),
+        })),
     );
     return (
         <ClientLibraryVideoList videos={videosWithCompletion} />

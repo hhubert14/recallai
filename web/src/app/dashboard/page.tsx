@@ -6,12 +6,13 @@ import { Brain, Play, Chrome, Video } from "lucide-react";
 import { UserButton } from "@/components/ui/user-button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { createClient } from "@/lib/supabase/server";
-import { getUserStatsByUserId } from "@/data-access/user-stats/get-user-stats-by-user-id";
 import { StatsCard } from "./StatsCard";
 import { RefreshButton } from "./RefreshButton";
+import { DrizzleAnswerRepository } from "@/clean-architecture/infrastructure/repositories/answer.repository.drizzle";
 import { DrizzleVideoRepository } from "@/clean-architecture/infrastructure/repositories/video.repository.drizzle";
 import { FindVideosByUserIdUseCase } from "@/clean-architecture/use-cases/video/find-videos-by-user-id.use-case";
 import { OnboardingSurveyWrapper } from "./OnboardingSurvey/OnboardingSurveyWrapper";
+import { GetUserStatsUseCase } from "@/clean-architecture/use-cases/user-stats/get-user-stats.use-case";
 
 export const metadata: Metadata = {
     title: "Dashboard | RecallAI",
@@ -38,9 +39,8 @@ export default async function DashboardPage() {
 
     const [videos, stats] = await Promise.all([
         new FindVideosByUserIdUseCase(new DrizzleVideoRepository()).execute(user.id, 5),
-        getUserStatsByUserId(user.id),
+        new GetUserStatsUseCase(new DrizzleVideoRepository(), new DrizzleAnswerRepository()).execute(user.id),
     ]);
-    // recentVideos = videos;
     userStats = stats;
 
     return (
@@ -308,7 +308,7 @@ export default async function DashboardPage() {
                                 subtitle="Overall performance"
                             />
                             <StatsCard
-                                title="This Week"
+                                title="Last 7 Days"
                                 value={`${userStats.videosThisWeek + userStats.questionsThisWeek}`}
                                 iconName="Calendar"
                                 subtitle={`${userStats.videosThisWeek} videos, ${userStats.questionsThisWeek} questions`}

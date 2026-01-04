@@ -640,18 +640,90 @@ Use these standard task markers in code comments:
 
 ## Testing Strategy
 
-**Co-located Tests:** Place test files next to source files with `.test.ts` suffix
+### Test-Driven Development (TDD)
+
+Use TDD for non-trivial implementations, especially use cases and business logic:
+
+1. **Red** - Write tests first that describe the expected behavior
+2. **Green** - Implement the minimum code to make tests pass
+3. **Refactor** - Clean up while keeping tests green
+
+**TDD Workflow Example:**
+```bash
+# 1. Write test file with failing tests
+# 2. Run tests to verify they fail
+npm run test -- --run path/to/file.unit.test.ts
+
+# 3. Implement the feature
+# 4. Run tests to verify they pass
+npm run test -- --run path/to/file.unit.test.ts
+
+# 5. Refactor if needed, run tests again
+npm run test -- --run path/to/file.unit.test.ts
+```
+
+### Testing Cadence
+
+**Run tests frequently after each change:**
+- After writing each test → verify test fails (red)
+- After implementing each piece → verify test passes (green)
+- After each refactor → verify nothing broke
+- Before committing → run all tests
+
+```bash
+npm run test -- --run              # Run all tests once
+npm run test -- --watch            # Watch mode during development
+npm run test -- --run <pattern>    # Run specific tests
+```
+
+### Test File Naming Convention
+
+**Co-located Tests:** Place test files next to source files with naming convention:
+- Unit tests: `<name>.unit.test.ts`
+- Integration tests: `<name>.integration.test.ts`
 
 ```
-src/use-cases/extension/
-├── process-video.ts
-└── process-video.test.ts
+src/clean-architecture/use-cases/user-stats/
+├── get-user-stats.use-case.ts
+├── get-user-stats.unit.test.ts           # Unit test with mocked dependencies
+└── get-user-stats.integration.test.ts    # Integration test with real DB (if needed)
 ```
 
-**Critical Areas Requiring Tests (Priority Order):**
+### Unit Tests with Mocked Repositories
+
+For use case tests, mock repository dependencies:
+
+```typescript
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { GetUserStatsUseCase } from "./get-user-stats.use-case";
+import { IVideoRepository } from "@/clean-architecture/domain/repositories/video.repository.interface";
+
+describe("GetUserStatsUseCase", () => {
+  let useCase: GetUserStatsUseCase;
+  let mockVideoRepo: IVideoRepository;
+
+  beforeEach(() => {
+    mockVideoRepo = {
+      findVideosByUserId: vi.fn(),
+      // ... other methods
+    };
+    useCase = new GetUserStatsUseCase(mockVideoRepo);
+  });
+
+  it("returns correct total video count", async () => {
+    vi.mocked(mockVideoRepo.findVideosByUserId).mockResolvedValue([...]);
+    const result = await useCase.execute("user-1");
+    expect(result.totalVideos).toBe(3);
+  });
+});
+```
+
+### Critical Areas Requiring Tests (Priority Order)
+
 1. Spaced repetition engine (`process-spaced-repetition-answer.ts`, `utils.ts`)
 2. Video processing pipeline (`process-video.ts`)
-3. Complex query functions (see `docs/complex-query-migrations.md`)
+3. Use cases with business logic
+4. Complex query functions (see `docs/complex-query-migrations.md`)
 
 See `docs/testing-priorities.md` for comprehensive testing roadmap.
 

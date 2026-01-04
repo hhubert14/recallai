@@ -5,7 +5,10 @@ import { Brain, User, Chrome, Database } from "lucide-react";
 import { UserButton } from "@/components/ui/user-button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { createClient } from "@/lib/supabase/server";
-import { getUserStatsByUserId } from "@/data-access/user-stats/get-user-stats-by-user-id";
+import { GetUserStatsUseCase } from "@/clean-architecture/use-cases/user-stats/get-user-stats.use-case";
+import { DrizzleAnswerRepository } from "@/clean-architecture/infrastructure/repositories/answer.repository.drizzle";
+import { DrizzleVideoRepository } from "@/clean-architecture/infrastructure/repositories/video.repository.drizzle";
+
 
 export const metadata: Metadata = {
     title: "Settings | RecallAI",
@@ -22,10 +25,9 @@ export default async function SettingsPage() {
     if (!user) {
         redirect("/auth/login");
     }
-    const [userStats] =
-        await Promise.all([
-            getUserStatsByUserId(user.id),
-        ]);
+    const [userStats] = await Promise.all([
+        new GetUserStatsUseCase(new DrizzleVideoRepository(), new DrizzleAnswerRepository()).execute(user.id),
+    ]);
 
     // Format join date
     const joinDate = new Date(user.created_at).toLocaleDateString("en-US", {
