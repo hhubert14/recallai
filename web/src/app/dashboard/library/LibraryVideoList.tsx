@@ -37,14 +37,13 @@ export async function LibraryVideoList({
         );
     }
 
+    const useCase = new GetQuizCompletionStatusUseCase(new DrizzleQuestionRepository(), new DrizzleAnswerRepository())
+
     // Get quiz completion status for all videos
     const videosWithCompletion = await Promise.all(
         videos.map(async video => ({
             ...video,
-            quizCompleted: await new GetQuizCompletionStatusUseCase(
-                new DrizzleQuestionRepository(),
-                new DrizzleAnswerRepository(),
-            ).execute(userId, video.id),
+            quizCompleted: await useCase.execute(userId, video.id),
         })),
     );
     return (
