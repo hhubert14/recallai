@@ -2,7 +2,7 @@ import { db } from "@/drizzle";
 import { userAnswers, questions } from "@/drizzle/schema";
 import { IAnswerRepository } from "@/clean-architecture/domain/repositories/answer.repository.interface";
 import { MultipleChoiceAnswerEntity } from "@/clean-architecture/domain/entities/answer.entity";
-import { eq, and } from "drizzle-orm";
+import { eq, and, desc } from "drizzle-orm";
 
 function toMultipleChoiceAnswerEntity(
   record: typeof userAnswers.$inferSelect
@@ -36,6 +36,16 @@ export class DrizzleAnswerRepository implements IAnswerRepository {
       .returning();
 
     return toMultipleChoiceAnswerEntity(result);
+  }
+
+  async findAnswersByUserId(userId: string): Promise<MultipleChoiceAnswerEntity[]> {
+    const results = await db
+      .select()
+      .from(userAnswers)
+      .where(eq(userAnswers.userId, userId))
+      .orderBy(desc(userAnswers.createdAt));
+
+    return results.map(toMultipleChoiceAnswerEntity);
   }
 
   async findAnsweredQuestionIdsByVideoId(
