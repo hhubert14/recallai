@@ -33,7 +33,8 @@
       "mcp__github__list_issues",
       "mcp__github__issue_read",
       "Bash(dir \"C:\\\\Users\\\\huang\\\\repos\\\\Personal\\\\recallai\\\\web\\\\src\" /s /b)",
-      "mcp__github__search_issues"
+      "mcp__github__search_issues",
+      "Bash(npm run test:*)"
     ],
     "deny": [],
     "ask": []
