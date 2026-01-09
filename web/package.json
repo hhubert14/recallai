@@ -9,7 +9,6 @@
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
-    "stripe": "stripe listen --forward-to localhost:3000/api/v1/stripe/webhook",
     "test": "vitest",
     "test:unit": "vitest .unit.test.",
     "test:integration": "vitest .integration.test.",
