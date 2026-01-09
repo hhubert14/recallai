@@ -72,7 +72,6 @@ export default async function VideoDetailPage({
             id: opt.id,
             optionText: opt.optionText,
             isCorrect: opt.isCorrect,
-            orderIndex: opt.orderIndex,
             explanation: opt.explanation,
         })),
     }));

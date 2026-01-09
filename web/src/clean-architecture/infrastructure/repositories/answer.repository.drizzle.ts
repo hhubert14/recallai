@@ -30,7 +30,6 @@ export class DrizzleAnswerRepository implements IAnswerRepository {
         userId,
         questionId,
         selectedOptionId,
-        textAnswer: null,
         isCorrect,
       })
       .returning();

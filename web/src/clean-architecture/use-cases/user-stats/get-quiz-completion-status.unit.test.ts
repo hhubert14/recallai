@@ -10,8 +10,8 @@ function createMockQuestion(id: number, videoId: number = 1): MultipleChoiceQues
 		videoId,
 		`Question ${id}`,
 		[
-			new MultipleChoiceOption(id * 10 + 1, "Option A", true, 0, null),
-			new MultipleChoiceOption(id * 10 + 2, "Option B", false, 1, null),
+			new MultipleChoiceOption(id * 10 + 1, "Option A", true, null),
+			new MultipleChoiceOption(id * 10 + 2, "Option B", false, null),
 		],
 		null,
 		null,

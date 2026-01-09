@@ -6,12 +6,10 @@ export class CreateVideoUseCase {
 
     async execute(
         userId: string,
-        platform: "YouTube" | "Vimeo",
         title: string,
         url: string,
         channelName: string,
-        duration: number | null,
     ): Promise<VideoEntity> {
-        return await this.videoRepository.createVideo(userId, platform, title, url, channelName, duration);
+        return await this.videoRepository.createVideo(userId, title, url, channelName);
     }
 }

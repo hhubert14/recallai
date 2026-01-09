@@ -2,28 +2,23 @@ import { IVideoRepository } from "@/clean-architecture/domain/repositories/video
 import { VideoEntity } from "@/clean-architecture/domain/entities/video.entity";
 import { db } from "@/drizzle";
 import { videos } from "@/drizzle/schema";
-import { eq, and, isNull, desc } from "drizzle-orm";
+import { eq, and, desc } from "drizzle-orm";
 
 export class DrizzleVideoRepository implements IVideoRepository {
     async createVideo(
         userId: string,
-        platform: "YouTube" | "Vimeo",
         title: string,
         url: string,
         channelName: string,
-        duration: number | null
     ): Promise<VideoEntity> {
         try {
             const [data] = await db
                 .insert(videos)
                 .values({
                     userId,
-                    platform,
                     title,
                     url,
                     channelName,
-                    duration,
-                    shouldExpire: false,
                 })
                 .returning();
 
@@ -71,7 +66,7 @@ export class DrizzleVideoRepository implements IVideoRepository {
             const baseQuery = db
                 .select()
                 .from(videos)
-                .where(and(eq(videos.userId, userId), isNull(videos.deletedAt)))
+                .where(eq(videos.userId, userId))
                 .orderBy(desc(videos.createdAt));
 
             const data = limit ? await baseQuery.limit(limit) : await baseQuery;
@@ -87,11 +82,9 @@ export class DrizzleVideoRepository implements IVideoRepository {
         return new VideoEntity(
             data.id,
             data.userId,
-            data.platform,
             data.title,
             data.url,
             data.channelName,
-            data.duration,
             data.createdAt,
         );
     }

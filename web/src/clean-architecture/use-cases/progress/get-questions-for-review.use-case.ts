@@ -21,7 +21,6 @@ export type QuestionWithProgress = {
       id: number;
       optionText: string;
       isCorrect: boolean;
-      orderIndex: number | null;
       explanation: string | null;
     }[];
   };
@@ -65,7 +64,6 @@ export class GetQuestionsForReviewUseCase {
               id: opt.id,
               optionText: opt.optionText,
               isCorrect: opt.isCorrect,
-              orderIndex: opt.orderIndex,
               explanation: opt.explanation,
             })),
           },

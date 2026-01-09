@@ -9,11 +9,9 @@ function createMockVideo(overrides: Partial<VideoEntity> = {}): VideoEntity {
 	return new VideoEntity(
 		overrides.id ?? 1,
 		overrides.userId ?? "user-1",
-		overrides.platform ?? "YouTube",
 		overrides.title ?? "Test Video",
 		overrides.url ?? "https://youtube.com/watch?v=test",
 		overrides.channelName ?? "Test Channel",
-		overrides.duration ?? 600,
 		overrides.createdAt ?? new Date().toISOString(),
 	);
 }

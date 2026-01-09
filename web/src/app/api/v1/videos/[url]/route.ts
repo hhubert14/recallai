@@ -27,7 +27,6 @@ export async function POST(
 
     try {
         const {
-            platform,
             title,
             channelName,
             url,
@@ -55,17 +54,14 @@ export async function POST(
 
         const createdVideo = await new CreateVideoUseCase(repo).execute(
             authenticatedUserId,
-            platform,
             title,
             url,
             channelName,
-            null,
         )
         return jsendSuccess(createdVideo, 201);
     } catch (error) {
         logger.video.error("Error creating video", error, {
             videoUrl,
-            platform: body?.platform,
         });
         return jsendError(
             "Failed to create video",
