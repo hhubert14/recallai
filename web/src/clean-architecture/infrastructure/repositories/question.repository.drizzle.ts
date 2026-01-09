@@ -11,7 +11,6 @@ export class DrizzleQuestionRepository implements IQuestionRepository {
         options: {
             optionText: string;
             isCorrect: boolean;
-            orderIndex: number;
             explanation: string | null;
         }[],
         sourceQuote: string | null,
@@ -39,7 +38,6 @@ export class DrizzleQuestionRepository implements IQuestionRepository {
                         questionId: questionData.id,
                         optionText: option.optionText,
                         isCorrect: option.isCorrect,
-                        orderIndex: option.orderIndex,
                         explanation: option.explanation,
                     })
                     .returning();
@@ -122,7 +120,6 @@ export class DrizzleQuestionRepository implements IQuestionRepository {
                 opt.id,
                 opt.optionText,
                 opt.isCorrect,
-                opt.orderIndex,
                 opt.explanation
             )
         );

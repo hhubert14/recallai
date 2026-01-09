@@ -1,26 +1,10 @@
 import { relations } from "drizzle-orm/relations";
-import { users, extensionTokens, subscriptions, videos, summaries, questions, questionOptions, userQuestionProgress, userAnswers, transcriptWindows } from "./schema";
-
-export const extensionTokensRelations = relations(extensionTokens, ({one}) => ({
-	user: one(users, {
-		fields: [extensionTokens.userId],
-		references: [users.id]
-	}),
-}));
+import { users, videos, summaries, questions, questionOptions, userQuestionProgress, userAnswers, transcriptWindows } from "./schema";
 
 export const usersRelations = relations(users, ({many}) => ({
-	extensionTokens: many(extensionTokens),
-	subscriptions: many(subscriptions),
 	videos: many(videos),
 	userQuestionProgresses: many(userQuestionProgress),
 	userAnswers: many(userAnswers),
-}));
-
-export const subscriptionsRelations = relations(subscriptions, ({one}) => ({
-	user: one(users, {
-		fields: [subscriptions.userId],
-		references: [users.id]
-	}),
 }));
 
 export const videosRelations = relations(videos, ({one, many}) => ({

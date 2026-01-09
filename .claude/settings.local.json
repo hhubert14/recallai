@@ -34,7 +34,11 @@
       "mcp__github__issue_read",
       "Bash(dir \"C:\\\\Users\\\\huang\\\\repos\\\\Personal\\\\recallai\\\\web\\\\src\" /s /b)",
       "mcp__github__search_issues",
-      "Bash(npm run test:*)"
+      "Bash(npm run test:*)",
+      "mcp__supabase__get_project_url",
+      "mcp__supabase__list_tables",
+      "mcp__supabase__search_docs",
+      "mcp__context7__query-docs"
     ],
     "deny": [],
     "ask": []

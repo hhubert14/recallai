@@ -98,7 +98,6 @@ export class GenerateMultipleChoiceQuestionsUseCase {
             const options = q.options.map((optionText, index) => ({
                 optionText,
                 isCorrect: index === q.correctAnswerIndex,
-                orderIndex: index,
                 explanation:
                     index === q.correctAnswerIndex ? q.explanation : null,
             }));

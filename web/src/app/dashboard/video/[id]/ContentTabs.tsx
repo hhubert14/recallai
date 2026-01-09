@@ -21,7 +21,6 @@ interface ContentTabsProps {
             id: number;
             optionText: string;
             isCorrect: boolean;
-            orderIndex: number | null;
             explanation: string | null;
         }[];
     }[];

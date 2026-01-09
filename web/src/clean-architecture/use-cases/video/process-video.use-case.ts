@@ -84,11 +84,9 @@ export class ProcessVideoUseCase {
         logger.extension.debug("Creating video record");
         const video = await this.videoRepository.createVideo(
             userId,
-            "YouTube",
             title,
             videoUrl,
             channelName,
-            null // duration - could be extracted from YouTube API if needed
         );
         logger.extension.info("Video created successfully", { videoId: video.id });
 

@@ -16,7 +16,6 @@ type QuestionWithOptions = {
         id: number;
         optionText: string;
         isCorrect: boolean;
-        orderIndex: number | null;
         explanation: string | null;
     }[];
 };
@@ -25,7 +24,6 @@ type QuestionOption = {
     id: number;
     optionText: string;
     isCorrect: boolean;
-    orderIndex: number | null;
     explanation: string | null;
 };
 

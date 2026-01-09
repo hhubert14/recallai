@@ -64,6 +64,13 @@
       "when": 1766198855326,
       "tag": "0008_warm_annihilus",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1767960810056,
+      "tag": "0009_old_famine",
+      "breakpoints": true
     }
   ]
 }

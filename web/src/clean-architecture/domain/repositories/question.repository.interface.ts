@@ -7,7 +7,6 @@ export interface IQuestionRepository {
         options: {
             optionText: string;
             isCorrect: boolean;
-            orderIndex: number;
             explanation: string | null;
         }[],
         sourceQuote: string | null,

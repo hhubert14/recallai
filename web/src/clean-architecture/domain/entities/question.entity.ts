@@ -10,7 +10,6 @@ export class MultipleChoiceOption {
         public readonly id: number,
         public readonly optionText: string,
         public readonly isCorrect: boolean,
-        public readonly orderIndex: number | null,
         public readonly explanation: string | null,
     ) {}
 }
