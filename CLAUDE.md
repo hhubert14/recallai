@@ -28,6 +28,60 @@ The platform uses the Leitner box system for optimal knowledge retention.
 - Tailwind CSS
 - Session-based authentication (cookie-based, no tokens)
 
+## Development Workflow: Test-Driven Development (TDD)
+
+**IMPORTANT: This project follows TDD. When implementing any non-trivial feature, bug fix, or use case, you MUST write tests first.**
+
+### TDD is the Default
+
+When planning or implementing work, always follow this order:
+
+1. **Write tests first** - Before writing any implementation code, create the test file with tests that describe expected behavior
+2. **Verify tests fail** - Run tests to confirm they fail (red phase)
+3. **Implement the code** - Write the minimum code to make tests pass (green phase)
+4. **Refactor** - Clean up while keeping tests green
+
+### When Planning Tasks
+
+When creating a plan or todo list for implementation work, structure it as:
+
+```
+1. Create test file with test cases for [feature]
+2. Run tests to verify they fail
+3. Implement [feature]
+4. Run tests to verify they pass
+5. Refactor if needed
+```
+
+**NOT** like this:
+```
+1. Implement [feature]
+2. Write tests for [feature]  ❌ Tests come LAST = wrong
+```
+
+### What Requires TDD
+
+- Use cases and business logic (always)
+- Repository methods with complex queries
+- Utility functions with logic
+- Bug fixes (write a failing test that reproduces the bug first)
+
+### What Can Skip TDD
+
+- Simple CRUD with no logic
+- Configuration changes
+- UI components (unless complex logic)
+- One-line changes
+
+### TDD Commands
+
+```bash
+npm run test -- --run path/to/file.unit.test.ts    # Run specific test
+npm run test -- --watch                             # Watch mode during development
+```
+
+See [Testing Strategy](#testing-strategy) section for more details on test organization and patterns.
+
 ## Project Structure
 
 ```
