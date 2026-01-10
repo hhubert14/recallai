@@ -1,5 +1,7 @@
 import { createClient, User } from "@supabase/supabase-js";
 
+const CLEANUP_THRESHOLD_DAYS = 7;
+
 // Validate required environment variables
 if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
     console.error("ERROR: NEXT_PUBLIC_SUPABASE_URL environment variable is required");
@@ -19,7 +21,7 @@ const supabase = createClient(
 );
 
 async function cleanupUnverifiedUsers() {
-    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const sevenDaysAgo = new Date(Date.now() - CLEANUP_THRESHOLD_DAYS * 24 * 60 * 60 * 1000);
 
     console.log("Starting cleanup of unverified users...");
     console.log("Threshold date:", sevenDaysAgo.toISOString());
