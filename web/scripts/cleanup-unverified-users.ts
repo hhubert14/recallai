@@ -18,14 +18,20 @@ const supabase = createClient(
     process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 async function cleanupUnverifiedUsers() {
-    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const CLEANUP_THRESHOLD_DAYS = 7;
+    const sevenDaysAgo = new Date(Date.now() - CLEANUP_THRESHOLD_DAYS * 24 * 60 * 60 * 1000);
 
     console.log("Starting cleanup of unverified users...");
     console.log("Threshold date:", sevenDaysAgo.toISOString());
 
-    // List all users using admin API
-    const { data, error } = await supabase.auth.admin.listUsers();
+    // List all users using admin API (default is 50, max is 1000)
+    const { data, error } = await supabase.auth.admin.listUsers({
+        page: 1,
+        perPage: 1000,
+    });
 
     if (error) {
         console.error("Failed to list users:", error);
@@ -57,6 +63,7 @@ async function cleanupUnverifiedUsers() {
             console.log(`Deleted user ${user.id} (${user.email})`);
             deleted++;
         }
+        await delay(100); // Small delay to avoid rate limits
     }
 
     console.log(`Cleanup complete: ${deleted} deleted, ${failed} failed`);
