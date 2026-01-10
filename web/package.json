@@ -23,7 +23,8 @@
     "docker:down": "docker-compose down",
     "docker:status": "docker-compose ps",
     "keep-alive": "dotenv -e .env.local -- tsx scripts/keep-alive.ts",
-    "test:db": "dotenv -e .env.local -- tsx scripts/test-db-connection.ts"
+    "test:db": "dotenv -e .env.local -- tsx scripts/test-db-connection.ts",
+    "cleanup-unverified-users": "dotenv -e .env.local -- tsx scripts/cleanup-unverified-users.ts"
   },
   "dependencies": {
     "@langchain/core": "^0.3.57",
