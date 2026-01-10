@@ -18,6 +18,9 @@ export const videos = pgTable("videos", {
 		}).onUpdate("cascade").onDelete("cascade"),
 ]);
 
+// NOTE: id references auth.users(id) ON DELETE CASCADE
+// FK constraint added via migration 0010_auth_users_fk_constraint.sql
+// Trigger on auth.users auto-creates public.users (see Supabase auth triggers)
 export const users = pgTable("users", {
 	id: uuid().defaultRandom().primaryKey().notNull(),
 	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
