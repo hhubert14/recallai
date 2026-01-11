@@ -34,8 +34,8 @@ export function CTASection() {
               }`}
               style={{ animationDelay: "100ms", animationFillMode: "forwards" }}
             >
-              Join thousands of learners who remember what they watch.
-              Free forever, no credit card required.
+              Start remembering what you watch.
+              Free to use. No credit card required.
             </p>
 
             <div
