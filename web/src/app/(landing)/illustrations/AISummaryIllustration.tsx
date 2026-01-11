@@ -11,6 +11,7 @@ export function AISummaryIllustration({ className = "" }: AISummaryIllustrationP
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
+      aria-hidden="true"
     >
       {/* Video input representation */}
       <g transform="translate(20, 40)">

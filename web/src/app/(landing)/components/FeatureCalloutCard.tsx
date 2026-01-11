@@ -16,11 +16,11 @@ export function FeatureCalloutCard({
   illustration,
   delay = 0,
 }: FeatureCalloutCardProps) {
-  const { ref, isInView } = useInView({ threshold: 0.2 });
+  const { ref, isInView } = useInView<HTMLDivElement>({ threshold: 0.2 });
 
   return (
     <div
-      ref={ref as React.RefObject<HTMLDivElement>}
+      ref={ref}
       className={`relative col-span-1 md:col-span-2 p-8 rounded-2xl border border-border bg-muted/30 dark:bg-white/[0.02] overflow-hidden opacity-0 ${
         isInView ? "animate-fade-up" : ""
       }`}

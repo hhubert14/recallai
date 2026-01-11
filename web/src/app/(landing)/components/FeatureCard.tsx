@@ -16,11 +16,11 @@ export function FeatureCard({
   icon: Icon,
   delay = 0,
 }: FeatureCardProps) {
-  const { ref, isInView } = useInView({ threshold: 0.2 });
+  const { ref, isInView } = useInView<HTMLDivElement>({ threshold: 0.2 });
 
   return (
     <div
-      ref={ref as React.RefObject<HTMLDivElement>}
+      ref={ref}
       className={`group p-6 rounded-xl border border-border bg-card hover:bg-muted/50 dark:hover:bg-white/[0.02] transition-all duration-300 hover:border-foreground/20 opacity-0 ${
         isInView ? "animate-fade-up" : ""
       }`}

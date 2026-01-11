@@ -11,6 +11,7 @@ export function ProcessFlowSVG({ className = "" }: ProcessFlowSVGProps) {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
+      aria-hidden="true"
     >
       {/* Connection lines between steps */}
       <g className="stroke-muted-foreground/30" strokeWidth="2" strokeDasharray="8 4">

@@ -8,7 +8,7 @@ import { HeroIllustration } from "./illustrations/HeroIllustration";
 import { useInView } from "@/hooks/useInView";
 
 export function HeroSection() {
-  const { ref, isInView } = useInView({ threshold: 0.1 });
+  const { ref, isInView } = useInView<HTMLDivElement>({ threshold: 0.1 });
 
   return (
     <section className="relative w-full py-20 md:py-32 lg:py-40 overflow-hidden">
@@ -16,7 +16,7 @@ export function HeroSection() {
       <div className="absolute inset-0 bg-gradient-to-b from-muted/30 to-transparent dark:from-white/[0.02] dark:to-transparent" />
 
       {/* Decorative grid lines */}
-      <div className="absolute inset-0 pointer-events-none">
+      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
         <svg className="absolute inset-0 w-full h-full opacity-[0.03] dark:opacity-[0.02]" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
@@ -31,7 +31,7 @@ export function HeroSection() {
         <div className="grid gap-12 lg:grid-cols-2 lg:gap-16 items-center">
           {/* Content */}
           <div
-            ref={ref as React.RefObject<HTMLDivElement>}
+            ref={ref}
             className="flex flex-col justify-center space-y-8"
           >
             <AnimatedHeadline

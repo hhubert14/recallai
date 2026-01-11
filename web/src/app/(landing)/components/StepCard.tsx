@@ -18,11 +18,11 @@ export function StepCard({
   icon: Icon,
   delay = 0,
 }: StepCardProps) {
-  const { ref, isInView } = useInView({ threshold: 0.2 });
+  const { ref, isInView } = useInView<HTMLDivElement>({ threshold: 0.2 });
 
   return (
     <div
-      ref={ref as React.RefObject<HTMLDivElement>}
+      ref={ref}
       className={`flex flex-col items-center text-center space-y-4 opacity-0 ${
         isInView ? "animate-fade-up" : ""
       }`}

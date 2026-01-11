@@ -29,14 +29,14 @@ const minimalFeatures = [
 ];
 
 export function FeaturesSection() {
-  const { ref, isInView } = useInView({ threshold: 0.1 });
+  const { ref, isInView } = useInView<HTMLDivElement>({ threshold: 0.1 });
 
   return (
     <section id="features" className="w-full py-20 md:py-32 bg-muted/30 dark:bg-white/[0.01]">
       <div className="container px-4 md:px-6">
         {/* Section header */}
         <div
-          ref={ref as React.RefObject<HTMLDivElement>}
+          ref={ref}
           className="text-center space-y-4 mb-16"
         >
           <span

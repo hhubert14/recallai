@@ -6,13 +6,13 @@ import { ArrowRight, Chrome } from "lucide-react";
 import { useInView } from "@/hooks/useInView";
 
 export function CTASection() {
-  const { ref, isInView } = useInView({ threshold: 0.2 });
+  const { ref, isInView } = useInView<HTMLDivElement>({ threshold: 0.2 });
 
   return (
     <section className="w-full py-20 md:py-32">
       <div className="container px-4 md:px-6">
         <div
-          ref={ref as React.RefObject<HTMLDivElement>}
+          ref={ref}
           className="relative text-center"
         >
           {/* Accent glow behind headline */}

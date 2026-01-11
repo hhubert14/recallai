@@ -13,13 +13,13 @@ export function AnimatedHeadline({
   className = "",
   as: Component = "h1",
 }: AnimatedHeadlineProps) {
-  const { ref, isInView } = useInView({ threshold: 0.2 });
+  const { ref, isInView } = useInView<HTMLHeadingElement>({ threshold: 0.2 });
 
   const words = children.split(" ");
 
   return (
     <Component
-      ref={ref as React.RefObject<HTMLHeadingElement>}
+      ref={ref}
       className={className}
     >
       {words.map((word, index) => (
