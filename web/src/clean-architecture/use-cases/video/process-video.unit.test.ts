@@ -187,6 +187,46 @@ describe("ProcessVideoUseCase", () => {
                 1,
                 "This is a summary of the TypeScript tutorial."
             );
+
+            // Verify transcript was stored
+            expect(mockTranscriptRepo.createTranscript).toHaveBeenCalledWith(
+                1,
+                [{ text: "segment 1", startTime: 0, endTime: 10 }],
+                "This is the full transcript text..."
+            );
+        });
+
+        it("stores transcript after creating video", async () => {
+            const newVideo = createMockVideo({ id: 1 });
+            const newSummary = createMockSummary({ videoId: 1 });
+
+            vi.mocked(mockVideoRepo.createVideo).mockResolvedValue(newVideo);
+            vi.mocked(mockSummaryRepo.createSummary).mockResolvedValue(newSummary);
+
+            await useCase.execute(testUserId, testVideoUrl);
+
+            expect(mockTranscriptRepo.createTranscript).toHaveBeenCalledWith(
+                1,
+                [{ text: "segment 1", startTime: 0, endTime: 10 }],
+                "This is the full transcript text..."
+            );
+        });
+
+        it("continues successfully even if transcript storage fails", async () => {
+            const newVideo = createMockVideo({ id: 1 });
+            const newSummary = createMockSummary({ videoId: 1 });
+
+            vi.mocked(mockVideoRepo.createVideo).mockResolvedValue(newVideo);
+            vi.mocked(mockSummaryRepo.createSummary).mockResolvedValue(newSummary);
+            vi.mocked(mockTranscriptRepo.createTranscript).mockRejectedValue(
+                new Error("Transcript storage failed")
+            );
+
+            // Should not throw
+            const result = await useCase.execute(testUserId, testVideoUrl);
+
+            expect(result.video).toEqual(newVideo);
+            expect(result.summary).toEqual(newSummary);
         });
 
         it("generates transcript windows after creating video", async () => {
