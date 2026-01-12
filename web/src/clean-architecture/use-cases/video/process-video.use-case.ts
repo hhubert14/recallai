@@ -101,7 +101,7 @@ export class ProcessVideoUseCase {
         );
         logger.extension.info("Transcript stored successfully", { videoId: video.id });
 
-        // 8. Generate and save summary
+        // 7. Generate and save summary
         logger.extension.debug("Generating summary");
         const summaryResult = await this.videoSummarizerService.generate(title, description, transcriptResult.fullText);
         if (!summaryResult) {
@@ -114,7 +114,7 @@ export class ProcessVideoUseCase {
             summaryLength: summary.content.length,
         });
 
-        // 9. Generate transcript windows for timestamp matching (non-blocking)
+        // 8. Generate transcript windows for timestamp matching (non-blocking)
         try {
             await this.transcriptWindowGeneratorService.generate(
                 video.id,

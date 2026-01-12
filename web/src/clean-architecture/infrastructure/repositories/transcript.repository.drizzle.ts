@@ -3,6 +3,7 @@ import { TranscriptEntity, TranscriptSegment } from "@/clean-architecture/domain
 import { db } from "@/drizzle";
 import { videoTranscripts } from "@/drizzle/schema";
 import { eq } from "drizzle-orm";
+import { logger } from "@/lib/logger";
 
 export class DrizzleTranscriptRepository implements ITranscriptRepository {
     async createTranscript(
@@ -17,7 +18,7 @@ export class DrizzleTranscriptRepository implements ITranscriptRepository {
                 .returning();
             return this.toEntity(data);
         } catch (error) {
-            console.error("Error creating transcript:", error);
+            logger.db.error("Error creating transcript", error);
             throw error;
         }
     }
@@ -31,7 +32,7 @@ export class DrizzleTranscriptRepository implements ITranscriptRepository {
             if (!data) return null;
             return this.toEntity(data);
         } catch (error) {
-            console.error("Error finding transcript by video id:", error);
+            logger.db.error("Error finding transcript by video id", error);
             throw error;
         }
     }
