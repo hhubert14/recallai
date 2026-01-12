@@ -1,8 +1,4 @@
-export interface TranscriptSegment {
-    text: string;
-    startTime: number; // seconds
-    endTime: number; // seconds
-}
+import { TranscriptSegment } from "../entities/transcript.entity";
 
 export interface TranscriptResult {
     fullText: string;

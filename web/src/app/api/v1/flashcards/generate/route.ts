@@ -4,7 +4,9 @@ import { jsendSuccess, jsendFail, jsendError } from "@/lib/jsend";
 import { GenerateFlashcardsUseCase } from "@/clean-architecture/use-cases/flashcard/generate-flashcards.use-case";
 import { DrizzleVideoRepository } from "@/clean-architecture/infrastructure/repositories/video.repository.drizzle";
 import { DrizzleFlashcardRepository } from "@/clean-architecture/infrastructure/repositories/flashcard.repository.drizzle";
+import { DrizzleTranscriptRepository } from "@/clean-architecture/infrastructure/repositories/transcript.repository.drizzle";
 import { YoutubeTranscriptVideoTranscriptService } from "@/clean-architecture/infrastructure/services/video-transcript.service.youtube-transcript";
+import { TranscriptResolverService } from "@/clean-architecture/infrastructure/services/transcript-resolver.service";
 import { LangChainFlashcardGeneratorService } from "@/clean-architecture/infrastructure/services/flashcard-generator.service.langchain";
 
 const VALID_COUNTS = [5, 10, 20];
@@ -35,7 +37,10 @@ export async function POST(request: NextRequest) {
         const useCase = new GenerateFlashcardsUseCase(
             new DrizzleVideoRepository(),
             new DrizzleFlashcardRepository(),
-            new YoutubeTranscriptVideoTranscriptService(),
+            new TranscriptResolverService(
+                new DrizzleTranscriptRepository(),
+                new YoutubeTranscriptVideoTranscriptService()
+            ),
             new LangChainFlashcardGeneratorService()
         );
 

@@ -2,6 +2,7 @@ import { logger } from "@/lib/logger";
 import { extractYouTubeVideoId } from "@/lib/youtube";
 import { IVideoRepository } from "@/clean-architecture/domain/repositories/video.repository.interface";
 import { ISummaryRepository } from "@/clean-architecture/domain/repositories/summary.repository.interface";
+import { ITranscriptRepository } from "@/clean-architecture/domain/repositories/transcript.repository.interface";
 import { IVideoInfoService } from "@/clean-architecture/domain/services/video-info.interface";
 import { IVideoTranscriptService } from "@/clean-architecture/domain/services/video-transcript.interface";
 import { IVideoClassifierService } from "@/clean-architecture/domain/services/video-classifier.interface";
@@ -20,6 +21,7 @@ export class ProcessVideoUseCase {
     constructor(
         private readonly videoRepository: IVideoRepository,
         private readonly summaryRepository: ISummaryRepository,
+        private readonly transcriptRepository: ITranscriptRepository,
         private readonly videoInfoService: IVideoInfoService,
         private readonly videoTranscriptService: IVideoTranscriptService,
         private readonly videoClassifierService: IVideoClassifierService,
@@ -90,7 +92,21 @@ export class ProcessVideoUseCase {
         );
         logger.extension.info("Video created successfully", { videoId: video.id });
 
-        // 6. Generate and save summary
+        // 6. Store transcript for future use (non-blocking)
+        try {
+            await this.transcriptRepository.createTranscript(
+                video.id,
+                transcriptResult.segments,
+                transcriptResult.fullText,
+            );
+        } catch (error) {
+            logger.extension.warn("Failed to store transcript", {
+                videoId: video.id,
+                error: error instanceof Error ? error.message : String(error),
+            });
+        }
+
+        // 7. Generate and save summary
         logger.extension.debug("Generating summary");
         const summaryResult = await this.videoSummarizerService.generate(title, description, transcriptResult.fullText);
         if (!summaryResult) {
@@ -103,7 +119,7 @@ export class ProcessVideoUseCase {
             summaryLength: summary.content.length,
         });
 
-        // 7. Generate transcript windows for timestamp matching (non-blocking)
+        // 8. Generate transcript windows for timestamp matching (non-blocking)
         try {
             await this.transcriptWindowGeneratorService.generate(
                 video.id,

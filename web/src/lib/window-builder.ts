@@ -1,4 +1,4 @@
-import { TranscriptSegment } from "@/clean-architecture/domain/services/video-transcript.interface";
+import { TranscriptSegment } from "@/clean-architecture/domain/entities/transcript.entity";
 
 export interface TranscriptWindow {
 	windowIndex: number;
