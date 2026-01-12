@@ -5,7 +5,6 @@ import { ISummaryRepository } from "@/clean-architecture/domain/repositories/sum
 import { ITranscriptRepository } from "@/clean-architecture/domain/repositories/transcript.repository.interface";
 import { IVideoInfoService } from "@/clean-architecture/domain/services/video-info.interface";
 import { IVideoTranscriptService } from "@/clean-architecture/domain/services/video-transcript.interface";
-import { IVideoClassifierService } from "@/clean-architecture/domain/services/video-classifier.interface";
 import { IVideoSummarizerService } from "@/clean-architecture/domain/services/video-summarizer.interface";
 import { ITranscriptWindowGeneratorService } from "@/clean-architecture/domain/services/transcript-window-generator.interface";
 import { VideoEntity } from "@/clean-architecture/domain/entities/video.entity";
@@ -39,7 +38,6 @@ describe("ProcessVideoUseCase", () => {
     let mockTranscriptRepo: ITranscriptRepository;
     let mockVideoInfoService: IVideoInfoService;
     let mockVideoTranscriptService: IVideoTranscriptService;
-    let mockVideoClassifierService: IVideoClassifierService;
     let mockVideoSummarizerService: IVideoSummarizerService;
     let mockTranscriptWindowGeneratorService: ITranscriptWindowGeneratorService;
 
@@ -74,10 +72,6 @@ describe("ProcessVideoUseCase", () => {
             get: vi.fn(),
         };
 
-        mockVideoClassifierService = {
-            isEducational: vi.fn(),
-        };
-
         mockVideoSummarizerService = {
             generate: vi.fn(),
         };
@@ -92,7 +86,6 @@ describe("ProcessVideoUseCase", () => {
             mockTranscriptRepo,
             mockVideoInfoService,
             mockVideoTranscriptService,
-            mockVideoClassifierService,
             mockVideoSummarizerService,
             mockTranscriptWindowGeneratorService
         );
@@ -140,7 +133,6 @@ describe("ProcessVideoUseCase", () => {
                 fullText: "This is the full transcript text...",
                 segments: [{ text: "segment 1", startTime: 0, endTime: 10 }],
             });
-            vi.mocked(mockVideoClassifierService.isEducational).mockResolvedValue(true);
             vi.mocked(mockVideoSummarizerService.generate).mockResolvedValue({
                 summary: "This is a summary of the TypeScript tutorial.",
             });
@@ -292,24 +284,6 @@ describe("ProcessVideoUseCase", () => {
             );
         });
 
-        it("throws error for non-educational video", async () => {
-            vi.mocked(mockVideoRepo.findVideoByUserIdAndUrl).mockResolvedValue(null);
-            vi.mocked(mockVideoInfoService.get).mockResolvedValue({
-                title: "Funny Cat Video",
-                description: "Just a cat video",
-                channelName: "Cat Channel",
-            });
-            vi.mocked(mockVideoTranscriptService.get).mockResolvedValue({
-                fullText: "meow meow",
-                segments: [],
-            });
-            vi.mocked(mockVideoClassifierService.isEducational).mockResolvedValue(false);
-
-            await expect(useCase.execute(testUserId, testVideoUrl)).rejects.toThrow(
-                "Video does not appear to be educational content"
-            );
-        });
-
         it("throws error when summary generation fails", async () => {
             vi.mocked(mockVideoRepo.findVideoByUserIdAndUrl).mockResolvedValue(null);
             vi.mocked(mockVideoInfoService.get).mockResolvedValue({
@@ -321,7 +295,6 @@ describe("ProcessVideoUseCase", () => {
                 fullText: "transcript",
                 segments: [],
             });
-            vi.mocked(mockVideoClassifierService.isEducational).mockResolvedValue(true);
             vi.mocked(mockVideoRepo.createVideo).mockResolvedValue(createMockVideo());
             vi.mocked(mockVideoSummarizerService.generate).mockResolvedValue(undefined);
 
