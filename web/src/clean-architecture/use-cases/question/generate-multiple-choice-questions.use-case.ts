@@ -2,7 +2,7 @@ import { extractYouTubeVideoId } from "@/lib/youtube";
 import { IVideoRepository } from "@/clean-architecture/domain/repositories/video.repository.interface";
 import { IQuestionRepository } from "@/clean-architecture/domain/repositories/question.repository.interface";
 import { ITranscriptWindowRepository } from "@/clean-architecture/domain/repositories/transcript-window.repository.interface";
-import { IVideoTranscriptService } from "@/clean-architecture/domain/services/video-transcript.interface";
+import { ITranscriptResolverService } from "@/clean-architecture/domain/services/transcript-resolver.interface";
 import { IQuestionGeneratorService } from "@/clean-architecture/domain/services/question-generator.interface";
 import { IEmbeddingService } from "@/clean-architecture/domain/services/embedding.interface";
 import { MultipleChoiceQuestionEntity } from "@/clean-architecture/domain/entities/question.entity";
@@ -21,7 +21,7 @@ export class GenerateMultipleChoiceQuestionsUseCase {
     constructor(
         private readonly videoRepository: IVideoRepository,
         private readonly questionRepository: IQuestionRepository,
-        private readonly videoTranscriptService: IVideoTranscriptService,
+        private readonly transcriptResolverService: ITranscriptResolverService,
         private readonly questionGeneratorService: IQuestionGeneratorService,
         private readonly embeddingService: IEmbeddingService,
         private readonly transcriptWindowRepository: ITranscriptWindowRepository
@@ -72,14 +72,8 @@ export class GenerateMultipleChoiceQuestionsUseCase {
             throw new Error("Invalid video URL - could not extract video ID");
         }
 
-        // Fetch transcript
-        const transcriptResult =
-            await this.videoTranscriptService.get(youtubeVideoId);
-        if (!transcriptResult) {
-            throw new Error(
-                "Failed to fetch video transcript - captions may be disabled"
-            );
-        }
+        // Get transcript (DB first, then fallback to YouTube API)
+        const transcriptResult = await this.transcriptResolverService.getTranscript(videoId, youtubeVideoId);
 
         // Generate questions using full text (timestamps will be used when available)
         const generatedQuestions = await this.questionGeneratorService.generate(

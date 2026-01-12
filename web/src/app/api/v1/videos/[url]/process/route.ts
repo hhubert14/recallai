@@ -5,6 +5,7 @@ import { jsendFail, jsendSuccess, jsendError } from "@/lib/jsend";
 import { ProcessVideoUseCase } from "@/clean-architecture/use-cases/video/process-video.use-case";
 import { DrizzleVideoRepository } from "@/clean-architecture/infrastructure/repositories/video.repository.drizzle";
 import { DrizzleSummaryRepository } from "@/clean-architecture/infrastructure/repositories/summary.repository.drizzle";
+import { DrizzleTranscriptRepository } from "@/clean-architecture/infrastructure/repositories/transcript.repository.drizzle";
 import { YouTubeVideoInfoService } from "@/clean-architecture/infrastructure/services/video-info.service.youtube";
 import { YoutubeTranscriptVideoTranscriptService } from "@/clean-architecture/infrastructure/services/video-transcript.service.youtube-transcript";
 import { OpenAIVideoClassifierService } from "@/clean-architecture/infrastructure/services/video-classifier.service.openai";
@@ -36,6 +37,7 @@ export async function POST(
         const useCase = new ProcessVideoUseCase(
             new DrizzleVideoRepository(),
             new DrizzleSummaryRepository(),
+            new DrizzleTranscriptRepository(),
             new YouTubeVideoInfoService(),
             new YoutubeTranscriptVideoTranscriptService(),
             new OpenAIVideoClassifierService(),

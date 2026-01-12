@@ -1,7 +1,7 @@
 import { extractYouTubeVideoId } from "@/lib/youtube";
 import { IVideoRepository } from "@/clean-architecture/domain/repositories/video.repository.interface";
 import { IFlashcardRepository } from "@/clean-architecture/domain/repositories/flashcard.repository.interface";
-import { IVideoTranscriptService } from "@/clean-architecture/domain/services/video-transcript.interface";
+import { ITranscriptResolverService } from "@/clean-architecture/domain/services/transcript-resolver.interface";
 import { IFlashcardGeneratorService } from "@/clean-architecture/domain/services/flashcard-generator.interface";
 import { FlashcardEntity } from "@/clean-architecture/domain/entities/flashcard.entity";
 
@@ -18,7 +18,7 @@ export class GenerateFlashcardsUseCase {
     constructor(
         private readonly videoRepository: IVideoRepository,
         private readonly flashcardRepository: IFlashcardRepository,
-        private readonly videoTranscriptService: IVideoTranscriptService,
+        private readonly transcriptResolverService: ITranscriptResolverService,
         private readonly flashcardGeneratorService: IFlashcardGeneratorService
     ) {}
 
@@ -67,14 +67,8 @@ export class GenerateFlashcardsUseCase {
             throw new Error("Invalid video URL - could not extract video ID");
         }
 
-        // Fetch transcript
-        const transcriptResult =
-            await this.videoTranscriptService.get(youtubeVideoId);
-        if (!transcriptResult) {
-            throw new Error(
-                "Failed to fetch video transcript - captions may be disabled"
-            );
-        }
+        // Get transcript (DB first, then fallback to YouTube API)
+        const transcriptResult = await this.transcriptResolverService.getTranscript(videoId, youtubeVideoId);
 
         // Generate flashcards using full text (timestamps will be used when available)
         const generatedFlashcards = await this.flashcardGeneratorService.generate(

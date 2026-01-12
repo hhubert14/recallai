@@ -104,14 +104,7 @@ class Logger {
         //     // Suppress most video debug logs
         // },
         info: (message: string, context?: LogContext) => {
-            // Only log important video milestones
-            if (
-                message.includes("processed") ||
-                message.includes("completed") ||
-                message.includes("failed")
-            ) {
-                this.info(`🎥 Video: ${message}`, context);
-            }
+            this.info(`🎥 Video: ${message}`, context);
         },
         warn: (message: string, context?: LogContext) =>
             this.warn(`[VIDEO] ${message}`, context),
