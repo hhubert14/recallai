@@ -92,6 +92,13 @@
       "when": 1768179959856,
       "tag": "0012_left_tyrannus",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1768280000000,
+      "tag": "0013_add_updated_at_triggers",
+      "breakpoints": true
     }
   ]
 }
