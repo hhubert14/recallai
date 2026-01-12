@@ -92,14 +92,19 @@ export class ProcessVideoUseCase {
         );
         logger.extension.info("Video created successfully", { videoId: video.id });
 
-        // 6. Store transcript for future use
-        logger.extension.debug("Storing transcript");
-        await this.transcriptRepository.createTranscript(
-            video.id,
-            transcriptResult.segments,
-            transcriptResult.fullText,
-        );
-        logger.extension.info("Transcript stored successfully", { videoId: video.id });
+        // 6. Store transcript for future use (non-blocking)
+        try {
+            await this.transcriptRepository.createTranscript(
+                video.id,
+                transcriptResult.segments,
+                transcriptResult.fullText,
+            );
+        } catch (error) {
+            logger.extension.warn("Failed to store transcript", {
+                videoId: video.id,
+                error: error instanceof Error ? error.message : String(error),
+            });
+        }
 
         // 7. Generate and save summary
         logger.extension.debug("Generating summary");
