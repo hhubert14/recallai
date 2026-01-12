@@ -4,8 +4,8 @@ import { logger } from "@/lib/logger";
 import {
     IVideoTranscriptService,
     TranscriptResult,
-    TranscriptSegment,
 } from "@/clean-architecture/domain/services/video-transcript.interface";
+import { TranscriptSegment } from "@/clean-architecture/domain/entities/transcript.entity";
 
 // Only type fields we actually use - ignore everything else from the API
 interface YoutubeTranscriptResponse {

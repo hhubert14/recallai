@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { WindowBuilder } from "./window-builder";
-import { TranscriptSegment } from "@/clean-architecture/domain/services/video-transcript.interface";
+import { TranscriptSegment } from "@/clean-architecture/domain/entities/transcript.entity";
 
 function createSegments(count: number, durationPerSegment = 2): TranscriptSegment[] {
 	return Array.from({ length: count }, (_, i) => ({

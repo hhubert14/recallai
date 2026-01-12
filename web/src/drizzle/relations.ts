@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm/relations";
-import { users, videos, summaries, questions, questionOptions, userQuestionProgress, userAnswers, transcriptWindows } from "./schema";
+import { users, videos, summaries, questions, questionOptions, userQuestionProgress, userAnswers, transcriptWindows, videoTranscripts } from "./schema";
 
 export const usersRelations = relations(users, ({many}) => ({
 	videos: many(videos),
@@ -15,6 +15,7 @@ export const videosRelations = relations(videos, ({one, many}) => ({
 	summaries: many(summaries),
 	questions: many(questions),
 	transcriptWindows: many(transcriptWindows),
+	videoTranscript: one(videoTranscripts),
 }));
 
 export const summariesRelations = relations(summaries, ({one}) => ({
@@ -71,6 +72,13 @@ export const userAnswersRelations = relations(userAnswers, ({one}) => ({
 export const transcriptWindowsRelations = relations(transcriptWindows, ({one}) => ({
 	video: one(videos, {
 		fields: [transcriptWindows.videoId],
+		references: [videos.id]
+	}),
+}));
+
+export const videoTranscriptsRelations = relations(videoTranscripts, ({one}) => ({
+	video: one(videos, {
+		fields: [videoTranscripts.videoId],
 		references: [videos.id]
 	}),
 }));

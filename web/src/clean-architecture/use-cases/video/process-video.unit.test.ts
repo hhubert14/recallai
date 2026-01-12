@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { ProcessVideoUseCase } from "./process-video.use-case";
 import { IVideoRepository } from "@/clean-architecture/domain/repositories/video.repository.interface";
 import { ISummaryRepository } from "@/clean-architecture/domain/repositories/summary.repository.interface";
+import { ITranscriptRepository } from "@/clean-architecture/domain/repositories/transcript.repository.interface";
 import { IVideoInfoService } from "@/clean-architecture/domain/services/video-info.interface";
 import { IVideoTranscriptService } from "@/clean-architecture/domain/services/video-transcript.interface";
 import { IVideoClassifierService } from "@/clean-architecture/domain/services/video-classifier.interface";
@@ -35,6 +36,7 @@ describe("ProcessVideoUseCase", () => {
     let useCase: ProcessVideoUseCase;
     let mockVideoRepo: IVideoRepository;
     let mockSummaryRepo: ISummaryRepository;
+    let mockTranscriptRepo: ITranscriptRepository;
     let mockVideoInfoService: IVideoInfoService;
     let mockVideoTranscriptService: IVideoTranscriptService;
     let mockVideoClassifierService: IVideoClassifierService;
@@ -56,6 +58,11 @@ describe("ProcessVideoUseCase", () => {
         mockSummaryRepo = {
             createSummary: vi.fn(),
             findSummaryByVideoId: vi.fn(),
+        };
+
+        mockTranscriptRepo = {
+            createTranscript: vi.fn(),
+            findTranscriptByVideoId: vi.fn(),
         };
 
         // Create mock services
@@ -82,6 +89,7 @@ describe("ProcessVideoUseCase", () => {
         useCase = new ProcessVideoUseCase(
             mockVideoRepo,
             mockSummaryRepo,
+            mockTranscriptRepo,
             mockVideoInfoService,
             mockVideoTranscriptService,
             mockVideoClassifierService,
@@ -137,6 +145,13 @@ describe("ProcessVideoUseCase", () => {
                 summary: "This is a summary of the TypeScript tutorial.",
             });
             vi.mocked(mockTranscriptWindowGeneratorService.generate).mockResolvedValue([]);
+            vi.mocked(mockTranscriptRepo.createTranscript).mockResolvedValue({
+                id: 1,
+                videoId: 1,
+                segments: [{ text: "segment 1", startTime: 0, endTime: 10 }],
+                fullText: "This is the full transcript text...",
+                createdAt: new Date().toISOString(),
+            });
         });
 
         it("creates video and summary for new educational video", async () => {

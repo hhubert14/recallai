@@ -4,7 +4,7 @@ import { ITranscriptWindowGeneratorService } from "@/clean-architecture/domain/s
 import { IEmbeddingService } from "@/clean-architecture/domain/services/embedding.interface";
 import { ITranscriptWindowRepository } from "@/clean-architecture/domain/repositories/transcript-window.repository.interface";
 import { TranscriptWindowEntity } from "@/clean-architecture/domain/entities/transcript-window.entity";
-import { TranscriptSegment } from "@/clean-architecture/domain/services/video-transcript.interface";
+import { TranscriptSegment } from "@/clean-architecture/domain/entities/transcript.entity";
 import { WindowBuilder } from "@/lib/window-builder";
 import { logger } from "@/lib/logger";
 

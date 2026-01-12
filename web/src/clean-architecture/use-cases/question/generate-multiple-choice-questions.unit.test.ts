@@ -3,7 +3,7 @@ import { GenerateMultipleChoiceQuestionsUseCase } from "./generate-multiple-choi
 import { IVideoRepository } from "@/clean-architecture/domain/repositories/video.repository.interface";
 import { IQuestionRepository } from "@/clean-architecture/domain/repositories/question.repository.interface";
 import { ITranscriptWindowRepository, WindowMatchResult } from "@/clean-architecture/domain/repositories/transcript-window.repository.interface";
-import { IVideoTranscriptService } from "@/clean-architecture/domain/services/video-transcript.interface";
+import { ITranscriptResolverService } from "@/clean-architecture/domain/services/transcript-resolver.interface";
 import { IQuestionGeneratorService } from "@/clean-architecture/domain/services/question-generator.interface";
 import { IEmbeddingService } from "@/clean-architecture/domain/services/embedding.interface";
 import { VideoEntity } from "@/clean-architecture/domain/entities/video.entity";
@@ -75,7 +75,7 @@ describe("GenerateMultipleChoiceQuestionsUseCase", () => {
     let mockVideoRepo: IVideoRepository;
     let mockQuestionRepo: IQuestionRepository;
     let mockTranscriptWindowRepo: ITranscriptWindowRepository;
-    let mockVideoTranscriptService: IVideoTranscriptService;
+    let mockTranscriptResolverService: ITranscriptResolverService;
     let mockQuestionGeneratorService: IQuestionGeneratorService;
     let mockEmbeddingService: IEmbeddingService;
 
@@ -103,8 +103,8 @@ describe("GenerateMultipleChoiceQuestionsUseCase", () => {
             deleteWindowsByVideoId: vi.fn(),
         };
 
-        mockVideoTranscriptService = {
-            get: vi.fn(),
+        mockTranscriptResolverService = {
+            getTranscript: vi.fn(),
         };
 
         mockQuestionGeneratorService = {
@@ -119,7 +119,7 @@ describe("GenerateMultipleChoiceQuestionsUseCase", () => {
         useCase = new GenerateMultipleChoiceQuestionsUseCase(
             mockVideoRepo,
             mockQuestionRepo,
-            mockVideoTranscriptService,
+            mockTranscriptResolverService,
             mockQuestionGeneratorService,
             mockEmbeddingService,
             mockTranscriptWindowRepo
@@ -208,7 +208,7 @@ describe("GenerateMultipleChoiceQuestionsUseCase", () => {
                 createMockVideo({ userId: testUserId, title: "TypeScript Tutorial" })
             );
             vi.mocked(mockQuestionRepo.findQuestionsByVideoId).mockResolvedValue([]);
-            vi.mocked(mockVideoTranscriptService.get).mockResolvedValue({
+            vi.mocked(mockTranscriptResolverService.getTranscript).mockResolvedValue({
                 fullText: "This is the full transcript about TypeScript...",
                 segments: [{ text: "segment", startTime: 0, endTime: 10 }],
             });
@@ -339,7 +339,9 @@ describe("GenerateMultipleChoiceQuestionsUseCase", () => {
         });
 
         it("throws error when transcript fetch fails", async () => {
-            vi.mocked(mockVideoTranscriptService.get).mockResolvedValue(null);
+            vi.mocked(mockTranscriptResolverService.getTranscript).mockRejectedValue(
+                new Error("Failed to fetch video transcript - captions may be disabled")
+            );
 
             await expect(useCase.execute(testUserId, testVideoId, 5)).rejects.toThrow(
                 "Failed to fetch video transcript - captions may be disabled"
@@ -347,7 +349,7 @@ describe("GenerateMultipleChoiceQuestionsUseCase", () => {
         });
 
         it("throws error when question generation fails", async () => {
-            vi.mocked(mockVideoTranscriptService.get).mockResolvedValue({
+            vi.mocked(mockTranscriptResolverService.getTranscript).mockResolvedValue({
                 fullText: "transcript",
                 segments: [],
             });
@@ -359,7 +361,7 @@ describe("GenerateMultipleChoiceQuestionsUseCase", () => {
         });
 
         it("throws error when question generation returns empty array", async () => {
-            vi.mocked(mockVideoTranscriptService.get).mockResolvedValue({
+            vi.mocked(mockTranscriptResolverService.getTranscript).mockResolvedValue({
                 fullText: "transcript",
                 segments: [],
             });

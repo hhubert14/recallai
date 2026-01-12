@@ -189,3 +189,19 @@ export const transcriptWindows = pgTable("transcript_windows", {
 	index("idx_transcript_windows_video_id").using("btree", table.videoId.asc().nullsLast()),
 	unique("transcript_windows_video_id_window_index_key").on(table.videoId, table.windowIndex),
 ]);
+
+export const videoTranscripts = pgTable("video_transcripts", {
+	id: bigint({ mode: "number" }).primaryKey().generatedByDefaultAsIdentity({ name: "video_transcripts_id_seq", startWith: 1, increment: 1, minValue: 1, cache: 1 }),
+	videoId: bigint("video_id", { mode: "number" }).notNull(),
+	segments: jsonb().notNull(),
+	fullText: text("full_text").notNull(),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+}, (table) => [
+	foreignKey({
+			columns: [table.videoId],
+			foreignColumns: [videos.id],
+			name: "video_transcripts_video_id_fkey"
+		}).onUpdate("cascade").onDelete("cascade"),
+	index("idx_video_transcripts_video_id").using("btree", table.videoId.asc().nullsLast()),
+	unique("video_transcripts_video_id_key").on(table.videoId),
+]);
