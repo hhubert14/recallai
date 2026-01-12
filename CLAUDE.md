@@ -254,18 +254,17 @@ Box 5: Review in 30 days (mastered)
 
 ### 2. Video Processing Pipeline
 
-4-step AI processing for YouTube videos:
+3-step AI processing for YouTube videos:
 
-1. **Educational Check** - Is video worth processing?
-2. **Create Video** - Store metadata in database
-3. **Generate Summary** - OpenAI + LangChain summarization
-4. **Generate Questions** - AI-generated quiz with 4 options each
+1. **Create Video** - Store metadata in database
+2. **Generate Summary** - OpenAI + LangChain summarization
+3. **Generate Questions** - AI-generated quiz with 4 options each
 
 **Validation Steps:**
-- Authentication (extension token)
+- Authentication (session cookie)
 - Duplicate detection
 
-**File:** `src/use-cases/extension/process-video.ts`
+**File:** `src/clean-architecture/use-cases/video/process-video.use-case.ts`
 
 ## Development Commands
 

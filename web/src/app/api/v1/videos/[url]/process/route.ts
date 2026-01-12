@@ -8,7 +8,6 @@ import { DrizzleSummaryRepository } from "@/clean-architecture/infrastructure/re
 import { DrizzleTranscriptRepository } from "@/clean-architecture/infrastructure/repositories/transcript.repository.drizzle";
 import { YouTubeVideoInfoService } from "@/clean-architecture/infrastructure/services/video-info.service.youtube";
 import { YoutubeTranscriptVideoTranscriptService } from "@/clean-architecture/infrastructure/services/video-transcript.service.youtube-transcript";
-import { OpenAIVideoClassifierService } from "@/clean-architecture/infrastructure/services/video-classifier.service.openai";
 import { LangChainVideoSummarizerService } from "@/clean-architecture/infrastructure/services/video-summarizer.service.langchain";
 import { TranscriptWindowGeneratorService } from "@/clean-architecture/infrastructure/services/transcript-window-generator.service";
 import { SupabaseEmbeddingService } from "@/clean-architecture/infrastructure/services/embedding.service.supabase";
@@ -40,7 +39,6 @@ export async function POST(
             new DrizzleTranscriptRepository(),
             new YouTubeVideoInfoService(),
             new YoutubeTranscriptVideoTranscriptService(),
-            new OpenAIVideoClassifierService(),
             new LangChainVideoSummarizerService(),
             new TranscriptWindowGeneratorService(new SupabaseEmbeddingService(), new DrizzleTranscriptWindowRepository())
         );

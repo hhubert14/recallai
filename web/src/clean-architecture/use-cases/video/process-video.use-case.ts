@@ -5,7 +5,6 @@ import { ISummaryRepository } from "@/clean-architecture/domain/repositories/sum
 import { ITranscriptRepository } from "@/clean-architecture/domain/repositories/transcript.repository.interface";
 import { IVideoInfoService } from "@/clean-architecture/domain/services/video-info.interface";
 import { IVideoTranscriptService } from "@/clean-architecture/domain/services/video-transcript.interface";
-import { IVideoClassifierService } from "@/clean-architecture/domain/services/video-classifier.interface";
 import { IVideoSummarizerService } from "@/clean-architecture/domain/services/video-summarizer.interface";
 import { VideoEntity } from "@/clean-architecture/domain/entities/video.entity";
 import { SummaryEntity } from "@/clean-architecture/domain/entities/summary.entity";
@@ -24,7 +23,6 @@ export class ProcessVideoUseCase {
         private readonly transcriptRepository: ITranscriptRepository,
         private readonly videoInfoService: IVideoInfoService,
         private readonly videoTranscriptService: IVideoTranscriptService,
-        private readonly videoClassifierService: IVideoClassifierService,
         private readonly videoSummarizerService: IVideoSummarizerService,
         private readonly transcriptWindowGeneratorService: ITranscriptWindowGeneratorService
     ) {}
@@ -75,14 +73,7 @@ export class ProcessVideoUseCase {
             throw new Error("Failed to fetch video transcript - captions may be disabled");
         }
 
-        // 4. Check if video is educational
-        logger.extension.debug("Checking if video is educational");
-        const isEducational = await this.videoClassifierService.isEducational(title, description, transcriptResult.fullText);
-        if (!isEducational) {
-            throw new Error("Video does not appear to be educational content");
-        }
-
-        // 5. Create video record
+        // 4. Create video record
         logger.extension.debug("Creating video record");
         const video = await this.videoRepository.createVideo(
             userId,
@@ -92,7 +83,7 @@ export class ProcessVideoUseCase {
         );
         logger.extension.info("Video created successfully", { videoId: video.id });
 
-        // 6. Store transcript for future use (non-blocking)
+        // 5. Store transcript for future use (non-blocking)
         try {
             await this.transcriptRepository.createTranscript(
                 video.id,
@@ -106,7 +97,7 @@ export class ProcessVideoUseCase {
             });
         }
 
-        // 7. Generate and save summary
+        // 6. Generate and save summary
         logger.extension.debug("Generating summary");
         const summaryResult = await this.videoSummarizerService.generate(title, description, transcriptResult.fullText);
         if (!summaryResult) {
@@ -119,7 +110,7 @@ export class ProcessVideoUseCase {
             summaryLength: summary.content.length,
         });
 
-        // 8. Generate transcript windows for timestamp matching (non-blocking)
+        // 7. Generate transcript windows for timestamp matching (non-blocking)
         try {
             await this.transcriptWindowGeneratorService.generate(
                 video.id,
