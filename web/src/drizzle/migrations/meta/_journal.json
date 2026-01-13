@@ -99,6 +99,13 @@
       "when": 1768280000000,
       "tag": "0013_add_updated_at_triggers",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1768295424642,
+      "tag": "0014_broken_squadron_sinister",
+      "breakpoints": true
     }
   ]
 }
