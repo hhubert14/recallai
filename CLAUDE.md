@@ -95,6 +95,7 @@ learnsync/
 │   │   ├── components/            # React components
 │   │   │   ├── providers/         # Context providers
 │   │   │   └── ui/                # Reusable UI components
+│   │   ├── hooks/                 # Custom React hooks (always here, not co-located)
 │   │   ├── data-access/           # Database queries (Drizzle ORM)
 │   │   ├── use-cases/             # Business logic layer
 │   │   ├── drizzle/               # Drizzle ORM schema & migrations
@@ -478,12 +479,33 @@ createFlashcardsBatch(items[]) → FlashcardEntity[]
 - Component used in **1 place only** → Co-locate with the page/feature
 - Component used in **2+ places** → Move to `components/` directory
 
+**Exception: Custom Hooks**
+
+Custom React hooks (`use*.ts`) always go in `src/hooks/`, even if only used in one place.
+
+**Why hooks are different:**
+- **Discoverability** - Hooks encapsulate reusable logic patterns; a central folder documents "what logic abstractions exist"
+- **Different nature** - Components are visual and page-specific; hooks are logic that often could apply elsewhere
+- **Refactoring signal** - Putting a hook in `hooks/` signals "this logic is worth reusing"
+- **Convention** - Developers naturally look in a `hooks/` folder for custom hooks
+
+```typescript
+// ✅ Always in src/hooks/, even if single-use
+import { useChatMessages } from "@/hooks/useChatMessages";
+import { useVideoPlayer } from "@/hooks/useVideoPlayer";
+
+// ❌ Don't co-locate hooks with pages
+import { useChatMessages } from "./useChatMessages";  // Bad
+```
+
 **Current Structure:**
 ```
 src/
 ├── components/
 │   ├── ui/              # Reusable UI primitives (buttons, dropdowns, forms, etc.)
 │   └── providers/       # React context providers (AuthProvider, etc.)
+├── hooks/               # Custom React hooks (always here, not co-located)
+│   └── useChatMessages.ts
 └── app/
     ├── auth/
     │   ├── login/
