@@ -46,6 +46,15 @@ export class DrizzleTranscriptWindowRepository
 		videoId: number,
 		queryEmbedding: number[]
 	): Promise<WindowMatchResult | null> {
+		const results = await this.findTopKSimilarWindows(videoId, queryEmbedding, 1);
+		return results.length > 0 ? results[0] : null;
+	}
+
+	async findTopKSimilarWindows(
+		videoId: number,
+		queryEmbedding: number[],
+		k: number
+	): Promise<WindowMatchResult[]> {
 		const similarity = sql<number>`1 - (${cosineDistance(transcriptWindows.embedding, queryEmbedding)})`;
 
 		const results = await db
@@ -63,17 +72,12 @@ export class DrizzleTranscriptWindowRepository
 			.from(transcriptWindows)
 			.where(eq(transcriptWindows.videoId, videoId))
 			.orderBy(desc(similarity))
-			.limit(1);
+			.limit(k);
 
-		if (results.length === 0) {
-			return null;
-		}
-
-		const result = results[0];
-		return {
+		return results.map((result) => ({
 			window: this.toEntity(result),
 			similarity: result.similarity,
-		};
+		}));
 	}
 
 	async deleteWindowsByVideoId(videoId: number): Promise<void> {
