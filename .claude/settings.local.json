@@ -49,7 +49,9 @@
       "mcp__playwright__browser_snapshot",
       "mcp__github__pull_request_read",
       "mcp__supabase__list_migrations",
-      "Bash(gh issue list:*)"
+      "Bash(gh issue list:*)",
+      "mcp__github__search_repositories",
+      "mcp__github__get_file_contents"
     ],
     "deny": [],
     "ask": []
