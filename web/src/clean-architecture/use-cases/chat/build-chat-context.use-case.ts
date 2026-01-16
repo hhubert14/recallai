@@ -49,7 +49,6 @@ export class BuildChatContextUseCase {
                 TOP_K_WINDOWS
             );
             relevantTranscriptWindows = windowMatches.map((match) => match.window.text);
-            console.log("Relevant windows: ", relevantTranscriptWindows)
         } catch {
             // Continue with empty context if embedding fails
             relevantTranscriptWindows = [];
