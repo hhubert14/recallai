@@ -358,6 +358,10 @@ DATABASE_URL="postgresql://postgres.xxxxx:[PASSWORD]@aws-0-us-west-1.pooler.supa
 
 # OpenAI
 OPENAI_API_KEY=
+
+# Upstash Redis (Rate Limiting)
+UPSTASH_REDIS_REST_URL=
+UPSTASH_REDIS_REST_TOKEN=
 ```
 
 ## Code Patterns & Conventions
