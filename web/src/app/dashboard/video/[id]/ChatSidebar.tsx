@@ -4,6 +4,14 @@ import { useState, useRef, useEffect } from "react";
 import { X, Send, Trash2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
 import { useChatMessages } from "@/hooks/useChatMessages";
 import { ChatMessage } from "./ChatMessage";
 
@@ -15,10 +23,16 @@ interface ChatSidebarProps {
 
 export function ChatSidebar({ videoId, isOpen, onClose }: ChatSidebarProps) {
     const [input, setInput] = useState("");
+    const [showClearConfirm, setShowClearConfirm] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
     const { messages, isLoading, error, sendMessage, clearHistory, isSending } =
         useChatMessages(videoId);
+
+    async function handleClearHistory() {
+        await clearHistory();
+        setShowClearConfirm(false);
+    }
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -64,7 +78,8 @@ export function ChatSidebar({ videoId, isOpen, onClose }: ChatSidebarProps) {
                         <Button
                             variant="ghost"
                             size="icon"
-                            onClick={clearHistory}
+                            onClick={() => setShowClearConfirm(true)}
+                            disabled={messages.length === 0}
                             title="Clear chat history"
                         >
                             <Trash2 className="h-4 w-4" />
@@ -127,6 +142,27 @@ export function ChatSidebar({ videoId, isOpen, onClose }: ChatSidebarProps) {
                     </div>
                 </form>
             </div>
+
+            {/* Clear History Confirmation Dialog */}
+            <Dialog open={showClearConfirm} onOpenChange={setShowClearConfirm}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Clear chat history?</DialogTitle>
+                        <DialogDescription>
+                            This will permanently delete all messages in this chat. This action
+                            cannot be undone.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setShowClearConfirm(false)}>
+                            Cancel
+                        </Button>
+                        <Button variant="destructive" onClick={handleClearHistory}>
+                            Clear history
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </>
     );
 }
