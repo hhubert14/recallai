@@ -4,6 +4,8 @@ import { getAuthenticatedUser } from "@/lib/auth-helpers";
 import { jsendFail, jsendError } from "@/lib/jsend";
 import { getRateLimiter } from "@/lib/rate-limit";
 
+const MAX_MESSAGE_LENGTH = 4000;
+
 function getTextContent(content: ModelMessage["content"]): string {
     if (typeof content === "string") return content;
     return content
@@ -56,6 +58,12 @@ export async function POST(request: NextRequest) {
             return jsendFail({ error: "Empty message content" }, 400);
         }
 
+        if (lastUserMessageText.length > MAX_MESSAGE_LENGTH) {
+            return jsendFail({
+                error: `Message too long. Maximum length is ${MAX_MESSAGE_LENGTH} characters.`
+            }, 400);
+        }
+
         // Build context using the use case (validation, RAG, etc.)
         const buildContextUseCase = new BuildChatContextUseCase(
             new DrizzleVideoRepository(),
@@ -92,7 +100,11 @@ export async function POST(request: NextRequest) {
         const videoChatService = new AiSdkVideoChatService();
         return videoChatService.streamChat(systemPrompt, chatMessages, {
             onFinish: async (text) => {
-                await saveChatMessageUseCase.saveAssistantMessage(videoId, user.id, text);
+                try {
+                    await saveChatMessageUseCase.saveAssistantMessage(videoId, user.id, text);
+                } catch (error) {
+                    console.error("Failed to save assistant message:", error);
+                }
             },
         });
     } catch (err) {

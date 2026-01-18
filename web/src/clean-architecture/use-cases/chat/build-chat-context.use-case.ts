@@ -4,6 +4,7 @@ import { ITranscriptWindowRepository } from "@/clean-architecture/domain/reposit
 import { IEmbeddingService } from "@/clean-architecture/domain/services/embedding.interface";
 
 const TOP_K_WINDOWS = 3;
+const SIMILARITY_THRESHOLD = 0.5;
 
 export type ChatContext = {
     videoTitle: string;
@@ -48,7 +49,9 @@ export class BuildChatContextUseCase {
                 queryEmbedding,
                 TOP_K_WINDOWS
             );
-            relevantTranscriptWindows = windowMatches.map((match) => match.window.text);
+            relevantTranscriptWindows = windowMatches
+                .filter((match) => match.similarity >= SIMILARITY_THRESHOLD)
+                .map((match) => match.window.text);
         } catch {
             // Continue with empty context if embedding fails
             relevantTranscriptWindows = [];

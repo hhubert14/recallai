@@ -200,6 +200,25 @@ describe("BuildChatContextUseCase", () => {
                     3
                 );
             });
+
+            it("filters out transcript windows below similarity threshold", async () => {
+                vi.mocked(mockEmbeddingService.embed).mockResolvedValue([0.1, 0.2, 0.3]);
+                vi.mocked(mockTranscriptWindowRepo.findTopKSimilarWindows).mockResolvedValue([
+                    {
+                        window: createMockWindow(1, "High similarity window", 0),
+                        similarity: 0.8,
+                    },
+                    {
+                        window: createMockWindow(2, "Low similarity window", 20),
+                        similarity: 0.3, // Below threshold
+                    },
+                ]);
+
+                const context = await useCase.execute(testUserId, testVideoId, testMessage);
+
+                expect(context.relevantTranscriptWindows).toHaveLength(1);
+                expect(context.relevantTranscriptWindows[0]).toBe("High similarity window");
+            });
         });
     });
 });
