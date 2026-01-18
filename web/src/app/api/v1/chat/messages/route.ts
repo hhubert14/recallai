@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { getAuthenticatedUser } from "@/lib/auth-helpers";
-import { jsendSuccess, jsendFail } from "@/lib/jsend";
+import { jsendSuccess, jsendFail, jsendError } from "@/lib/jsend";
 import { DrizzleChatMessageRepository } from "@/clean-architecture/infrastructure/repositories/chat-message.repository.drizzle";
 import { DrizzleVideoRepository } from "@/clean-architecture/infrastructure/repositories/video.repository.drizzle";
 
@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
         });
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        return jsendFail({ error: message }, 500);
+        return jsendError(message);
     }
 }
 
@@ -92,6 +92,6 @@ export async function DELETE(request: NextRequest) {
         return jsendSuccess({ message: "Chat history cleared" });
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        return jsendFail({ error: message }, 500);
+        return jsendError(message);
     }
 }

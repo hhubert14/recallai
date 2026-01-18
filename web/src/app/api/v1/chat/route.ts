@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { UIMessage, ModelMessage, convertToModelMessages } from "ai";
 import { getAuthenticatedUser } from "@/lib/auth-helpers";
-import { jsendFail } from "@/lib/jsend";
+import { jsendFail, jsendError } from "@/lib/jsend";
 
 function getTextContent(content: ModelMessage["content"]): string {
     if (typeof content === "string") return content;
@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
         });
     } catch (err) {
         const message = err instanceof Error ? err.message : String(err);
-        return jsendFail({ error: message }, 500);
+        return jsendError(message);
     }
 }
 
