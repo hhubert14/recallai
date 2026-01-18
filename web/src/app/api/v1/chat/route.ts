@@ -3,6 +3,15 @@ import { UIMessage, ModelMessage, convertToModelMessages } from "ai";
 import { getAuthenticatedUser } from "@/lib/auth-helpers";
 import { jsendFail, jsendError } from "@/lib/jsend";
 import { getRateLimiter } from "@/lib/rate-limit";
+import { BuildChatContextUseCase } from "@/clean-architecture/use-cases/chat/build-chat-context.use-case";
+import { SaveChatMessageUseCase } from "@/clean-architecture/use-cases/chat/save-chat-message.use-case";
+import { DrizzleVideoRepository } from "@/clean-architecture/infrastructure/repositories/video.repository.drizzle";
+import { DrizzleSummaryRepository } from "@/clean-architecture/infrastructure/repositories/summary.repository.drizzle";
+import { DrizzleTranscriptWindowRepository } from "@/clean-architecture/infrastructure/repositories/transcript-window.repository.drizzle";
+import { DrizzleChatMessageRepository } from "@/clean-architecture/infrastructure/repositories/chat-message.repository.drizzle";
+import { SupabaseEmbeddingService } from "@/clean-architecture/infrastructure/services/embedding.service.supabase";
+import { AiSdkVideoChatService } from "@/clean-architecture/infrastructure/services/video-chat.service.ai-sdk";
+import { ChatMessageInput } from "@/clean-architecture/domain/services/video-chat.interface";
 
 const MAX_MESSAGE_LENGTH = 4000;
 
@@ -13,15 +22,6 @@ function getTextContent(content: ModelMessage["content"]): string {
         .map((part) => part.text)
         .join("");
 }
-import { BuildChatContextUseCase } from "@/clean-architecture/use-cases/chat/build-chat-context.use-case";
-import { SaveChatMessageUseCase } from "@/clean-architecture/use-cases/chat/save-chat-message.use-case";
-import { DrizzleVideoRepository } from "@/clean-architecture/infrastructure/repositories/video.repository.drizzle";
-import { DrizzleSummaryRepository } from "@/clean-architecture/infrastructure/repositories/summary.repository.drizzle";
-import { DrizzleTranscriptWindowRepository } from "@/clean-architecture/infrastructure/repositories/transcript-window.repository.drizzle";
-import { DrizzleChatMessageRepository } from "@/clean-architecture/infrastructure/repositories/chat-message.repository.drizzle";
-import { SupabaseEmbeddingService } from "@/clean-architecture/infrastructure/services/embedding.service.supabase";
-import { AiSdkVideoChatService } from "@/clean-architecture/infrastructure/services/video-chat.service.ai-sdk";
-import { ChatMessageInput } from "@/clean-architecture/domain/services/video-chat.interface";
 
 export async function POST(request: NextRequest) {
     try {
@@ -47,9 +47,12 @@ export async function POST(request: NextRequest) {
             return jsendFail({ error: "Missing or empty messages" }, 400);
         }
 
-        // Get the last user message for context building
-        const lastMessage = messages[messages.length - 1];
-        const lastUserMessageText = lastMessage.parts
+        // Get the last user message for context building (role-verified)
+        const lastUserMessage = [...messages].reverse().find((msg) => msg.role === "user");
+        if (!lastUserMessage) {
+            return jsendFail({ error: "No user message provided" }, 400);
+        }
+        const lastUserMessageText = (lastUserMessage.parts ?? [])
             .filter((part): part is { type: "text"; text: string } => part.type === "text")
             .map((part) => part.text)
             .join("");
@@ -89,12 +92,18 @@ export async function POST(request: NextRequest) {
         // Build system prompt from context
         const systemPrompt = buildSystemPrompt(context);
 
-        // Convert UI messages to model messages format
+        // Convert UI messages to model messages format (filter to only user/assistant roles)
         const modelMessages = await convertToModelMessages(messages);
-        const chatMessages: ChatMessageInput[] = modelMessages.map((msg) => ({
-            role: msg.role as "user" | "assistant",
-            content: getTextContent(msg.content),
-        }));
+        const chatMessages: ChatMessageInput[] = modelMessages
+            .filter(
+                (msg): msg is ModelMessage & { role: "user" | "assistant" } =>
+                    msg.role === "user" || msg.role === "assistant"
+            )
+            .map((msg) => ({
+                role: msg.role,
+                content: getTextContent(msg.content),
+            }))
+            .filter((msg) => msg.content.trim().length > 0);
 
         // Stream response using infrastructure service
         const videoChatService = new AiSdkVideoChatService();
