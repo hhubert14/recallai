@@ -27,11 +27,8 @@ export class BuildChatContextUseCase {
     ): Promise<ChatContext> {
         // 1. Validate video ownership
         const video = await this.videoRepository.findVideoById(videoId);
-        if (!video) {
+        if (!video || video.userId !== userId) {
             throw new Error("Video not found");
-        }
-        if (video.userId !== userId) {
-            throw new Error("Not authorized to access this video");
         }
 
         // 2. Fetch summary
