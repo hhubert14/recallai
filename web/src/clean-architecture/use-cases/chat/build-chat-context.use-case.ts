@@ -2,6 +2,7 @@ import { IVideoRepository } from "@/clean-architecture/domain/repositories/video
 import { ISummaryRepository } from "@/clean-architecture/domain/repositories/summary.repository.interface";
 import { ITranscriptWindowRepository } from "@/clean-architecture/domain/repositories/transcript-window.repository.interface";
 import { IEmbeddingService } from "@/clean-architecture/domain/services/embedding.interface";
+import { logger } from "@/lib/logger";
 
 const TOP_K_WINDOWS = 3;
 const SIMILARITY_THRESHOLD = 0.5;
@@ -49,9 +50,11 @@ export class BuildChatContextUseCase {
             relevantTranscriptWindows = windowMatches
                 .filter((match) => match.similarity >= SIMILARITY_THRESHOLD)
                 .map((match) => match.window.text);
-        } catch {
-            // Continue with empty context if embedding fails
-            relevantTranscriptWindows = [];
+        } catch (err) {
+            logger.warn("[CHAT] Embedding retrieval failed, continuing with empty context", {
+                videoId,
+                error: err,
+            });
         }
 
         return {
