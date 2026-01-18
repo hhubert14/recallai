@@ -51,7 +51,8 @@
       "mcp__supabase__list_migrations",
       "Bash(gh issue list:*)",
       "mcp__github__search_repositories",
-      "mcp__github__get_file_contents"
+      "mcp__github__get_file_contents",
+      "mcp__github__list_pull_requests"
     ],
     "deny": [],
     "ask": []
