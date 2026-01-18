@@ -48,13 +48,13 @@ export function ChatSidebar({ videoId, isOpen, onClose }: ChatSidebarProps) {
         }
     }, [isOpen]);
 
-    async function handleSubmit(e: React.FormEvent) {
+    function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
         if (!input.trim() || isSending) return;
 
         const message = input.trim();
         setInput("");
-        await sendMessage(message);
+        sendMessage(message);
     }
 
     if (!isOpen) return null;
