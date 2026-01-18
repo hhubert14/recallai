@@ -53,8 +53,7 @@
       "mcp__github__search_repositories",
       "mcp__github__get_file_contents",
       "mcp__github__list_pull_requests",
-      "mcp__github__search_pull_requests",
-      "mcp__playwright__browser_console_messages"
+      "mcp__github__search_pull_requests"
     ],
     "deny": [],
     "ask": []

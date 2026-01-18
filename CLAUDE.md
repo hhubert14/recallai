@@ -860,38 +860,6 @@ See `docs/drizzle-migration-guide.md` for complete migration patterns.
 6. **Check `externally_connectable` matches** - Only whitelisted domains can message extension
 7. **Test both environments** - Dev uses localhost:3000, production uses recallai.io
 
-## Maintaining the Updates Page
-
-When adding noteworthy features, improvements, or bug fixes, update the changelog so users can discover new functionality.
-
-**File to edit:** `web/src/app/updates/updates-data.ts`
-
-**How to add an update:**
-1. Add a new entry at the **TOP** of the `updates` array (newest first)
-2. Use an appropriate category: `"New Feature"`, `"Improvement"`, or `"Fix"`
-3. Write a clear, user-facing title and description
-
-**Example entry:**
-```typescript
-{
-  id: "2025-01-20-dark-mode",
-  date: "2025-01-20",
-  title: "Dark Mode Support",
-  description: "Toggle between light and dark themes for comfortable viewing in any environment.",
-  category: "New Feature",
-}
-```
-
-**When to add an update:**
-- New user-facing features (chatbot, new tabs, integrations)
-- Significant improvements to existing features (better summaries, faster processing)
-- Important bug fixes that users would notice
-
-**When NOT to add an update:**
-- Internal refactoring
-- Minor styling tweaks
-- Developer-only changes (CI/CD, tests)
-
 ## Useful Resources
 
 - **Drizzle Docs:** https://orm.drizzle.team/docs/overview
