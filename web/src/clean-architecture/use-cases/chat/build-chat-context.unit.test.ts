@@ -106,9 +106,10 @@ describe("BuildChatContextUseCase", () => {
                 const otherUsersVideo = createMockVideo({ userId: "other-user" });
                 vi.mocked(mockVideoRepo.findVideoById).mockResolvedValue(otherUsersVideo);
 
+                // Returns generic "Video not found" to avoid leaking info about other users' videos
                 await expect(
                     useCase.execute(testUserId, testVideoId, testMessage)
-                ).rejects.toThrow("Not authorized to access this video");
+                ).rejects.toThrow("Video not found");
             });
         });
 
