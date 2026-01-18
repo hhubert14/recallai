@@ -56,7 +56,8 @@
       "mcp__github__search_pull_requests",
       "mcp__playwright__browser_console_messages",
       "mcp__playwright__browser_fill_form",
-      "mcp__playwright__browser_wait_for"
+      "mcp__playwright__browser_wait_for",
+      "Bash(layout \")"
     ],
     "deny": [],
     "ask": []
