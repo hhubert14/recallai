@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { UIMessage, ModelMessage, convertToModelMessages } from "ai";
 import { getAuthenticatedUser } from "@/lib/auth-helpers";
 import { jsendFail, jsendError } from "@/lib/jsend";
+import { getRateLimiter } from "@/lib/rate-limit";
 
 function getTextContent(content: ModelMessage["content"]): string {
     if (typeof content === "string") return content;
@@ -25,6 +26,12 @@ export async function POST(request: NextRequest) {
         const { user, error } = await getAuthenticatedUser();
         if (error || !user) {
             return jsendFail({ error: "Unauthorized" }, 401);
+        }
+
+        // Rate limiting
+        const { success } = await getRateLimiter("/api/v1/chat").limit(user.id);
+        if (!success) {
+            return jsendFail({ error: "Rate limit exceeded. Please try again later." }, 429);
         }
 
         const body = await request.json();

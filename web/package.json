@@ -38,6 +38,8 @@
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.49.8",
     "@types/stripe": "^8.0.417",
+    "@upstash/ratelimit": "^2.0.8",
+    "@upstash/redis": "^1.36.1",
     "@vercel/analytics": "^1.5.0",
     "ai": "^6.0.35",
     "class-variance-authority": "^0.7.1",
