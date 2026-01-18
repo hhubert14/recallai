@@ -100,6 +100,7 @@ describe("GenerateMultipleChoiceQuestionsUseCase", () => {
             createWindowsBatch: vi.fn(),
             findWindowsByVideoId: vi.fn(),
             findMostSimilarWindow: vi.fn(),
+            findTopKSimilarWindows: vi.fn(),
             deleteWindowsByVideoId: vi.fn(),
         };
 

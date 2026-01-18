@@ -24,5 +24,11 @@ export interface ITranscriptWindowRepository {
 		queryEmbedding: number[]
 	): Promise<WindowMatchResult | null>;
 
+	findTopKSimilarWindows(
+		videoId: number,
+		queryEmbedding: number[],
+		k: number
+	): Promise<WindowMatchResult[]>;
+
 	deleteWindowsByVideoId(videoId: number): Promise<void>;
 }

@@ -10,6 +10,7 @@ import { VideoPlayer } from "./VideoPlayer";
 import { ContentTabs } from "./ContentTabs";
 import { VideoPlayerProvider } from "./VideoPlayerContext";
 import { BackButton } from "./BackButton";
+import { ChatButton } from "./ChatButton";
 import { DrizzleVideoRepository } from "@/clean-architecture/infrastructure/repositories/video.repository.drizzle";
 import { DrizzleSummaryRepository } from "@/clean-architecture/infrastructure/repositories/summary.repository.drizzle";
 import { DrizzleQuestionRepository } from "@/clean-architecture/infrastructure/repositories/question.repository.drizzle";
@@ -155,6 +156,9 @@ export default async function VideoDetailPage({
                         </div>
                     </div>
                 </VideoPlayerProvider>
+
+                {/* Floating Chat Button */}
+                <ChatButton videoId={video.id} />
             </main>
         </div>
     );

@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -127,6 +128,18 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Style inline code in prose (chat messages) */
+.prose code::before,
+.prose code::after {
+  content: none;
+}
+.prose code {
+  background-color: rgba(127, 127, 127, 0.15);
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  font-weight: normal;
 }
 
 /* Landing page animations */

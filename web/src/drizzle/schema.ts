@@ -205,3 +205,24 @@ export const videoTranscripts = pgTable("video_transcripts", {
 	index("idx_video_transcripts_video_id").using("btree", table.videoId.asc().nullsLast()),
 	unique("video_transcripts_video_id_key").on(table.videoId),
 ]);
+
+export const chatMessages = pgTable("chat_messages", {
+	id: bigint({ mode: "number" }).primaryKey().generatedByDefaultAsIdentity({ name: "chat_messages_id_seq", startWith: 1, increment: 1, minValue: 1, cache: 1 }),
+	videoId: bigint("video_id", { mode: "number" }).notNull(),
+	userId: uuid("user_id").notNull(),
+	role: text().notNull(),
+	content: text().notNull(),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+}, (table) => [
+	foreignKey({
+			columns: [table.videoId],
+			foreignColumns: [videos.id],
+			name: "chat_messages_video_id_fkey"
+		}).onUpdate("cascade").onDelete("cascade"),
+	foreignKey({
+			columns: [table.userId],
+			foreignColumns: [users.id],
+			name: "chat_messages_user_id_fkey"
+		}).onUpdate("cascade").onDelete("cascade"),
+	index("idx_chat_messages_video_user").using("btree", table.videoId.asc().nullsLast(), table.userId.asc().nullsLast()),
+]);
