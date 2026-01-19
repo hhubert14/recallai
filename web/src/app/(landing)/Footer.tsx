@@ -7,6 +7,7 @@ const footerLinks = {
   product: [
     { label: "Features", href: "#features" },
     { label: "How It Works", href: "#how-it-works" },
+    { label: "Updates", href: "/updates" },
     {
       label: "Chrome Extension",
       href: "https://chromewebstore.google.com/detail/recallai/dciecdpjkhhagindacahojeiaeecblaa",
