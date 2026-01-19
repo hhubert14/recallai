@@ -63,8 +63,7 @@
       "Bash(findstr:*)",
       "Bash(npx -y jq:*)",
       "Bash(head:*)",
-      "Bash(tail:*)",
-      "Bash(powershell -Command \"Get-Content ''C:\\\\Users\\\\huang\\\\.claude\\\\projects\\\\C--Users-huang-repos-Personal-recallai\\\\2d799853-75c5-42cf-bb30-f60e7d06f87b\\\\tool-results\\\\mcp-github-list_issues-1768846306013.txt'' | Select-String -Pattern ''\"\"number\"\":\\\\d+,\"\"state\"\":\"\"OPEN\"\",\"\"title\"\":\"\"[^\"\"]*\"\"'' -AllMatches | ForEach-Object { $_Matches.Value }\")"
+      "Bash(tail:*)"
     ],
     "deny": [],
     "ask": []
