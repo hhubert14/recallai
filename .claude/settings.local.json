@@ -63,7 +63,8 @@
       "Bash(findstr:*)",
       "Bash(npx -y jq:*)",
       "Bash(head:*)",
-      "Bash(tail:*)"
+      "Bash(tail:*)",
+      "Bash(tsconfig \")"
     ],
     "deny": [],
     "ask": []
