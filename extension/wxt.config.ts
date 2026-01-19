@@ -15,7 +15,7 @@ export default defineConfig({
   }),
   manifest: {
     name: 'RecallAI',
-    version: '1.1.3',
+    version: '1.1.4',
     description: 'Transform educational YouTube videos into summaries and Q&As for better learning.',
     permissions: ['storage', 'tabs'],
     host_permissions: [

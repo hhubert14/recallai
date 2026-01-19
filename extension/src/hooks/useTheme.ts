@@ -3,6 +3,8 @@ import { browser } from 'wxt/browser';
 
 export type Theme = 'light' | 'dark' | 'system';
 
+const validThemes: Theme[] = ['light', 'dark', 'system'];
+
 export function useTheme() {
   const [theme, setThemeState] = useState<Theme>('system');
   const [mounted, setMounted] = useState(false);
@@ -10,8 +12,8 @@ export function useTheme() {
   useEffect(() => {
     // Load saved preference from browser.storage
     browser.storage.local.get(['theme']).then((result) => {
-      if (result.theme) {
-        setThemeState(result.theme as Theme);
+      if (result.theme && validThemes.includes(result.theme)) {
+        setThemeState(result.theme);
       }
       setMounted(true);
     });
