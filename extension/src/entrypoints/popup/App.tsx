@@ -1,30 +1,51 @@
 import { useAuth } from '@/hooks/useAuth';
 import { useCurrentTab } from '@/hooks/useCurrentTab';
+import { useTheme, type Theme } from '@/hooks/useTheme';
 import { useVideoProcessing } from '@/hooks/useVideoProcessing';
+import { ThemeToggle } from '@/components/ThemeToggle';
+import {
+  YouTubeIcon,
+  ArrowRightIcon,
+  CheckCircleIcon,
+  XCircleIcon,
+  PlayCircleIcon,
+  InfoCircleIcon,
+  LoaderIcon,
+} from '@/components/Icons';
 import { BASE_URL } from '@/lib/constants';
 
 export default function App() {
   const { authState } = useAuth();
   const tabState = useCurrentTab();
   const processing = useVideoProcessing();
+  const { theme, setTheme } = useTheme();
 
   return (
-    <div className="w-[300px] p-4 font-sans">
-      <Header />
+    <div className="w-[300px] p-4 font-sans bg-background text-foreground">
+      <Header theme={theme} onThemeChange={setTheme} />
       <Content authState={authState} tabState={tabState} processing={processing} />
     </div>
   );
 }
 
-function Header() {
+function Header({
+  theme,
+  onThemeChange,
+}: {
+  theme: Theme;
+  onThemeChange: (theme: Theme) => void;
+}) {
   return (
-    <div className="flex items-center mb-4">
-      <img
-        src="/icons/icon48.png"
-        alt="RecallAI Logo"
-        className="w-6 h-6 mr-2"
-      />
-      <h1 className="text-lg font-semibold m-0">RecallAI</h1>
+    <div className="flex items-center justify-between pb-3 mb-4 border-b border-border">
+      <div className="flex items-center gap-2">
+        <img
+          src="/icons/icon48.png"
+          alt="RecallAI Logo"
+          className="w-7 h-7"
+        />
+        <h1 className="text-lg font-semibold">RecallAI</h1>
+      </div>
+      <ThemeToggle theme={theme} onThemeChange={onThemeChange} />
     </div>
   );
 }
@@ -42,7 +63,12 @@ function Content({
   processing: ProcessingState;
 }) {
   if (authState === 'loading') {
-    return <p className="text-gray-500">Loading...</p>;
+    return (
+      <div className="flex items-center justify-center py-8">
+        <LoaderIcon className="w-5 h-5 animate-spin text-muted-foreground" />
+        <span className="ml-2 text-sm text-muted-foreground">Loading...</span>
+      </div>
+    );
   }
 
   if (authState === 'authenticated') {
@@ -64,26 +90,26 @@ function AuthenticatedView({
   };
 
   return (
-    <>
+    <div className="space-y-4">
       <VideoProcessingSection tabState={tabState} processing={processing} />
 
-      <div className="mt-4 space-y-2">
-        <a
-          href={`${BASE_URL}/dashboard`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="block w-full text-center px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-        >
-          Go to My Dashboard
-        </a>
-        <button
-          onClick={handleSignOut}
-          className="w-full px-4 py-2 bg-gray-100 text-gray-800 rounded hover:bg-gray-200 transition-colors"
-        >
-          Disconnect
-        </button>
-      </div>
-    </>
+      <a
+        href={`${BASE_URL}/dashboard`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-primary text-primary-foreground rounded-xl font-medium hover:bg-primary/90 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200"
+      >
+        Go to My Dashboard
+        <ArrowRightIcon className="w-4 h-4" />
+      </a>
+
+      <button
+        onClick={handleSignOut}
+        className="w-full px-4 py-2 text-muted-foreground rounded-xl hover:bg-muted hover:text-foreground transition-all duration-200"
+      >
+        Disconnect
+      </button>
+    </div>
   );
 }
 
@@ -96,80 +122,104 @@ function VideoProcessingSection({
 }) {
   if (tabState.isLoading) {
     return (
-      <div className="p-3 bg-gray-50 rounded">
-        <p className="text-sm text-gray-500">Checking current page...</p>
+      <div className="p-4 bg-card border border-border rounded-xl shadow-sm">
+        <div className="flex items-center justify-center">
+          <LoaderIcon className="w-4 h-4 animate-spin text-muted-foreground" />
+          <span className="ml-2 text-sm text-muted-foreground">
+            Checking current page...
+          </span>
+        </div>
       </div>
     );
   }
 
   if (!tabState.isYouTubeVideo) {
     return (
-      <div className="p-3 bg-gray-50 rounded">
-        <p className="text-sm text-gray-500">
-          Navigate to a YouTube video to process it.
-        </p>
+      <div className="p-4 bg-card border border-border rounded-xl shadow-sm">
+        <div className="flex items-center gap-3">
+          <YouTubeIcon className="w-5 h-5 text-muted-foreground flex-shrink-0" />
+          <p className="text-sm text-muted-foreground">
+            Navigate to a YouTube video to process it.
+          </p>
+        </div>
       </div>
     );
   }
 
-  return (
-    <div className="p-3 bg-gray-50 rounded">
-      {processing.status === 'idle' && (
-        <button
-          onClick={() => tabState.url && processing.process(tabState.url)}
-          className="w-full px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors font-medium"
-        >
-          Process This Video
-        </button>
-      )}
+  if (processing.status === 'idle') {
+    return (
+      <button
+        onClick={() => tabState.url && processing.process(tabState.url)}
+        className="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-primary text-primary-foreground rounded-xl font-medium hover:bg-primary/90 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200"
+      >
+        <PlayCircleIcon className="w-4 h-4" />
+        Process Video
+      </button>
+    );
+  }
 
+  return (
+    <div className="p-4 bg-card border border-border rounded-xl shadow-sm">
       {processing.status === 'processing' && (
         <div className="flex items-center justify-center py-2">
-          <div className="animate-spin h-5 w-5 border-2 border-green-500 border-t-transparent rounded-full mr-2" />
-          <span className="text-sm text-gray-600">Processing video...</span>
+          <LoaderIcon className="w-5 h-5 animate-spin text-primary" />
+          <span className="ml-2 text-sm text-muted-foreground">
+            Processing video...
+          </span>
         </div>
       )}
 
       {processing.status === 'success' && (
-        <div className="text-center">
-          <p className="text-sm text-green-600 mb-2">
-            Video processed successfully!
-          </p>
+        <div className="text-center py-2">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <CheckCircleIcon className="w-5 h-5 text-green-600 dark:text-green-400" />
+            <p className="text-sm font-medium text-green-600 dark:text-green-400">
+              Video processed!
+            </p>
+          </div>
           <a
             href={`${BASE_URL}/dashboard`}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-sm text-blue-500 hover:underline"
+            className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
           >
             View in Dashboard
+            <ArrowRightIcon className="w-3 h-3" />
           </a>
         </div>
       )}
 
       {processing.status === 'already_exists' && (
-        <div className="text-center">
-          <p className="text-sm text-blue-600 mb-2">
-            This video is already in your library.
-          </p>
+        <div className="text-center py-2">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <InfoCircleIcon className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            <p className="text-sm font-medium text-blue-600 dark:text-blue-400">
+              Already in your library
+            </p>
+          </div>
           <a
             href={`${BASE_URL}/dashboard`}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-sm text-blue-500 hover:underline"
+            className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
           >
             View in Dashboard
+            <ArrowRightIcon className="w-3 h-3" />
           </a>
         </div>
       )}
 
       {processing.status === 'error' && (
-        <div className="text-center">
-          <p className="text-sm text-red-600 mb-2">
-            {processing.errorMessage || 'Failed to process video'}
-          </p>
+        <div className="text-center py-2">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <XCircleIcon className="w-5 h-5 text-destructive" />
+            <p className="text-sm font-medium text-destructive">
+              {processing.errorMessage || 'Failed to process video'}
+            </p>
+          </div>
           <button
             onClick={() => processing.reset()}
-            className="text-sm text-blue-500 hover:underline"
+            className="text-sm text-primary hover:underline"
           >
             Try Again
           </button>
@@ -185,17 +235,23 @@ function UnauthenticatedView() {
   };
 
   return (
-    <>
-      <p className="mb-4 leading-relaxed text-sm">
-        Sign in to RecallAI to process educational YouTube videos
-        and create summaries for your learning library.
-      </p>
+    <div className="space-y-4">
+      <div className="text-center">
+        <h2 className="text-base font-medium mb-2">
+          Transform YouTube videos into your personal learning library.
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Sign in to create summaries, flashcards, and quizzes from educational videos.
+        </p>
+      </div>
+
       <button
         onClick={handleSignIn}
-        className="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+        className="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-primary text-primary-foreground rounded-xl font-medium hover:bg-primary/90 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200"
       >
         Sign in to RecallAI
+        <ArrowRightIcon className="w-4 h-4" />
       </button>
-    </>
+    </div>
   );
 }
