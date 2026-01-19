@@ -158,20 +158,20 @@ export function SignUpForm() {
                     type="checkbox"
                     checked={agreeToTerms}
                     onChange={e => setAgreeToTerms(e.target.checked)}
-                    className={`mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 ${
-                        error && !agreeToTerms ? "border-red-500" : ""
+                    className={`mt-1 h-4 w-4 rounded border-input text-primary focus:ring-primary ${
+                        error && !agreeToTerms ? "border-destructive" : ""
                     }`}
                 />
                 <label
                     htmlFor="agree-to-terms"
-                    className="text-sm text-gray-700 dark:text-gray-300"
+                    className="text-sm text-muted-foreground"
                 >
                     I have read and agree to the{" "}
                     <a
                         href="/terms"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-blue-600 hover:text-blue-500 hover:underline"
+                        className="text-primary hover:text-primary/80 hover:underline"
                     >
                         Terms of Service
                     </a>{" "}
@@ -180,7 +180,7 @@ export function SignUpForm() {
                         href="/privacy"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-blue-600 hover:text-blue-500 hover:underline"
+                        className="text-primary hover:text-primary/80 hover:underline"
                     >
                         Privacy Policy
                     </a>
@@ -190,7 +190,7 @@ export function SignUpForm() {
             <div>
                 <Button
                     type="submit"
-                    className="w-full bg-blue-600 hover:bg-blue-700"
+                    className="w-full"
                     disabled={isLoading}
                 >
                     {" "}

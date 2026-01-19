@@ -23,8 +23,8 @@ export function ChatMessage({ message }: ChatMessageProps) {
                 className={cn(
                     "max-w-[85%] rounded-lg px-4 py-2 text-sm",
                     isUser
-                        ? "bg-blue-600 text-white"
-                        : "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted text-foreground"
                 )}
             >
                 {content ? (
@@ -36,7 +36,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
                         </div>
                     )
                 ) : (
-                    <p className="text-gray-400 dark:text-gray-500 italic">
+                    <p className="text-muted-foreground italic">
                         Thinking...
                     </p>
                 )}

@@ -28,20 +28,20 @@ export function LibraryVideoCard({ video }: LibraryVideoCardProps) {
     return (
         <Link
             href={`/dashboard/video/${video.id}`}
-            className="block p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/20 transition-colors bg-white dark:bg-gray-900"
+            className="group block p-4 rounded-lg border border-border bg-card transition-all duration-300 hover:bg-muted/50 hover:-translate-y-0.5 hover:shadow-sm dark:hover:shadow-none dark:hover:border-foreground/20"
         >
             <div className="flex items-center justify-between">
                 {/* Left side - Video info */}
                 <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <div className="flex-shrink-0">
-                        <Play className="h-5 w-5 text-blue-600 dark:text-blue-500" />
+                    <div className="flex-shrink-0 transition-transform duration-300 group-hover:scale-110">
+                        <Play className="h-5 w-5 text-muted-foreground transition-colors group-hover:text-foreground" />
                     </div>
                     <div className="flex-1 min-w-0">
-                        <h3 className="font-medium truncate text-gray-900 dark:text-white">
+                        <h3 className="font-medium truncate text-foreground">
                             {video.title}
                         </h3>
                         {video.channelName && (
-                            <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
+                            <p className="text-sm text-muted-foreground truncate">
                                 {video.channelName}
                             </p>
                         )}
@@ -51,21 +51,21 @@ export function LibraryVideoCard({ video }: LibraryVideoCardProps) {
                 {/* Right side - Additional info */}
                 <div className="flex items-center gap-4 flex-shrink-0 ml-4">
                     <div className="text-right">
-                        <p className="text-sm text-gray-600 dark:text-gray-300">
+                        <p className="text-sm text-muted-foreground">
                             {formatDate(video.createdAt)}
                         </p>
                         <div className="flex items-center justify-end gap-1 mt-1">
                             {isCompleted ? (
                                 <>
-                                    <Check className="h-4 w-4 text-green-600" />
-                                    <span className="text-xs text-green-600">
+                                    <Check className="h-4 w-4 text-green-600 dark:text-green-400" />
+                                    <span className="text-xs text-green-600 dark:text-green-400">
                                         Completed
                                     </span>
                                 </>
                             ) : (
                                 <>
-                                    <X className="h-4 w-4 text-gray-400 dark:text-gray-500" />
-                                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                                    <X className="h-4 w-4 text-muted-foreground/70" />
+                                    <span className="text-xs text-muted-foreground">
                                         Questions Unanswered
                                     </span>
                                 </>

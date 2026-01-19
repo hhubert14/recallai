@@ -17,7 +17,7 @@ export function ChatButton({ videoId }: ChatButtonProps) {
             {/* Floating Button */}
             <Button
                 onClick={() => setIsOpen(true)}
-                className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg z-40 bg-blue-600 hover:bg-blue-700"
+                className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg z-40"
                 size="icon"
                 title="Ask about this video"
             >

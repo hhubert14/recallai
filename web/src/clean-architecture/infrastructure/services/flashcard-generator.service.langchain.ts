@@ -48,7 +48,7 @@ export class LangChainFlashcardGeneratorService
         }
 
         const llm = new ChatOpenAI({
-            model: "gpt-4.1-nano-2025-04-14",
+            model: "gpt-4o-mini",
             temperature: 0,
         });
 

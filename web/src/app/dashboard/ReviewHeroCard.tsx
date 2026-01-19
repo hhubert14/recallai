@@ -1,20 +1,28 @@
+"use client";
+
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Brain, CheckCircle2, ArrowRight } from "lucide-react";
+import { useInView } from "@/hooks/useInView";
 
 interface ReviewHeroCardProps {
   questionsDue: number;
 }
 
 export function ReviewHeroCard({ questionsDue }: ReviewHeroCardProps) {
+  const { ref, isInView } = useInView<HTMLDivElement>({ threshold: 0.1 });
   const hasQuestionsDue = questionsDue > 0;
 
   return (
-    <div className="rounded-xl border border-border bg-card p-6 md:p-8">
+    <div
+      ref={ref}
+      className={`rounded-xl border border-border bg-card p-6 md:p-8 opacity-0 transition-all duration-300 hover:shadow-md dark:hover:shadow-none dark:hover:border-foreground/20 ${isInView ? "animate-fade-up" : ""}`}
+      style={{ animationDelay: "300ms", animationFillMode: "forwards" }}
+    >
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
         <div className="flex items-start gap-4">
           <div
-            className={`p-3 rounded-xl ${
+            className={`p-3 rounded-xl transition-transform duration-300 hover:scale-105 ${
               hasQuestionsDue
                 ? "bg-blue-100 dark:bg-blue-900/30"
                 : "bg-green-100 dark:bg-green-900/30"

@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { Sparkles, ArrowRight } from "lucide-react";
 import {
@@ -5,15 +7,21 @@ import {
   categoryColors,
   formatUpdateDate,
 } from "@/app/updates/updates-data";
+import { useInView } from "@/hooks/useInView";
 
 export function WhatsNewCard() {
+  const { ref, isInView } = useInView<HTMLDivElement>({ threshold: 0.1 });
   // Show the 2 most recent updates
   const recentUpdates = updates.slice(0, 2);
 
   return (
-    <div className="rounded-xl border border-border bg-card p-6 h-full flex flex-col">
+    <div
+      ref={ref}
+      className={`rounded-xl border border-border bg-card p-6 h-full flex flex-col opacity-0 transition-all duration-300 hover:shadow-md dark:hover:shadow-none dark:hover:border-foreground/20 ${isInView ? "animate-fade-up" : ""}`}
+      style={{ animationDelay: "400ms", animationFillMode: "forwards" }}
+    >
       <div className="flex items-center gap-2 mb-4">
-        <Sparkles className="h-5 w-5 text-muted-foreground" />
+        <Sparkles className="h-5 w-5 text-muted-foreground transition-transform duration-300 hover:scale-110 hover:rotate-12" />
         <h2 className="font-semibold">What&apos;s New</h2>
       </div>
 
@@ -22,7 +30,7 @@ export function WhatsNewCard() {
           <div key={update.id} className="space-y-1">
             <div className="flex items-center gap-2">
               <span
-                className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${categoryColors[update.category]}`}
+                className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium transition-transform duration-200 hover:scale-105 ${categoryColors[update.category]}`}
               >
                 {update.category}
               </span>

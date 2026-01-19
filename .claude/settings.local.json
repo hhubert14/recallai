@@ -59,7 +59,12 @@
       "mcp__playwright__browser_wait_for",
       "Bash(layout \")",
       "mcp__github__list_commits",
-      "mcp__github__sub_issue_write"
+      "mcp__github__sub_issue_write",
+      "Bash(findstr:*)",
+      "Bash(npx -y jq:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(tsconfig \")"
     ],
     "deny": [],
     "ask": []
