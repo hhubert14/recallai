@@ -68,41 +68,45 @@ export function AnnouncementBanner() {
 
   return (
     <div className="fixed top-20 right-4 z-50 animate-fade-up" style={{ animationFillMode: "forwards" }}>
-      <Link
-        href="/updates"
-        className="group flex flex-col gap-2 p-4 w-72 rounded-xl border border-border bg-background/95 backdrop-blur-sm shadow-lg hover:shadow-xl hover:border-foreground/20 transition-all duration-300"
-      >
-        {/* Header with icon and dismiss */}
-        <div className="flex items-center justify-between">
-          <div className={`flex items-center gap-2 px-2 py-1 rounded-full ${bgColor}`}>
-            <Icon className={`h-3.5 w-3.5 ${iconColor}`} />
-            <span className={`text-xs font-medium ${iconColor}`}>
-              {latestUpdate.category}
-            </span>
+      <div className="relative group w-72 rounded-xl border border-border bg-background/95 backdrop-blur-sm shadow-lg hover:shadow-xl hover:border-foreground/20 transition-all duration-300">
+        <Link
+          href="/updates"
+          className="flex flex-col gap-2 p-4"
+        >
+          {/* Header with icon */}
+          <div className="flex items-center">
+            <div className={`flex items-center gap-2 px-2 py-1 rounded-full ${bgColor}`}>
+              <Icon className={`h-3.5 w-3.5 ${iconColor}`} />
+              <span className={`text-xs font-medium ${iconColor}`}>
+                {latestUpdate.category}
+              </span>
+            </div>
           </div>
-          <button
-            onClick={handleDismiss}
-            className="p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-            aria-label="Dismiss announcement"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        </div>
 
-        {/* Content */}
-        <div className="space-y-1">
-          <h4 className="font-semibold text-sm">{latestUpdate.title}</h4>
-          <p className="text-xs text-muted-foreground line-clamp-2">
-            {latestUpdate.description}
-          </p>
-        </div>
+          {/* Content */}
+          <div className="space-y-1">
+            <h4 className="font-semibold text-sm">{latestUpdate.title}</h4>
+            <p className="text-xs text-muted-foreground line-clamp-2">
+              {latestUpdate.description}
+            </p>
+          </div>
 
-        {/* Learn more link */}
-        <div className="flex items-center text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">
-          Learn more
-          <ArrowRight className="ml-1 h-3 w-3 transition-transform group-hover:translate-x-0.5" />
-        </div>
-      </Link>
+          {/* Learn more link */}
+          <div className="flex items-center text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">
+            Learn more
+            <ArrowRight className="ml-1 h-3 w-3 transition-transform group-hover:translate-x-0.5" />
+          </div>
+        </Link>
+
+        {/* Dismiss button - positioned outside Link to avoid nested interactive elements */}
+        <button
+          onClick={handleDismiss}
+          className="absolute top-4 right-4 p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+          aria-label="Dismiss announcement"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </div>
     </div>
   );
 }

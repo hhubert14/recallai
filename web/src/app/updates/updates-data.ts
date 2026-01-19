@@ -22,7 +22,9 @@ export function formatUpdateDate(
   dateString: string,
   options: { includeYear?: boolean } = {}
 ): string {
-  const date = new Date(dateString);
+  // Parse as local date to avoid UTC timezone shift (e.g., "2026-01-18" showing as Jan 17 in US timezones)
+  const [year, month, day] = dateString.split("-").map(Number);
+  const date = new Date(year, month - 1, day);
   return date.toLocaleDateString("en-US", {
     month: options.includeYear ? "long" : "short",
     day: "numeric",
