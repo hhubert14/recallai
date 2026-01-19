@@ -1,6 +1,7 @@
 export default function Loading() {
     return (
-        <div className="flex min-h-screen flex-col bg-background">
+        <div className="flex min-h-screen flex-col bg-background" role="status" aria-live="polite">
+            <span className="sr-only">Loading...</span>
             {/* Header skeleton */}
             <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur">
                 <div className="container flex h-16 items-center justify-between px-6 md:px-8">

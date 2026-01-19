@@ -6,14 +6,14 @@ import { Button } from "@/components/ui/button";
 import { useInView } from "@/hooks/useInView";
 import { RefreshButton } from "./RefreshButton";
 
-interface Video {
+interface VideoData {
   id: number;
   title: string;
   channelName: string | null;
 }
 
 interface RecentVideosCardProps {
-  videos: Video[];
+  videos: VideoData[];
 }
 
 export function RecentVideosCard({ videos }: RecentVideosCardProps) {
