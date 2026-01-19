@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 function isPublicPath(pathname: string): boolean {
-    const publicPrefixes = ["/auth", "/privacy", "/terms", "/api"];
+    const publicPrefixes = ["/auth", "/privacy", "/terms", "/updates", "/api"];
     return (
         pathname === "/" ||
         publicPrefixes.some((prefix) => pathname.startsWith(prefix))
