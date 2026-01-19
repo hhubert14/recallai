@@ -38,8 +38,8 @@ export function UpdatePasswordForm() {
     return (
         <form onSubmit={handleForgotPassword} className="space-y-6">
             {error && (
-                <div className="rounded-md bg-red-50 p-4">
-                    <p className="text-sm text-red-800">{error}</p>
+                <div className="rounded-md bg-destructive/10 p-4">
+                    <p className="text-sm text-destructive">{error}</p>
                 </div>
             )}
 
@@ -63,7 +63,7 @@ export function UpdatePasswordForm() {
             <div>
                 <Button
                     type="submit"
-                    className="w-full bg-blue-600 hover:bg-blue-700"
+                    className="w-full"
                     disabled={isLoading}
                 >
                     {isLoading ? "Saving..." : "Save new password"}

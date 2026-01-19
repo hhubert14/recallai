@@ -43,19 +43,19 @@ export function ForgotPasswordForm({
             {success ? (
                 <div className="space-y-4">
                     <div className="text-center">
-                        <h2 className="text-2xl font-bold text-blue-900 dark:text-blue-100">
+                        <h2 className="text-2xl font-bold text-primary">
                             Check Your Email
                         </h2>
-                        <p className="mt-2 text-gray-500 dark:text-gray-400">
+                        <p className="mt-2 text-muted-foreground">
                             Password reset instructions sent
                         </p>
                     </div>
-                    <div className="rounded-lg bg-blue-50 dark:bg-blue-950/20 p-4">
-                        <p className="text-sm text-blue-600 dark:text-blue-400">
+                    <div className="rounded-lg bg-primary/10 p-4">
+                        <p className="text-sm text-primary">
                             If you registered using your email and password, you
                             will receive a password reset email.
                         </p>
-                        <p className="text-sm text-blue-600 dark:text-blue-400 mt-2">
+                        <p className="text-sm text-primary mt-2">
                             Can&apos;t find it? Check your spam or junk folder.
                         </p>
                     </div>
@@ -63,12 +63,7 @@ export function ForgotPasswordForm({
             ) : (
                 <form onSubmit={handleForgotPassword} className="space-y-6">
                     <div className="space-y-2">
-                        <Label
-                            htmlFor="email"
-                            className="text-gray-700 dark:text-gray-300"
-                        >
-                            Email
-                        </Label>
+                        <Label htmlFor="email">Email</Label>
                         <Input
                             id="email"
                             type="email"
@@ -76,13 +71,12 @@ export function ForgotPasswordForm({
                             required
                             value={email}
                             onChange={e => setEmail(e.target.value)}
-                            className="border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900"
                         />
                     </div>
 
                     {error && (
-                        <div className="rounded-lg bg-red-50 dark:bg-red-950/20 p-4">
-                            <p className="text-sm text-red-600 dark:text-red-400">
+                        <div className="rounded-lg bg-destructive/10 p-4">
+                            <p className="text-sm text-destructive">
                                 {error}
                             </p>
                         </div>
@@ -90,7 +84,7 @@ export function ForgotPasswordForm({
 
                     <Button
                         type="submit"
-                        className="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700"
+                        className="w-full"
                         disabled={isLoading}
                     >
                         {isLoading ? "Sending..." : "Send reset email"}

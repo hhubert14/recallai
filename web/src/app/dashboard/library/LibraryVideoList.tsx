@@ -3,6 +3,8 @@ import { GetQuizCompletionStatusUseCase } from "@/clean-architecture/use-cases/u
 import { DrizzleQuestionRepository } from "@/clean-architecture/infrastructure/repositories/question.repository.drizzle";
 import { DrizzleAnswerRepository } from "@/clean-architecture/infrastructure/repositories/answer.repository.drizzle";
 import { ClientLibraryVideoList } from "@/app/dashboard/library/ClientLibraryVideoList";
+import { Video, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface LibraryVideoListProps {
     videos: VideoEntity[];
@@ -15,24 +17,24 @@ export async function LibraryVideoList({
 }: LibraryVideoListProps) {
     if (videos.length === 0) {
         return (
-            <div className="text-center py-12">
-                <div className="max-w-md mx-auto">
-                    <div className="mb-4">
-                        <div className="w-16 h-16 mx-auto bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
-                            <div className="w-8 h-8 bg-gray-300 dark:bg-gray-600 rounded"></div>
-                        </div>
-                    </div>
-                    <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                        No videos in your library yet
-                    </h3>
-                    <p className="text-gray-500 dark:text-gray-400 mb-6">
-                        Start watching educational videos with the RecallAI
-                        extension to build your library.
-                    </p>
-                    <div className="text-sm text-gray-400 dark:text-gray-500">
-                        Install the Chrome extension to get started
-                    </div>
+            <div className="rounded-lg border border-dashed border-border p-8 text-center">
+                <div className="w-12 h-12 mx-auto mb-4 bg-primary/10 rounded-full flex items-center justify-center">
+                    <Video className="w-6 h-6 text-primary" />
                 </div>
+                <p className="text-sm text-muted-foreground mb-4">
+                    No videos yet. Install the Chrome extension and start
+                    watching YouTube to build your library.
+                </p>
+                <Button asChild variant="outline" size="sm" className="group">
+                    <a
+                        href="https://chromewebstore.google.com/detail/recallai/dciecdpjkhhagindacahojeiaeecblaa"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Get Chrome Extension
+                        <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    </a>
+                </Button>
             </div>
         );
     }

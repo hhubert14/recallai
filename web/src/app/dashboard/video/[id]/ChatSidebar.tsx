@@ -68,10 +68,10 @@ export function ChatSidebar({ videoId, isOpen, onClose }: ChatSidebarProps) {
             />
 
             {/* Sidebar */}
-            <div className="fixed right-0 top-0 h-full w-full sm:w-96 bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 shadow-xl z-50 flex flex-col">
+            <div className="fixed right-0 top-0 h-full w-full sm:w-96 bg-card border-l border-border shadow-xl z-50 flex flex-col">
                 {/* Header */}
-                <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-                    <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                <div className="flex items-center justify-between p-4 border-b border-border">
+                    <h2 className="text-lg font-semibold text-foreground">
                         Ask about this video
                     </h2>
                     <div className="flex gap-2">
@@ -94,10 +94,10 @@ export function ChatSidebar({ videoId, isOpen, onClose }: ChatSidebarProps) {
                 <div className="flex-1 overflow-y-auto p-4 space-y-4">
                     {isLoading ? (
                         <div className="flex items-center justify-center py-8">
-                            <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+                            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                         </div>
                     ) : messages.length === 0 ? (
-                        <div className="text-center text-gray-500 dark:text-gray-400 py-8">
+                        <div className="text-center text-muted-foreground py-8">
                             <p className="mb-2">Ask me anything about this video!</p>
                             <p className="text-sm">
                                 I can help explain concepts, answer questions, and more.
@@ -117,7 +117,7 @@ export function ChatSidebar({ videoId, isOpen, onClose }: ChatSidebarProps) {
                 {/* Input */}
                 <form
                     onSubmit={handleSubmit}
-                    className="p-4 border-t border-gray-200 dark:border-gray-700"
+                    className="p-4 border-t border-border"
                 >
                     <div className="flex gap-2">
                         <Input

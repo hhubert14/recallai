@@ -10,8 +10,8 @@ export default async function Page({
     const params = await searchParams;
 
     return (
-        <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
-            <div className="w-full max-w-sm">
+        <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10 bg-background">
+            <div className="w-full max-w-sm animate-fade-up">
                 <div className="flex flex-col gap-6">
                     <Card>
                         <CardHeader>
@@ -30,7 +30,7 @@ export default async function Page({
                                 </p>
                             )}
                             <div className="space-y-3">
-                                <p className="text-sm text-gray-600">
+                                <p className="text-sm text-muted-foreground">
                                     If this error persists, please contact our
                                     support team:
                                 </p>
@@ -41,7 +41,7 @@ export default async function Page({
                                     className="w-full"
                                 >
                                     <Link href="mailto:hubert@recallai.io?subject=Error Report">
-                                        📧 Contact Support
+                                        Contact Support
                                     </Link>
                                 </Button>
                                 <Button asChild size="sm" className="w-full">

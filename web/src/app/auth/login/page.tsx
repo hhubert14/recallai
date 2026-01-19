@@ -11,25 +11,25 @@ export const metadata: Metadata = {
 
 export default function LoginPage() {
     return (
-        <div className="flex min-h-screen flex-col bg-white dark:bg-gray-950">
+        <div className="flex min-h-screen flex-col bg-background">
             {/* Theme toggle in top right */}
             <div className="absolute top-4 right-4 z-10">
                 <ThemeToggle />
             </div>
 
             <div className="flex min-h-screen flex-col items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
-                <div className="w-full max-w-md space-y-8">
+                <div className="w-full max-w-md space-y-8 animate-fade-up">
                     <div className="flex flex-col items-center space-y-4">
                         <Link href="/" className="flex items-center gap-2">
-                            <Brain className="h-8 w-8 text-blue-600 dark:text-blue-500" />
-                            <span className="text-2xl font-bold text-gray-900 dark:text-white">
+                            <Brain className="h-8 w-8 text-primary" />
+                            <span className="text-2xl font-bold text-foreground">
                                 RecallAI
                             </span>
                         </Link>
-                        <h1 className="text-3xl font-bold tracking-tight text-blue-900 dark:text-blue-100">
+                        <h1 className="text-3xl font-bold tracking-tight text-primary">
                             Log In
                         </h1>
-                        <p className="text-center text-gray-500 dark:text-gray-400">
+                        <p className="text-center text-muted-foreground">
                             Enter your email and password to access your
                             RecallAI dashboard
                         </p>
@@ -37,12 +37,12 @@ export default function LoginPage() {
 
                     <LoginForm />
 
-                    <div className="text-center text-sm text-gray-500 dark:text-gray-400">
+                    <div className="text-center text-sm text-muted-foreground">
                         <p>
                             Don&apos;t have an account?{" "}
                             <Link
                                 href="/auth/sign-up"
-                                className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
+                                className="font-medium text-primary hover:text-primary/80"
                             >
                                 Sign up
                             </Link>
@@ -50,7 +50,7 @@ export default function LoginPage() {
                         <p className="mt-2">
                             <Link
                                 href="/auth/forgot-password"
-                                className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
+                                className="font-medium text-primary hover:text-primary/80"
                             >
                                 Forgot your password?
                             </Link>

@@ -53,13 +53,13 @@ export function FlashcardInterface({ flashcards }: FlashcardInterfaceProps) {
     return (
         <div className="space-y-6">
             {/* Progress */}
-            <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+            <div className="flex items-center justify-between text-sm text-muted-foreground">
                 <span>
                     Card {currentIndex + 1} of {flashcards.length}
                 </span>
-                <div className="w-32 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                <div className="w-32 bg-muted rounded-full h-2">
                     <div
-                        className="bg-blue-600 dark:bg-blue-500 h-2 rounded-full transition-all duration-300"
+                        className="bg-primary h-2 rounded-full transition-all duration-300"
                         style={{
                             width: `${((currentIndex + 1) / flashcards.length) * 100}%`,
                         }}
@@ -70,13 +70,13 @@ export function FlashcardInterface({ flashcards }: FlashcardInterfaceProps) {
             {/* Flashcard */}
             <div
                 onClick={handleFlip}
-                className="bg-gray-50 dark:bg-gray-800 p-8 rounded-lg border border-gray-200 dark:border-gray-700 min-h-[200px] flex flex-col items-center justify-center cursor-pointer hover:border-blue-400 dark:hover:border-blue-500 transition-colors"
+                className="bg-muted p-8 rounded-lg border border-border min-h-[200px] flex flex-col items-center justify-center cursor-pointer hover:border-primary/50 transition-colors"
             >
                 <div className="text-center">
-                    <p className="text-lg text-gray-900 dark:text-white leading-relaxed">
+                    <p className="text-lg text-foreground leading-relaxed">
                         {isFlipped ? currentFlashcard.back : currentFlashcard.front}
                     </p>
-                    <p className="text-sm text-gray-400 dark:text-gray-500 mt-4">
+                    <p className="text-sm text-muted-foreground/70 mt-4">
                         {isFlipped ? "(Click to see question)" : "(Click to reveal answer)"}
                     </p>
                 </div>
@@ -88,7 +88,6 @@ export function FlashcardInterface({ flashcards }: FlashcardInterfaceProps) {
                     onClick={handlePrevious}
                     disabled={isFirstCard}
                     variant="outline"
-                    className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50"
                 >
                     Previous
                 </Button>
@@ -97,15 +96,11 @@ export function FlashcardInterface({ flashcards }: FlashcardInterfaceProps) {
                     <Button
                         onClick={handleReset}
                         variant="outline"
-                        className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
                     >
                         Start Over
                     </Button>
                 ) : (
-                    <Button
-                        onClick={handleNext}
-                        className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700"
-                    >
+                    <Button onClick={handleNext}>
                         Next
                     </Button>
                 )}
