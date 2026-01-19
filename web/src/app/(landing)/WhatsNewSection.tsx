@@ -3,23 +3,11 @@
 import Link from "next/link";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { useInView } from "@/hooks/useInView";
-import { updates, UpdateCategory } from "@/app/updates/updates-data";
-
-const categoryColors: Record<UpdateCategory, string> = {
-  "New Feature":
-    "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
-  Improvement:
-    "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
-  Fix: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
-};
-
-function formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  return date.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-  });
-}
+import {
+  updates,
+  categoryColors,
+  formatUpdateDate,
+} from "@/app/updates/updates-data";
 
 export function WhatsNewSection() {
   const { ref, isInView } = useInView<HTMLDivElement>({ threshold: 0.1 });
@@ -78,7 +66,7 @@ export function WhatsNewSection() {
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-muted-foreground">
-                    {formatDate(update.date)}
+                    {formatUpdateDate(update.date)}
                   </span>
                   <span
                     className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${categoryColors[update.category]}`}

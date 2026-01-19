@@ -32,9 +32,14 @@ export function AnnouncementBanner() {
   useEffect(() => {
     if (!latestUpdate) return;
 
-    const dismissedKey = `announcement-dismissed-${latestUpdate.id}`;
-    const wasDismissed = localStorage.getItem(dismissedKey) === "true";
-    setIsDismissed(wasDismissed);
+    try {
+      const dismissedKey = `announcement-dismissed-${latestUpdate.id}`;
+      const wasDismissed = localStorage.getItem(dismissedKey) === "true";
+      setIsDismissed(wasDismissed);
+    } catch {
+      // localStorage may be unavailable (e.g., private browsing)
+      setIsDismissed(false);
+    }
     setIsLoaded(true);
   }, [latestUpdate]);
 
@@ -43,8 +48,12 @@ export function AnnouncementBanner() {
     e.stopPropagation();
     if (!latestUpdate) return;
 
-    const dismissedKey = `announcement-dismissed-${latestUpdate.id}`;
-    localStorage.setItem(dismissedKey, "true");
+    try {
+      const dismissedKey = `announcement-dismissed-${latestUpdate.id}`;
+      localStorage.setItem(dismissedKey, "true");
+    } catch {
+      // localStorage may be unavailable
+    }
     setIsDismissed(true);
   };
 

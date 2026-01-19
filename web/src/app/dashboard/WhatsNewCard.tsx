@@ -1,22 +1,10 @@
 import Link from "next/link";
 import { Sparkles, ArrowRight } from "lucide-react";
-import { updates, UpdateCategory } from "@/app/updates/updates-data";
-
-const categoryColors: Record<UpdateCategory, string> = {
-  "New Feature":
-    "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
-  Improvement:
-    "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
-  Fix: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
-};
-
-function formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  return date.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-  });
-}
+import {
+  updates,
+  categoryColors,
+  formatUpdateDate,
+} from "@/app/updates/updates-data";
 
 export function WhatsNewCard() {
   // Show the 2 most recent updates
@@ -39,7 +27,7 @@ export function WhatsNewCard() {
                 {update.category}
               </span>
               <span className="text-xs text-muted-foreground">
-                {formatDate(update.date)}
+                {formatUpdateDate(update.date)}
               </span>
             </div>
             <h3 className="font-medium text-sm">{update.title}</h3>

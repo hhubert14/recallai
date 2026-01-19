@@ -8,6 +8,28 @@ export interface UpdateEntry {
   category: UpdateCategory;
 }
 
+// Shared category colors for badges
+export const categoryColors: Record<UpdateCategory, string> = {
+  "New Feature":
+    "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+  Improvement:
+    "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
+  Fix: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+};
+
+// Format date for display (e.g., "Jan 18" or "January 18, 2026")
+export function formatUpdateDate(
+  dateString: string,
+  options: { includeYear?: boolean } = {}
+): string {
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-US", {
+    month: options.includeYear ? "long" : "short",
+    day: "numeric",
+    ...(options.includeYear && { year: "numeric" }),
+  });
+}
+
 // Add new entries at the TOP of this array (newest first)
 export const updates: UpdateEntry[] = [
   {

@@ -1,21 +1,12 @@
 "use client";
 
 import { useInView } from "@/hooks/useInView";
-import { UpdateEntry } from "./updates-data";
+import { UpdateEntry, formatUpdateDate } from "./updates-data";
 import { CategoryBadge } from "./CategoryBadge";
 
 interface UpdateCardProps {
   update: UpdateEntry;
   delay?: number;
-}
-
-function formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  return date.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
 }
 
 export function UpdateCard({ update, delay = 0 }: UpdateCardProps) {
@@ -31,7 +22,7 @@ export function UpdateCard({ update, delay = 0 }: UpdateCardProps) {
     >
       <div className="flex items-center justify-between mb-3">
         <time className="text-sm text-muted-foreground">
-          {formatDate(update.date)}
+          {formatUpdateDate(update.date, { includeYear: true })}
         </time>
         <CategoryBadge category={update.category} />
       </div>
