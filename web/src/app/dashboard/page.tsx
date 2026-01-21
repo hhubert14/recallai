@@ -71,6 +71,7 @@ export default async function DashboardPage() {
             <RecentVideosCard
               videos={videos.map((v) => ({
                 id: v.id,
+                publicId: v.publicId,
                 title: v.title,
                 channelName: v.channelName,
               }))}

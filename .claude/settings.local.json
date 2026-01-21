@@ -64,7 +64,8 @@
       "Bash(npx -y jq:*)",
       "Bash(head:*)",
       "Bash(tail:*)",
-      "Bash(tsconfig \")"
+      "Bash(tsconfig \")",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "ask": []

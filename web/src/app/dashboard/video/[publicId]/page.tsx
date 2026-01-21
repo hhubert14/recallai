@@ -11,7 +11,7 @@ import { DrizzleVideoRepository } from "@/clean-architecture/infrastructure/repo
 import { DrizzleSummaryRepository } from "@/clean-architecture/infrastructure/repositories/summary.repository.drizzle";
 import { DrizzleQuestionRepository } from "@/clean-architecture/infrastructure/repositories/question.repository.drizzle";
 import { DrizzleFlashcardRepository } from "@/clean-architecture/infrastructure/repositories/flashcard.repository.drizzle";
-import { FindVideoByIdUseCase } from "@/clean-architecture/use-cases/video/find-video-by-id.use-case";
+import { FindVideoByPublicIdUseCase } from "@/clean-architecture/use-cases/video/find-video-by-public-id.use-case";
 import { FindSummaryByVideoIdUseCase } from "@/clean-architecture/use-cases/summary/find-summary-by-video-id.use-case";
 import { FindQuestionsByVideoIdUseCase } from "@/clean-architecture/use-cases/question/find-questions-by-video-id.use-case";
 import { FindFlashcardsByVideoIdUseCase } from "@/clean-architecture/use-cases/flashcard/find-flashcards-by-video-id.use-case";
@@ -23,14 +23,14 @@ export const metadata: Metadata = {
 
 interface VideoDetailPageProps {
     params: Promise<{
-        id: string;
+        publicId: string;
     }>;
 }
 
 export default async function VideoDetailPage({
     params,
 }: VideoDetailPageProps) {
-    const { id } = await params;
+    const { publicId } = await params;
     const supabase = await createClient();
     const {
         data: { user },
@@ -40,7 +40,9 @@ export default async function VideoDetailPage({
         redirect("/auth/login");
     }
 
-    const video = await new FindVideoByIdUseCase(new DrizzleVideoRepository()).execute(parseInt(id), user.id);
+    const video = await new FindVideoByPublicIdUseCase(
+        new DrizzleVideoRepository()
+    ).execute(publicId, user.id);
 
     if (!video) {
         notFound();

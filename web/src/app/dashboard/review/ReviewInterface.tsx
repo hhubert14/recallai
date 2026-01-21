@@ -302,7 +302,7 @@ export function ReviewInterface({
 
       {/* Video source badge */}
       <a
-        href={`/dashboard/video/${currentItem.question.videoId}`}
+        href={`/dashboard/video/${currentItem.question.videoPublicId}`}
         className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
       >
         <Video className="w-4 h-4" />

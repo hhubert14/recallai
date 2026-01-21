@@ -14,12 +14,13 @@ export type StudyModeParams =
   | { mode: "random" };
 
 /**
- * Extended type for API responses that includes video title.
- * The API route enriches QuestionWithProgress with videoTitle for display.
+ * Extended type for API responses that includes video title and publicId.
+ * The API route enriches QuestionWithProgress with video info for display and navigation.
  */
 export type QuestionWithProgressApiResponse = {
   progress: QuestionWithProgress["progress"];
   question: QuestionWithProgress["question"] & {
     videoTitle: string;
+    videoPublicId: string;
   };
 };

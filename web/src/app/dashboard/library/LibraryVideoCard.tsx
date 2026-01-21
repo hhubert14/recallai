@@ -22,7 +22,7 @@ export function LibraryVideoCard({ video }: LibraryVideoCardProps) {
 
     return (
         <Link
-            href={`/dashboard/video/${video.id}`}
+            href={`/dashboard/video/${video.publicId}`}
             className="group block p-4 rounded-lg border border-border bg-card transition-all duration-300 hover:bg-muted/50 hover:-translate-y-0.5 hover:shadow-sm dark:hover:shadow-none dark:hover:border-foreground/20"
         >
             <div className="flex items-center justify-between">

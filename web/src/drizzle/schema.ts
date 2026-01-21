@@ -4,6 +4,7 @@ import { pgTable, foreignKey, unique, uuid, text, timestamp, bigint, boolean, in
 export const videos = pgTable("videos", {
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
 	id: bigint({ mode: "number" }).primaryKey().generatedByDefaultAsIdentity({ name: "videos_id_seq", startWith: 1, increment: 1, minValue: 1, cache: 1 }),
+	publicId: uuid("public_id").defaultRandom().notNull(),
 	userId: uuid("user_id").notNull(),
 	title: text().notNull(),
 	channelName: text("channel_name").notNull(),
@@ -16,6 +17,7 @@ export const videos = pgTable("videos", {
 			foreignColumns: [users.id],
 			name: "videos_user_id_fkey"
 		}).onUpdate("cascade").onDelete("cascade"),
+	unique("videos_public_id_key").on(table.publicId),
 ]);
 
 // NOTE: id references auth.users(id) ON DELETE CASCADE
