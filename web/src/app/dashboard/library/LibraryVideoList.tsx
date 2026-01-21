@@ -1,7 +1,6 @@
 import { VideoEntity } from "@/clean-architecture/domain/entities/video.entity";
-import { GetQuizCompletionStatusUseCase } from "@/clean-architecture/use-cases/user-stats/get-quiz-completion-status.use-case";
 import { DrizzleQuestionRepository } from "@/clean-architecture/infrastructure/repositories/question.repository.drizzle";
-import { DrizzleAnswerRepository } from "@/clean-architecture/infrastructure/repositories/answer.repository.drizzle";
+import { DrizzleFlashcardRepository } from "@/clean-architecture/infrastructure/repositories/flashcard.repository.drizzle";
 import { ClientLibraryVideoList } from "@/app/dashboard/library/ClientLibraryVideoList";
 import { Video, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -39,16 +38,35 @@ export async function LibraryVideoList({
         );
     }
 
-    const useCase = new GetQuizCompletionStatusUseCase(new DrizzleQuestionRepository(), new DrizzleAnswerRepository())
+    // Fetch all questions and flashcards for user
+    const questionRepo = new DrizzleQuestionRepository();
+    const flashcardRepo = new DrizzleFlashcardRepository();
 
-    // Get quiz completion status for all videos
-    const videosWithCompletion = await Promise.all(
-        videos.map(async video => ({
-            ...video,
-            quizCompleted: await useCase.execute(userId, video.id),
-        })),
-    );
+    const [allQuestions, allFlashcards] = await Promise.all([
+        questionRepo.findQuestionsByUserId(userId),
+        flashcardRepo.findFlashcardsByUserId(userId),
+    ]);
+
+    // Count by video
+    const questionCountByVideo = new Map<number, number>();
+    for (const question of allQuestions) {
+        const count = questionCountByVideo.get(question.videoId) ?? 0;
+        questionCountByVideo.set(question.videoId, count + 1);
+    }
+
+    const flashcardCountByVideo = new Map<number, number>();
+    for (const flashcard of allFlashcards) {
+        const count = flashcardCountByVideo.get(flashcard.videoId) ?? 0;
+        flashcardCountByVideo.set(flashcard.videoId, count + 1);
+    }
+
+    const videosWithCounts = videos.map(video => ({
+        ...video,
+        questionCount: questionCountByVideo.get(video.id) ?? 0,
+        flashcardCount: flashcardCountByVideo.get(video.id) ?? 0,
+    }));
+
     return (
-        <ClientLibraryVideoList videos={videosWithCompletion} />
+        <ClientLibraryVideoList videos={videosWithCounts} />
     );
 }

@@ -1,19 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { Play, Check, X } from "lucide-react";
+import { Play, HelpCircle, Layers } from "lucide-react";
 import { VideoEntity } from "@/clean-architecture/domain/entities/video.entity";
-import { useQuizCompletion } from "@/components/providers/QuizCompletionProvider";
 
 interface LibraryVideoCardProps {
-    video: VideoEntity & { quizCompleted: boolean };
+    video: VideoEntity & { questionCount: number; flashcardCount: number };
 }
 
 export function LibraryVideoCard({ video }: LibraryVideoCardProps) {
-    const { isVideoCompleted } = useQuizCompletion();
-
-    // Check both server-side data and client-side state
-    const isCompleted = video.quizCompleted || isVideoCompleted(video.id);
 
     // Format date as "June 13, 2025"
     const formatDate = (dateString: string): string => {
@@ -54,22 +49,19 @@ export function LibraryVideoCard({ video }: LibraryVideoCardProps) {
                         <p className="text-sm text-muted-foreground">
                             {formatDate(video.createdAt)}
                         </p>
-                        <div className="flex items-center justify-end gap-1 mt-1">
-                            {isCompleted ? (
-                                <>
-                                    <Check className="h-4 w-4 text-green-600 dark:text-green-400" />
-                                    <span className="text-xs text-green-600 dark:text-green-400">
-                                        Completed
-                                    </span>
-                                </>
-                            ) : (
-                                <>
-                                    <X className="h-4 w-4 text-muted-foreground/70" />
-                                    <span className="text-xs text-muted-foreground">
-                                        Questions Unanswered
-                                    </span>
-                                </>
-                            )}
+                        <div className="flex items-center justify-end gap-3 mt-1">
+                            <div className="flex items-center gap-1">
+                                <HelpCircle className="h-4 w-4 text-muted-foreground/70" />
+                                <span className="text-xs text-muted-foreground">
+                                    {video.questionCount}
+                                </span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                                <Layers className="h-4 w-4 text-muted-foreground/70" />
+                                <span className="text-xs text-muted-foreground">
+                                    {video.flashcardCount}
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>

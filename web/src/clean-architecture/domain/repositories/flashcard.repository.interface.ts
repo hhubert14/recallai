@@ -6,4 +6,6 @@ export interface IFlashcardRepository {
     ): Promise<FlashcardEntity[]>;
 
     findFlashcardsByVideoId(videoId: number): Promise<FlashcardEntity[]>;
+
+    findFlashcardsByUserId(userId: string): Promise<FlashcardEntity[]>;
 }
