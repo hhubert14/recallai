@@ -44,6 +44,7 @@ describe("GetUserStatsUseCase", () => {
 			createVideo: vi.fn(),
 			findVideoById: vi.fn(),
 			findVideoByUserIdAndUrl: vi.fn(),
+			findVideosByIds: vi.fn(),
 		};
 
 		mockAnswerRepo = {

@@ -88,6 +88,7 @@ describe("GenerateMultipleChoiceQuestionsUseCase", () => {
             findVideoById: vi.fn(),
             findVideoByUserIdAndUrl: vi.fn(),
             findVideosByUserId: vi.fn(),
+            findVideosByIds: vi.fn(),
         };
 
         mockQuestionRepo = {
