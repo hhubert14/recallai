@@ -61,6 +61,11 @@ export async function GET(request: NextRequest) {
     // Add video title and publicId to each question
     const questionsWithVideoInfo = questions.map((q) => {
       const videoInfo = videoMap.get(q.question.videoId);
+      if (!videoInfo) {
+        console.error(
+          `Data integrity issue: Question ${q.question.id} references missing video ${q.question.videoId}`
+        );
+      }
       return {
         ...q,
         question: {
