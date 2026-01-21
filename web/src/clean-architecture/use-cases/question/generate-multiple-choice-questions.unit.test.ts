@@ -325,6 +325,66 @@ describe("GenerateMultipleChoiceQuestionsUseCase", () => {
         });
     });
 
+    describe("duplicate prevention", () => {
+        beforeEach(() => {
+            vi.mocked(mockVideoRepo.findVideoById).mockResolvedValue(
+                createMockVideo({ userId: testUserId, title: "TypeScript Tutorial" })
+            );
+            vi.mocked(mockTranscriptResolverService.getTranscript).mockResolvedValue({
+                fullText: "This is the full transcript about TypeScript...",
+                segments: [{ text: "segment", startTime: 0, endTime: 10 }],
+            });
+            vi.mocked(mockQuestionGeneratorService.generate).mockResolvedValue({
+                questions: [
+                    {
+                        question: "New question about generics?",
+                        options: ["Option A", "Option B", "Option C", "Option D"],
+                        correctAnswerIndex: 0,
+                        explanation: "Explanation",
+                        sourceQuote: "Source quote",
+                    },
+                ],
+            });
+            vi.mocked(mockEmbeddingService.embed).mockResolvedValue([0.1, 0.2, 0.3]);
+            vi.mocked(mockTranscriptWindowRepo.findMostSimilarWindow).mockResolvedValue(
+                createMockWindowMatch(60)
+            );
+            vi.mocked(mockQuestionRepo.createMultipleChoiceQuestion).mockResolvedValue(
+                createMockQuestion({ id: 1 })
+            );
+        });
+
+        it("passes existing question texts to the generator service", async () => {
+            const existingQuestions = [
+                createMockQuestion({ id: 1, questionText: "What is TypeScript?" }),
+                createMockQuestion({ id: 2, questionText: "How do interfaces work?" }),
+            ];
+            vi.mocked(mockQuestionRepo.findQuestionsByVideoId).mockResolvedValue(existingQuestions);
+
+            await useCase.execute(testUserId, testVideoId, 5);
+
+            expect(mockQuestionGeneratorService.generate).toHaveBeenCalledWith(
+                "TypeScript Tutorial",
+                "This is the full transcript about TypeScript...",
+                5,
+                ["What is TypeScript?", "How do interfaces work?"]
+            );
+        });
+
+        it("passes empty array when no existing questions", async () => {
+            vi.mocked(mockQuestionRepo.findQuestionsByVideoId).mockResolvedValue([]);
+
+            await useCase.execute(testUserId, testVideoId, 5);
+
+            expect(mockQuestionGeneratorService.generate).toHaveBeenCalledWith(
+                "TypeScript Tutorial",
+                "This is the full transcript about TypeScript...",
+                5,
+                []
+            );
+        });
+    });
+
     describe("error handling", () => {
         beforeEach(() => {
             vi.mocked(mockVideoRepo.findVideoById).mockResolvedValue(

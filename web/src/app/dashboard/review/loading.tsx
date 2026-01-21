@@ -24,55 +24,54 @@ export default function Loading() {
                 </div>
             </header>
 
-            <main className="flex-1 container py-4 px-6 md:px-8 max-w-7xl mx-auto">
-                <div className="mb-6 mt-2 space-y-3">
-                    <div className="h-10 w-56 rounded bg-muted animate-pulse" />
-                    <div className="h-5 w-96 rounded bg-muted animate-pulse" />
+            <main className="flex-1 container py-8 px-6 md:px-8 max-w-7xl mx-auto">
+                {/* Page title */}
+                <div className="mb-8 text-center">
+                    <div className="h-9 w-32 mx-auto rounded bg-muted animate-pulse mb-2" />
+                    <div className="h-5 w-72 mx-auto rounded bg-muted animate-pulse" />
                 </div>
 
-                {/* Stats bar skeleton - 4 colored stats */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                    <div className="bg-blue-50 dark:bg-blue-950/20 p-4 rounded-lg">
-                        <div className="h-8 w-8 rounded bg-muted animate-pulse mb-1" />
-                        <div className="h-4 w-16 rounded bg-muted animate-pulse" />
-                    </div>
-                    <div className="bg-green-50 dark:bg-green-950/20 p-4 rounded-lg">
-                        <div className="h-8 w-8 rounded bg-muted animate-pulse mb-1" />
-                        <div className="h-4 w-24 rounded bg-muted animate-pulse" />
-                    </div>
-                    <div className="bg-orange-50 dark:bg-orange-950/20 p-4 rounded-lg">
-                        <div className="h-8 w-8 rounded bg-muted animate-pulse mb-1" />
-                        <div className="h-4 w-20 rounded bg-muted animate-pulse" />
-                    </div>
-                    <div className="bg-purple-50 dark:bg-purple-950/20 p-4 rounded-lg">
-                        <div className="h-8 w-8 rounded bg-muted animate-pulse mb-1" />
-                        <div className="h-4 w-16 rounded bg-muted animate-pulse" />
-                    </div>
-                </div>
-
-                {/* Review card skeleton */}
-                <div className="rounded-xl bg-card border border-border p-6 space-y-6">
-                    {/* Question skeleton */}
-                    <div className="space-y-3">
-                        <div className="h-4 w-24 rounded bg-muted animate-pulse" />
-                        <div className="h-6 w-full rounded bg-muted animate-pulse" />
-                        <div className="h-6 w-3/4 rounded bg-muted animate-pulse" />
+                {/* Study mode selector skeleton */}
+                <div className="max-w-2xl mx-auto space-y-8">
+                    {/* Hero message */}
+                    <div className="text-center">
+                        <div className="h-8 w-64 mx-auto rounded bg-muted animate-pulse" />
                     </div>
 
-                    {/* Options skeleton */}
+                    {/* Mode cards */}
                     <div className="space-y-3">
-                        {[...Array(4)].map((_, i) => (
+                        {[...Array(3)].map((_, i) => (
                             <div
                                 key={i}
-                                className="h-14 rounded-lg bg-muted animate-pulse"
+                                className="w-full p-4 rounded-xl border-2 border-border bg-card flex items-center gap-4"
                                 style={{ animationDelay: `${i * 100}ms` }}
-                            />
+                            >
+                                {/* Radio indicator */}
+                                <div className="w-5 h-5 rounded-full border-2 border-muted-foreground/50 shrink-0" />
+                                {/* Icon */}
+                                <div className="w-10 h-10 rounded-lg bg-muted animate-pulse shrink-0" />
+                                {/* Content */}
+                                <div className="flex-1 min-w-0 space-y-2">
+                                    <div className="flex items-center justify-between gap-2">
+                                        <div className="h-5 w-32 rounded bg-muted animate-pulse" />
+                                        <div className="h-4 w-8 rounded bg-muted animate-pulse" />
+                                    </div>
+                                    <div className="h-4 w-48 rounded bg-muted animate-pulse" />
+                                </div>
+                                {/* Arrow */}
+                                <div className="w-5 h-5 rounded bg-muted animate-pulse shrink-0" />
+                            </div>
                         ))}
                     </div>
 
-                    {/* Button skeleton */}
-                    <div className="flex justify-end">
-                        <div className="h-10 w-32 rounded-lg bg-muted animate-pulse" />
+                    {/* Start button */}
+                    <div className="flex justify-center">
+                        <div className="h-11 w-36 rounded-lg bg-muted animate-pulse" />
+                    </div>
+
+                    {/* Progress footer */}
+                    <div className="text-center border-t border-border pt-6">
+                        <div className="h-4 w-64 mx-auto rounded bg-muted animate-pulse" />
                     </div>
                 </div>
             </main>

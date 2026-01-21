@@ -75,11 +75,15 @@ export class GenerateMultipleChoiceQuestionsUseCase {
         // Get transcript (DB first, then fallback to YouTube API)
         const transcriptResult = await this.transcriptResolverService.getTranscript(videoId, youtubeVideoId);
 
+        // Extract existing question texts to avoid duplicates
+        const existingQuestionTexts = existingQuestions.map(q => q.questionText);
+
         // Generate questions using full text (timestamps will be used when available)
         const generatedQuestions = await this.questionGeneratorService.generate(
             video.title,
             transcriptResult.fullText,
-            count
+            count,
+            existingQuestionTexts
         );
 
         if (!generatedQuestions || generatedQuestions.questions.length === 0) {
