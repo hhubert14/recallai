@@ -13,4 +13,6 @@ export interface IVideoRepository {
     findVideoByUserIdAndUrl(userId: string, url: string): Promise<VideoEntity | null>;
 
     findVideosByUserId(userId: string, limit?: number): Promise<VideoEntity[]>;
+
+    findVideosByIds(ids: number[]): Promise<VideoEntity[]>;
 }
