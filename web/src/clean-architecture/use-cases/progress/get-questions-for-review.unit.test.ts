@@ -62,6 +62,7 @@ describe("GetQuestionsForReviewUseCase", () => {
       findQuestionsByVideoId: vi.fn(),
       findQuestionsByUserId: vi.fn(),
       findQuestionsByIds: vi.fn(),
+      countQuestionsByVideoIds: vi.fn(),
     };
     useCase = new GetQuestionsForReviewUseCase(
       mockProgressRepo,

@@ -51,6 +51,7 @@ describe("GetStudyModeStatsUseCase", () => {
       findQuestionsByVideoId: vi.fn(),
       findQuestionsByUserId: vi.fn(),
       findQuestionsByIds: vi.fn(),
+      countQuestionsByVideoIds: vi.fn(),
     };
     useCase = new GetStudyModeStatsUseCase(mockProgressRepo, mockQuestionRepo);
   });

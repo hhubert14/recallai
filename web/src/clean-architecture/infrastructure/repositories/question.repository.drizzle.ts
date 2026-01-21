@@ -2,7 +2,7 @@ import { IQuestionRepository } from "@/clean-architecture/domain/repositories/qu
 import { MultipleChoiceQuestionEntity, MultipleChoiceOption } from "@/clean-architecture/domain/entities/question.entity";
 import { db } from "@/drizzle";
 import { questions, questionOptions, videos } from "@/drizzle/schema";
-import { eq, asc, inArray } from "drizzle-orm";
+import { eq, asc, inArray, count } from "drizzle-orm";
 
 export class DrizzleQuestionRepository implements IQuestionRepository {
     async createMultipleChoiceQuestion(
@@ -186,6 +186,28 @@ export class DrizzleQuestionRepository implements IQuestionRepository {
             );
         } catch (error) {
             console.error("Error finding questions by IDs:", error);
+            throw error;
+        }
+    }
+
+    async countQuestionsByVideoIds(videoIds: number[]): Promise<Record<number, number>> {
+        if (videoIds.length === 0) {
+            return {};
+        }
+
+        try {
+            const rows = await db
+                .select({
+                    videoId: questions.videoId,
+                    count: count(),
+                })
+                .from(questions)
+                .where(inArray(questions.videoId, videoIds))
+                .groupBy(questions.videoId);
+
+            return Object.fromEntries(rows.map(r => [r.videoId, r.count]));
+        } catch (error) {
+            console.error("Error counting questions by video IDs:", error);
             throw error;
         }
     }

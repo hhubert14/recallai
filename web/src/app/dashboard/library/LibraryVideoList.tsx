@@ -38,32 +38,20 @@ export async function LibraryVideoList({
         );
     }
 
-    // Fetch all questions and flashcards for user
+    // Fetch counts for current videos only (SQL aggregation)
     const questionRepo = new DrizzleQuestionRepository();
     const flashcardRepo = new DrizzleFlashcardRepository();
 
-    const [allQuestions, allFlashcards] = await Promise.all([
-        questionRepo.findQuestionsByUserId(userId),
-        flashcardRepo.findFlashcardsByUserId(userId),
+    const videoIds = videos.map(v => v.id);
+    const [questionCounts, flashcardCounts] = await Promise.all([
+        questionRepo.countQuestionsByVideoIds(videoIds),
+        flashcardRepo.countFlashcardsByVideoIds(videoIds),
     ]);
-
-    // Count by video
-    const questionCountByVideo = new Map<number, number>();
-    for (const question of allQuestions) {
-        const count = questionCountByVideo.get(question.videoId) ?? 0;
-        questionCountByVideo.set(question.videoId, count + 1);
-    }
-
-    const flashcardCountByVideo = new Map<number, number>();
-    for (const flashcard of allFlashcards) {
-        const count = flashcardCountByVideo.get(flashcard.videoId) ?? 0;
-        flashcardCountByVideo.set(flashcard.videoId, count + 1);
-    }
 
     const videosWithCounts = videos.map(video => ({
         ...video,
-        questionCount: questionCountByVideo.get(video.id) ?? 0,
-        flashcardCount: flashcardCountByVideo.get(video.id) ?? 0,
+        questionCount: questionCounts[video.id] ?? 0,
+        flashcardCount: flashcardCounts[video.id] ?? 0,
     }));
 
     return (

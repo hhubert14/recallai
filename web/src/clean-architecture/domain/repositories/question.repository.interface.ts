@@ -28,4 +28,10 @@ export interface IQuestionRepository {
      * Used to fetch full question data after getting progress records.
      */
     findQuestionsByIds(questionIds: number[]): Promise<MultipleChoiceQuestionEntity[]>;
+
+    /**
+     * Count questions grouped by video ID.
+     * Returns a map of videoId -> count.
+     */
+    countQuestionsByVideoIds(videoIds: number[]): Promise<Record<number, number>>;
 }
