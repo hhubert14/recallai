@@ -24,6 +24,7 @@ interface StudyModeSelectorProps {
   onModeSelect: (mode: StudyMode) => void;
   onStartSession: () => void;
   isLoading?: boolean;
+  error: string | null;
 }
 
 const MODE_CONFIG: Record<StudyMode, {
@@ -63,6 +64,7 @@ export function StudyModeSelector({
   onModeSelect,
   onStartSession,
   isLoading = false,
+  error,
 }: StudyModeSelectorProps) {
   const hasAnyQuestions = stats.totalCount > 0;
   const selectedModeCount = stats[MODE_CONFIG[selectedMode].countKey];
@@ -171,7 +173,7 @@ export function StudyModeSelector({
       </div>
 
       {/* Start button */}
-      <div className="flex justify-center">
+      <div className="flex flex-col items-center gap-3">
         <Button
           onClick={onStartSession}
           disabled={!canStart || isLoading}
@@ -180,6 +182,9 @@ export function StudyModeSelector({
         >
           {isLoading ? "Loading..." : "Start Session"}
         </Button>
+        {error && (
+          <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+        )}
       </div>
 
       {/* Progress footer */}

@@ -5,38 +5,8 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { QuizProgress, QuizQuestion, QuizResult, QuizSummary } from "@/components/quiz";
 import { StudyModeSelector, StudyModeStats, ProgressStats } from "./StudyModeSelector";
-import { StudyMode } from "@/clean-architecture/use-cases/progress/types";
+import { StudyMode, QuestionWithProgressApiResponse } from "@/clean-architecture/use-cases/progress/types";
 import { BookOpen, Video } from "lucide-react";
-
-interface QuestionOption {
-  id: number;
-  optionText: string;
-  isCorrect: boolean;
-  explanation: string | null;
-}
-
-interface Question {
-  id: number;
-  videoId: number;
-  videoTitle: string;
-  questionText: string;
-  options: QuestionOption[];
-}
-
-interface QuestionWithProgress {
-  progress: {
-    id: number;
-    userId: string;
-    questionId: number;
-    boxLevel: number;
-    nextReviewDate: string | null;
-    timesCorrect: number;
-    timesIncorrect: number;
-    lastReviewedAt: string | null;
-    createdAt: string;
-  } | null;
-  question: Question;
-}
 
 interface SessionResults {
   correct: number;
@@ -66,11 +36,15 @@ export function ReviewInterface({
   const [isLoadingQuestions, setIsLoadingQuestions] = useState(false);
 
   // Quiz state
-  const [questions, setQuestions] = useState<QuestionWithProgress[]>([]);
+  const [questions, setQuestions] = useState<QuestionWithProgressApiResponse[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedOptionId, setSelectedOptionId] = useState<number | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Error states
+  const [fetchError, setFetchError] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   // Session tracking
   const [sessionResults, setSessionResults] = useState<SessionResults>({
@@ -85,23 +59,31 @@ export function ReviewInterface({
   const isLastQuestion = currentQuestionIndex === questions.length - 1;
   const hasMoreQuestions = questions.length >= SESSION_LIMIT;
 
-  const fetchQuestions = async (mode: StudyMode) => {
+  const fetchQuestions = async (mode: StudyMode): Promise<boolean> => {
     setIsLoadingQuestions(true);
+    setFetchError(null);
     try {
       const response = await fetch(`/api/v1/reviews?mode=${mode}&limit=${SESSION_LIMIT}`);
       const data = await response.json();
       if (data.status === "success") {
         setQuestions(data.data.questions);
+        return true;
+      } else {
+        setFetchError(data.data?.error || "Failed to load questions");
+        return false;
       }
-    } catch (error) {
-      console.error("Failed to fetch questions:", error);
+    } catch {
+      setFetchError("Failed to load questions. Please try again.");
+      return false;
     } finally {
       setIsLoadingQuestions(false);
     }
   };
 
   const handleStartSession = async () => {
-    await fetchQuestions(selectedMode);
+    const success = await fetchQuestions(selectedMode);
+    if (!success) return;
+
     setSessionStarted(true);
     setCurrentQuestionIndex(0);
     setSelectedOptionId(null);
@@ -113,6 +95,7 @@ export function ReviewInterface({
     if (!selectedOptionId || !currentItem) return;
 
     setIsSubmitting(true);
+    setSubmitError(null);
 
     const selectedOption = currentItem.question.options.find(
       (option) => option.id === selectedOptionId
@@ -149,24 +132,29 @@ export function ReviewInterface({
       });
 
       const data = await response.json();
-      const newBoxLevel = data.data?.progress?.boxLevel ?? previousBoxLevel;
 
-      // Update session results
-      setSessionResults((prev) => {
-        const newResults = { ...prev };
-        if (selectedOption.isCorrect) {
-          newResults.correct++;
-          if (newBoxLevel > previousBoxLevel) {
-            newResults.movedUp++;
+      if (data.status === "success") {
+        const newBoxLevel = data.data?.progress?.boxLevel ?? previousBoxLevel;
+
+        // Update session results
+        setSessionResults((prev) => {
+          const newResults = { ...prev };
+          if (selectedOption.isCorrect) {
+            newResults.correct++;
+            if (newBoxLevel > previousBoxLevel) {
+              newResults.movedUp++;
+            }
+          } else {
+            newResults.incorrect++;
+            newResults.needsReview++;
           }
-        } else {
-          newResults.incorrect++;
-          newResults.needsReview++;
-        }
-        return newResults;
-      });
-    } catch (error) {
-      console.error("Failed to submit answer:", error);
+          return newResults;
+        });
+      } else {
+        setSubmitError(data.data?.error || "Failed to save your answer");
+      }
+    } catch {
+      setSubmitError("Failed to save your answer. Your progress may not be recorded.");
     }
 
     setShowResult(true);
@@ -186,7 +174,9 @@ export function ReviewInterface({
   };
 
   const handleContinue = async () => {
-    await fetchQuestions(selectedMode);
+    const success = await fetchQuestions(selectedMode);
+    if (!success) return;
+
     setCurrentQuestionIndex(0);
     setSelectedOptionId(null);
     setShowResult(false);
@@ -201,6 +191,8 @@ export function ReviewInterface({
     setSelectedOptionId(null);
     setShowResult(false);
     setSessionResults({ correct: 0, incorrect: 0, movedUp: 0, needsReview: 0 });
+    setFetchError(null);
+    setSubmitError(null);
     // Refresh server data (stats)
     router.refresh();
   };
@@ -244,6 +236,7 @@ export function ReviewInterface({
         onModeSelect={setSelectedMode}
         onStartSession={handleStartSession}
         isLoading={isLoadingQuestions}
+        error={fetchError}
       />
     );
   }
@@ -278,12 +271,21 @@ export function ReviewInterface({
     );
   }
 
-  // Loading state
+  // Loading state or fetch error
   if (!currentItem) {
     return (
       <div className="max-w-2xl mx-auto">
         <div className="text-center py-12">
-          <p className="text-muted-foreground">Loading questions...</p>
+          {fetchError ? (
+            <>
+              <p className="text-red-600 dark:text-red-400 mb-4">{fetchError}</p>
+              <Button onClick={() => fetchQuestions(selectedMode)} variant="outline">
+                Try Again
+              </Button>
+            </>
+          ) : (
+            <p className="text-muted-foreground">Loading questions...</p>
+          )}
         </div>
       </div>
     );
@@ -325,6 +327,13 @@ export function ReviewInterface({
             currentItem.question.options.find((opt) => opt.isCorrect)?.explanation
           }
         />
+      )}
+
+      {/* Submit error message */}
+      {submitError && (
+        <p className="text-sm text-red-600 dark:text-red-400">
+          {submitError}
+        </p>
       )}
 
       {/* Actions */}
