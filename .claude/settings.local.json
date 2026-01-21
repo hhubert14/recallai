@@ -65,7 +65,8 @@
       "Bash(head:*)",
       "Bash(tail:*)",
       "Bash(tsconfig \")",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(git pull:*)"
     ],
     "deny": [],
     "ask": []
