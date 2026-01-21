@@ -14,6 +14,7 @@ export interface IQuestionGeneratorService {
     generate(
         title: string,
         transcript: string,
-        count: number
+        count: number,
+        existingQuestions?: string[]
     ): Promise<GeneratedQuestionsDto | undefined>;
 }

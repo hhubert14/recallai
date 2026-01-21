@@ -49,7 +49,8 @@ export class LangChainQuestionGeneratorService
         title: string,
         // description: string,
         transcript: string,
-        count: number
+        count: number,
+        existingQuestions?: string[]
     ): Promise<GeneratedQuestionsDto | undefined> {
         if (!title || !transcript) {
             logger.video.warn(
@@ -103,7 +104,12 @@ SOURCE QUOTE REQUIREMENTS:
 - The quote should be verbatim from the transcript (not paraphrased)
 - Choose quotes that clearly relate to the question concept
 
-Each question should test whether someone truly grasps the underlying principle, not whether they remember specific details from this video.`,
+Each question should test whether someone truly grasps the underlying principle, not whether they remember specific details from this video.${existingQuestions && existingQuestions.length > 0 ? `
+
+EXISTING QUESTIONS - Generate questions on DIFFERENT topics:
+${existingQuestions.map((q, i) => `${i + 1}. ${q}`).join('\n')}
+
+Do NOT create questions that cover the same concepts as the existing questions above.` : ''}`,
                 },
             ]);
 
