@@ -51,12 +51,22 @@ export default function Loading() {
                                         <div className="h-4 w-32 rounded bg-muted animate-pulse" />
                                     </div>
                                 </div>
-                                {/* Right side - Date and status */}
-                                <div className="flex flex-col items-end gap-1 ml-4">
-                                    <div className="h-4 w-28 rounded bg-muted animate-pulse" />
-                                    <div className="flex items-center gap-1">
-                                        <div className="h-4 w-4 rounded bg-muted animate-pulse" />
-                                        <div className="h-3 w-24 rounded bg-muted animate-pulse" />
+                                {/* Right side - Date and counts */}
+                                <div className="flex items-center gap-4 flex-shrink-0 ml-4">
+                                    <div className="text-right">
+                                        <div className="h-4 w-28 rounded bg-muted animate-pulse" />
+                                        <div className="flex items-center justify-end gap-3 mt-1">
+                                            {/* Question count */}
+                                            <div className="flex items-center gap-1">
+                                                <div className="h-4 w-4 rounded bg-muted animate-pulse" />
+                                                <div className="h-3 w-4 rounded bg-muted animate-pulse" />
+                                            </div>
+                                            {/* Flashcard count */}
+                                            <div className="flex items-center gap-1">
+                                                <div className="h-4 w-4 rounded bg-muted animate-pulse" />
+                                                <div className="h-3 w-4 rounded bg-muted animate-pulse" />
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

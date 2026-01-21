@@ -553,6 +553,22 @@ export function VideoPlayer({ url }: { url: string }) { ... }
 3. It's a generic UI primitive (button variant, modal, etc.) → Move to `components/ui/`
 4. It's a shared provider/context → Move to `components/providers/`
 
+**Loading Skeletons:**
+
+When modifying a page's UI, always update the corresponding `loading.tsx` skeleton to match. Skeletons should mirror the actual page layout so users see a consistent loading experience.
+
+```
+app/dashboard/library/
+├── page.tsx           # Actual page
+├── loading.tsx        # Skeleton - must match page.tsx layout
+└── LibraryVideoCard.tsx
+```
+
+**When to update skeletons:**
+- Adding/removing UI sections (stats bars, cards, lists)
+- Changing layout structure (grid → list, adding columns)
+- Adding new data displays (counts, badges, icons)
+
 **Benefits of this approach:**
 - **Performance** - Next.js App Router optimizes co-located components automatically
 - **Developer experience** - Easy to find components (check the page first, then `components/`)
