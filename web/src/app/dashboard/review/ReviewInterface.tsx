@@ -226,7 +226,7 @@ export function ReviewInterface({
               Complete some video quizzes to add questions to your spaced repetition system.
             </p>
             <Button
-              onClick={() => (window.location.href = "/dashboard")}
+              onClick={() => router.push("/dashboard")}
               variant="outline"
             >
               Go to Dashboard
