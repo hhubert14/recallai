@@ -2,7 +2,7 @@ import { IVideoRepository } from "@/clean-architecture/domain/repositories/video
 import { VideoEntity } from "@/clean-architecture/domain/entities/video.entity";
 import { db } from "@/drizzle";
 import { videos } from "@/drizzle/schema";
-import { eq, and, desc } from "drizzle-orm";
+import { eq, and, desc, inArray } from "drizzle-orm";
 
 export class DrizzleVideoRepository implements IVideoRepository {
     async createVideo(
@@ -74,6 +74,24 @@ export class DrizzleVideoRepository implements IVideoRepository {
             return data.map((video) => this.toEntity(video));
         } catch (error) {
             console.error("Error finding videos by user ID:", error);
+            throw error;
+        }
+    }
+
+    async findVideosByIds(ids: number[]): Promise<VideoEntity[]> {
+        if (ids.length === 0) {
+            return [];
+        }
+
+        try {
+            const data = await db
+                .select()
+                .from(videos)
+                .where(inArray(videos.id, ids));
+
+            return data.map((video) => this.toEntity(video));
+        } catch (error) {
+            console.error("Error finding videos by IDs:", error);
             throw error;
         }
     }

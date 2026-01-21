@@ -88,12 +88,16 @@ describe("GenerateMultipleChoiceQuestionsUseCase", () => {
             findVideoById: vi.fn(),
             findVideoByUserIdAndUrl: vi.fn(),
             findVideosByUserId: vi.fn(),
+            findVideosByIds: vi.fn(),
         };
 
         mockQuestionRepo = {
             createMultipleChoiceQuestion: vi.fn(),
             findQuestionById: vi.fn(),
             findQuestionsByVideoId: vi.fn(),
+            findQuestionsByUserId: vi.fn(),
+            findQuestionsByIds: vi.fn(),
+            countQuestionsByVideoIds: vi.fn(),
         };
 
         mockTranscriptWindowRepo = {

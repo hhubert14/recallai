@@ -21,6 +21,15 @@ function toProgressEntity(
 }
 
 export class DrizzleProgressRepository implements IProgressRepository {
+  async findProgressByUserId(userId: string): Promise<ProgressEntity[]> {
+    const results = await db
+      .select()
+      .from(userQuestionProgress)
+      .where(eq(userQuestionProgress.userId, userId));
+
+    return results.map(toProgressEntity);
+  }
+
   async createProgress(
     userId: string,
     questionId: number,

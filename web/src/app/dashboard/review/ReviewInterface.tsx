@@ -1,39 +1,101 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { QuestionWithProgress } from "@/clean-architecture/use-cases/progress/get-questions-for-review.use-case";
-import { ReviewStatsDto } from "@/clean-architecture/use-cases/progress/get-progress-stats.use-case";
-import { ReviewStats } from "./ReviewStats";
-import { CheckCircle2, XCircle, PartyPopper, BookOpen } from "lucide-react";
+import { QuizProgress, QuizQuestion, QuizResult, QuizSummary } from "@/components/quiz";
+import { StudyModeSelector, StudyModeStats, ProgressStats } from "./StudyModeSelector";
+import { StudyMode, QuestionWithProgressApiResponse } from "@/clean-architecture/use-cases/progress/types";
+import { BookOpen, Video } from "lucide-react";
 
-interface ReviewInterfaceProps {
-  reviewStats: ReviewStatsDto;
-  questionsForReview: QuestionWithProgress[];
+interface SessionResults {
+  correct: number;
+  incorrect: number;
+  movedUp: number;
+  needsReview: number;
 }
 
+interface ReviewInterfaceProps {
+  studyModeStats: StudyModeStats;
+  progressStats: ProgressStats;
+}
+
+const SESSION_LIMIT = 10;
+
 export function ReviewInterface({
-  reviewStats,
-  questionsForReview,
+  studyModeStats,
+  progressStats,
 }: ReviewInterfaceProps) {
+  const router = useRouter();
+
+  // Mode selection state
+  const [selectedMode, setSelectedMode] = useState<StudyMode>(
+    studyModeStats.dueCount > 0 ? "due" : studyModeStats.newCount > 0 ? "new" : "random"
+  );
+  const [sessionStarted, setSessionStarted] = useState(false);
+  const [isLoadingQuestions, setIsLoadingQuestions] = useState(false);
+
+  // Quiz state
+  const [questions, setQuestions] = useState<QuestionWithProgressApiResponse[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedOptionId, setSelectedOptionId] = useState<number | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const sessionComplete =
-    questionsForReview.length === 0 || currentQuestionIndex >= questionsForReview.length;
-  const currentItem = sessionComplete ? null : questionsForReview[currentQuestionIndex];
-  const isLastQuestion = !sessionComplete && currentQuestionIndex === questionsForReview.length - 1;
+  // Error states
+  const [fetchError, setFetchError] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
-  const selectedOption = currentItem?.question.options.find(
-    (option) => option.id === selectedOptionId
-  );
+  // Session tracking
+  const [sessionResults, setSessionResults] = useState<SessionResults>({
+    correct: 0,
+    incorrect: 0,
+    movedUp: 0,
+    needsReview: 0,
+  });
+
+  const currentItem = questions[currentQuestionIndex];
+  const isSessionComplete = sessionStarted && currentQuestionIndex >= questions.length;
+  const isLastQuestion = currentQuestionIndex === questions.length - 1;
+  const hasMoreQuestions = questions.length >= SESSION_LIMIT;
+
+  const fetchQuestions = async (mode: StudyMode): Promise<boolean> => {
+    setIsLoadingQuestions(true);
+    setFetchError(null);
+    try {
+      const response = await fetch(`/api/v1/reviews?mode=${mode}&limit=${SESSION_LIMIT}`);
+      const data = await response.json();
+      if (data.status === "success") {
+        setQuestions(data.data.questions);
+        return true;
+      } else {
+        setFetchError(data.data?.error || "Failed to load questions");
+        return false;
+      }
+    } catch {
+      setFetchError("Failed to load questions. Please try again.");
+      return false;
+    } finally {
+      setIsLoadingQuestions(false);
+    }
+  };
+
+  const handleStartSession = async () => {
+    const success = await fetchQuestions(selectedMode);
+    if (!success) return;
+
+    setSessionStarted(true);
+    setCurrentQuestionIndex(0);
+    setSelectedOptionId(null);
+    setShowResult(false);
+    setSessionResults({ correct: 0, incorrect: 0, movedUp: 0, needsReview: 0 });
+  };
 
   const handleSubmit = async () => {
     if (!selectedOptionId || !currentItem) return;
 
     setIsSubmitting(true);
+    setSubmitError(null);
 
     const selectedOption = currentItem.question.options.find(
       (option) => option.id === selectedOptionId
@@ -44,21 +106,63 @@ export function ReviewInterface({
       return;
     }
 
-    await fetch("/api/v1/reviews/submit-answer", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        questionId: currentItem.question.id,
-        isCorrect: selectedOption.isCorrect,
-      }),
-    });
+    // Random mode: show feedback but don't update progress
+    if (selectedMode === "random") {
+      setSessionResults((prev) => ({
+        ...prev,
+        correct: prev.correct + (selectedOption.isCorrect ? 1 : 0),
+        incorrect: prev.incorrect + (selectedOption.isCorrect ? 0 : 1),
+      }));
+      setShowResult(true);
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Due/New modes: update spaced repetition progress
+    const previousBoxLevel = currentItem.progress?.boxLevel ?? 0;
+
+    try {
+      const response = await fetch("/api/v1/reviews/submit-answer", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          questionId: currentItem.question.id,
+          isCorrect: selectedOption.isCorrect,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.status === "success") {
+        const newBoxLevel = data.data?.progress?.boxLevel ?? previousBoxLevel;
+
+        // Update session results
+        setSessionResults((prev) => {
+          const newResults = { ...prev };
+          if (selectedOption.isCorrect) {
+            newResults.correct++;
+            if (newBoxLevel > previousBoxLevel) {
+              newResults.movedUp++;
+            }
+          } else {
+            newResults.incorrect++;
+            newResults.needsReview++;
+          }
+          return newResults;
+        });
+      } else {
+        setSubmitError(data.data?.error || "Failed to save your answer");
+      }
+    } catch {
+      setSubmitError("Failed to save your answer. Your progress may not be recorded.");
+    }
 
     setShowResult(true);
     setIsSubmitting(false);
   };
 
   const handleNext = () => {
-    if (currentQuestionIndex < questionsForReview.length - 1) {
+    if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
       setSelectedOptionId(null);
       setShowResult(false);
@@ -66,193 +170,194 @@ export function ReviewInterface({
   };
 
   const handleFinish = () => {
-    setCurrentQuestionIndex(questionsForReview.length);
+    setCurrentQuestionIndex(questions.length); // Trigger session complete
   };
 
-  if (sessionComplete && questionsForReview.length > 0) {
-    return (
-      <div className="max-w-2xl mx-auto">
-        <ReviewStats stats={reviewStats} />
+  const handleContinue = async () => {
+    const success = await fetchQuestions(selectedMode);
+    if (!success) return;
 
-        <div className="mt-8 text-center py-12 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200 dark:border-green-800 animate-fade-up">
-          <div className="space-y-4">
-            <div className="w-16 h-16 mx-auto bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-4">
-              <PartyPopper className="w-8 h-8 text-green-600 dark:text-green-400" />
+    setCurrentQuestionIndex(0);
+    setSelectedOptionId(null);
+    setShowResult(false);
+    // Keep cumulative results
+  };
+
+  const handleBackToModeSelection = () => {
+    // Reset client state
+    setSessionStarted(false);
+    setQuestions([]);
+    setCurrentQuestionIndex(0);
+    setSelectedOptionId(null);
+    setShowResult(false);
+    setSessionResults({ correct: 0, incorrect: 0, movedUp: 0, needsReview: 0 });
+    setFetchError(null);
+    setSubmitError(null);
+    // Refresh server data (stats)
+    router.refresh();
+  };
+
+  const selectedOption = currentItem?.question.options.find(
+    (option) => option.id === selectedOptionId
+  );
+
+  // Mode selection screen
+  if (!sessionStarted) {
+    // No questions at all - empty state
+    if (studyModeStats.totalCount === 0) {
+      return (
+        <div className="max-w-2xl mx-auto">
+          <div className="text-center py-16 animate-fade-up">
+            <div className="w-20 h-20 mx-auto bg-primary/10 rounded-full flex items-center justify-center mb-6">
+              <BookOpen className="w-10 h-10 text-primary" />
             </div>
-            <h2 className="text-2xl font-bold text-green-900 dark:text-green-100">
-              Session Complete!
+            <h2 className="text-2xl font-bold text-foreground mb-3">
+              No Questions Yet
             </h2>
-            <p className="text-muted-foreground max-w-md mx-auto">
-              Great job! You&apos;ve completed all available questions. Reviewed
-              questions will appear again based on their spaced repetition schedule.
+            <p className="text-muted-foreground max-w-md mx-auto mb-6">
+              Complete some video quizzes to add questions to your spaced repetition system.
             </p>
             <Button
-              onClick={() => window.location.reload()}
-            >
-              Start New Session
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (questionsForReview.length === 0) {
-    return (
-      <div className="max-w-2xl mx-auto">
-        <ReviewStats stats={reviewStats} />
-
-        <div className="mt-8 text-center py-12 animate-fade-up">
-          <div className="space-y-4">
-            <div className="w-16 h-16 mx-auto bg-primary/10 rounded-full flex items-center justify-center mb-4">
-              <BookOpen className="w-8 h-8 text-primary" />
-            </div>
-            <h2 className="text-2xl font-bold text-foreground">
-              No Questions Available
-            </h2>
-            <p className="text-muted-foreground max-w-md mx-auto">
-              You don&apos;t have any questions due for review today. Complete some
-              video quizzes to add questions to your spaced repetition system.
-            </p>
-            <Button
-              onClick={() => (window.location.href = "/dashboard")}
+              onClick={() => router.push("/dashboard")}
               variant="outline"
             >
               Go to Dashboard
             </Button>
           </div>
         </div>
+      );
+    }
+
+    return (
+      <StudyModeSelector
+        stats={studyModeStats}
+        progressStats={progressStats}
+        selectedMode={selectedMode}
+        onModeSelect={setSelectedMode}
+        onStartSession={handleStartSession}
+        isLoading={isLoadingQuestions}
+        error={fetchError}
+      />
+    );
+  }
+
+  // Session complete screen
+  if (isSessionComplete) {
+    return (
+      <div className="max-w-2xl mx-auto">
+        <QuizSummary
+          correct={sessionResults.correct}
+          total={sessionResults.correct + sessionResults.incorrect}
+          movedUp={sessionResults.movedUp}
+          needsReview={sessionResults.needsReview}
+          actions={[
+            {
+              label: "Back to Review",
+              onClick: handleBackToModeSelection,
+              variant: "outline",
+            },
+            ...(hasMoreQuestions
+              ? [
+                  {
+                    label: "Continue",
+                    onClick: handleContinue,
+                    variant: "default" as const,
+                  },
+                ]
+              : []),
+          ]}
+        />
       </div>
     );
   }
 
+  // Loading state or fetch error
   if (!currentItem) {
     return (
       <div className="max-w-2xl mx-auto">
         <div className="text-center py-12">
-          <p className="text-muted-foreground">Loading question...</p>
+          {fetchError ? (
+            <>
+              <p className="text-red-600 dark:text-red-400 mb-4">{fetchError}</p>
+              <Button onClick={() => fetchQuestions(selectedMode)} variant="outline">
+                Try Again
+              </Button>
+            </>
+          ) : (
+            <p className="text-muted-foreground">Loading questions...</p>
+          )}
         </div>
       </div>
     );
   }
 
+  // Quiz interface
   return (
     <div className="max-w-2xl mx-auto space-y-6">
-      <ReviewStats stats={reviewStats} />
+      {/* Progress */}
+      <QuizProgress
+        current={currentQuestionIndex + 1}
+        total={questions.length}
+      />
 
-      <div className="flex items-center justify-between text-sm text-muted-foreground">
-        <span>
-          Question {currentQuestionIndex + 1} of {questionsForReview.length}
-        </span>
-        <div className="w-32 bg-muted rounded-full h-2">
-          <div
-            className="bg-primary h-2 rounded-full transition-all duration-300"
-            style={{
-              width: `${((currentQuestionIndex + 1) / questionsForReview.length) * 100}%`,
-            }}
-          />
-        </div>
-      </div>
+      {/* Video source badge */}
+      <a
+        href={`/dashboard/video/${currentItem.question.videoId}`}
+        className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+      >
+        <Video className="w-4 h-4" />
+        <span className="truncate hover:underline">{currentItem.question.videoTitle}</span>
+      </a>
 
-      <div className="bg-card p-6 rounded-lg border border-border">
-        <h3 className="text-lg font-medium text-foreground mb-4">
-          {currentItem.question.questionText}
-        </h3>
+      {/* Question */}
+      <QuizQuestion
+        questionText={currentItem.question.questionText}
+        options={currentItem.question.options}
+        selectedOptionId={selectedOptionId}
+        onSelect={setSelectedOptionId}
+        disabled={showResult}
+        showResult={showResult}
+      />
 
-        <div className="space-y-3">
-          {currentItem.question.options.map((option) => (
-            <label
-              key={option.id}
-              className={`block p-3 border rounded-lg cursor-pointer transition-colors ${
-                selectedOptionId === option.id
-                  ? "border-primary bg-primary/10"
-                  : "border-border hover:border-muted-foreground/50"
-              } ${
-                showResult
-                  ? option.isCorrect
-                    ? "border-green-600 dark:border-green-500 bg-green-50 dark:bg-green-950/20"
-                    : selectedOptionId === option.id && !option.isCorrect
-                      ? "border-red-600 dark:border-red-500 bg-red-50 dark:bg-red-950/20"
-                      : "border-border bg-card"
-                  : ""
-              }`}
-            >
-              <input
-                type="radio"
-                name="option"
-                value={option.id}
-                checked={selectedOptionId === option.id}
-                onChange={() => !showResult && setSelectedOptionId(option.id)}
-                disabled={showResult}
-                className="sr-only"
-              />
-              <div className="flex items-center">
-                <div
-                  className={`w-4 h-4 rounded-full border-2 mr-3 flex items-center justify-center ${
-                    selectedOptionId === option.id
-                      ? "border-primary"
-                      : "border-muted-foreground/50"
-                  }`}
-                >
-                  {selectedOptionId === option.id && (
-                    <div className="w-2 h-2 rounded-full bg-primary" />
-                  )}
-                </div>
-                <span className="text-foreground">{option.optionText}</span>
-              </div>
-            </label>
-          ))}
-        </div>
-      </div>
-
-      {showResult && (
-        <div
-          className={`p-4 rounded-lg animate-fade-up ${
-            selectedOption?.isCorrect
-              ? "bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800"
-              : "bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800"
-          }`}
-        >
-          <div className="flex items-center gap-2 mb-2">
-            {selectedOption?.isCorrect ? (
-              <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400" />
-            ) : (
-              <XCircle className="w-5 h-5 text-red-600 dark:text-red-400" />
-            )}
-            <span
-              className={`font-medium ${
-                selectedOption?.isCorrect
-                  ? "text-green-800 dark:text-green-100"
-                  : "text-red-800 dark:text-red-100"
-              }`}
-            >
-              {selectedOption?.isCorrect ? "Correct!" : "Incorrect"}
-            </span>
-          </div>
-          {currentItem.question.options.find((opt) => opt.isCorrect)?.explanation && (
-            <p className="text-sm text-muted-foreground">
-              {currentItem.question.options.find((opt) => opt.isCorrect)?.explanation}
-            </p>
-          )}
-        </div>
+      {/* Result feedback */}
+      {showResult && selectedOption && (
+        <QuizResult
+          isCorrect={selectedOption.isCorrect}
+          explanation={
+            currentItem.question.options.find((opt) => opt.isCorrect)?.explanation
+          }
+        />
       )}
 
+      {/* Submit error message */}
+      {submitError && (
+        <p className="text-sm text-red-600 dark:text-red-400">
+          {submitError}
+        </p>
+      )}
+
+      {/* Actions */}
       <div className="flex gap-3">
         {!showResult ? (
           <Button
             onClick={handleSubmit}
             disabled={!selectedOptionId || isSubmitting}
+            size="lg"
           >
-            {isSubmitting ? "Submitting..." : "Submit Answer"}
+            {isSubmitting ? "Checking..." : "Check Answer"}
           </Button>
         ) : (
           <>
             {!isLastQuestion ? (
-              <Button onClick={handleNext}>
-                Next Question
+              <Button onClick={handleNext} size="lg">
+                Next Question →
               </Button>
             ) : (
-              <Button onClick={handleFinish} className="bg-green-600 hover:bg-green-700">
+              <Button
+                onClick={handleFinish}
+                size="lg"
+                className="bg-green-600 hover:bg-green-700"
+              >
                 Finish Session
               </Button>
             )}

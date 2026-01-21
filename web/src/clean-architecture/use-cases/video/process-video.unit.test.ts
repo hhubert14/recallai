@@ -51,6 +51,7 @@ describe("ProcessVideoUseCase", () => {
             findVideoById: vi.fn(),
             findVideoByUserIdAndUrl: vi.fn(),
             findVideosByUserId: vi.fn(),
+            findVideosByIds: vi.fn(),
         };
 
         mockSummaryRepo = {

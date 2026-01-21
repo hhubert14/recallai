@@ -28,6 +28,9 @@ describe("GetQuizCompletionStatusUseCase", () => {
 			findQuestionsByVideoId: vi.fn(),
 			createMultipleChoiceQuestion: vi.fn(),
 			findQuestionById: vi.fn(),
+			findQuestionsByUserId: vi.fn(),
+			findQuestionsByIds: vi.fn(),
+			countQuestionsByVideoIds: vi.fn(),
 		};
 
 		mockAnswerRepo = {
