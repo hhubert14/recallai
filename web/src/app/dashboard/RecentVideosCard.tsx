@@ -8,6 +8,7 @@ import { RefreshButton } from "./RefreshButton";
 
 interface VideoData {
   id: number;
+  publicId: string;
   title: string;
   channelName: string | null;
 }
@@ -38,7 +39,7 @@ export function RecentVideosCard({ videos }: RecentVideosCardProps) {
           {videos.map((video, index) => (
             <Link
               key={video.id}
-              href={`/dashboard/video/${video.id}`}
+              href={`/dashboard/video/${video.publicId}`}
               className={`group block rounded-lg border border-border p-4 hover:bg-muted/50 dark:hover:bg-white/[0.02] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-sm dark:hover:shadow-none dark:hover:border-foreground/20 opacity-0 ${isInView ? "animate-fade-up" : ""}`}
               style={{
                 animationDelay: `${600 + index * 75}ms`,

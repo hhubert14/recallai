@@ -1,6 +1,7 @@
 export class VideoEntity {
     constructor(
         public readonly id: number,
+        public readonly publicId: string,
         public readonly userId: string,
         public readonly title: string,
         public readonly url: string,

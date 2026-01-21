@@ -52,22 +52,26 @@ export async function GET(request: NextRequest) {
       limit
     );
 
-    // Fetch video titles for the questions
+    // Fetch video info for the questions
     const videoIds = [...new Set(questions.map((q) => q.question.videoId))];
     const videoRepo = new DrizzleVideoRepository();
     const videos = await videoRepo.findVideosByIds(videoIds);
-    const videoTitleMap = new Map(videos.map((v) => [v.id, v.title]));
+    const videoMap = new Map(videos.map((v) => [v.id, { title: v.title, publicId: v.publicId }]));
 
-    // Add video title to each question
-    const questionsWithVideoTitle = questions.map((q) => ({
-      ...q,
-      question: {
-        ...q.question,
-        videoTitle: videoTitleMap.get(q.question.videoId) || "Unknown Video",
-      },
-    }));
+    // Add video title and publicId to each question
+    const questionsWithVideoInfo = questions.map((q) => {
+      const videoInfo = videoMap.get(q.question.videoId);
+      return {
+        ...q,
+        question: {
+          ...q.question,
+          videoTitle: videoInfo?.title || "Unknown Video",
+          videoPublicId: videoInfo?.publicId || "",
+        },
+      };
+    });
 
-    return jsendSuccess({ questions: questionsWithVideoTitle });
+    return jsendSuccess({ questions: questionsWithVideoInfo });
   } catch (error) {
     return jsendError(String(error));
   }

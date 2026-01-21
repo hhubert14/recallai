@@ -8,6 +8,7 @@ import { MultipleChoiceAnswerEntity } from "@/clean-architecture/domain/entities
 function createMockVideo(overrides: Partial<VideoEntity> = {}): VideoEntity {
 	return new VideoEntity(
 		overrides.id ?? 1,
+		overrides.publicId ?? "550e8400-e29b-41d4-a716-446655440000",
 		overrides.userId ?? "user-1",
 		overrides.title ?? "Test Video",
 		overrides.url ?? "https://youtube.com/watch?v=test",
@@ -43,6 +44,7 @@ describe("GetUserStatsUseCase", () => {
 			findVideosByUserId: vi.fn(),
 			createVideo: vi.fn(),
 			findVideoById: vi.fn(),
+			findVideoByPublicId: vi.fn(),
 			findVideoByUserIdAndUrl: vi.fn(),
 			findVideosByIds: vi.fn(),
 		};

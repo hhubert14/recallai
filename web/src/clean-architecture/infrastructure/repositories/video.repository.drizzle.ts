@@ -45,6 +45,22 @@ export class DrizzleVideoRepository implements IVideoRepository {
         }
     }
 
+    async findVideoByPublicId(publicId: string): Promise<VideoEntity | null> {
+        try {
+            const [data] = await db
+                .select()
+                .from(videos)
+                .where(eq(videos.publicId, publicId))
+                .limit(1);
+
+            if (!data) return null;
+            return this.toEntity(data);
+        } catch (error) {
+            console.error("Error finding video by public ID:", error);
+            throw error;
+        }
+    }
+
     async findVideoByUserIdAndUrl(userId: string, url: string): Promise<VideoEntity | null> {
         try {
             const [data] = await db
@@ -99,6 +115,7 @@ export class DrizzleVideoRepository implements IVideoRepository {
     private toEntity(data: typeof videos.$inferSelect): VideoEntity {
         return new VideoEntity(
             data.id,
+            data.publicId,
             data.userId,
             data.title,
             data.url,
