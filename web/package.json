@@ -16,7 +16,7 @@
     "// ---- Testing ----": "",
     "test": "vitest",
     "test:unit": "vitest .unit.test.",
-    "test:integration": "vitest .integration.test.",
+    "test:integration": "dotenv -e .env.test.local -- vitest .integration.test. --no-file-parallelism",
 
     "// ---- Local Supabase ----": "",
     "supabase:start": "npx supabase start",
