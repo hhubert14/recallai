@@ -4,27 +4,40 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build",
+    "// ---- Core ----": "",
+    "dev": "npx supabase start && next dev --turbopack",
+    "build": "npx supabase start && next build",
     "start": "next start",
+
+    "// ---- Code Quality ----": "",
     "lint": "next lint",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
+
+    "// ---- Testing ----": "",
     "test": "vitest",
     "test:unit": "vitest .unit.test.",
     "test:integration": "vitest .integration.test.",
+
+    "// ---- Local Supabase ----": "",
+    "supabase:start": "npx supabase start",
+    "supabase:stop": "npx supabase stop",
+    "supabase:reset": "npx supabase start && npx supabase db reset && npm run setup-test-db && npm run db:migrate:dev && npm run db:migrate:test",
+
+    "// ---- Database (Drizzle) ----": "",
     "db:generate": "dotenv -e .env.local -- drizzle-kit generate",
-    "db:migrate": "dotenv -e .env.local -- drizzle-kit migrate",
-    "db:push": "dotenv -e .env.local -- drizzle-kit push",
+    "db:migrate:dev": "dotenv -e .env.local -- drizzle-kit migrate",
+    "db:migrate:test": "dotenv -e .env.test.local -- drizzle-kit migrate",
+    "db:migrate:prod": "dotenv -e .env.prod -- drizzle-kit migrate",
+    "db:push:dev": "dotenv -e .env.local -- drizzle-kit push",
     "db:push:test": "dotenv -e .env.test.local -- drizzle-kit push",
-    "db:pull": "dotenv -e .env.local -- drizzle-kit pull",
-    "db:studio": "dotenv -e .env.local -- drizzle-kit studio",
+    "db:studio:dev": "dotenv -e .env.local -- drizzle-kit studio",
     "db:studio:test": "dotenv -e .env.test.local -- drizzle-kit studio",
-    "docker:up": "docker-compose up -d",
-    "docker:down": "docker-compose down",
-    "docker:status": "docker-compose ps",
+
+    "// ---- Utility Scripts ----": "",
     "keep-alive": "dotenv -e .env.local -- tsx scripts/keep-alive.ts",
-    "test:db": "dotenv -e .env.local -- tsx scripts/test-db-connection.ts",
-    "cleanup-unverified-users": "dotenv -e .env.local -- tsx scripts/cleanup-unverified-users.ts"
+    "test-db-connection": "dotenv -e .env.local -- tsx scripts/test-db-connection.ts",
+    "cleanup-unverified-users": "dotenv -e .env.local -- tsx scripts/cleanup-unverified-users.ts",
+    "setup-test-db": "dotenv -e .env.local -- tsx scripts/setup-test-db.ts"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.10",
