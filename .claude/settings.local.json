@@ -71,7 +71,9 @@
       "WebFetch(domain:supabase.com)",
       "Bash(node -e:*)",
       "Bash(npm run test:unit:*)",
-      "Bash(npm run db:generate:*)"
+      "Bash(npm run db:generate:*)",
+      "Bash(npm run db:migrate:dev:*)",
+      "Bash(npm run db:migrate:test:*)"
     ],
     "deny": [],
     "ask": []

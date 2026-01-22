@@ -332,16 +332,22 @@ npm run test -- <filename>      # Run specific test file
 ### Database (Drizzle)
 
 ```bash
-npm run db:generate  # Generate migration files from schema
-npm run db:migrate   # Apply migrations to database
-npm run db:push      # Push schema changes directly (faster for dev)
-npm run db:studio    # Open Drizzle Studio (database GUI)
+npm run db:generate      # Generate migration files from schema changes
+
+# Migrations (per environment)
+npm run db:migrate:dev   # Apply migrations to LOCAL dev database
+npm run db:migrate:test  # Apply migrations to LOCAL test database
+
+# Direct push (faster for dev iteration, no migration files)
+npm run db:push:dev      # Push schema directly to dev DB
+npm run db:push:test     # Push schema directly to test DB
+
+# Database GUI
+npm run db:studio:dev    # Open Drizzle Studio for dev DB
+npm run db:studio:test   # Open Drizzle Studio for test DB (port 4984)
 ```
 
-**Testing Drizzle Connection:**
-```bash
-npm run test:db
-```
+**Important:** DO NOT run `db:migrate:prod` locally - production migrations require separate review/deployment process.
 
 ## Local Development Setup
 
