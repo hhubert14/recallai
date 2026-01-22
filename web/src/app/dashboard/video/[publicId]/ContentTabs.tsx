@@ -2,6 +2,7 @@
 "use client";
 
 import { useState } from "react";
+import ReactMarkdown from "react-markdown";
 import { QuizInterface } from "./QuizInterface";
 import { FlashcardInterface } from "./FlashcardInterface";
 
@@ -150,11 +151,9 @@ export function ContentTabs({
             {/* Tab Content */}
             <div className="flex-1 overflow-auto p-6">
                 {activeTab === "summary" && (
-                    <div className="prose prose-sm max-w-none dark:prose-invert">
+                    <div className="prose prose-sm dark:prose-invert max-w-none prose-p:my-2 prose-ul:my-2 prose-ol:my-2 prose-li:my-0.5 prose-headings:mt-4 prose-headings:mb-2 prose-headings:text-foreground">
                         {summary ? (
-                            <div className="whitespace-pre-wrap text-muted-foreground leading-relaxed text-base">
-                                {summary.content}
-                            </div>
+                            <ReactMarkdown>{summary.content}</ReactMarkdown>
                         ) : (
                             <div className="text-center py-12">
                                 <p className="text-muted-foreground text-lg">
