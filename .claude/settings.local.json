@@ -70,7 +70,8 @@
       "Bash(git ls-tree:*)",
       "WebFetch(domain:supabase.com)",
       "Bash(node -e:*)",
-      "Bash(npm run test:unit:*)"
+      "Bash(npm run test:unit:*)",
+      "Bash(npm run db:generate:*)"
     ],
     "deny": [],
     "ask": []
