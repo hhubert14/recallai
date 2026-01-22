@@ -343,21 +343,48 @@ npm run db:studio    # Open Drizzle Studio (database GUI)
 npm run test:db
 ```
 
+## Local Development Setup
+
+### Prerequisites
+
+- **Docker Desktop** must be running (required for local Supabase)
+- Run `npm run dev` from `web/` directory (auto-starts Supabase)
+
+### Dev Account Credentials
+
+For local development, use these credentials to sign in:
+- **Email:** `test@test.com`
+- **Password:** `password`
+
+### Local Services
+
+When Supabase is running locally:
+- **Supabase Studio:** http://127.0.0.1:54323 (database GUI)
+- **Mailpit:** http://127.0.0.1:54324 (captures auth emails locally)
+- **API:** http://127.0.0.1:54321
+
+### Environment Files
+
+- `.env` - Shared defaults (committed, no secrets)
+- `.env.local` - Local Supabase credentials (dev + build)
+- `.env.test.local` - Local Supabase testdb (integration tests)
+- `.env.prod` - Production credentials (for Vercel import, not auto-loaded)
+
 ## Environment Variables
 
-Required in `.env.local`:
+Required in `.env.local` for local development:
 
 ```bash
-# Supabase (Auth + Direct Connection)
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-SUPABASE_SERVICE_ROLE_KEY=
+# Local Supabase
+NEXT_PUBLIC_SUPABASE_URL="http://127.0.0.1:54321"
+NEXT_PUBLIC_SUPABASE_ANON_KEY="<local anon key>"
+SUPABASE_SERVICE_ROLE_KEY="<local service role key>"
+DATABASE_URL="postgresql://postgres:postgres@127.0.0.1:54322/postgres"
 
-# Database (Drizzle) - Use Session mode (port 6543)
-DATABASE_URL="postgresql://postgres.xxxxx:[PASSWORD]@aws-0-us-west-1.pooler.supabase.com:6543/postgres"
-
-# OpenAI
+# API Keys
 OPENAI_API_KEY=
+YOUTUBE_INFO_API_KEY=
+YOUTUBE_TRANSCRIPT_API_KEY=
 
 # Upstash Redis (Rate Limiting)
 UPSTASH_REDIS_REST_URL=
