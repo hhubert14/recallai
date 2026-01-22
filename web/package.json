@@ -14,7 +14,7 @@
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
 
     "// ---- Testing ----": "",
-    "test": "vitest",
+    "test": "vitest --no-file-parallelism",
     "test:unit": "vitest .unit.test.",
     "test:integration": "dotenv -e .env.test.local -- vitest .integration.test. --no-file-parallelism",
 
