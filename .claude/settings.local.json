@@ -67,7 +67,8 @@
       "Bash(tsconfig \")",
       "Bash(git checkout:*)",
       "Bash(git pull:*)",
-      "Bash(git ls-tree:*)"
+      "Bash(git ls-tree:*)",
+      "WebFetch(domain:supabase.com)"
     ],
     "deny": [],
     "ask": []
