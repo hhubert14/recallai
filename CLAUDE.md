@@ -840,6 +840,41 @@ describe("GetUserStatsUseCase", () => {
 });
 ```
 
+### Integration Tests
+
+Integration tests test against the real test database. Use for:
+- Repository methods with complex queries
+- Database constraint validation
+- SQL/ORM correctness
+
+**Important rules:**
+- Integration tests must **fail** (not skip) when the test database is not configured
+- This ensures CI catches missing environment setup
+- Use this pattern at the start of the describe block:
+
+```typescript
+describe("SomeRepository (integration)", () => {
+  const TEST_DATABASE_URL = process.env.DATABASE_URL;
+
+  if (!TEST_DATABASE_URL?.includes("testdb")) {
+    it("fails when test database is not configured", () => {
+      throw new Error(
+        "Integration tests require DATABASE_URL pointing to testdb. " +
+        "Ensure .env.test.local is configured and run: npm run test:integration"
+      );
+    });
+    return;
+  }
+
+  // ... rest of tests
+});
+```
+
+**Running integration tests:**
+```bash
+npm run test:integration  # Runs *.integration.test.ts files
+```
+
 ### Critical Areas Requiring Tests (Priority Order)
 
 1. Spaced repetition engine (`process-spaced-repetition-answer.ts`, `utils.ts`)
