@@ -75,7 +75,15 @@
       "Bash(npm run db:migrate:dev:*)",
       "Bash(npm run db:migrate:test:*)",
       "Bash(npm ls:*)",
-      "Bash(npm run test:component:*)"
+      "Bash(npm run test:component:*)",
+      "Bash(timeout:*)",
+      "mcp__playwright__browser_type",
+      "mcp__chrome-devtools__list_pages",
+      "mcp__chrome-devtools__navigate_page",
+      "mcp__chrome-devtools__take_snapshot",
+      "Skill(agent-browser)",
+      "Bash(agent-browser open:*)",
+      "Bash(agent-browser:*)"
     ],
     "deny": [],
     "ask": []
