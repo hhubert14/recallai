@@ -8,6 +8,7 @@ import { DrizzleReviewableItemRepository } from "@/clean-architecture/infrastruc
 import { DrizzleReviewProgressRepository } from "@/clean-architecture/infrastructure/repositories/review-progress.repository.drizzle";
 import { FindVideosByUserIdUseCase } from "@/clean-architecture/use-cases/video/find-videos-by-user-id.use-case";
 import { OnboardingSurveyWrapper } from "./OnboardingSurvey/OnboardingSurveyWrapper";
+import { WelcomeModalWrapper } from "./WelcomeModal/WelcomeModalWrapper";
 import { GetUserStatsUseCase } from "@/clean-architecture/use-cases/user-stats/get-user-stats.use-case";
 import { GetReviewStatsUseCase } from "@/clean-architecture/use-cases/review/get-review-stats.use-case";
 import { ReviewHeroCard } from "./ReviewHeroCard";
@@ -47,6 +48,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
+      <WelcomeModalWrapper />
       <OnboardingSurveyWrapper />
       <DashboardHeader />
 

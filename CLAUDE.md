@@ -807,14 +807,19 @@ npm run test -- --run <pattern>    # Run specific tests
 ### Test File Naming Convention
 
 **Co-located Tests:** Place test files next to source files with naming convention:
-- Unit tests: `<name>.unit.test.ts`
-- Integration tests: `<name>.integration.test.ts`
+- Unit tests: `<name>.unit.test.ts` - Pure logic, hooks, utilities with mocked dependencies
+- Component tests: `<name>.component.test.tsx` - React component rendering and interactions
+- Integration tests: `<name>.integration.test.ts` - Tests with real database
 
 ```
 src/clean-architecture/use-cases/user-stats/
 ├── get-user-stats.use-case.ts
 ├── get-user-stats.unit.test.ts           # Unit test with mocked dependencies
 └── get-user-stats.integration.test.ts    # Integration test with real DB (if needed)
+
+src/app/dashboard/review/
+├── ReviewInterface.tsx
+└── ReviewInterface.component.test.tsx    # Component test with React Testing Library
 ```
 
 ### Unit Tests with Mocked Repositories
