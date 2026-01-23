@@ -1,9 +1,8 @@
 import { relations } from "drizzle-orm/relations";
-import { users, videos, summaries, questions, questionOptions, userQuestionProgress, userAnswers, transcriptWindows, videoTranscripts } from "./schema";
+import { users, videos, summaries, questions, questionOptions, userAnswers, transcriptWindows, videoTranscripts } from "./schema";
 
 export const usersRelations = relations(users, ({many}) => ({
 	videos: many(videos),
-	userQuestionProgresses: many(userQuestionProgress),
 	userAnswers: many(userAnswers),
 }));
 
@@ -31,7 +30,6 @@ export const questionsRelations = relations(questions, ({one, many}) => ({
 		references: [videos.id]
 	}),
 	questionOptions: many(questionOptions),
-	userQuestionProgresses: many(userQuestionProgress),
 	userAnswers: many(userAnswers),
 }));
 
@@ -41,17 +39,6 @@ export const questionOptionsRelations = relations(questionOptions, ({one, many})
 		references: [questions.id]
 	}),
 	userAnswers: many(userAnswers),
-}));
-
-export const userQuestionProgressRelations = relations(userQuestionProgress, ({one}) => ({
-	question: one(questions, {
-		fields: [userQuestionProgress.questionId],
-		references: [questions.id]
-	}),
-	user: one(users, {
-		fields: [userQuestionProgress.userId],
-		references: [users.id]
-	}),
 }));
 
 export const userAnswersRelations = relations(userAnswers, ({one}) => ({

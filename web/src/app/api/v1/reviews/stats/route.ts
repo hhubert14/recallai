@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
-import { GetStudyModeStatsUseCase } from "@/clean-architecture/use-cases/progress/get-study-mode-stats.use-case";
-import { DrizzleProgressRepository } from "@/clean-architecture/infrastructure/repositories/progress.repository.drizzle";
-import { DrizzleQuestionRepository } from "@/clean-architecture/infrastructure/repositories/question.repository.drizzle";
+import { GetReviewStatsUseCase } from "@/clean-architecture/use-cases/review/get-review-stats.use-case";
+import { DrizzleReviewableItemRepository } from "@/clean-architecture/infrastructure/repositories/reviewable-item.repository.drizzle";
+import { DrizzleReviewProgressRepository } from "@/clean-architecture/infrastructure/repositories/review-progress.repository.drizzle";
 import { jsendSuccess, jsendFail, jsendError } from "@/lib/jsend";
 
 export async function GET() {
@@ -15,9 +15,9 @@ export async function GET() {
       return jsendFail({ error: "Unauthorized" }, 401);
     }
 
-    const useCase = new GetStudyModeStatsUseCase(
-      new DrizzleProgressRepository(),
-      new DrizzleQuestionRepository()
+    const useCase = new GetReviewStatsUseCase(
+      new DrizzleReviewableItemRepository(),
+      new DrizzleReviewProgressRepository()
     );
 
     const stats = await useCase.execute(user.id);

@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { ProcessSpacedRepetitionAnswerUseCase } from "@/clean-architecture/use-cases/progress/process-spaced-repetition-answer.use-case";
-import { DrizzleProgressRepository } from "@/clean-architecture/infrastructure/repositories/progress.repository.drizzle";
+import { ProcessReviewAnswerUseCase } from "@/clean-architecture/use-cases/review/process-review-answer.use-case";
+import { DrizzleReviewProgressRepository } from "@/clean-architecture/infrastructure/repositories/review-progress.repository.drizzle";
 import { jsendSuccess, jsendFail, jsendError } from "@/lib/jsend";
 
 export async function POST(request: NextRequest) {
@@ -16,19 +16,31 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { questionId, isCorrect } = body;
+    const { reviewableItemId, isCorrect } = body;
 
-    if (!questionId || typeof isCorrect !== "boolean") {
+    if (!reviewableItemId || typeof isCorrect !== "boolean") {
       return jsendFail({
-        error: "Missing required fields: questionId, isCorrect",
+        error: "Missing required fields: reviewableItemId, isCorrect",
       });
     }
 
-    const useCase = new ProcessSpacedRepetitionAnswerUseCase(new DrizzleProgressRepository());
+    const useCase = new ProcessReviewAnswerUseCase(
+      new DrizzleReviewProgressRepository()
+    );
 
-    const progress = await useCase.execute(user.id, questionId, isCorrect);
+    const progress = await useCase.execute(user.id, reviewableItemId, isCorrect);
 
-    return jsendSuccess({ progress });
+    return jsendSuccess({
+      progress: {
+        id: progress.id,
+        reviewableItemId: progress.reviewableItemId,
+        boxLevel: progress.boxLevel,
+        nextReviewDate: progress.nextReviewDate,
+        timesCorrect: progress.timesCorrect,
+        timesIncorrect: progress.timesIncorrect,
+        lastReviewedAt: progress.lastReviewedAt,
+      },
+    });
   } catch (error) {
     return jsendError(String(error));
   }

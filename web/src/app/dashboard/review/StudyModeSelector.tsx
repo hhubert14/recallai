@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Clock, Sparkles, Shuffle, ChevronRight } from "lucide-react";
-import { StudyMode } from "@/clean-architecture/use-cases/progress/types";
+import { StudyMode } from "@/clean-architecture/use-cases/review/types";
 
 export interface StudyModeStats {
   dueCount: number;
@@ -43,15 +43,15 @@ const MODE_CONFIG: Record<StudyMode, {
   },
   new: {
     icon: <Sparkles className="w-5 h-5" />,
-    title: "Learn New Questions",
-    description: "Expand your knowledge",
+    title: "Learn New Items",
+    description: "Expand your knowledge with new questions and flashcards",
     countKey: "newCount",
     color: "text-green-600 dark:text-green-400",
   },
   random: {
     icon: <Shuffle className="w-5 h-5" />,
     title: "Random Practice",
-    description: "Mix it up with random questions",
+    description: "Mix it up with random questions and flashcards",
     countKey: "totalCount",
     color: "text-purple-600 dark:text-purple-400",
   },
@@ -73,13 +73,13 @@ export function StudyModeSelector({
   // Determine hero message
   const getHeroMessage = () => {
     if (!hasAnyQuestions) {
-      return "No questions yet";
+      return "No items yet";
     }
     if (stats.dueCount > 0) {
-      return `You have ${stats.dueCount} question${stats.dueCount !== 1 ? "s" : ""} waiting!`;
+      return `You have ${stats.dueCount} item${stats.dueCount !== 1 ? "s" : ""} waiting!`;
     }
     if (stats.newCount > 0) {
-      return `${stats.newCount} new question${stats.newCount !== 1 ? "s" : ""} to learn!`;
+      return `${stats.newCount} new item${stats.newCount !== 1 ? "s" : ""} to learn!`;
     }
     return "You're all caught up! 🎉";
   };

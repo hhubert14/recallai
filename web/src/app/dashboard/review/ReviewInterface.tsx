@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { QuizProgress, QuizQuestion, QuizResult, QuizSummary } from "@/components/quiz";
 import { StudyModeSelector, StudyModeStats, ProgressStats } from "./StudyModeSelector";
-import { StudyMode, QuestionWithProgressApiResponse } from "@/clean-architecture/use-cases/progress/types";
-import { BookOpen, Video } from "lucide-react";
+import { StudyMode, ReviewItemApiResponse } from "@/clean-architecture/use-cases/review/types";
+import { BookOpen, Video, RotateCcw } from "lucide-react";
 
 interface SessionResults {
   correct: number;
@@ -33,12 +33,14 @@ export function ReviewInterface({
     studyModeStats.dueCount > 0 ? "due" : studyModeStats.newCount > 0 ? "new" : "random"
   );
   const [sessionStarted, setSessionStarted] = useState(false);
-  const [isLoadingQuestions, setIsLoadingQuestions] = useState(false);
+  const [isLoadingItems, setIsLoadingItems] = useState(false);
 
-  // Quiz state
-  const [questions, setQuestions] = useState<QuestionWithProgressApiResponse[]>([]);
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  // Review state
+  const [items, setItems] = useState<ReviewItemApiResponse[]>([]);
+  const [currentItemIndex, setCurrentItemIndex] = useState(0);
   const [selectedOptionId, setSelectedOptionId] = useState<number | null>(null);
+  const [flashcardFlipped, setFlashcardFlipped] = useState(false);
+  const [selfAssessment, setSelfAssessment] = useState<boolean | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -54,64 +56,78 @@ export function ReviewInterface({
     needsReview: 0,
   });
 
-  const currentItem = questions[currentQuestionIndex];
-  const isSessionComplete = sessionStarted && currentQuestionIndex >= questions.length;
-  const isLastQuestion = currentQuestionIndex === questions.length - 1;
-  const hasMoreQuestions = questions.length >= SESSION_LIMIT;
+  const currentItem = items[currentItemIndex];
+  const isSessionComplete = sessionStarted && currentItemIndex >= items.length;
+  const isLastItem = currentItemIndex === items.length - 1;
+  const hasMoreItems = items.length >= SESSION_LIMIT;
 
-  const fetchQuestions = async (mode: StudyMode): Promise<boolean> => {
-    setIsLoadingQuestions(true);
+  const fetchItems = async (mode: StudyMode): Promise<boolean> => {
+    setIsLoadingItems(true);
     setFetchError(null);
     try {
       const response = await fetch(`/api/v1/reviews?mode=${mode}&limit=${SESSION_LIMIT}`);
       const data = await response.json();
       if (data.status === "success") {
-        setQuestions(data.data.questions);
+        setItems(data.data.items);
         return true;
       } else {
-        setFetchError(data.data?.error || "Failed to load questions");
+        setFetchError(data.data?.error || "Failed to load items");
         return false;
       }
     } catch {
-      setFetchError("Failed to load questions. Please try again.");
+      setFetchError("Failed to load items. Please try again.");
       return false;
     } finally {
-      setIsLoadingQuestions(false);
+      setIsLoadingItems(false);
     }
   };
 
   const handleStartSession = async () => {
-    const success = await fetchQuestions(selectedMode);
+    const success = await fetchItems(selectedMode);
     if (!success) return;
 
     setSessionStarted(true);
-    setCurrentQuestionIndex(0);
+    setCurrentItemIndex(0);
     setSelectedOptionId(null);
+    setFlashcardFlipped(false);
+    setSelfAssessment(null);
     setShowResult(false);
     setSessionResults({ correct: 0, incorrect: 0, movedUp: 0, needsReview: 0 });
   };
 
   const handleSubmit = async () => {
-    if (!selectedOptionId || !currentItem) return;
+    if (!currentItem) return;
+
+    // For questions, require option selection
+    if (currentItem.itemType === "question" && !selectedOptionId) return;
+    // For flashcards, require self-assessment
+    if (currentItem.itemType === "flashcard" && selfAssessment === null) return;
 
     setIsSubmitting(true);
     setSubmitError(null);
 
-    const selectedOption = currentItem.question.options.find(
-      (option) => option.id === selectedOptionId
-    );
+    let isCorrect: boolean;
 
-    if (!selectedOption) {
-      setIsSubmitting(false);
-      return;
+    if (currentItem.itemType === "question" && currentItem.question) {
+      const selectedOption = currentItem.question.options.find(
+        (option) => option.id === selectedOptionId
+      );
+      if (!selectedOption) {
+        setIsSubmitting(false);
+        return;
+      }
+      isCorrect = selectedOption.isCorrect;
+    } else {
+      // Flashcard - use self-assessment
+      isCorrect = selfAssessment === true;
     }
 
     // Random mode: show feedback but don't update progress
     if (selectedMode === "random") {
       setSessionResults((prev) => ({
         ...prev,
-        correct: prev.correct + (selectedOption.isCorrect ? 1 : 0),
-        incorrect: prev.incorrect + (selectedOption.isCorrect ? 0 : 1),
+        correct: prev.correct + (isCorrect ? 1 : 0),
+        incorrect: prev.incorrect + (isCorrect ? 0 : 1),
       }));
       setShowResult(true);
       setIsSubmitting(false);
@@ -126,8 +142,8 @@ export function ReviewInterface({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          questionId: currentItem.question.id,
-          isCorrect: selectedOption.isCorrect,
+          reviewableItemId: currentItem.reviewableItemId,
+          isCorrect,
         }),
       });
 
@@ -139,7 +155,7 @@ export function ReviewInterface({
         // Update session results
         setSessionResults((prev) => {
           const newResults = { ...prev };
-          if (selectedOption.isCorrect) {
+          if (isCorrect) {
             newResults.correct++;
             if (newBoxLevel > previousBoxLevel) {
               newResults.movedUp++;
@@ -162,23 +178,27 @@ export function ReviewInterface({
   };
 
   const handleNext = () => {
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
+    if (currentItemIndex < items.length - 1) {
+      setCurrentItemIndex(currentItemIndex + 1);
       setSelectedOptionId(null);
+      setFlashcardFlipped(false);
+      setSelfAssessment(null);
       setShowResult(false);
     }
   };
 
   const handleFinish = () => {
-    setCurrentQuestionIndex(questions.length); // Trigger session complete
+    setCurrentItemIndex(items.length); // Trigger session complete
   };
 
   const handleContinue = async () => {
-    const success = await fetchQuestions(selectedMode);
+    const success = await fetchItems(selectedMode);
     if (!success) return;
 
-    setCurrentQuestionIndex(0);
+    setCurrentItemIndex(0);
     setSelectedOptionId(null);
+    setFlashcardFlipped(false);
+    setSelfAssessment(null);
     setShowResult(false);
     // Keep cumulative results
   };
@@ -186,9 +206,11 @@ export function ReviewInterface({
   const handleBackToModeSelection = () => {
     // Reset client state
     setSessionStarted(false);
-    setQuestions([]);
-    setCurrentQuestionIndex(0);
+    setItems([]);
+    setCurrentItemIndex(0);
     setSelectedOptionId(null);
+    setFlashcardFlipped(false);
+    setSelfAssessment(null);
     setShowResult(false);
     setSessionResults({ correct: 0, incorrect: 0, movedUp: 0, needsReview: 0 });
     setFetchError(null);
@@ -197,13 +219,9 @@ export function ReviewInterface({
     router.refresh();
   };
 
-  const selectedOption = currentItem?.question.options.find(
-    (option) => option.id === selectedOptionId
-  );
-
   // Mode selection screen
   if (!sessionStarted) {
-    // No questions at all - empty state
+    // No items at all - empty state
     if (studyModeStats.totalCount === 0) {
       return (
         <div className="max-w-2xl mx-auto">
@@ -212,10 +230,10 @@ export function ReviewInterface({
               <BookOpen className="w-10 h-10 text-primary" />
             </div>
             <h2 className="text-2xl font-bold text-foreground mb-3">
-              No Questions Yet
+              No Items Yet
             </h2>
             <p className="text-muted-foreground max-w-md mx-auto mb-6">
-              Complete some video quizzes to add questions to your spaced repetition system.
+              Complete some video quizzes or create flashcards to add items to your spaced repetition system.
             </p>
             <Button
               onClick={() => router.push("/dashboard")}
@@ -235,7 +253,7 @@ export function ReviewInterface({
         selectedMode={selectedMode}
         onModeSelect={setSelectedMode}
         onStartSession={handleStartSession}
-        isLoading={isLoadingQuestions}
+        isLoading={isLoadingItems}
         error={fetchError}
       />
     );
@@ -256,7 +274,7 @@ export function ReviewInterface({
               onClick: handleBackToModeSelection,
               variant: "outline",
             },
-            ...(hasMoreQuestions
+            ...(hasMoreItems
               ? [
                   {
                     label: "Continue",
@@ -279,61 +297,155 @@ export function ReviewInterface({
           {fetchError ? (
             <>
               <p className="text-red-600 dark:text-red-400 mb-4">{fetchError}</p>
-              <Button onClick={() => fetchQuestions(selectedMode)} variant="outline">
+              <Button onClick={() => fetchItems(selectedMode)} variant="outline">
                 Try Again
               </Button>
             </>
           ) : (
-            <p className="text-muted-foreground">Loading questions...</p>
+            <p className="text-muted-foreground">Loading items...</p>
           )}
         </div>
       </div>
     );
   }
 
-  // Quiz interface
+  // Render based on item type
+  const renderQuestionReview = () => {
+    if (!currentItem.question) return null;
+
+    const selectedOption = currentItem.question.options.find(
+      (option) => option.id === selectedOptionId
+    );
+
+    return (
+      <>
+        {/* Question */}
+        <QuizQuestion
+          questionText={currentItem.question.questionText}
+          options={currentItem.question.options}
+          selectedOptionId={selectedOptionId}
+          onSelect={setSelectedOptionId}
+          disabled={showResult}
+          showResult={showResult}
+        />
+
+        {/* Result feedback */}
+        {showResult && selectedOption && (
+          <QuizResult
+            isCorrect={selectedOption.isCorrect}
+            explanation={
+              currentItem.question.options.find((opt) => opt.isCorrect)?.explanation
+            }
+          />
+        )}
+      </>
+    );
+  };
+
+  const renderFlashcardReview = () => {
+    if (!currentItem.flashcard) return null;
+
+    return (
+      <div className="space-y-4">
+        {/* Flashcard */}
+        <div
+          className={`p-6 rounded-xl border-2 transition-all duration-300 cursor-pointer ${
+            flashcardFlipped
+              ? "bg-primary/5 border-primary"
+              : "bg-card border-border hover:border-primary/50"
+          }`}
+          onClick={() => !showResult && setFlashcardFlipped(!flashcardFlipped)}
+        >
+          <div className="text-center min-h-[200px] flex flex-col items-center justify-center">
+            <p className="text-xs uppercase tracking-wider text-muted-foreground mb-4">
+              {flashcardFlipped ? "Back" : "Front"}
+            </p>
+            <p className="text-xl font-medium text-foreground">
+              {flashcardFlipped ? currentItem.flashcard.back : currentItem.flashcard.front}
+            </p>
+            {!flashcardFlipped && !showResult && (
+              <p className="text-sm text-muted-foreground mt-4 flex items-center gap-2">
+                <RotateCcw className="w-4 h-4" />
+                Click to flip
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Self-assessment buttons (only after flipping, before result) */}
+        {flashcardFlipped && !showResult && (
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground text-center">
+              Did you know the answer?
+            </p>
+            <div className="flex gap-3 justify-center">
+              <Button
+                variant={selfAssessment === false ? "destructive" : "outline"}
+                onClick={() => setSelfAssessment(false)}
+                className="flex-1 max-w-32"
+              >
+                Not Yet
+              </Button>
+              <Button
+                variant={selfAssessment === true ? "default" : "outline"}
+                onClick={() => setSelfAssessment(true)}
+                className="flex-1 max-w-32"
+              >
+                Got It!
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Result feedback */}
+        {showResult && (
+          <QuizResult
+            isCorrect={selfAssessment === true}
+            explanation={
+              selfAssessment
+                ? "Great job! Keep it up!"
+                : "No worries - you'll see this card again soon."
+            }
+          />
+        )}
+      </div>
+    );
+  };
+
+  // Review interface
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       {/* Progress */}
-      <QuizProgress
-        current={currentQuestionIndex + 1}
-        total={questions.length}
-      />
+      <QuizProgress current={currentItemIndex + 1} total={items.length} />
 
       {/* Video source badge */}
       <a
-        href={`/dashboard/video/${currentItem.question.videoPublicId}`}
+        href={`/dashboard/video/${currentItem.video.publicId}`}
         className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
       >
         <Video className="w-4 h-4" />
-        <span className="truncate hover:underline">{currentItem.question.videoTitle}</span>
+        <span className="truncate hover:underline">{currentItem.video.title}</span>
       </a>
 
-      {/* Question */}
-      <QuizQuestion
-        questionText={currentItem.question.questionText}
-        options={currentItem.question.options}
-        selectedOptionId={selectedOptionId}
-        onSelect={setSelectedOptionId}
-        disabled={showResult}
-        showResult={showResult}
-      />
+      {/* Item type badge */}
+      <div className="flex items-center gap-2">
+        <span
+          className={`text-xs px-2 py-1 rounded-full font-medium ${
+            currentItem.itemType === "question"
+              ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
+              : "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300"
+          }`}
+        >
+          {currentItem.itemType === "question" ? "Question" : "Flashcard"}
+        </span>
+      </div>
 
-      {/* Result feedback */}
-      {showResult && selectedOption && (
-        <QuizResult
-          isCorrect={selectedOption.isCorrect}
-          explanation={
-            currentItem.question.options.find((opt) => opt.isCorrect)?.explanation
-          }
-        />
-      )}
+      {/* Content based on item type */}
+      {currentItem.itemType === "question" ? renderQuestionReview() : renderFlashcardReview()}
 
       {/* Submit error message */}
       {submitError && (
-        <p className="text-sm text-red-600 dark:text-red-400">
-          {submitError}
-        </p>
+        <p className="text-sm text-red-600 dark:text-red-400">{submitError}</p>
       )}
 
       {/* Actions */}
@@ -341,16 +453,24 @@ export function ReviewInterface({
         {!showResult ? (
           <Button
             onClick={handleSubmit}
-            disabled={!selectedOptionId || isSubmitting}
+            disabled={
+              (currentItem.itemType === "question" && !selectedOptionId) ||
+              (currentItem.itemType === "flashcard" && selfAssessment === null) ||
+              isSubmitting
+            }
             size="lg"
           >
-            {isSubmitting ? "Checking..." : "Check Answer"}
+            {isSubmitting
+              ? "Checking..."
+              : currentItem.itemType === "question"
+              ? "Check Answer"
+              : "Submit"}
           </Button>
         ) : (
           <>
-            {!isLastQuestion ? (
+            {!isLastItem ? (
               <Button onClick={handleNext} size="lg">
-                Next Question →
+                Next →
               </Button>
             ) : (
               <Button

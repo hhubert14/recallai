@@ -3,6 +3,7 @@ import { GenerateMultipleChoiceQuestionsUseCase } from "./generate-multiple-choi
 import { IVideoRepository } from "@/clean-architecture/domain/repositories/video.repository.interface";
 import { IQuestionRepository } from "@/clean-architecture/domain/repositories/question.repository.interface";
 import { ITranscriptWindowRepository, WindowMatchResult } from "@/clean-architecture/domain/repositories/transcript-window.repository.interface";
+import { IReviewableItemRepository } from "@/clean-architecture/domain/repositories/reviewable-item.repository.interface";
 import { ITranscriptResolverService } from "@/clean-architecture/domain/services/transcript-resolver.interface";
 import { IQuestionGeneratorService } from "@/clean-architecture/domain/services/question-generator.interface";
 import { IEmbeddingService } from "@/clean-architecture/domain/services/embedding.interface";
@@ -76,6 +77,7 @@ describe("GenerateMultipleChoiceQuestionsUseCase", () => {
     let mockVideoRepo: IVideoRepository;
     let mockQuestionRepo: IQuestionRepository;
     let mockTranscriptWindowRepo: ITranscriptWindowRepository;
+    let mockReviewableItemRepo: IReviewableItemRepository;
     let mockTranscriptResolverService: ITranscriptResolverService;
     let mockQuestionGeneratorService: IQuestionGeneratorService;
     let mockEmbeddingService: IEmbeddingService;
@@ -110,6 +112,17 @@ describe("GenerateMultipleChoiceQuestionsUseCase", () => {
             deleteWindowsByVideoId: vi.fn(),
         };
 
+        mockReviewableItemRepo = {
+            createReviewableItemsForQuestionsBatch: vi.fn().mockResolvedValue([]),
+            createReviewableItemsForFlashcardsBatch: vi.fn().mockResolvedValue([]),
+            findReviewableItemsByUserId: vi.fn(),
+            findReviewableItemsByUserIdAndVideoId: vi.fn(),
+            findReviewableItemByQuestionId: vi.fn(),
+            findReviewableItemByFlashcardId: vi.fn(),
+            findReviewableItemById: vi.fn(),
+            findReviewableItemsByIds: vi.fn(),
+        };
+
         mockTranscriptResolverService = {
             getTranscript: vi.fn(),
         };
@@ -129,7 +142,8 @@ describe("GenerateMultipleChoiceQuestionsUseCase", () => {
             mockTranscriptResolverService,
             mockQuestionGeneratorService,
             mockEmbeddingService,
-            mockTranscriptWindowRepo
+            mockTranscriptWindowRepo,
+            mockReviewableItemRepo
         );
     });
 

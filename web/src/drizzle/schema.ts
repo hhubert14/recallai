@@ -81,34 +81,6 @@ export const questionOptions = pgTable("question_options", {
 		}).onUpdate("cascade").onDelete("cascade"),
 ]);
 
-export const userQuestionProgress = pgTable("user_question_progress", {
-	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
-	id: bigint({ mode: "number" }).primaryKey().generatedByDefaultAsIdentity({ name: "user_question_progress_id_seq", startWith: 1, increment: 1, minValue: 1, cache: 1 }),
-	userId: uuid("user_id").notNull(),
-	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
-	questionId: bigint("question_id", { mode: "number" }).notNull(),
-	boxLevel: integer("box_level").default(1),
-	nextReviewDate: date("next_review_date"),
-	timesCorrect: integer("times_correct").default(0),
-	timesIncorrect: integer("times_incorrect").default(0),
-	lastReviewedAt: timestamp("last_reviewed_at", { mode: 'string' }),
-	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-}, (table) => [
-	foreignKey({
-			columns: [table.questionId],
-			foreignColumns: [questions.id],
-			name: "user_question_progress_question_id_fkey"
-		}).onUpdate("cascade").onDelete("cascade"),
-	foreignKey({
-			columns: [table.userId],
-			foreignColumns: [users.id],
-			name: "user_question_progress_user_id_fkey"
-		}).onUpdate("cascade").onDelete("cascade"),
-	unique("user_question_progress_user_id_question_id_key").on(table.userId, table.questionId),
-	unique("user_question_progress_unique").on(table.userId, table.questionId),
-]);
-
 export const userAnswers = pgTable("user_answers", {
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
 	id: bigint({ mode: "number" }).primaryKey().generatedByDefaultAsIdentity({ name: "user_answers_id_seq", startWith: 1, increment: 1, minValue: 1, cache: 1 }),
@@ -160,6 +132,7 @@ export const flashcards = pgTable("flashcards", {
 	front: text().notNull(),
 	back: text().notNull(),
 	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 }, (table) => [
 	foreignKey({
 			columns: [table.videoId],
@@ -227,4 +200,67 @@ export const chatMessages = pgTable("chat_messages", {
 			name: "chat_messages_user_id_fkey"
 		}).onUpdate("cascade").onDelete("cascade"),
 	index("idx_chat_messages_video_user").using("btree", table.videoId.asc().nullsLast(), table.userId.asc().nullsLast()),
+]);
+
+export const reviewableItems = pgTable("reviewable_items", {
+	id: bigint({ mode: "number" }).primaryKey().generatedByDefaultAsIdentity({ name: "reviewable_items_id_seq", startWith: 1, increment: 1, minValue: 1, cache: 1 }),
+	userId: uuid("user_id").notNull(),
+	itemType: text("item_type").notNull(), // 'question' | 'flashcard'
+	questionId: bigint("question_id", { mode: "number" }),
+	flashcardId: bigint("flashcard_id", { mode: "number" }),
+	videoId: bigint("video_id", { mode: "number" }).notNull(),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+}, (table) => [
+	foreignKey({
+		columns: [table.userId],
+		foreignColumns: [users.id],
+		name: "reviewable_items_user_id_fkey"
+	}).onUpdate("cascade").onDelete("cascade"),
+	foreignKey({
+		columns: [table.questionId],
+		foreignColumns: [questions.id],
+		name: "reviewable_items_question_id_fkey"
+	}).onUpdate("cascade").onDelete("cascade"),
+	foreignKey({
+		columns: [table.flashcardId],
+		foreignColumns: [flashcards.id],
+		name: "reviewable_items_flashcard_id_fkey"
+	}).onUpdate("cascade").onDelete("cascade"),
+	foreignKey({
+		columns: [table.videoId],
+		foreignColumns: [videos.id],
+		name: "reviewable_items_video_id_fkey"
+	}).onUpdate("cascade").onDelete("cascade"),
+	// Ensure one reviewable item per question/flashcard (questions are user-scoped via video ownership)
+	unique("reviewable_items_question_id_key").on(table.questionId),
+	unique("reviewable_items_flashcard_id_key").on(table.flashcardId),
+	index("idx_reviewable_items_user_id").using("btree", table.userId.asc().nullsLast()),
+	index("idx_reviewable_items_video_id").using("btree", table.videoId.asc().nullsLast()),
+]);
+
+export const reviewProgress = pgTable("review_progress", {
+	id: bigint({ mode: "number" }).primaryKey().generatedByDefaultAsIdentity({ name: "review_progress_id_seq", startWith: 1, increment: 1, minValue: 1, cache: 1 }),
+	userId: uuid("user_id").notNull(),
+	reviewableItemId: bigint("reviewable_item_id", { mode: "number" }).notNull(),
+	boxLevel: integer("box_level").default(1).notNull(),
+	nextReviewDate: date("next_review_date"),
+	timesCorrect: integer("times_correct").default(0).notNull(),
+	timesIncorrect: integer("times_incorrect").default(0).notNull(),
+	lastReviewedAt: timestamp("last_reviewed_at", { withTimezone: true, mode: 'string' }),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+}, (table) => [
+	foreignKey({
+		columns: [table.userId],
+		foreignColumns: [users.id],
+		name: "review_progress_user_id_fkey"
+	}).onUpdate("cascade").onDelete("cascade"),
+	foreignKey({
+		columns: [table.reviewableItemId],
+		foreignColumns: [reviewableItems.id],
+		name: "review_progress_reviewable_item_id_fkey"
+	}).onUpdate("cascade").onDelete("cascade"),
+	unique("review_progress_user_reviewable_item_key").on(table.userId, table.reviewableItemId),
+	index("idx_review_progress_user_id").using("btree", table.userId.asc().nullsLast()),
+	index("idx_review_progress_next_review_date").using("btree", table.nextReviewDate.asc().nullsLast()),
 ]);
