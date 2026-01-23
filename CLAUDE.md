@@ -349,6 +349,26 @@ npm run db:studio:test   # Open Drizzle Studio for test DB (port 4984)
 
 **Important:** DO NOT run `db:migrate:prod` locally - production migrations require separate review/deployment process.
 
+## Development Workflow Tools
+
+### Skills
+
+| Skill | When to use |
+|-------|-------------|
+| `/test-driven-development` | Before implementing features - write tests first |
+| `/frontend-design` | Building/styling UI components and pages |
+| `/vercel-react-best-practices` | Writing or reviewing React/Next.js code for performance |
+| `/web-design-guidelines` | Reviewing UI for accessibility and design best practices |
+
+### MCP Servers
+
+| Server | Purpose | When to use |
+|--------|---------|-------------|
+| `context7` | Library documentation | See [Using External Libraries](#using-external-libraries) |
+| `github` | GitHub operations | Creating PRs, managing issues, searching code |
+| `supabase` | Database operations | Running SQL, checking migrations, viewing logs |
+| `chrome-devtools` / `playwright` | Browser automation | Testing extension behavior, E2E testing |
+
 ## Local Development Setup
 
 ### Prerequisites
@@ -980,6 +1000,30 @@ When adding noteworthy features, improvements, or bug fixes, update the changelo
 - Internal refactoring
 - Minor styling tweaks
 - Developer-only changes (CI/CD, tests)
+
+## Using External Libraries
+
+**IMPORTANT: When adding a new library or using an unfamiliar library, always use Context7 to get up-to-date documentation before implementing.**
+
+Context7 provides current documentation and code examples for libraries. Use it to:
+- Learn the latest API patterns (libraries change frequently)
+- Get accurate TypeScript types
+- Find working code examples
+- Avoid deprecated patterns
+
+**Workflow:**
+1. `mcp__context7__resolve-library-id` - Find the library ID
+2. `mcp__context7__query-docs` - Query for specific usage patterns
+
+**Example:**
+```
+// 1. Find library ID
+resolve-library-id("react-joyride", "React tooltip tour library")
+// Returns: /gilbarbara/react-joyride
+
+// 2. Query documentation
+query-docs("/gilbarbara/react-joyride", "How to create controlled tour with callbacks")
+```
 
 ## Useful Resources
 
