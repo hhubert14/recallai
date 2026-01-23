@@ -231,7 +231,7 @@ export const reviewableItems = pgTable("reviewable_items", {
 		foreignColumns: [videos.id],
 		name: "reviewable_items_video_id_fkey"
 	}).onUpdate("cascade").onDelete("cascade"),
-	// Ensure either questionId or flashcardId is set based on itemType
+	// Ensure one reviewable item per question/flashcard (questions are user-scoped via video ownership)
 	unique("reviewable_items_question_id_key").on(table.questionId),
 	unique("reviewable_items_flashcard_id_key").on(table.flashcardId),
 	index("idx_reviewable_items_user_id").using("btree", table.userId.asc().nullsLast()),
