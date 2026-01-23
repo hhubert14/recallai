@@ -99,7 +99,10 @@ export class ProcessVideoUseCase {
 
         // 6. Generate and save summary
         logger.extension.debug("Generating summary");
-        const summaryResult = await this.videoSummarizerService.generate(title, description, transcriptResult.fullText);
+        const summaryResult = await this.videoSummarizerService.generate(title, description, {
+            fullText: transcriptResult.fullText,
+            segments: transcriptResult.segments,
+        });
         if (!summaryResult) {
             throw new Error("Failed to generate video summary");
         }
