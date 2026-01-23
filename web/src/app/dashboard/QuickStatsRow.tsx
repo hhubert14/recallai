@@ -5,13 +5,13 @@ import { useInView } from "@/hooks/useInView";
 
 interface QuickStatsRowProps {
   totalVideos: number;
-  questionsMastered: number;
+  itemsMastered: number;
   quizAccuracy: number;
 }
 
 export function QuickStatsRow({
   totalVideos,
-  questionsMastered,
+  itemsMastered,
   quizAccuracy,
 }: QuickStatsRowProps) {
   const { ref, isInView } = useInView<HTMLDivElement>({ threshold: 0.1 });
@@ -26,8 +26,8 @@ export function QuickStatsRow({
       delay: 0,
     },
     {
-      label: "Questions Mastered",
-      value: questionsMastered.toString(),
+      label: "Items Mastered",
+      value: itemsMastered.toString(),
       icon: Trophy,
       color: "text-green-600 dark:text-green-400",
       bgColor: "bg-green-100 dark:bg-green-900/30",

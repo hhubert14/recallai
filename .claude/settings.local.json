@@ -73,7 +73,9 @@
       "Bash(npm run test:unit:*)",
       "Bash(npm run db:generate:*)",
       "Bash(npm run db:migrate:dev:*)",
-      "Bash(npm run db:migrate:test:*)"
+      "Bash(npm run db:migrate:test:*)",
+      "Bash(npm ls:*)",
+      "Bash(npm run test:component:*)"
     ],
     "deny": [],
     "ask": []

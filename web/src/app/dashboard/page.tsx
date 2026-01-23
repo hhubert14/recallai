@@ -4,11 +4,12 @@ import { createClient } from "@/lib/supabase/server";
 import { DashboardHeader } from "./components/DashboardHeader";
 import { DrizzleAnswerRepository } from "@/clean-architecture/infrastructure/repositories/answer.repository.drizzle";
 import { DrizzleVideoRepository } from "@/clean-architecture/infrastructure/repositories/video.repository.drizzle";
-import { DrizzleProgressRepository } from "@/clean-architecture/infrastructure/repositories/progress.repository.drizzle";
+import { DrizzleReviewableItemRepository } from "@/clean-architecture/infrastructure/repositories/reviewable-item.repository.drizzle";
+import { DrizzleReviewProgressRepository } from "@/clean-architecture/infrastructure/repositories/review-progress.repository.drizzle";
 import { FindVideosByUserIdUseCase } from "@/clean-architecture/use-cases/video/find-videos-by-user-id.use-case";
 import { OnboardingSurveyWrapper } from "./OnboardingSurvey/OnboardingSurveyWrapper";
 import { GetUserStatsUseCase } from "@/clean-architecture/use-cases/user-stats/get-user-stats.use-case";
-import { GetProgressStatsUseCase } from "@/clean-architecture/use-cases/progress/get-progress-stats.use-case";
+import { GetReviewStatsUseCase } from "@/clean-architecture/use-cases/review/get-review-stats.use-case";
 import { ReviewHeroCard } from "./ReviewHeroCard";
 import { QuickStatsRow } from "./QuickStatsRow";
 import { WhatsNewCard } from "./WhatsNewCard";
@@ -29,7 +30,7 @@ export default async function DashboardPage() {
     redirect("/auth/login");
   }
 
-  const [videos, userStats, progressStats] = await Promise.all([
+  const [videos, userStats, reviewStats] = await Promise.all([
     new FindVideosByUserIdUseCase(new DrizzleVideoRepository()).execute(
       user.id,
       4
@@ -38,9 +39,10 @@ export default async function DashboardPage() {
       new DrizzleVideoRepository(),
       new DrizzleAnswerRepository()
     ).execute(user.id),
-    new GetProgressStatsUseCase(new DrizzleProgressRepository()).execute(
-      user.id
-    ),
+    new GetReviewStatsUseCase(
+      new DrizzleReviewableItemRepository(),
+      new DrizzleReviewProgressRepository()
+    ).execute(user.id),
   ]);
 
   return (
@@ -51,12 +53,12 @@ export default async function DashboardPage() {
       <main className="flex-1 container py-8 md:py-12 px-6 md:px-8 max-w-6xl mx-auto">
         <div className="space-y-8">
           {/* Review Hero Card */}
-          <ReviewHeroCard questionsDue={progressStats.questionsDueToday} />
+          <ReviewHeroCard itemsDue={reviewStats.dueCount} />
 
           {/* Quick Stats Row */}
           <QuickStatsRow
             totalVideos={userStats.totalVideos}
-            questionsMastered={progressStats.questionsInBox5}
+            itemsMastered={reviewStats.boxDistribution[4]}
             quizAccuracy={userStats.quizAccuracy}
           />
 

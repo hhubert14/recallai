@@ -10,6 +10,12 @@ export interface IFlashcardRepository {
     findFlashcardsByUserId(userId: string): Promise<FlashcardEntity[]>;
 
     /**
+     * Find flashcards by their IDs.
+     * Used to fetch full flashcard data after getting reviewable items.
+     */
+    findFlashcardsByIds(flashcardIds: number[]): Promise<FlashcardEntity[]>;
+
+    /**
      * Count flashcards grouped by video ID.
      * Returns a map of videoId -> count.
      */

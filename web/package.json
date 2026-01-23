@@ -8,21 +8,18 @@
     "dev": "npx supabase start && next dev --turbopack",
     "build": "npx supabase start && next build",
     "start": "next start",
-
     "// ---- Code Quality ----": "",
     "lint": "next lint",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
-
     "// ---- Testing ----": "",
     "test": "vitest --no-file-parallelism",
     "test:unit": "vitest .unit.test.",
+    "test:component": "vitest .component.test.",
     "test:integration": "dotenv -e .env.test.local -- vitest .integration.test. --no-file-parallelism",
-
     "// ---- Local Supabase ----": "",
     "supabase:start": "npx supabase start",
     "supabase:stop": "npx supabase stop",
     "supabase:reset": "npx supabase start && npx supabase db reset && npm run setup-test-db && npm run db:migrate:dev && npm run db:migrate:test",
-
     "// ---- Database (Drizzle) ----": "",
     "db:generate": "dotenv -e .env.local -- drizzle-kit generate",
     "db:migrate:dev": "dotenv -e .env.local -- drizzle-kit migrate",
@@ -32,7 +29,6 @@
     "db:push:test": "dotenv -e .env.test.local -- drizzle-kit push",
     "db:studio:dev": "dotenv -e .env.local -- drizzle-kit studio",
     "db:studio:test": "dotenv -e .env.test.local -- drizzle-kit studio --port 4984",
-
     "// ---- Utility Scripts ----": "",
     "keep-alive": "dotenv -e .env.local -- tsx scripts/keep-alive.ts",
     "test-db-connection": "dotenv -e .env.local -- tsx scripts/test-db-connection.ts",
@@ -66,7 +62,7 @@
     "openai": "^5.1.0",
     "postgres": "^3.4.7",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0",
+    "react-dom": "^19.2.3",
     "react-markdown": "^10.1.0",
     "stripe": "^19.1.0",
     "tailwind-merge": "^3.3.0",
