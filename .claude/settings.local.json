@@ -83,7 +83,8 @@
       "mcp__chrome-devtools__take_snapshot",
       "Skill(agent-browser)",
       "Bash(agent-browser open:*)",
-      "Bash(agent-browser:*)"
+      "Bash(agent-browser:*)",
+      "Bash(rm -f nul)"
     ],
     "deny": [],
     "ask": []
