@@ -25,6 +25,7 @@ function TimestampLink({
 
     return (
         <button
+            type="button"
             onClick={() => seekTo(timestamp)}
             className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline transition-colors"
             title={`Jump to ${formattedTime}`}
@@ -76,26 +77,6 @@ function processTextWithTimestamps(text: string): (string | React.ReactElement)[
     return parts;
 }
 
-export function MarkdownWithTimestamps({
-    children,
-    className,
-}: MarkdownWithTimestampsProps) {
-    return (
-        <div className={className}>
-            <ReactMarkdown
-                components={{
-                    p: ({ children }) => <p>{processChildren(children)}</p>,
-                    li: ({ children }) => <li>{processChildren(children)}</li>,
-                    strong: ({ children }) => <strong>{processChildren(children)}</strong>,
-                    em: ({ children }) => <em>{processChildren(children)}</em>,
-                }}
-            >
-                {children}
-            </ReactMarkdown>
-        </div>
-    );
-}
-
 // Helper to process children and replace timestamp strings
 function processChildren(children: React.ReactNode): React.ReactNode {
     if (!children) return children;
@@ -120,4 +101,29 @@ function processChildren(children: React.ReactNode): React.ReactNode {
     }
 
     return children;
+}
+
+export function MarkdownWithTimestamps({
+    children,
+    className,
+}: MarkdownWithTimestampsProps) {
+    return (
+        <div className={className}>
+            <ReactMarkdown
+                components={{
+                    p: ({ children }) => <p>{processChildren(children)}</p>,
+                    li: ({ children }) => <li>{processChildren(children)}</li>,
+                    strong: ({ children }) => <strong>{processChildren(children)}</strong>,
+                    em: ({ children }) => <em>{processChildren(children)}</em>,
+                    h1: ({ children }) => <h1>{processChildren(children)}</h1>,
+                    h2: ({ children }) => <h2>{processChildren(children)}</h2>,
+                    h3: ({ children }) => <h3>{processChildren(children)}</h3>,
+                    h4: ({ children }) => <h4>{processChildren(children)}</h4>,
+                    blockquote: ({ children }) => <blockquote>{processChildren(children)}</blockquote>,
+                }}
+            >
+                {children}
+            </ReactMarkdown>
+        </div>
+    );
 }

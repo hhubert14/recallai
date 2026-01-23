@@ -66,8 +66,6 @@
       "Bash(tail:*)",
       "Bash(tsconfig \")",
       "Bash(git checkout:*)",
-      "Bash(git push:*)",
-      "Bash(npm install:*)"
       "Bash(git pull:*)",
       "Bash(git ls-tree:*)",
       "WebFetch(domain:supabase.com)",
