@@ -53,6 +53,24 @@ export class DrizzleFlashcardRepository implements IFlashcardRepository {
         }
     }
 
+    async findFlashcardsByIds(flashcardIds: number[]): Promise<FlashcardEntity[]> {
+        if (flashcardIds.length === 0) {
+            return [];
+        }
+
+        try {
+            const data = await db
+                .select()
+                .from(flashcards)
+                .where(inArray(flashcards.id, flashcardIds));
+
+            return data.map((flashcard) => this.toEntity(flashcard));
+        } catch (error) {
+            console.error("Error finding flashcards by IDs:", error);
+            throw error;
+        }
+    }
+
     async countFlashcardsByVideoIds(videoIds: number[]): Promise<Record<number, number>> {
         if (videoIds.length === 0) {
             return {};

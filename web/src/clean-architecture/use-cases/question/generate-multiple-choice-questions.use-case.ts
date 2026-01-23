@@ -2,6 +2,7 @@ import { extractYouTubeVideoId } from "@/lib/youtube";
 import { IVideoRepository } from "@/clean-architecture/domain/repositories/video.repository.interface";
 import { IQuestionRepository } from "@/clean-architecture/domain/repositories/question.repository.interface";
 import { ITranscriptWindowRepository } from "@/clean-architecture/domain/repositories/transcript-window.repository.interface";
+import { IReviewableItemRepository } from "@/clean-architecture/domain/repositories/reviewable-item.repository.interface";
 import { ITranscriptResolverService } from "@/clean-architecture/domain/services/transcript-resolver.interface";
 import { IQuestionGeneratorService } from "@/clean-architecture/domain/services/question-generator.interface";
 import { IEmbeddingService } from "@/clean-architecture/domain/services/embedding.interface";
@@ -24,7 +25,8 @@ export class GenerateMultipleChoiceQuestionsUseCase {
         private readonly transcriptResolverService: ITranscriptResolverService,
         private readonly questionGeneratorService: IQuestionGeneratorService,
         private readonly embeddingService: IEmbeddingService,
-        private readonly transcriptWindowRepository: ITranscriptWindowRepository
+        private readonly transcriptWindowRepository: ITranscriptWindowRepository,
+        private readonly reviewableItemRepository: IReviewableItemRepository
     ) {}
 
     async execute(
@@ -125,6 +127,18 @@ export class GenerateMultipleChoiceQuestionsUseCase {
                     sourceTimestamp
                 );
             savedQuestions.push(savedQuestion);
+        }
+
+        // Create reviewable items for spaced repetition tracking
+        if (savedQuestions.length > 0) {
+            const reviewableItemsData = savedQuestions.map((question) => ({
+                userId,
+                questionId: question.id,
+                videoId,
+            }));
+            await this.reviewableItemRepository.createReviewableItemsForQuestionsBatch(
+                reviewableItemsData
+            );
         }
 
         return {

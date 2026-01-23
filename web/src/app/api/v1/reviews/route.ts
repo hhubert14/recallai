@@ -1,13 +1,20 @@
 import { NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { GetQuestionsForReviewUseCase } from "@/clean-architecture/use-cases/progress/get-questions-for-review.use-case";
-import { DrizzleProgressRepository } from "@/clean-architecture/infrastructure/repositories/progress.repository.drizzle";
+import { GetItemsForReviewUseCase } from "@/clean-architecture/use-cases/review/get-items-for-review.use-case";
+import { DrizzleReviewableItemRepository } from "@/clean-architecture/infrastructure/repositories/reviewable-item.repository.drizzle";
+import { DrizzleReviewProgressRepository } from "@/clean-architecture/infrastructure/repositories/review-progress.repository.drizzle";
 import { DrizzleQuestionRepository } from "@/clean-architecture/infrastructure/repositories/question.repository.drizzle";
+import { DrizzleFlashcardRepository } from "@/clean-architecture/infrastructure/repositories/flashcard.repository.drizzle";
 import { DrizzleVideoRepository } from "@/clean-architecture/infrastructure/repositories/video.repository.drizzle";
 import { jsendSuccess, jsendFail, jsendError } from "@/lib/jsend";
-import { StudyMode } from "@/clean-architecture/use-cases/progress/types";
+import {
+  StudyMode,
+  ItemTypeFilter,
+} from "@/clean-architecture/use-cases/review/types";
+import { toReviewItemApiResponse } from "@/clean-architecture/use-cases/review/review-item-transformer";
 
 const VALID_MODES: StudyMode[] = ["due", "new", "random"];
+const VALID_TYPES: ItemTypeFilter[] = ["all", "question", "flashcard"];
 const DEFAULT_LIMIT = 10;
 const MAX_LIMIT = 100;
 
@@ -24,11 +31,18 @@ export async function GET(request: NextRequest) {
 
     const searchParams = request.nextUrl.searchParams;
     const modeParam = searchParams.get("mode") || "due";
+    const typeParam = searchParams.get("type") || "all";
     const limitParam = searchParams.get("limit");
 
     if (!VALID_MODES.includes(modeParam as StudyMode)) {
       return jsendFail({
         error: `Invalid mode. Must be one of: ${VALID_MODES.join(", ")}`,
+      });
+    }
+
+    if (!VALID_TYPES.includes(typeParam as ItemTypeFilter)) {
+      return jsendFail({
+        error: `Invalid type. Must be one of: ${VALID_TYPES.join(", ")}`,
       });
     }
 
@@ -41,42 +55,23 @@ export async function GET(request: NextRequest) {
       limit = Math.min(parsedLimit, MAX_LIMIT);
     }
 
-    const useCase = new GetQuestionsForReviewUseCase(
-      new DrizzleProgressRepository(),
-      new DrizzleQuestionRepository()
+    const useCase = new GetItemsForReviewUseCase(
+      new DrizzleReviewableItemRepository(),
+      new DrizzleReviewProgressRepository(),
+      new DrizzleQuestionRepository(),
+      new DrizzleFlashcardRepository(),
+      new DrizzleVideoRepository()
     );
 
-    const questions = await useCase.execute(
+    const items = await useCase.execute(
       user.id,
-      { mode: modeParam as StudyMode },
+      { mode: modeParam as StudyMode, itemType: typeParam as ItemTypeFilter },
       limit
     );
 
-    // Fetch video info for the questions
-    const videoIds = [...new Set(questions.map((q) => q.question.videoId))];
-    const videoRepo = new DrizzleVideoRepository();
-    const videos = await videoRepo.findVideosByIds(videoIds);
-    const videoMap = new Map(videos.map((v) => [v.id, { title: v.title, publicId: v.publicId }]));
+    const response = items.map(toReviewItemApiResponse);
 
-    // Add video title and publicId to each question
-    const questionsWithVideoInfo = questions.map((q) => {
-      const videoInfo = videoMap.get(q.question.videoId);
-      if (!videoInfo) {
-        console.error(
-          `Data integrity issue: Question ${q.question.id} references missing video ${q.question.videoId}`
-        );
-      }
-      return {
-        ...q,
-        question: {
-          ...q.question,
-          videoTitle: videoInfo?.title || "Unknown Video",
-          videoPublicId: videoInfo?.publicId || "",
-        },
-      };
-    });
-
-    return jsendSuccess({ questions: questionsWithVideoInfo });
+    return jsendSuccess({ items: response });
   } catch (error) {
     return jsendError(String(error));
   }

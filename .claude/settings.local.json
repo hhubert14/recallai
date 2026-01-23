@@ -65,7 +65,17 @@
       "Bash(head:*)",
       "Bash(tail:*)",
       "Bash(tsconfig \")",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(git pull:*)",
+      "Bash(git ls-tree:*)",
+      "WebFetch(domain:supabase.com)",
+      "Bash(node -e:*)",
+      "Bash(npm run test:unit:*)",
+      "Bash(npm run db:generate:*)",
+      "Bash(npm run db:migrate:dev:*)",
+      "Bash(npm run db:migrate:test:*)",
+      "Bash(npm ls:*)",
+      "Bash(npm run test:component:*)"
     ],
     "deny": [],
     "ask": []

@@ -5,6 +5,7 @@ import { GenerateMultipleChoiceQuestionsUseCase } from "@/clean-architecture/use
 import { DrizzleVideoRepository } from "@/clean-architecture/infrastructure/repositories/video.repository.drizzle";
 import { DrizzleQuestionRepository } from "@/clean-architecture/infrastructure/repositories/question.repository.drizzle";
 import { DrizzleTranscriptRepository } from "@/clean-architecture/infrastructure/repositories/transcript.repository.drizzle";
+import { DrizzleReviewableItemRepository } from "@/clean-architecture/infrastructure/repositories/reviewable-item.repository.drizzle";
 import { YoutubeTranscriptVideoTranscriptService } from "@/clean-architecture/infrastructure/services/video-transcript.service.youtube-transcript";
 import { TranscriptResolverService } from "@/clean-architecture/infrastructure/services/transcript-resolver.service";
 import { LangChainQuestionGeneratorService } from "@/clean-architecture/infrastructure/services/question-generator.service.langchain";
@@ -45,7 +46,8 @@ export async function POST(request: NextRequest) {
             ),
             new LangChainQuestionGeneratorService(),
             new SupabaseEmbeddingService(),
-            new DrizzleTranscriptWindowRepository()
+            new DrizzleTranscriptWindowRepository(),
+            new DrizzleReviewableItemRepository()
         );
 
         const result = await useCase.execute(user.id, videoId, count);
