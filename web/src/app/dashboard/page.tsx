@@ -58,7 +58,7 @@ export default async function DashboardPage() {
           {/* Quick Stats Row */}
           <QuickStatsRow
             totalVideos={userStats.totalVideos}
-            itemsMastered={reviewStats.boxDistribution[4]}
+            itemsMastered={reviewStats.boxDistribution[4] ?? 0}
             quizAccuracy={userStats.quizAccuracy}
           />
 
