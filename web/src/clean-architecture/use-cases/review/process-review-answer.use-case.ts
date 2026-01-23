@@ -51,6 +51,10 @@ export class ProcessReviewAnswerUseCase {
             lastReviewedAt: now,
           },
         ]);
+      
+      if (!createdProgress) {
+        throw new Error(`Failed to create review progress for reviewableItemId: ${reviewableItemId}`);
+      }
 
       return createdProgress;
     }
