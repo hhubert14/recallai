@@ -16,15 +16,11 @@ export function WelcomeModalWrapper() {
   } = useExtensionDetection();
 
   useEffect(() => {
-    // Check if already completed
-    if (localStorage.getItem(STORAGE_KEY) === "true") {
-      setIsChecking(false);
-      return;
+    const completed = localStorage.getItem(STORAGE_KEY) === "true";
+    if (!completed) {
+      setIsOpen(true);
     }
-
-    // Show modal
     setIsChecking(false);
-    setIsOpen(true);
   }, []);
 
   const handleComplete = () => {

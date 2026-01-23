@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -42,6 +42,28 @@ export function WelcomeModal({
   onRecheckExtension,
 }: WelcomeModalProps) {
   const [currentStep, setCurrentStep] = useState(0);
+  const [showNotDetectedError, setShowNotDetectedError] = useState(false);
+  const [recheckCount, setRecheckCount] = useState(0);
+
+  // Show inline error when manual recheck completes and extension is still not installed
+  useEffect(() => {
+    if (recheckCount > 0 && !isCheckingExtension && !isExtensionInstalled) {
+      setShowNotDetectedError(true);
+    }
+  }, [recheckCount, isCheckingExtension, isExtensionInstalled]);
+
+  // Clear error when extension is installed
+  useEffect(() => {
+    if (isExtensionInstalled) {
+      setShowNotDetectedError(false);
+    }
+  }, [isExtensionInstalled]);
+
+  const handleRecheckExtension = () => {
+    setShowNotDetectedError(false);
+    setRecheckCount((c) => c + 1);
+    onRecheckExtension();
+  };
 
   const totalSteps = WELCOME_STEPS.length;
   const currentStepData = WELCOME_STEPS[currentStep];
@@ -131,11 +153,16 @@ export function WelcomeModal({
                   </Button>
                   <button
                     type="button"
-                    onClick={onRecheckExtension}
+                    onClick={handleRecheckExtension}
                     className="text-sm text-muted-foreground underline hover:text-foreground"
                   >
                     Check again
                   </button>
+                  {showNotDetectedError && (
+                    <p className="text-sm text-red-600 dark:text-red-400">
+                      Extension not detected. Please install and try again.
+                    </p>
+                  )}
                 </div>
               )}
             </div>
