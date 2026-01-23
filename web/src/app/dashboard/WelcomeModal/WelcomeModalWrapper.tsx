@@ -16,15 +16,24 @@ export function WelcomeModalWrapper() {
   } = useExtensionDetection();
 
   useEffect(() => {
-    const completed = localStorage.getItem(STORAGE_KEY) === "true";
-    if (!completed) {
+    try {
+      const completed = localStorage.getItem(STORAGE_KEY) === "true";
+      if (!completed) {
+        setIsOpen(true);
+      }
+    } catch {
+      // localStorage unavailable, show modal anyway
       setIsOpen(true);
     }
     setIsChecking(false);
   }, []);
 
   const handleComplete = () => {
-    localStorage.setItem(STORAGE_KEY, "true");
+    try {
+      localStorage.setItem(STORAGE_KEY, "true");
+    } catch {
+      // Ignore - modal will show again next visit
+    }
     setIsOpen(false);
   };
 
