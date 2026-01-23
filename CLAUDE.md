@@ -30,7 +30,7 @@ The platform uses the Leitner box system for optimal knowledge retention.
 
 ## Development Workflow: Test-Driven Development (TDD)
 
-**IMPORTANT: This project follows TDD. When implementing any non-trivial feature, bug fix, or use case, you MUST write tests first.**
+**IMPORTANT: This project follows TDD. Tests are the default, not the exception. When in doubt, write the test.**
 
 ### TDD is the Default
 
@@ -59,19 +59,37 @@ When creating a plan or todo list for implementation work, structure it as:
 2. Write tests for [feature]  ❌ Tests come LAST = wrong
 ```
 
-### What Requires TDD
+### What Requires Tests
 
-- Use cases and business logic (always)
-- Repository methods with complex queries
-- Utility functions with logic
+Almost everything. Specifically:
+
+**Always test:**
+- Use cases and business logic
+- Repository methods (even "simple" CRUD - edge cases exist)
+- Utility functions and helpers
+- Custom React hooks
 - Bug fixes (write a failing test that reproduces the bug first)
+- API routes with any logic
+- Components with user interactions (forms, buttons, modals)
+- Components with conditional rendering
+- Data transformations and formatting
 
-### What Can Skip TDD
+**Component tests should cover:**
+- User interactions (clicks, form submissions, keyboard navigation)
+- Accessibility (screen reader support, focus management)
+- Error states and loading states
+- Conditional rendering logic
 
-- Simple CRUD with no logic
-- Configuration changes
-- UI components (unless complex logic)
-- One-line changes
+### Rare Exceptions
+
+These are the **only** cases where skipping tests is acceptable:
+
+- Pure configuration changes (env vars, build config)
+- Obvious typo fixes in text/comments
+- Auto-generated code (migrations, type definitions)
+- Purely presentational components with zero logic or interactions (rare)
+
+**If you're unsure whether something needs a test, it needs a test.**
 
 ### TDD Commands
 
