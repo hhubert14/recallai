@@ -84,7 +84,9 @@
       "Skill(agent-browser)",
       "Bash(agent-browser open:*)",
       "Bash(agent-browser:*)",
-      "Bash(rm -f nul)"
+      "Bash(rm -f nul)",
+      "Bash(rm nul)",
+      "Bash(npx agent-browser:*)"
     ],
     "deny": [],
     "ask": []
