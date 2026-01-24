@@ -88,7 +88,8 @@
       "Bash(rm nul)",
       "Bash(npx agent-browser:*)",
       "Bash(npx eslint:*)",
-      "Bash(npm run lint:*)"
+      "Bash(npm run lint:*)",
+      "mcp__github__add_issue_comment"
     ],
     "deny": [],
     "ask": []
