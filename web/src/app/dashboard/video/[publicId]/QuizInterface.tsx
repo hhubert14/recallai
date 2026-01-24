@@ -106,8 +106,8 @@ export function QuizInterface({
             }),
         });
 
-        // Create/update progress record for spaced repetition
-        await fetch("/api/v1/reviews/submit-answer", {
+        // Initialize progress record for spaced repetition (creates if not exists)
+        await fetch("/api/v1/reviews/initialize-progress", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({

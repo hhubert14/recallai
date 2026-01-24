@@ -1,8 +1,9 @@
-import { db } from "@/drizzle";
+import { db as defaultDb } from "@/drizzle";
 import { reviewProgress } from "@/drizzle/schema";
 import { IReviewProgressRepository } from "@/clean-architecture/domain/repositories/review-progress.repository.interface";
 import { ReviewProgressEntity } from "@/clean-architecture/domain/entities/review-progress.entity";
 import { eq, and, lte, isNotNull, count, inArray, notInArray } from "drizzle-orm";
+import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 function toReviewProgressEntity(
   record: typeof reviewProgress.$inferSelect
@@ -23,6 +24,8 @@ function toReviewProgressEntity(
 export class DrizzleReviewProgressRepository
   implements IReviewProgressRepository
 {
+  constructor(private readonly db: PostgresJsDatabase = defaultDb) {}
+
   async createReviewProgressBatch(
     items: Array<{
       userId: string;
@@ -38,7 +41,7 @@ export class DrizzleReviewProgressRepository
       return [];
     }
 
-    const results = await db
+    const results = await this.db
       .insert(reviewProgress)
       .values(items)
       .returning();
@@ -50,7 +53,7 @@ export class DrizzleReviewProgressRepository
     userId: string,
     reviewableItemId: number
   ): Promise<ReviewProgressEntity | null> {
-    const [result] = await db
+    const [result] = await this.db
       .select()
       .from(reviewProgress)
       .where(
@@ -69,7 +72,7 @@ export class DrizzleReviewProgressRepository
   ): Promise<ReviewProgressEntity[]> {
     const today = new Date().toISOString().split("T")[0];
 
-    const results = await db
+    const results = await this.db
       .select()
       .from(reviewProgress)
       .where(
@@ -92,7 +95,7 @@ export class DrizzleReviewProgressRepository
     }
 
     // Find all reviewable item IDs that have progress records
-    const progressRecords = await db
+    const progressRecords = await this.db
       .select({ reviewableItemId: reviewProgress.reviewableItemId })
       .from(reviewProgress)
       .where(
@@ -119,7 +122,7 @@ export class DrizzleReviewProgressRepository
     timesIncorrect: number,
     lastReviewedAt: string
   ): Promise<ReviewProgressEntity> {
-    const [result] = await db
+    const [result] = await this.db
       .update(reviewProgress)
       .set({
         boxLevel,
@@ -148,7 +151,7 @@ export class DrizzleReviewProgressRepository
     const today = new Date().toISOString().split("T")[0];
 
     // Get due count
-    const dueResult = await db
+    const dueResult = await this.db
       .select({ count: count() })
       .from(reviewProgress)
       .where(
@@ -160,13 +163,13 @@ export class DrizzleReviewProgressRepository
       );
 
     // Get total count
-    const totalResult = await db
+    const totalResult = await this.db
       .select({ count: count() })
       .from(reviewProgress)
       .where(eq(reviewProgress.userId, userId));
 
     // Get box distribution
-    const boxData = await db
+    const boxData = await this.db
       .select({ boxLevel: reviewProgress.boxLevel })
       .from(reviewProgress)
       .where(eq(reviewProgress.userId, userId));
@@ -189,7 +192,7 @@ export class DrizzleReviewProgressRepository
   async findReviewProgressByUserId(
     userId: string
   ): Promise<ReviewProgressEntity[]> {
-    const results = await db
+    const results = await this.db
       .select()
       .from(reviewProgress)
       .where(eq(reviewProgress.userId, userId));
@@ -205,7 +208,7 @@ export class DrizzleReviewProgressRepository
       return [];
     }
 
-    const results = await db
+    const results = await this.db
       .select()
       .from(reviewProgress)
       .where(

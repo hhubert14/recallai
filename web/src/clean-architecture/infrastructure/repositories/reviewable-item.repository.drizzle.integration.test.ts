@@ -1,14 +1,10 @@
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from "vitest";
-import postgres from "postgres";
-import {
-  users,
-  videos,
-  questions,
-  flashcards,
-  reviewableItems,
-} from "@/drizzle/schema";
-import { db } from "@/drizzle";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { users, videos, questions, flashcards } from "@/drizzle/schema";
 import { DrizzleReviewableItemRepository } from "./reviewable-item.repository.drizzle";
+import {
+  createTestContext,
+  IntegrationTestContext,
+} from "@/test-utils/integration-test-context";
 
 /**
  * Integration tests for DrizzleReviewableItemRepository
@@ -27,14 +23,13 @@ describe("DrizzleReviewableItemRepository (integration)", () => {
     it("fails when test database is not configured", () => {
       throw new Error(
         "Integration tests require DATABASE_URL pointing to testdb. " +
-        "Ensure .env.test.local is configured and run: npm run test:integration"
+          "Ensure .env.test.local is configured and run: npm run test:integration"
       );
     });
     return;
   }
 
-  // Raw client for auth.users operations (not in Drizzle schema)
-  let rawClient: postgres.Sql;
+  let ctx: IntegrationTestContext;
   let repository: DrizzleReviewableItemRepository;
 
   // Test data IDs
@@ -43,40 +38,20 @@ describe("DrizzleReviewableItemRepository (integration)", () => {
   let testQuestionIds: number[] = [];
   let testFlashcardIds: number[] = [];
 
-  beforeAll(async () => {
-    if (!TEST_DATABASE_URL) {
-      throw new Error("DATABASE_URL is required for integration tests");
-    }
-
-    // Raw client only for auth.users operations
-    rawClient = postgres(TEST_DATABASE_URL, { prepare: false });
-    repository = new DrizzleReviewableItemRepository();
-  });
-
-  afterAll(async () => {
-    await rawClient.end();
-  });
-
   beforeEach(async () => {
-    // Clean up test data in reverse dependency order
-    await db.delete(reviewableItems);
-    await db.delete(flashcards);
-    await db.delete(questions);
-    await db.delete(videos);
-    await db.delete(users);
-    // Clean up auth.users (mock table in test db)
-    await rawClient`DELETE FROM auth.users`;
+    ctx = await createTestContext();
+    repository = new DrizzleReviewableItemRepository(ctx.db);
 
     // Create test user (must insert into auth.users first due to FK constraint)
     testUserId = crypto.randomUUID();
-    await rawClient`INSERT INTO auth.users (id, email) VALUES (${testUserId}, 'test@example.com')`;
-    await db.insert(users).values({
+    await ctx.sql`INSERT INTO auth.users (id, email) VALUES (${testUserId}, 'test@example.com')`;
+    await ctx.db.insert(users).values({
       id: testUserId,
       email: "test@example.com",
     });
 
     // Create test video
-    const [video] = await db
+    const [video] = await ctx.db
       .insert(videos)
       .values({
         userId: testUserId,
@@ -88,7 +63,7 @@ describe("DrizzleReviewableItemRepository (integration)", () => {
     testVideoId = video.id;
 
     // Create test questions
-    const questionResults = await db
+    const questionResults = await ctx.db
       .insert(questions)
       .values([
         {
@@ -106,7 +81,7 @@ describe("DrizzleReviewableItemRepository (integration)", () => {
     testQuestionIds = questionResults.map((q) => q.id);
 
     // Create test flashcards
-    const flashcardResults = await db
+    const flashcardResults = await ctx.db
       .insert(flashcards)
       .values([
         {
@@ -124,6 +99,10 @@ describe("DrizzleReviewableItemRepository (integration)", () => {
       ])
       .returning();
     testFlashcardIds = flashcardResults.map((f) => f.id);
+  });
+
+  afterEach(async () => {
+    await ctx.cleanup();
   });
 
   describe("createReviewableItemsForQuestionsBatch", () => {
@@ -196,7 +175,7 @@ describe("DrizzleReviewableItemRepository (integration)", () => {
   describe("findReviewableItemsByUserIdAndVideoId", () => {
     it("filters by video", async () => {
       // Create another video
-      const [video2] = await db
+      const [video2] = await ctx.db
         .insert(videos)
         .values({
           userId: testUserId,
@@ -211,7 +190,7 @@ describe("DrizzleReviewableItemRepository (integration)", () => {
         { userId: testUserId, questionId: testQuestionIds[0], videoId: testVideoId },
       ]);
 
-      const [q3] = await db
+      const [q3] = await ctx.db
         .insert(questions)
         .values({
           videoId: video2.id,

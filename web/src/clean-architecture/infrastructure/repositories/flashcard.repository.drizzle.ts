@@ -1,10 +1,13 @@
 import { IFlashcardRepository } from "@/clean-architecture/domain/repositories/flashcard.repository.interface";
 import { FlashcardEntity } from "@/clean-architecture/domain/entities/flashcard.entity";
-import { db } from "@/drizzle";
+import { db as defaultDb } from "@/drizzle";
 import { flashcards } from "@/drizzle/schema";
 import { eq, inArray, count } from "drizzle-orm";
+import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 export class DrizzleFlashcardRepository implements IFlashcardRepository {
+    constructor(private readonly db: PostgresJsDatabase = defaultDb) {}
+
     async createFlashcards(
         flashcardsData: { videoId: number; userId: string; front: string; back: string }[]
     ): Promise<FlashcardEntity[]> {
@@ -13,7 +16,7 @@ export class DrizzleFlashcardRepository implements IFlashcardRepository {
                 return [];
             }
 
-            const data = await db
+            const data = await this.db
                 .insert(flashcards)
                 .values(flashcardsData)
                 .returning();
@@ -27,7 +30,7 @@ export class DrizzleFlashcardRepository implements IFlashcardRepository {
 
     async findFlashcardsByVideoId(videoId: number): Promise<FlashcardEntity[]> {
         try {
-            const data = await db
+            const data = await this.db
                 .select()
                 .from(flashcards)
                 .where(eq(flashcards.videoId, videoId));
@@ -41,7 +44,7 @@ export class DrizzleFlashcardRepository implements IFlashcardRepository {
 
     async findFlashcardsByUserId(userId: string): Promise<FlashcardEntity[]> {
         try {
-            const data = await db
+            const data = await this.db
                 .select()
                 .from(flashcards)
                 .where(eq(flashcards.userId, userId));
@@ -59,7 +62,7 @@ export class DrizzleFlashcardRepository implements IFlashcardRepository {
         }
 
         try {
-            const data = await db
+            const data = await this.db
                 .select()
                 .from(flashcards)
                 .where(inArray(flashcards.id, flashcardIds));
@@ -77,7 +80,7 @@ export class DrizzleFlashcardRepository implements IFlashcardRepository {
         }
 
         try {
-            const rows = await db
+            const rows = await this.db
                 .select({
                     videoId: flashcards.videoId,
                     count: count(),

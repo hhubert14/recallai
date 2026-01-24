@@ -141,7 +141,7 @@ export function ReviewInterface({
     const previousBoxLevel = currentItem.progress?.boxLevel ?? 0;
 
     try {
-      const response = await fetch("/api/v1/reviews/submit-answer", {
+      const response = await fetch("/api/v1/reviews/submit-review-answer", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

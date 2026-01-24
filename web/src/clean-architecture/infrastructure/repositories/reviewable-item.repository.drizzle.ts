@@ -1,4 +1,4 @@
-import { db } from "@/drizzle";
+import { db as defaultDb } from "@/drizzle";
 import { reviewableItems } from "@/drizzle/schema";
 import { IReviewableItemRepository } from "@/clean-architecture/domain/repositories/reviewable-item.repository.interface";
 import {
@@ -6,6 +6,7 @@ import {
   ReviewableItemType,
 } from "@/clean-architecture/domain/entities/reviewable-item.entity";
 import { eq, and, inArray } from "drizzle-orm";
+import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 function toReviewableItemEntity(
   record: typeof reviewableItems.$inferSelect
@@ -24,6 +25,8 @@ function toReviewableItemEntity(
 export class DrizzleReviewableItemRepository
   implements IReviewableItemRepository
 {
+  constructor(private readonly db: PostgresJsDatabase = defaultDb) {}
+
   async createReviewableItemsForQuestionsBatch(
     items: Array<{
       userId: string;
@@ -35,7 +38,7 @@ export class DrizzleReviewableItemRepository
       return [];
     }
 
-    const results = await db
+    const results = await this.db
       .insert(reviewableItems)
       .values(
         items.map((item) => ({
@@ -62,7 +65,7 @@ export class DrizzleReviewableItemRepository
       return [];
     }
 
-    const results = await db
+    const results = await this.db
       .insert(reviewableItems)
       .values(
         items.map((item) => ({
@@ -81,7 +84,7 @@ export class DrizzleReviewableItemRepository
   async findReviewableItemsByUserId(
     userId: string
   ): Promise<ReviewableItemEntity[]> {
-    const results = await db
+    const results = await this.db
       .select()
       .from(reviewableItems)
       .where(eq(reviewableItems.userId, userId));
@@ -93,7 +96,7 @@ export class DrizzleReviewableItemRepository
     userId: string,
     videoId: number
   ): Promise<ReviewableItemEntity[]> {
-    const results = await db
+    const results = await this.db
       .select()
       .from(reviewableItems)
       .where(
@@ -109,7 +112,7 @@ export class DrizzleReviewableItemRepository
   async findReviewableItemByQuestionId(
     questionId: number
   ): Promise<ReviewableItemEntity | null> {
-    const [result] = await db
+    const [result] = await this.db
       .select()
       .from(reviewableItems)
       .where(eq(reviewableItems.questionId, questionId))
@@ -121,7 +124,7 @@ export class DrizzleReviewableItemRepository
   async findReviewableItemByFlashcardId(
     flashcardId: number
   ): Promise<ReviewableItemEntity | null> {
-    const [result] = await db
+    const [result] = await this.db
       .select()
       .from(reviewableItems)
       .where(eq(reviewableItems.flashcardId, flashcardId))
@@ -133,7 +136,7 @@ export class DrizzleReviewableItemRepository
   async findReviewableItemById(
     id: number
   ): Promise<ReviewableItemEntity | null> {
-    const [result] = await db
+    const [result] = await this.db
       .select()
       .from(reviewableItems)
       .where(eq(reviewableItems.id, id))
@@ -149,7 +152,7 @@ export class DrizzleReviewableItemRepository
       return [];
     }
 
-    const results = await db
+    const results = await this.db
       .select()
       .from(reviewableItems)
       .where(inArray(reviewableItems.id, ids));
