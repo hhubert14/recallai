@@ -23,6 +23,7 @@ export function FlashcardInterface({ flashcards }: FlashcardInterfaceProps) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [correctCount, setCorrectCount] = useState(0);
     const [sessionComplete, setSessionComplete] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     const currentFlashcard = flashcards[currentIndex];
 
@@ -39,19 +40,30 @@ export function FlashcardInterface({ flashcards }: FlashcardInterfaceProps) {
     const handleSubmit = async () => {
         if (selfAssessment === null) return;
         setIsSubmitting(true);
+        setError(null);
 
         if (selfAssessment) {
             setCorrectCount(prev => prev + 1);
         }
 
-        await fetch("/api/v1/reviews/initialize-progress", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                flashcardId: currentFlashcard.id,
-                isCorrect: selfAssessment,
-            }),
-        });
+        try {
+            const response = await fetch("/api/v1/reviews/initialize-progress", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    flashcardId: currentFlashcard.id,
+                    isCorrect: selfAssessment,
+                }),
+            });
+
+            if (!response.ok) {
+                console.error("Failed to save progress:", response.status);
+                setError("Failed to save progress. Your answer was recorded locally.");
+            }
+        } catch (err) {
+            console.error("Failed to save progress:", err);
+            setError("Failed to save progress. Your answer was recorded locally.");
+        }
 
         setShowResult(true);
         setIsSubmitting(false);
@@ -63,6 +75,7 @@ export function FlashcardInterface({ flashcards }: FlashcardInterfaceProps) {
             setIsFlipped(false);
             setSelfAssessment(null);
             setShowResult(false);
+            setError(null);
         }
     };
 
@@ -77,6 +90,7 @@ export function FlashcardInterface({ flashcards }: FlashcardInterfaceProps) {
         setShowResult(false);
         setCorrectCount(0);
         setSessionComplete(false);
+        setError(null);
     };
 
     const isLastCard = currentIndex === flashcards.length - 1;
@@ -158,6 +172,13 @@ export function FlashcardInterface({ flashcards }: FlashcardInterfaceProps) {
                             : "No worries - you'll see this card again soon."
                     }
                 />
+            )}
+
+            {/* Error message */}
+            {error && (
+                <p className="text-sm text-amber-600 text-center">
+                    {error}
+                </p>
             )}
 
             {/* Actions */}

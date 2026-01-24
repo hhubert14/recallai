@@ -232,6 +232,84 @@ describe("FlashcardInterface", () => {
     });
   });
 
+  describe("error handling", () => {
+    it("shows error message when API returns non-ok response", async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: false,
+        status: 500,
+        json: async () => ({ status: "error", message: "Server error" }),
+      } as Response);
+
+      const user = userEvent.setup();
+      render(<FlashcardInterface flashcards={mockFlashcards} />);
+
+      await user.click(screen.getByText("What is React?"));
+      await user.click(screen.getByRole("button", { name: "Got It!" }));
+      await user.click(screen.getByRole("button", { name: "Check Answer" }));
+
+      await waitFor(() => {
+        expect(screen.getByText(/Failed to save progress/)).toBeInTheDocument();
+      });
+    });
+
+    it("shows error message when fetch throws an error", async () => {
+      mockFetch.mockRejectedValueOnce(new Error("Network error"));
+
+      const user = userEvent.setup();
+      render(<FlashcardInterface flashcards={mockFlashcards} />);
+
+      await user.click(screen.getByText("What is React?"));
+      await user.click(screen.getByRole("button", { name: "Got It!" }));
+      await user.click(screen.getByRole("button", { name: "Check Answer" }));
+
+      await waitFor(() => {
+        expect(screen.getByText(/Failed to save progress/)).toBeInTheDocument();
+      });
+    });
+
+    it("still shows result and allows navigation even when error occurs", async () => {
+      mockFetch.mockRejectedValueOnce(new Error("Network error"));
+
+      const user = userEvent.setup();
+      render(<FlashcardInterface flashcards={mockFlashcards} />);
+
+      await user.click(screen.getByText("What is React?"));
+      await user.click(screen.getByRole("button", { name: "Got It!" }));
+      await user.click(screen.getByRole("button", { name: "Check Answer" }));
+
+      await waitFor(() => {
+        expect(screen.getByText("Correct!")).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: /Next Card/i })).toBeInTheDocument();
+      });
+    });
+
+    it("clears error when navigating to next card", async () => {
+      mockFetch.mockRejectedValueOnce(new Error("Network error"));
+
+      const user = userEvent.setup();
+      render(<FlashcardInterface flashcards={mockFlashcards} />);
+
+      await user.click(screen.getByText("What is React?"));
+      await user.click(screen.getByRole("button", { name: "Got It!" }));
+      await user.click(screen.getByRole("button", { name: "Check Answer" }));
+
+      await waitFor(() => {
+        expect(screen.getByText(/Failed to save progress/)).toBeInTheDocument();
+      });
+
+      // Reset mock to succeed for next card
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: async () => ({ status: "success", data: { progress: {}, created: true } }),
+      } as Response);
+
+      await user.click(screen.getByRole("button", { name: /Next Card/i }));
+
+      // Error should be cleared
+      expect(screen.queryByText(/Failed to save progress/)).not.toBeInTheDocument();
+    });
+  });
+
   describe("session complete", () => {
     it("shows summary after finishing all cards", async () => {
       const user = userEvent.setup();
