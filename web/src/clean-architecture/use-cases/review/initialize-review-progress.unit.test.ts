@@ -1,11 +1,17 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { InitializeReviewProgressUseCase } from "./initialize-review-progress.use-case";
+import {
+  InitializeReviewProgressUseCase,
+  ReviewableItemNotFoundError,
+} from "./initialize-review-progress.use-case";
 import { IReviewProgressRepository } from "@/clean-architecture/domain/repositories/review-progress.repository.interface";
+import { IReviewableItemRepository } from "@/clean-architecture/domain/repositories/reviewable-item.repository.interface";
 import { ReviewProgressEntity } from "@/clean-architecture/domain/entities/review-progress.entity";
+import { ReviewableItemEntity } from "@/clean-architecture/domain/entities/reviewable-item.entity";
 
 describe("InitializeReviewProgressUseCase", () => {
   let useCase: InitializeReviewProgressUseCase;
   let mockProgressRepo: IReviewProgressRepository;
+  let mockItemRepo: IReviewableItemRepository;
 
   const userId = "user-123";
   const reviewableItemId = 42;
@@ -21,7 +27,165 @@ describe("InitializeReviewProgressUseCase", () => {
       findReviewProgressByUserId: vi.fn(),
       findReviewProgressByReviewableItemIds: vi.fn(),
     };
-    useCase = new InitializeReviewProgressUseCase(mockProgressRepo);
+    mockItemRepo = {
+      createReviewableItemsForQuestionsBatch: vi.fn(),
+      createReviewableItemsForFlashcardsBatch: vi.fn(),
+      findReviewableItemsByUserId: vi.fn(),
+      findReviewableItemsByUserIdAndVideoId: vi.fn(),
+      findReviewableItemByQuestionId: vi.fn(),
+      findReviewableItemByFlashcardId: vi.fn(),
+      findReviewableItemById: vi.fn(),
+      findReviewableItemsByIds: vi.fn(),
+    };
+    useCase = new InitializeReviewProgressUseCase(mockProgressRepo, mockItemRepo);
+  });
+
+  describe("ID resolution", () => {
+    beforeEach(() => {
+      vi.mocked(
+        mockProgressRepo.findReviewProgressByUserIdAndReviewableItemId
+      ).mockResolvedValue(null);
+
+      const createdProgress = new ReviewProgressEntity(
+        1,
+        userId,
+        reviewableItemId,
+        2,
+        "2025-01-27",
+        1,
+        0,
+        new Date().toISOString(),
+        new Date().toISOString()
+      );
+      vi.mocked(mockProgressRepo.createReviewProgressBatch).mockResolvedValue([
+        createdProgress,
+      ]);
+    });
+
+    it("uses reviewableItemId directly when provided", async () => {
+      await useCase.execute({
+        userId,
+        reviewableItemId,
+        isCorrect: true,
+      });
+
+      expect(
+        mockProgressRepo.findReviewProgressByUserIdAndReviewableItemId
+      ).toHaveBeenCalledWith(userId, reviewableItemId);
+      expect(mockItemRepo.findReviewableItemByQuestionId).not.toHaveBeenCalled();
+      expect(mockItemRepo.findReviewableItemByFlashcardId).not.toHaveBeenCalled();
+    });
+
+    it("resolves reviewableItemId from questionId", async () => {
+      const questionId = 100;
+      const reviewableItem = new ReviewableItemEntity(
+        reviewableItemId,
+        userId,
+        1,
+        questionId,
+        null,
+        new Date().toISOString()
+      );
+
+      vi.mocked(mockItemRepo.findReviewableItemByQuestionId).mockResolvedValue(
+        reviewableItem
+      );
+
+      await useCase.execute({
+        userId,
+        questionId,
+        isCorrect: true,
+      });
+
+      expect(mockItemRepo.findReviewableItemByQuestionId).toHaveBeenCalledWith(
+        questionId
+      );
+      expect(
+        mockProgressRepo.findReviewProgressByUserIdAndReviewableItemId
+      ).toHaveBeenCalledWith(userId, reviewableItemId);
+    });
+
+    it("resolves reviewableItemId from flashcardId", async () => {
+      const flashcardId = 200;
+      const reviewableItem = new ReviewableItemEntity(
+        reviewableItemId,
+        userId,
+        1,
+        null,
+        flashcardId,
+        new Date().toISOString()
+      );
+
+      vi.mocked(mockItemRepo.findReviewableItemByFlashcardId).mockResolvedValue(
+        reviewableItem
+      );
+
+      await useCase.execute({
+        userId,
+        flashcardId,
+        isCorrect: true,
+      });
+
+      expect(mockItemRepo.findReviewableItemByFlashcardId).toHaveBeenCalledWith(
+        flashcardId
+      );
+      expect(
+        mockProgressRepo.findReviewProgressByUserIdAndReviewableItemId
+      ).toHaveBeenCalledWith(userId, reviewableItemId);
+    });
+
+    it("prioritizes reviewableItemId over questionId and flashcardId", async () => {
+      await useCase.execute({
+        userId,
+        reviewableItemId,
+        questionId: 100,
+        flashcardId: 200,
+        isCorrect: true,
+      });
+
+      expect(mockItemRepo.findReviewableItemByQuestionId).not.toHaveBeenCalled();
+      expect(mockItemRepo.findReviewableItemByFlashcardId).not.toHaveBeenCalled();
+      expect(
+        mockProgressRepo.findReviewProgressByUserIdAndReviewableItemId
+      ).toHaveBeenCalledWith(userId, reviewableItemId);
+    });
+
+    it("throws ReviewableItemNotFoundError when no valid identifier is provided", async () => {
+      await expect(
+        useCase.execute({
+          userId,
+          isCorrect: true,
+        })
+      ).rejects.toThrow(ReviewableItemNotFoundError);
+    });
+
+    it("throws ReviewableItemNotFoundError when questionId lookup returns null", async () => {
+      vi.mocked(mockItemRepo.findReviewableItemByQuestionId).mockResolvedValue(
+        null
+      );
+
+      await expect(
+        useCase.execute({
+          userId,
+          questionId: 999,
+          isCorrect: true,
+        })
+      ).rejects.toThrow(ReviewableItemNotFoundError);
+    });
+
+    it("throws ReviewableItemNotFoundError when flashcardId lookup returns null", async () => {
+      vi.mocked(mockItemRepo.findReviewableItemByFlashcardId).mockResolvedValue(
+        null
+      );
+
+      await expect(
+        useCase.execute({
+          userId,
+          flashcardId: 999,
+          isCorrect: true,
+        })
+      ).rejects.toThrow(ReviewableItemNotFoundError);
+    });
   });
 
   describe("when no existing progress exists", () => {
@@ -48,7 +212,11 @@ describe("InitializeReviewProgressUseCase", () => {
         createdProgress,
       ]);
 
-      const result = await useCase.execute(userId, reviewableItemId, true);
+      const result = await useCase.execute({
+        userId,
+        reviewableItemId,
+        isCorrect: true,
+      });
 
       expect(result.created).toBe(true);
       expect(result.progress.boxLevel).toBe(2);
@@ -83,7 +251,11 @@ describe("InitializeReviewProgressUseCase", () => {
         createdProgress,
       ]);
 
-      const result = await useCase.execute(userId, reviewableItemId, false);
+      const result = await useCase.execute({
+        userId,
+        reviewableItemId,
+        isCorrect: false,
+      });
 
       expect(result.created).toBe(true);
       expect(result.progress.boxLevel).toBe(1);
@@ -104,7 +276,11 @@ describe("InitializeReviewProgressUseCase", () => {
       );
 
       await expect(
-        useCase.execute(userId, reviewableItemId, true)
+        useCase.execute({
+          userId,
+          reviewableItemId,
+          isCorrect: true,
+        })
       ).rejects.toThrow(
         `Failed to create review progress for reviewableItemId: ${reviewableItemId}`
       );
@@ -129,7 +305,11 @@ describe("InitializeReviewProgressUseCase", () => {
         mockProgressRepo.findReviewProgressByUserIdAndReviewableItemId
       ).mockResolvedValue(existingProgress);
 
-      const result = await useCase.execute(userId, reviewableItemId, true);
+      const result = await useCase.execute({
+        userId,
+        reviewableItemId,
+        isCorrect: true,
+      });
 
       expect(result.created).toBe(false);
       expect(result.progress).toBe(existingProgress);
@@ -155,7 +335,11 @@ describe("InitializeReviewProgressUseCase", () => {
         mockProgressRepo.findReviewProgressByUserIdAndReviewableItemId
       ).mockResolvedValue(existingProgress);
 
-      const result = await useCase.execute(userId, reviewableItemId, false);
+      const result = await useCase.execute({
+        userId,
+        reviewableItemId,
+        isCorrect: false,
+      });
 
       expect(result.created).toBe(false);
       expect(result.progress.boxLevel).toBe(4); // still at box 4, not reset to 1

@@ -1,11 +1,27 @@
 import { IReviewProgressRepository } from "@/clean-architecture/domain/repositories/review-progress.repository.interface";
+import { IReviewableItemRepository } from "@/clean-architecture/domain/repositories/reviewable-item.repository.interface";
 import { ReviewProgressEntity } from "@/clean-architecture/domain/entities/review-progress.entity";
 import { getNextReviewDate } from "./spaced-repetition";
+
+export type InitializeProgressParams = {
+  userId: string;
+  isCorrect: boolean;
+  reviewableItemId?: number;
+  questionId?: number;
+  flashcardId?: number;
+};
 
 export type InitializeProgressResult = {
   progress: ReviewProgressEntity;
   created: boolean;
 };
+
+export class ReviewableItemNotFoundError extends Error {
+  constructor() {
+    super("Must provide a valid reviewableItemId, questionId, or flashcardId");
+    this.name = "ReviewableItemNotFoundError";
+  }
+}
 
 /**
  * Initializes review progress for a reviewable item on the video page.
@@ -16,19 +32,27 @@ export type InitializeProgressResult = {
  * existing progress.
  *
  * Behavior:
+ * - Resolves the reviewable item ID from questionId or flashcardId if needed
  * - If no progress exists: creates new progress
  *   - Correct answer → box 2 (3-day review interval)
  *   - Incorrect answer → box 1 (1-day review interval)
  * - If progress exists: returns existing progress unchanged (no-op)
  */
 export class InitializeReviewProgressUseCase {
-  constructor(private reviewProgressRepository: IReviewProgressRepository) {}
+  constructor(
+    private reviewProgressRepository: IReviewProgressRepository,
+    private reviewableItemRepository: IReviewableItemRepository
+  ) {}
 
-  async execute(
-    userId: string,
-    reviewableItemId: number,
-    isCorrect: boolean
-  ): Promise<InitializeProgressResult> {
+  async execute(params: InitializeProgressParams): Promise<InitializeProgressResult> {
+    const { userId, isCorrect } = params;
+
+    const reviewableItemId = await this.resolveReviewableItemId(params);
+
+    if (!reviewableItemId) {
+      throw new ReviewableItemNotFoundError();
+    }
+
     const existingProgress =
       await this.reviewProgressRepository.findReviewProgressByUserIdAndReviewableItemId(
         userId,
@@ -73,5 +97,36 @@ export class InitializeReviewProgressUseCase {
       progress: createdProgress,
       created: true,
     };
+  }
+
+  private async resolveReviewableItemId(
+    params: InitializeProgressParams
+  ): Promise<number | null> {
+    const { reviewableItemId, questionId, flashcardId } = params;
+
+    // Direct ID takes priority
+    if (reviewableItemId) {
+      return reviewableItemId;
+    }
+
+    // Try question lookup
+    if (questionId) {
+      const item =
+        await this.reviewableItemRepository.findReviewableItemByQuestionId(
+          questionId
+        );
+      return item?.id ?? null;
+    }
+
+    // Try flashcard lookup
+    if (flashcardId) {
+      const item =
+        await this.reviewableItemRepository.findReviewableItemByFlashcardId(
+          flashcardId
+        );
+      return item?.id ?? null;
+    }
+
+    return null;
   }
 }

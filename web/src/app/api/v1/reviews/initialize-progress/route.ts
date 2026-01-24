@@ -1,44 +1,12 @@
 import { NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { InitializeReviewProgressUseCase } from "@/clean-architecture/use-cases/review/initialize-review-progress.use-case";
+import {
+  InitializeReviewProgressUseCase,
+  ReviewableItemNotFoundError,
+} from "@/clean-architecture/use-cases/review/initialize-review-progress.use-case";
 import { DrizzleReviewProgressRepository } from "@/clean-architecture/infrastructure/repositories/review-progress.repository.drizzle";
 import { DrizzleReviewableItemRepository } from "@/clean-architecture/infrastructure/repositories/reviewable-item.repository.drizzle";
-import { IReviewableItemRepository } from "@/clean-architecture/domain/repositories/reviewable-item.repository.interface";
 import { jsendSuccess, jsendFail, jsendError } from "@/lib/jsend";
-
-type ItemIdentifiers = {
-  reviewableItemId?: number;
-  questionId?: number;
-  flashcardId?: number;
-};
-
-async function resolveReviewableItemId(
-  identifiers: ItemIdentifiers,
-  repo: IReviewableItemRepository
-): Promise<number | null> {
-  // Direct ID takes priority
-  if (identifiers.reviewableItemId) {
-    return identifiers.reviewableItemId;
-  }
-
-  // Try question lookup
-  if (identifiers.questionId) {
-    const item = await repo.findReviewableItemByQuestionId(
-      identifiers.questionId
-    );
-    return item?.id ?? null;
-  }
-
-  // Try flashcard lookup
-  if (identifiers.flashcardId) {
-    const item = await repo.findReviewableItemByFlashcardId(
-      identifiers.flashcardId
-    );
-    return item?.id ?? null;
-  }
-
-  return null;
-}
 
 /**
  * POST /api/v1/reviews/initialize-progress
@@ -52,7 +20,7 @@ async function resolveReviewableItemId(
  * - Incorrect answers start at box 1 (more practice)
  *
  * Request body:
- * - questionId: number (required for video page questions)
+ * - reviewableItemId OR questionId OR flashcardId: number (at least one required)
  * - isCorrect: boolean (required)
  *
  * Response:
@@ -77,31 +45,18 @@ export async function POST(request: NextRequest) {
       return jsendFail({ error: "Missing required field: isCorrect" });
     }
 
-    const reviewableItemRepo = new DrizzleReviewableItemRepository();
-    const resolvedReviewableItemId = await resolveReviewableItemId(
-      { reviewableItemId, questionId, flashcardId },
-      reviewableItemRepo
-    );
-
-    if (!resolvedReviewableItemId) {
-      return jsendFail(
-        {
-          error:
-            "Must provide a valid reviewableItemId, questionId, or flashcardId",
-        },
-        400
-      );
-    }
-
     const useCase = new InitializeReviewProgressUseCase(
-      new DrizzleReviewProgressRepository()
+      new DrizzleReviewProgressRepository(),
+      new DrizzleReviewableItemRepository()
     );
 
-    const result = await useCase.execute(
-      user.id,
-      resolvedReviewableItemId,
-      isCorrect
-    );
+    const result = await useCase.execute({
+      userId: user.id,
+      isCorrect,
+      reviewableItemId,
+      questionId,
+      flashcardId,
+    });
 
     return jsendSuccess({
       progress: {
@@ -116,6 +71,9 @@ export async function POST(request: NextRequest) {
       created: result.created,
     });
   } catch (error) {
+    if (error instanceof ReviewableItemNotFoundError) {
+      return jsendFail({ error: error.message }, 400);
+    }
     return jsendError(String(error));
   }
 }
