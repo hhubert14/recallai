@@ -60,21 +60,26 @@ export function useTour({
     const steps = getTourSteps(tourId);
     if (steps.length === 0) return null;
 
-    return createTourDriver({
+    const driverInstance = createTourDriver({
       steps,
       onDestroyed: () => {
-        setIsRunning(false);
-        // Mark as completed when tour finishes
-        try {
-          const storageKey = TOUR_STORAGE_KEYS[tourId];
-          localStorage.setItem(storageKey, "true");
-          setIsCompleted(true);
-        } catch {
-          // Storage unavailable, just update state
-          setIsCompleted(true);
+        // Only update state if this is still the current driver
+        if (driverRef.current === driverInstance) {
+          setIsRunning(false);
+          // Mark as completed when tour finishes
+          try {
+            const storageKey = TOUR_STORAGE_KEYS[tourId];
+            localStorage.setItem(storageKey, "true");
+            setIsCompleted(true);
+          } catch {
+            // Storage unavailable, just update state
+            setIsCompleted(true);
+          }
         }
       },
     });
+
+    return driverInstance;
   }, [tourId]);
 
   const startTour = useCallback(() => {
