@@ -7,6 +7,9 @@ import { QuizProgress, QuizQuestion, QuizResult, QuizSummary } from "@/component
 import { StudyModeSelector, StudyModeStats, ProgressStats } from "./StudyModeSelector";
 import { StudyMode, ReviewItemApiResponse } from "@/clean-architecture/use-cases/review/types";
 import { BookOpen, Video, RotateCcw } from "lucide-react";
+import { TOUR_TARGETS } from "@/components/tour/tour-constants";
+import { ReviewModeSelectorTour } from "./ReviewModeSelectorTour";
+import { ReviewSessionTour } from "./ReviewSessionTour";
 
 interface SessionResults {
   correct: number;
@@ -247,15 +250,18 @@ export function ReviewInterface({
     }
 
     return (
-      <StudyModeSelector
-        stats={studyModeStats}
-        progressStats={progressStats}
-        selectedMode={selectedMode}
-        onModeSelect={setSelectedMode}
-        onStartSession={handleStartSession}
-        isLoading={isLoadingItems}
-        error={fetchError}
-      />
+      <>
+        <ReviewModeSelectorTour />
+        <StudyModeSelector
+          stats={studyModeStats}
+          progressStats={progressStats}
+          selectedMode={selectedMode}
+          onModeSelect={setSelectedMode}
+          onStartSession={handleStartSession}
+          isLoading={isLoadingItems}
+          error={fetchError}
+        />
+      </>
     );
   }
 
@@ -415,8 +421,11 @@ export function ReviewInterface({
   // Review interface
   return (
     <div className="max-w-2xl mx-auto space-y-6">
+      <ReviewSessionTour />
       {/* Progress */}
-      <QuizProgress current={currentItemIndex + 1} total={items.length} />
+      <div data-tour-id={TOUR_TARGETS.quizProgress}>
+        <QuizProgress current={currentItemIndex + 1} total={items.length} />
+      </div>
 
       {/* Video source badge */}
       <a
@@ -441,7 +450,9 @@ export function ReviewInterface({
       </div>
 
       {/* Content based on item type */}
-      {currentItem.itemType === "question" ? renderQuestionReview() : renderFlashcardReview()}
+      <div data-tour-id={TOUR_TARGETS.reviewContent}>
+        {currentItem.itemType === "question" ? renderQuestionReview() : renderFlashcardReview()}
+      </div>
 
       {/* Submit error message */}
       {submitError && (
@@ -449,7 +460,7 @@ export function ReviewInterface({
       )}
 
       {/* Actions */}
-      <div className="flex gap-3">
+      <div className="flex gap-3" data-tour-id={TOUR_TARGETS.actionButtons}>
         {!showResult ? (
           <Button
             onClick={handleSubmit}

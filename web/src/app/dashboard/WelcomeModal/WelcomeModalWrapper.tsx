@@ -31,6 +31,8 @@ export function WelcomeModalWrapper() {
   const handleComplete = () => {
     try {
       localStorage.setItem(STORAGE_KEY, "true");
+      // Dispatch event so other components (like DashboardTour) know modal is done
+      window.dispatchEvent(new CustomEvent("welcomeModalCompleted"));
     } catch {
       // Ignore - modal will show again next visit
     }

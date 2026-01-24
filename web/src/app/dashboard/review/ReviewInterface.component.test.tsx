@@ -4,6 +4,14 @@ import { ReviewInterface } from "./ReviewInterface";
 import { StudyModeStats, ProgressStats } from "./StudyModeSelector";
 import { ReviewItemApiResponse } from "@/clean-architecture/use-cases/review/types";
 
+// Mock tour components (they import CSS which causes issues in tests)
+vi.mock("./ReviewModeSelectorTour", () => ({
+  ReviewModeSelectorTour: () => null,
+}));
+vi.mock("./ReviewSessionTour", () => ({
+  ReviewSessionTour: () => null,
+}));
+
 // Mock next/navigation
 const mockPush = vi.fn();
 const mockRefresh = vi.fn();

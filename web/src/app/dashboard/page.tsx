@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { DashboardHeader } from "./components/DashboardHeader";
+import { DashboardHeader } from "@/components/DashboardHeader";
 import { DrizzleAnswerRepository } from "@/clean-architecture/infrastructure/repositories/answer.repository.drizzle";
 import { DrizzleVideoRepository } from "@/clean-architecture/infrastructure/repositories/video.repository.drizzle";
 import { DrizzleReviewableItemRepository } from "@/clean-architecture/infrastructure/repositories/reviewable-item.repository.drizzle";
@@ -15,6 +15,7 @@ import { ReviewHeroCard } from "./ReviewHeroCard";
 import { QuickStatsRow } from "./QuickStatsRow";
 import { WhatsNewCard } from "./WhatsNewCard";
 import { RecentVideosCard } from "./RecentVideosCard";
+import { DashboardTour } from "./DashboardTour";
 
 export const metadata: Metadata = {
   title: "Dashboard | RecallAI",
@@ -50,6 +51,7 @@ export default async function DashboardPage() {
     <div className="flex min-h-screen flex-col bg-background">
       <WelcomeModalWrapper />
       <OnboardingSurveyWrapper />
+      <DashboardTour />
       <DashboardHeader />
 
       <main className="flex-1 container py-8 md:py-12 px-6 md:px-8 max-w-6xl mx-auto">

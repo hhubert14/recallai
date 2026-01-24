@@ -2,6 +2,7 @@
 
 import { Video, Trophy, Target } from "lucide-react";
 import { useInView } from "@/hooks/useInView";
+import { TOUR_TARGETS } from "@/components/tour/tour-constants";
 
 interface QuickStatsRowProps {
   totalVideos: number;
@@ -44,7 +45,7 @@ export function QuickStatsRow({
   ];
 
   return (
-    <div ref={ref} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div ref={ref} data-tour-id={TOUR_TARGETS.quickStats} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
       {stats.map((stat) => (
         <div
           key={stat.label}

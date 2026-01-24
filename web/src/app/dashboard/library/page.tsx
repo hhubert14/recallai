@@ -5,7 +5,7 @@ import { LibraryVideoList } from "@/app/dashboard/library/LibraryVideoList";
 import { TextRefreshButton } from "../TextRefreshButton";
 import { DrizzleVideoRepository } from "@/clean-architecture/infrastructure/repositories/video.repository.drizzle";
 import { FindVideosByUserIdUseCase } from "@/clean-architecture/use-cases/video/find-videos-by-user-id.use-case";
-import { DashboardHeader } from "@/app/dashboard/components/DashboardHeader";
+import { DashboardHeader } from "@/components/DashboardHeader";
 
 export const metadata: Metadata = {
     title: "My Library | RecallAI",

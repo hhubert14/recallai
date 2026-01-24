@@ -6,7 +6,8 @@ import { VideoPlayer } from "./VideoPlayer";
 import { ContentTabs } from "./ContentTabs";
 import { VideoPlayerProvider } from "./VideoPlayerContext";
 import { ChatButton } from "./ChatButton";
-import { DashboardHeader } from "@/app/dashboard/components/DashboardHeader";
+import { VideoDetailTour } from "./VideoDetailTour";
+import { DashboardHeader } from "@/components/DashboardHeader";
 import { DrizzleVideoRepository } from "@/clean-architecture/infrastructure/repositories/video.repository.drizzle";
 import { DrizzleSummaryRepository } from "@/clean-architecture/infrastructure/repositories/summary.repository.drizzle";
 import { DrizzleQuestionRepository } from "@/clean-architecture/infrastructure/repositories/question.repository.drizzle";
@@ -86,6 +87,7 @@ export default async function VideoDetailPage({
 
     return (
         <div className="flex min-h-screen flex-col bg-background">
+            <VideoDetailTour />
             <DashboardHeader />
 
             <main className="flex-1 container py-4 px-6 md:px-8 max-w-7xl mx-auto">

@@ -8,6 +8,7 @@ import {
   formatUpdateDate,
 } from "@/app/updates/updates-data";
 import { useInView } from "@/hooks/useInView";
+import { TOUR_TARGETS } from "@/components/tour/tour-constants";
 
 export function WhatsNewCard() {
   const { ref, isInView } = useInView<HTMLDivElement>({ threshold: 0.1 });
@@ -17,6 +18,7 @@ export function WhatsNewCard() {
   return (
     <div
       ref={ref}
+      data-tour-id={TOUR_TARGETS.whatsNew}
       className={`rounded-xl border border-border bg-card p-6 h-full flex flex-col opacity-0 transition-all duration-300 hover:shadow-md dark:hover:shadow-none dark:hover:border-foreground/20 ${isInView ? "animate-fade-up" : ""}`}
       style={{ animationDelay: "400ms", animationFillMode: "forwards" }}
     >

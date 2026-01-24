@@ -5,6 +5,7 @@ import { useState } from "react";
 import { QuizInterface } from "./QuizInterface";
 import { FlashcardInterface } from "./FlashcardInterface";
 import { MarkdownWithTimestamps } from "./MarkdownWithTimestamps";
+import { TOUR_TARGETS } from "@/components/tour/tour-constants";
 
 const MAX_QUESTIONS = 20;
 const MAX_FLASHCARDS = 20;
@@ -118,6 +119,7 @@ export function ContentTabs({
             <div className="flex border-b border-border px-6 bg-muted">
                 <button
                     onClick={() => setActiveTab("summary")}
+                    data-tour-id={TOUR_TARGETS.summaryTab}
                     className={`px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
                         activeTab === "summary"
                             ? "border-primary text-primary bg-card -mb-px"
@@ -128,6 +130,7 @@ export function ContentTabs({
                 </button>
                 <button
                     onClick={() => setActiveTab("qa")}
+                    data-tour-id={TOUR_TARGETS.qaTab}
                     className={`px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
                         activeTab === "qa"
                             ? "border-primary text-primary bg-card -mb-px"
@@ -138,6 +141,7 @@ export function ContentTabs({
                 </button>
                 <button
                     onClick={() => setActiveTab("flashcards")}
+                    data-tour-id={TOUR_TARGETS.flashcardsTab}
                     className={`px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
                         activeTab === "flashcards"
                             ? "border-primary text-primary bg-card -mb-px"

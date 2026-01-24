@@ -35,6 +35,14 @@ export function formatUpdateDate(
 // Add new entries at the TOP of this array (newest first)
 export const updates: UpdateEntry[] = [
   {
+    id: "2026-01-23-guided-tours",
+    date: "2026-01-23",
+    title: "Guided Feature Tours",
+    description:
+      "Discover features as you go with lightweight tooltip tours on each page. Auto-starts on first visit and can be replayed anytime from the help button.",
+    category: "New Feature",
+  },
+  {
     id: "2026-01-18-ai-chatbot",
     date: "2026-01-18",
     title: "AI Video Chatbot",

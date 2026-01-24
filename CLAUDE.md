@@ -30,7 +30,7 @@ The platform uses the Leitner box system for optimal knowledge retention.
 
 ## Development Workflow: Test-Driven Development (TDD)
 
-**IMPORTANT: This project follows TDD. When implementing any non-trivial feature, bug fix, or use case, you MUST write tests first.**
+**IMPORTANT: This project follows TDD. Tests are the default, not the exception. When in doubt, write the test.**
 
 ### TDD is the Default
 
@@ -59,19 +59,37 @@ When creating a plan or todo list for implementation work, structure it as:
 2. Write tests for [feature]  ❌ Tests come LAST = wrong
 ```
 
-### What Requires TDD
+### What Requires Tests
 
-- Use cases and business logic (always)
-- Repository methods with complex queries
-- Utility functions with logic
+Almost everything. Specifically:
+
+**Always test:**
+- Use cases and business logic
+- Repository methods (even "simple" CRUD - edge cases exist)
+- Utility functions and helpers
+- Custom React hooks
 - Bug fixes (write a failing test that reproduces the bug first)
+- API routes with any logic
+- Components with user interactions (forms, buttons, modals)
+- Components with conditional rendering
+- Data transformations and formatting
 
-### What Can Skip TDD
+**Component tests should cover:**
+- User interactions (clicks, form submissions, keyboard navigation)
+- Accessibility (screen reader support, focus management)
+- Error states and loading states
+- Conditional rendering logic
 
-- Simple CRUD with no logic
-- Configuration changes
-- UI components (unless complex logic)
-- One-line changes
+### Rare Exceptions
+
+These are the **only** cases where skipping tests is acceptable:
+
+- Pure configuration changes (env vars, build config)
+- Obvious typo fixes in text/comments
+- Auto-generated code (migrations, type definitions)
+- Purely presentational components with zero logic or interactions (rare)
+
+**If you're unsure whether something needs a test, it needs a test.**
 
 ### TDD Commands
 
@@ -349,6 +367,26 @@ npm run db:studio:test   # Open Drizzle Studio for test DB (port 4984)
 
 **Important:** DO NOT run `db:migrate:prod` locally - production migrations require separate review/deployment process.
 
+## Development Workflow Tools
+
+### Skills
+
+| Skill | When to use |
+|-------|-------------|
+| `/test-driven-development` | Before implementing features - write tests first |
+| `/frontend-design` | Building/styling UI components and pages |
+| `/vercel-react-best-practices` | Writing or reviewing React/Next.js code for performance |
+| `/web-design-guidelines` | Reviewing UI for accessibility and design best practices |
+
+### MCP Servers
+
+| Server | Purpose | When to use |
+|--------|---------|-------------|
+| `context7` | Library documentation | See [Using External Libraries](#using-external-libraries) |
+| `github` | GitHub operations | Creating PRs, managing issues, searching code |
+| `supabase` | Database operations | Running SQL, checking migrations, viewing logs |
+| `chrome-devtools` / `playwright` | Browser automation | Testing extension behavior, E2E testing |
+
 ## Local Development Setup
 
 ### Prerequisites
@@ -608,7 +646,41 @@ app/dashboard/library/
 - **Scalability** - Clear rule prevents confusion as codebase grows
 - **Maintenance** - Feature-specific code stays together, easier to refactor/delete
 
-### 4. Database Queries (Drizzle)
+### 4. React Hook Ordering
+
+Inside React components and custom hooks, organize code in this order:
+
+```typescript
+function MyComponent({ props }) {
+  // 1. useContext
+  const theme = useContext(ThemeContext);
+
+  // 2. useState
+  const [value, setValue] = useState(false);
+
+  // 3. useRef
+  const ref = useRef(null);
+
+  // 4. Custom hooks
+  const { data } = useCustomHook();
+
+  // 5. useCallback
+  const handleClick = useCallback(() => { ... }, [deps]);
+
+  // 6. useEffect
+  useEffect(() => { ... }, [deps]);
+
+  // 7. Early returns
+  if (loading) return <Spinner />;
+
+  // 8. Return JSX
+  return <div>...</div>;
+}
+```
+
+Utility functions that don't depend on component state/props go **outside** the component.
+
+### 5. Database Queries (Drizzle)
 
 **Select:**
 ```typescript
@@ -650,7 +722,7 @@ const data = await db.query.questions.findMany({
 });
 ```
 
-### 5. API Routes
+### 6. API Routes
 
 All API routes are versioned under `/api/v1/` and use JSend response format.
 
@@ -710,13 +782,13 @@ export async function GET(request: Request, { params }: { params: { url: string 
 }
 ```
 
-### 6. Type Safety
+### 7. Type Safety
 
 - Use Drizzle-inferred types: `typeof tableName.$inferSelect`
 - Export types from `src/drizzle/schema.ts`
 - Prefer type-safe queries over raw SQL
 
-### 7. Git Branch Naming
+### 8. Git Branch Naming
 
 Use these prefixes when creating branches:
 
@@ -745,7 +817,7 @@ chore/refactor-auth-service
 release/v1.2.0
 ```
 
-### 8. Comment Task Markers
+### 9. Comment Task Markers
 
 Use these standard task markers in code comments:
 
@@ -764,6 +836,27 @@ Use these standard task markers in code comments:
 // HACK: Workaround for API bug, remove after v2.0
 // NOTE: This must run before database initialization
 // REVIEW: Is this the right approach for error handling?
+```
+
+### 10. Dead Code
+
+**Never add dead code.** Don't implement features, parameters, or options that aren't used. If a feature might be needed "later," wait until later to add it.
+
+**Remove dead code when found.** If you encounter unused functions, parameters, imports, or variables, delete them. Dead code:
+- Creates confusion about what's actually used
+- Requires maintenance for no benefit
+- Often becomes permanently dead (the "later" never comes)
+
+```typescript
+// ❌ Bad - unused parameter
+function completeTour(dontShowAgain?: boolean) {
+  // dontShowAgain is never used anywhere
+}
+
+// ✅ Good - only what's needed
+function completeTour() {
+  // ...
+}
 ```
 
 ## Testing Strategy
@@ -980,6 +1073,30 @@ When adding noteworthy features, improvements, or bug fixes, update the changelo
 - Internal refactoring
 - Minor styling tweaks
 - Developer-only changes (CI/CD, tests)
+
+## Using External Libraries
+
+**IMPORTANT: When adding a new library or using an unfamiliar library, always use Context7 to get up-to-date documentation before implementing.**
+
+Context7 provides current documentation and code examples for libraries. Use it to:
+- Learn the latest API patterns (libraries change frequently)
+- Get accurate TypeScript types
+- Find working code examples
+- Avoid deprecated patterns
+
+**Workflow:**
+1. `mcp__context7__resolve-library-id` - Find the library ID
+2. `mcp__context7__query-docs` - Query for specific usage patterns
+
+**Example:**
+```
+// 1. Find library ID
+resolve-library-id("react-joyride", "React tooltip tour library")
+// Returns: /gilbarbara/react-joyride
+
+// 2. Query documentation
+query-docs("/gilbarbara/react-joyride", "How to create controlled tour with callbacks")
+```
 
 ## Useful Resources
 

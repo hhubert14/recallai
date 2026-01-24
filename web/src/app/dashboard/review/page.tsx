@@ -5,7 +5,7 @@ import { GetReviewStatsUseCase } from "@/clean-architecture/use-cases/review/get
 import { DrizzleReviewableItemRepository } from "@/clean-architecture/infrastructure/repositories/reviewable-item.repository.drizzle";
 import { DrizzleReviewProgressRepository } from "@/clean-architecture/infrastructure/repositories/review-progress.repository.drizzle";
 import { ReviewInterface } from "@/app/dashboard/review/ReviewInterface";
-import { DashboardHeader } from "@/app/dashboard/components/DashboardHeader";
+import { DashboardHeader } from "@/components/DashboardHeader";
 
 export const metadata: Metadata = {
   title: "Review | RecallAI",
