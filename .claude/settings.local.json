@@ -89,7 +89,8 @@
       "Bash(npx agent-browser:*)",
       "Bash(npx eslint:*)",
       "Bash(npm run lint:*)",
-      "mcp__github__add_issue_comment"
+      "mcp__github__add_issue_comment",
+      "mcp__playwright__browser_run_code"
     ],
     "deny": [],
     "ask": []
