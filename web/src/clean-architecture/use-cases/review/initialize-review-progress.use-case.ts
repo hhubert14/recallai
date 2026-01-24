@@ -24,6 +24,17 @@ export class ReviewableItemNotFoundError extends Error {
 }
 
 /**
+ * Checks if an error is a PostgreSQL unique constraint violation.
+ * PostgreSQL error code 23505 = unique_violation
+ */
+function isUniqueConstraintViolation(error: unknown): boolean {
+  if (error && typeof error === "object" && "code" in error) {
+    return (error as { code: string }).code === "23505";
+  }
+  return false;
+}
+
+/**
  * Initializes review progress for a reviewable item on the video page.
  *
  * This use case is specifically for the video quiz page where users
@@ -37,6 +48,10 @@ export class ReviewableItemNotFoundError extends Error {
  *   - Correct answer → box 2 (3-day review interval)
  *   - Incorrect answer → box 1 (1-day review interval)
  * - If progress exists: returns existing progress unchanged (no-op)
+ *
+ * Race condition handling:
+ * - If concurrent requests cause a unique constraint violation,
+ *   we catch the error and return the existing progress record.
  */
 export class InitializeReviewProgressUseCase {
   constructor(
@@ -74,29 +89,52 @@ export class InitializeReviewProgressUseCase {
     const nextReviewDate = getNextReviewDate(initialBoxLevel);
     const now = new Date().toISOString();
 
-    const [createdProgress] =
-      await this.reviewProgressRepository.createReviewProgressBatch([
-        {
-          userId,
-          reviewableItemId,
-          boxLevel: initialBoxLevel,
-          nextReviewDate,
-          timesCorrect: isCorrect ? 1 : 0,
-          timesIncorrect: isCorrect ? 0 : 1,
-          lastReviewedAt: now,
-        },
-      ]);
+    try {
+      const [createdProgress] =
+        await this.reviewProgressRepository.createReviewProgressBatch([
+          {
+            userId,
+            reviewableItemId,
+            boxLevel: initialBoxLevel,
+            nextReviewDate,
+            timesCorrect: isCorrect ? 1 : 0,
+            timesIncorrect: isCorrect ? 0 : 1,
+            lastReviewedAt: now,
+          },
+        ]);
 
-    if (!createdProgress) {
-      throw new Error(
-        `Failed to create review progress for reviewableItemId: ${reviewableItemId}`
-      );
+      if (!createdProgress) {
+        throw new Error(
+          `Failed to create review progress for reviewableItemId: ${reviewableItemId}`
+        );
+      }
+
+      return {
+        progress: createdProgress,
+        created: true,
+      };
+    } catch (error) {
+      // Handle race condition: another request created the record between
+      // our check and insert. Re-query and return the existing record.
+      if (isUniqueConstraintViolation(error)) {
+        const racedProgress =
+          await this.reviewProgressRepository.findReviewProgressByUserIdAndReviewableItemId(
+            userId,
+            reviewableItemId
+          );
+
+        if (racedProgress) {
+          return {
+            progress: racedProgress,
+            created: false,
+          };
+        }
+      }
+
+      // Re-throw if it's not a unique constraint violation or if we
+      // still can't find the record (shouldn't happen)
+      throw error;
     }
-
-    return {
-      progress: createdProgress,
-      created: true,
-    };
   }
 
   private async resolveReviewableItemId(

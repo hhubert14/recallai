@@ -81,9 +81,10 @@ describe("InitializeReviewProgressUseCase", () => {
       const reviewableItem = new ReviewableItemEntity(
         reviewableItemId,
         userId,
-        1,
+        "question",
         questionId,
         null,
+        1,
         new Date().toISOString()
       );
 
@@ -110,9 +111,10 @@ describe("InitializeReviewProgressUseCase", () => {
       const reviewableItem = new ReviewableItemEntity(
         reviewableItemId,
         userId,
-        1,
+        "flashcard",
         null,
         flashcardId,
+        1,
         new Date().toISOString()
       );
 
@@ -284,6 +286,96 @@ describe("InitializeReviewProgressUseCase", () => {
       ).rejects.toThrow(
         `Failed to create review progress for reviewableItemId: ${reviewableItemId}`
       );
+    });
+  });
+
+  describe("race condition handling", () => {
+    it("returns existing progress when unique constraint violation occurs", async () => {
+      // First call returns null (no existing progress)
+      vi.mocked(
+        mockProgressRepo.findReviewProgressByUserIdAndReviewableItemId
+      ).mockResolvedValueOnce(null);
+
+      // Create throws unique constraint violation (another request won the race)
+      const uniqueViolationError = new Error("duplicate key value");
+      (uniqueViolationError as Error & { code: string }).code = "23505";
+      vi.mocked(mockProgressRepo.createReviewProgressBatch).mockRejectedValue(
+        uniqueViolationError
+      );
+
+      // Second call (after catching error) returns the record created by the other request
+      const racedProgress = new ReviewProgressEntity(
+        1,
+        userId,
+        reviewableItemId,
+        2,
+        "2025-01-27",
+        1,
+        0,
+        new Date().toISOString(),
+        new Date().toISOString()
+      );
+      vi.mocked(
+        mockProgressRepo.findReviewProgressByUserIdAndReviewableItemId
+      ).mockResolvedValueOnce(racedProgress);
+
+      const result = await useCase.execute({
+        userId,
+        reviewableItemId,
+        isCorrect: true,
+      });
+
+      expect(result.created).toBe(false);
+      expect(result.progress).toBe(racedProgress);
+      expect(
+        mockProgressRepo.findReviewProgressByUserIdAndReviewableItemId
+      ).toHaveBeenCalledTimes(2);
+    });
+
+    it("re-throws non-unique-constraint errors", async () => {
+      vi.mocked(
+        mockProgressRepo.findReviewProgressByUserIdAndReviewableItemId
+      ).mockResolvedValue(null);
+
+      const otherError = new Error("Connection failed");
+      vi.mocked(mockProgressRepo.createReviewProgressBatch).mockRejectedValue(
+        otherError
+      );
+
+      await expect(
+        useCase.execute({
+          userId,
+          reviewableItemId,
+          isCorrect: true,
+        })
+      ).rejects.toThrow("Connection failed");
+    });
+
+    it("re-throws if progress not found after unique constraint violation", async () => {
+      // First call returns null
+      vi.mocked(
+        mockProgressRepo.findReviewProgressByUserIdAndReviewableItemId
+      ).mockResolvedValueOnce(null);
+
+      // Create throws unique constraint violation
+      const uniqueViolationError = new Error("duplicate key value");
+      (uniqueViolationError as Error & { code: string }).code = "23505";
+      vi.mocked(mockProgressRepo.createReviewProgressBatch).mockRejectedValue(
+        uniqueViolationError
+      );
+
+      // Second call still returns null (shouldn't happen, but handle it)
+      vi.mocked(
+        mockProgressRepo.findReviewProgressByUserIdAndReviewableItemId
+      ).mockResolvedValueOnce(null);
+
+      await expect(
+        useCase.execute({
+          userId,
+          reviewableItemId,
+          isCorrect: true,
+        })
+      ).rejects.toThrow("duplicate key value");
     });
   });
 
