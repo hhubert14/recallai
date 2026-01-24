@@ -4,6 +4,23 @@ import { ProcessReviewAnswerUseCase } from "@/clean-architecture/use-cases/revie
 import { DrizzleReviewProgressRepository } from "@/clean-architecture/infrastructure/repositories/review-progress.repository.drizzle";
 import { jsendSuccess, jsendFail, jsendError } from "@/lib/jsend";
 
+/**
+ * POST /api/v1/reviews/submit-review-answer
+ *
+ * Submits an answer for a reviewable item from the Review page.
+ * This is used during spaced repetition review sessions.
+ *
+ * This endpoint applies the Leitner algorithm:
+ * - Correct answer → move up one box (max 5)
+ * - Incorrect answer → reset to box 1
+ *
+ * Request body:
+ * - reviewableItemId: number (required)
+ * - isCorrect: boolean (required)
+ *
+ * Response:
+ * - progress: the updated progress record
+ */
 export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
@@ -18,10 +35,12 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { reviewableItemId, isCorrect } = body;
 
-    if (!reviewableItemId || typeof isCorrect !== "boolean") {
-      return jsendFail({
-        error: "Missing required fields: reviewableItemId, isCorrect",
-      });
+    if (typeof reviewableItemId !== "number") {
+      return jsendFail({ error: "Missing required field: reviewableItemId" });
+    }
+
+    if (typeof isCorrect !== "boolean") {
+      return jsendFail({ error: "Missing required field: isCorrect" });
     }
 
     const useCase = new ProcessReviewAnswerUseCase(
