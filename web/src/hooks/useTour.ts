@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { driver, type Driver } from "driver.js";
+import { type Driver } from "driver.js";
 // NOTE: CSS is imported centrally in tour-constants.ts
 import {
   TOUR_STORAGE_KEYS,
+  createTourDriver,
   type TourId,
 } from "@/components/tour/tour-constants";
 import { getTourSteps } from "@/components/tour/tour-steps";
@@ -59,21 +60,8 @@ export function useTour({
     const steps = getTourSteps(tourId);
     if (steps.length === 0) return null;
 
-    const driverObj = driver({
-      showProgress: true,
-      showButtons: ["next", "previous", "close"],
+    return createTourDriver({
       steps,
-      animate: true,
-      overlayColor: "rgb(0, 0, 0)",
-      overlayOpacity: 0.5,
-      stagePadding: 8,
-      stageRadius: 8,
-      allowClose: true,
-      smoothScroll: true,
-      popoverClass: "tour-popover",
-      nextBtnText: "Next",
-      prevBtnText: "Back",
-      doneBtnText: "Done",
       onDestroyed: () => {
         setIsRunning(false);
         // Mark as completed when tour finishes
@@ -87,8 +75,6 @@ export function useTour({
         }
       },
     });
-
-    return driverObj;
   }, [tourId]);
 
   const startTour = useCallback(() => {
@@ -122,12 +108,7 @@ export function useTour({
     }
 
     setIsCompleted(true);
-    setIsRunning(false);
-
-    if (driverRef.current) {
-      driverRef.current.destroy();
-      driverRef.current = null;
-    }
+    stopTour();
   }, [tourId]);
 
   const resetTour = useCallback(() => {
@@ -175,9 +156,10 @@ export function useTour({
     return () => {
       if (driverRef.current) {
         driverRef.current.destroy();
+        driverRef.current = null;
       }
     };
-  }, []);
+  }, [tourId]);
 
   return {
     isRunning,

@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef } from "react";
-import { driver, type Driver } from "driver.js";
+import { useRef, useEffect } from "react";
+import { type Driver } from "driver.js";
 import { HelpCircle, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,6 +15,7 @@ import {
   TOUR_TARGETS,
   TOUR_STORAGE_KEYS,
   tourSelector,
+  createTourDriver,
   type TourId,
 } from "@/components/tour/tour-constants";
 import { getTourSteps } from "@/components/tour/tour-steps";
@@ -45,6 +46,15 @@ function getEffectiveTourId(tourId: TourId): TourId {
 export function HelpButton({ tourId }: HelpButtonProps) {
   const driverRef = useRef<Driver | null>(null);
 
+  // Cleanup driver on unmount
+  useEffect(() => {
+    return () => {
+      if (driverRef.current) {
+        driverRef.current.destroy();
+      }
+    };
+  }, []);
+
   const handleReplayTour = () => {
     // Check DOM at click time to determine correct tour
     const effectiveTourId = getEffectiveTourId(tourId);
@@ -66,21 +76,8 @@ export function HelpButton({ tourId }: HelpButtonProps) {
     const steps = getTourSteps(effectiveTourId);
     if (steps.length === 0) return;
 
-    const driverObj = driver({
-      showProgress: true,
-      showButtons: ["next", "previous", "close"],
+    const driverObj = createTourDriver({
       steps,
-      animate: true,
-      overlayColor: "rgb(0, 0, 0)",
-      overlayOpacity: 0.5,
-      stagePadding: 8,
-      stageRadius: 8,
-      allowClose: true,
-      smoothScroll: true,
-      popoverClass: "tour-popover",
-      nextBtnText: "Next",
-      prevBtnText: "Back",
-      doneBtnText: "Done",
       onDestroyed: () => {
         try {
           const storageKey = TOUR_STORAGE_KEYS[effectiveTourId];

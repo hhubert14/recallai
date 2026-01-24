@@ -1,5 +1,6 @@
 // Centralized CSS import for driver.js - all tour components use this
 import "driver.js/dist/driver.css";
+import { driver, type Driver, type DriveStep } from "driver.js";
 
 /**
  * Tour IDs for each page/section that has a guided tour
@@ -55,4 +56,36 @@ export const TOUR_TARGETS = {
  */
 export function tourSelector(target: string): string {
   return `[data-tour-id="${target}"]`;
+}
+
+interface CreateTourDriverOptions {
+  steps: DriveStep[];
+  onDestroyed?: () => void;
+}
+
+/**
+ * Create a driver.js instance with consistent configuration
+ * Use this to ensure all tours have the same look and feel
+ */
+export function createTourDriver({
+  steps,
+  onDestroyed,
+}: CreateTourDriverOptions): Driver {
+  return driver({
+    showProgress: true,
+    showButtons: ["next", "previous", "close"],
+    steps,
+    animate: true,
+    overlayColor: "rgb(0, 0, 0)",
+    overlayOpacity: 0.5,
+    stagePadding: 8,
+    stageRadius: 8,
+    allowClose: true,
+    smoothScroll: true,
+    popoverClass: "tour-popover",
+    nextBtnText: "Next",
+    prevBtnText: "Back",
+    doneBtnText: "Done",
+    onDestroyed,
+  });
 }
