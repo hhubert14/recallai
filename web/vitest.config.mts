@@ -17,5 +17,29 @@ export default defineConfig({
     setupFiles: ['./src/vitest-setup.ts'],
     globals: true,
     env: loadEnv('test', process.cwd(), ''),
+    projects: [
+      {
+        extends: true,
+        test: {
+          name: 'unit',
+          include: ['**/*.unit.test.{ts,tsx}'],
+        },
+      },
+      {
+        extends: true,
+        test: {
+          name: 'component',
+          include: ['**/*.component.test.{ts,tsx}'],
+        },
+      },
+      {
+        extends: true,
+        test: {
+          name: 'integration',
+          include: ['**/*.integration.test.{ts,tsx}'],
+          // Tests use transaction rollback for isolation, enabling parallel execution
+        },
+      },
+    ],
   },
 })

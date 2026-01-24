@@ -1,8 +1,10 @@
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from "vitest";
-import postgres from "postgres";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { users, videos, flashcards } from "@/drizzle/schema";
-import { db } from "@/drizzle";
 import { DrizzleFlashcardRepository } from "./flashcard.repository.drizzle";
+import {
+  createTestContext,
+  IntegrationTestContext,
+} from "@/test-utils/integration-test-context";
 
 /**
  * Integration tests for DrizzleFlashcardRepository
@@ -27,46 +29,27 @@ describe("DrizzleFlashcardRepository (integration)", () => {
     return;
   }
 
-  // Raw client for auth.users operations (not in Drizzle schema)
-  let rawClient: postgres.Sql;
+  let ctx: IntegrationTestContext;
   let repository: DrizzleFlashcardRepository;
 
   // Test data IDs
   let testUserId: string;
   let testVideoId: number;
 
-  beforeAll(async () => {
-    if (!TEST_DATABASE_URL) {
-      throw new Error("DATABASE_URL is required for integration tests");
-    }
-
-    // Raw client only for auth.users operations
-    rawClient = postgres(TEST_DATABASE_URL, { prepare: false });
-    repository = new DrizzleFlashcardRepository();
-  });
-
-  afterAll(async () => {
-    await rawClient.end();
-  });
-
   beforeEach(async () => {
-    // Clean up test data in reverse dependency order
-    await db.delete(flashcards);
-    await db.delete(videos);
-    await db.delete(users);
-    // Clean up auth.users (mock table in test db)
-    await rawClient`DELETE FROM auth.users`;
+    ctx = await createTestContext();
+    repository = new DrizzleFlashcardRepository(ctx.db);
 
     // Create test user (must insert into auth.users first due to FK constraint)
     testUserId = crypto.randomUUID();
-    await rawClient`INSERT INTO auth.users (id, email) VALUES (${testUserId}, 'test@example.com')`;
-    await db.insert(users).values({
+    await ctx.sql`INSERT INTO auth.users (id, email) VALUES (${testUserId}, 'test@example.com')`;
+    await ctx.db.insert(users).values({
       id: testUserId,
       email: "test@example.com",
     });
 
     // Create test video
-    const [video] = await db
+    const [video] = await ctx.db
       .insert(videos)
       .values({
         userId: testUserId,
@@ -76,6 +59,10 @@ describe("DrizzleFlashcardRepository (integration)", () => {
       })
       .returning();
     testVideoId = video.id;
+  });
+
+  afterEach(async () => {
+    await ctx.cleanup();
   });
 
   describe("createFlashcards", () => {
@@ -202,7 +189,7 @@ describe("DrizzleFlashcardRepository (integration)", () => {
   describe("countFlashcardsByVideoIds", () => {
     it("counts flashcards grouped by video ID", async () => {
       // Create another video
-      const [video2] = await db
+      const [video2] = await ctx.db
         .insert(videos)
         .values({
           userId: testUserId,
