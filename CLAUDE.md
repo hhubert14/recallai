@@ -646,7 +646,41 @@ app/dashboard/library/
 - **Scalability** - Clear rule prevents confusion as codebase grows
 - **Maintenance** - Feature-specific code stays together, easier to refactor/delete
 
-### 4. Database Queries (Drizzle)
+### 4. React Hook Ordering
+
+Inside React components and custom hooks, organize code in this order:
+
+```typescript
+function MyComponent({ props }) {
+  // 1. useContext
+  const theme = useContext(ThemeContext);
+
+  // 2. useState
+  const [value, setValue] = useState(false);
+
+  // 3. useRef
+  const ref = useRef(null);
+
+  // 4. Custom hooks
+  const { data } = useCustomHook();
+
+  // 5. useCallback
+  const handleClick = useCallback(() => { ... }, [deps]);
+
+  // 6. useEffect
+  useEffect(() => { ... }, [deps]);
+
+  // 7. Early returns
+  if (loading) return <Spinner />;
+
+  // 8. Return JSX
+  return <div>...</div>;
+}
+```
+
+Utility functions that don't depend on component state/props go **outside** the component.
+
+### 5. Database Queries (Drizzle)
 
 **Select:**
 ```typescript
@@ -688,7 +722,7 @@ const data = await db.query.questions.findMany({
 });
 ```
 
-### 5. API Routes
+### 6. API Routes
 
 All API routes are versioned under `/api/v1/` and use JSend response format.
 
@@ -748,13 +782,13 @@ export async function GET(request: Request, { params }: { params: { url: string 
 }
 ```
 
-### 6. Type Safety
+### 7. Type Safety
 
 - Use Drizzle-inferred types: `typeof tableName.$inferSelect`
 - Export types from `src/drizzle/schema.ts`
 - Prefer type-safe queries over raw SQL
 
-### 7. Git Branch Naming
+### 8. Git Branch Naming
 
 Use these prefixes when creating branches:
 
@@ -783,7 +817,7 @@ chore/refactor-auth-service
 release/v1.2.0
 ```
 
-### 8. Comment Task Markers
+### 9. Comment Task Markers
 
 Use these standard task markers in code comments:
 
@@ -802,6 +836,27 @@ Use these standard task markers in code comments:
 // HACK: Workaround for API bug, remove after v2.0
 // NOTE: This must run before database initialization
 // REVIEW: Is this the right approach for error handling?
+```
+
+### 10. Dead Code
+
+**Never add dead code.** Don't implement features, parameters, or options that aren't used. If a feature might be needed "later," wait until later to add it.
+
+**Remove dead code when found.** If you encounter unused functions, parameters, imports, or variables, delete them. Dead code:
+- Creates confusion about what's actually used
+- Requires maintenance for no benefit
+- Often becomes permanently dead (the "later" never comes)
+
+```typescript
+// ❌ Bad - unused parameter
+function completeTour(dontShowAgain?: boolean) {
+  // dontShowAgain is never used anywhere
+}
+
+// ✅ Good - only what's needed
+function completeTour() {
+  // ...
+}
 ```
 
 ## Testing Strategy

@@ -86,7 +86,9 @@
       "Bash(agent-browser:*)",
       "Bash(rm -f nul)",
       "Bash(rm nul)",
-      "Bash(npx agent-browser:*)"
+      "Bash(npx agent-browser:*)",
+      "Bash(npx eslint:*)",
+      "Bash(npm run lint:*)"
     ],
     "deny": [],
     "ask": []

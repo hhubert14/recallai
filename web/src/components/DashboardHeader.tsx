@@ -5,6 +5,8 @@ import { usePathname } from "next/navigation";
 import { Brain } from "lucide-react";
 import { UserButton } from "@/components/ui/user-button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { HelpButton } from "@/components/ui/help-button";
+import { TOUR_IDS, type TourId } from "@/components/tour/tour-constants";
 
 const navLinks = [
   { href: "/dashboard", label: "Dashboard", exact: true },
@@ -21,6 +23,22 @@ export function DashboardHeader() {
     }
     return pathname.startsWith(href);
   };
+
+  // Determine which tour to show based on current page
+  const getTourId = (): TourId | null => {
+    if (pathname === "/dashboard") {
+      return TOUR_IDS.dashboard;
+    }
+    if (pathname.startsWith("/dashboard/video/")) {
+      return TOUR_IDS.videoDetail;
+    }
+    if (pathname === "/dashboard/review") {
+      return TOUR_IDS.reviewModeSelector;
+    }
+    return null;
+  };
+
+  const tourId = getTourId();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -45,6 +63,7 @@ export function DashboardHeader() {
           ))}
         </nav>
         <div className="flex items-center gap-4">
+          {tourId && <HelpButton tourId={tourId} />}
           <ThemeToggle />
           <UserButton />
         </div>

@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Clock, Sparkles, Shuffle, ChevronRight } from "lucide-react";
 import { StudyMode } from "@/clean-architecture/use-cases/review/types";
+import { TOUR_TARGETS } from "@/components/tour/tour-constants";
 
 export interface StudyModeStats {
   dueCount: number;
@@ -99,7 +100,7 @@ export function StudyModeSelector({
       </div>
 
       {/* Mode cards */}
-      <div className="space-y-3">
+      <div className="space-y-3" data-tour-id={TOUR_TARGETS.studyModeCards}>
         {(Object.keys(MODE_CONFIG) as StudyMode[]).map((mode) => {
           const config = MODE_CONFIG[mode];
           const count = stats[config.countKey];
@@ -173,7 +174,7 @@ export function StudyModeSelector({
       </div>
 
       {/* Start button */}
-      <div className="flex flex-col items-center gap-3">
+      <div className="flex flex-col items-center gap-3" data-tour-id={TOUR_TARGETS.startSessionBtn}>
         <Button
           onClick={onStartSession}
           disabled={!canStart || isLoading}
@@ -188,7 +189,10 @@ export function StudyModeSelector({
       </div>
 
       {/* Progress footer */}
-      <div className="text-center text-sm text-muted-foreground border-t border-border pt-6">
+      <div
+        className="text-center text-sm text-muted-foreground border-t border-border pt-6"
+        data-tour-id={TOUR_TARGETS.progressFooter}
+      >
         <span className="inline-flex items-center gap-4">
           <span>{progressStats.mastered} mastered</span>
           <span className="w-1 h-1 rounded-full bg-muted-foreground/50" />

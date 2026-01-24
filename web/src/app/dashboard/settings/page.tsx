@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { GetUserStatsUseCase } from "@/clean-architecture/use-cases/user-stats/get-user-stats.use-case";
 import { DrizzleAnswerRepository } from "@/clean-architecture/infrastructure/repositories/answer.repository.drizzle";
 import { DrizzleVideoRepository } from "@/clean-architecture/infrastructure/repositories/video.repository.drizzle";
-import { DashboardHeader } from "@/app/dashboard/components/DashboardHeader";
+import { DashboardHeader } from "@/components/DashboardHeader";
 
 export const metadata: Metadata = {
     title: "Settings | RecallAI",
