@@ -35,7 +35,9 @@ export class ProcessReviewAnswerUseCase {
       );
     } else {
       // Create new progress record
-      const newBoxLevel = 1;
+      // Correct answer → Box 2 (3-day review interval)
+      // Incorrect answer → Box 1 (1-day review interval)
+      const newBoxLevel = isCorrect ? 2 : 1;
       const nextReviewDate = getNextReviewDate(newBoxLevel);
       const now = new Date().toISOString();
 

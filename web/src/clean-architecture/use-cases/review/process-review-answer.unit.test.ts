@@ -145,9 +145,9 @@ describe("ProcessReviewAnswerUseCase", () => {
   });
 
   describe("when progress does not exist", () => {
-    it("creates new progress with box level 1 on correct answer", async () => {
+    it("creates new progress with box level 2 on correct answer", async () => {
       const createdProgress = createMockReviewProgress({
-        boxLevel: 1,
+        boxLevel: 2,
         timesCorrect: 1,
         timesIncorrect: 0,
       });
@@ -159,14 +159,14 @@ describe("ProcessReviewAnswerUseCase", () => {
 
       const result = await useCase.execute("user-1", 1, true);
 
-      expect(result.boxLevel).toBe(1);
+      expect(result.boxLevel).toBe(2);
       expect(result.timesCorrect).toBe(1);
       expect(result.timesIncorrect).toBe(0);
       expect(mockProgressRepo.createReviewProgressBatch).toHaveBeenCalledWith([
         {
           userId: "user-1",
           reviewableItemId: 1,
-          boxLevel: 1,
+          boxLevel: 2,
           nextReviewDate: expect.any(String),
           timesCorrect: 1,
           timesIncorrect: 0,
