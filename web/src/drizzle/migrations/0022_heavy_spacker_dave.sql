@@ -1,0 +1,1 @@
+ALTER TABLE "folder_study_sets" RENAME COLUMN "added_at" TO "created_at";

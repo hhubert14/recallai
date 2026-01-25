@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { LibraryStudySetList } from "@/app/dashboard/library/LibraryStudySetList";
+import { StudySetList } from "@/app/dashboard/library/StudySetList";
 import { TextRefreshButton } from "../TextRefreshButton";
 import { DrizzleStudySetRepository } from "@/clean-architecture/infrastructure/repositories/study-set.repository.drizzle";
 import { FindStudySetsByUserIdUseCase } from "@/clean-architecture/use-cases/study-set/find-study-sets-by-user-id.use-case";
@@ -48,7 +48,7 @@ export default async function LibraryPage() {
                     </div>
                 </div>
 
-                <LibraryStudySetList studySets={allStudySets} userId={user.id} />
+                <StudySetList studySets={allStudySets} userId={user.id} />
             </main>
         </div>
     );

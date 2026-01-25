@@ -1,7 +1,7 @@
 "use client";
 
 import { StudySetSourceType } from "@/clean-architecture/domain/entities/study-set.entity";
-import { LibraryStudySetCard } from "./LibraryStudySetCard";
+import { StudySetCard } from "./StudySetCard";
 import { useInView } from "@/hooks/useInView";
 
 export interface StudySetWithCounts {
@@ -15,13 +15,13 @@ export interface StudySetWithCounts {
     flashcardCount: number;
 }
 
-interface ClientLibraryStudySetListProps {
+interface ClientStudySetListProps {
     studySets: StudySetWithCounts[];
 }
 
-export function ClientLibraryStudySetList({
+export function ClientStudySetList({
     studySets,
-}: ClientLibraryStudySetListProps) {
+}: ClientStudySetListProps) {
     const { ref, isInView } = useInView<HTMLDivElement>({ threshold: 0.1 });
 
     return (
@@ -35,7 +35,7 @@ export function ClientLibraryStudySetList({
                         animationFillMode: "forwards",
                     }}
                 >
-                    <LibraryStudySetCard studySet={studySet} />
+                    <StudySetCard studySet={studySet} />
                 </div>
             ))}
         </div>
