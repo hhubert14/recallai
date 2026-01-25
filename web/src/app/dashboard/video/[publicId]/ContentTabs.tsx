@@ -15,7 +15,7 @@ interface ContentTabsProps {
     summary: { id: number; videoId: number; content: string } | null;
     questions: {
         id: number;
-        videoId: number;
+        videoId: number | null;
         questionText: string;
         questionType: string;
         sourceTimestamp: number | null;
@@ -28,7 +28,7 @@ interface ContentTabsProps {
     }[];
     flashcards: {
         id: number;
-        videoId: number;
+        videoId: number | null;
         front: string;
         back: string;
     }[];

@@ -83,6 +83,7 @@ describe("DrizzleReviewProgressRepository (integration)", () => {
           userId: testUserId,
           questionId,
           videoId: testVideoId,
+          studySetId: null,
         }))
       );
     testReviewableItemIds = reviewableItemResults.map((r) => r.id);

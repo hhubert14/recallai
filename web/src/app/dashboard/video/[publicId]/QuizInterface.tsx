@@ -9,7 +9,7 @@ import { useVideoPlayer } from "./VideoPlayerContext";
 
 type QuestionWithOptions = {
     id: number;
-    videoId: number;
+    videoId: number | null;
     questionText: string;
     questionType: string;
     sourceTimestamp: number | null;

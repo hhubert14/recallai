@@ -1,7 +1,8 @@
 // Base interface - common fields across all question types
 interface BaseQuestion {
     id: number;
-    videoId: number;
+    // NOTE: nullable to support manual study sets without video source
+    videoId: number | null;
 }
 
 // Multiple choice option (value object)
@@ -20,7 +21,8 @@ export class MultipleChoiceQuestionEntity implements BaseQuestion {
 
     constructor(
         public readonly id: number,
-        public readonly videoId: number,
+        // NOTE: nullable to support manual study sets without video source
+        public readonly videoId: number | null,
         public readonly questionText: string,
         public readonly options: MultipleChoiceOption[],
         public readonly sourceQuote: string | null,

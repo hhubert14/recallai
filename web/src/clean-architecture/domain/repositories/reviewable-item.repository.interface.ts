@@ -3,25 +3,27 @@ import { ReviewableItemEntity } from "../entities/reviewable-item.entity";
 export interface IReviewableItemRepository {
   /**
    * Create reviewable items for a batch of questions.
-   * Called when questions are generated for a video.
+   * Called when questions are generated for a video or study set.
    */
   createReviewableItemsForQuestionsBatch(
     items: Array<{
       userId: string;
       questionId: number;
-      videoId: number;
+      videoId: number | null;
+      studySetId: number | null;
     }>
   ): Promise<ReviewableItemEntity[]>;
 
   /**
    * Create reviewable items for a batch of flashcards.
-   * Called when flashcards are generated for a video.
+   * Called when flashcards are generated for a video or study set.
    */
   createReviewableItemsForFlashcardsBatch(
     items: Array<{
       userId: string;
       flashcardId: number;
-      videoId: number;
+      videoId: number | null;
+      studySetId: number | null;
     }>
   ): Promise<ReviewableItemEntity[]>;
 
@@ -36,6 +38,13 @@ export interface IReviewableItemRepository {
   findReviewableItemsByUserIdAndVideoId(
     userId: string,
     videoId: number
+  ): Promise<ReviewableItemEntity[]>;
+
+  /**
+   * Find all reviewable items for a study set.
+   */
+  findReviewableItemsByStudySetId(
+    studySetId: number
   ): Promise<ReviewableItemEntity[]>;
 
   /**

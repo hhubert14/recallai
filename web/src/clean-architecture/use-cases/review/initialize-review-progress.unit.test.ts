@@ -32,6 +32,7 @@ describe("InitializeReviewProgressUseCase", () => {
       createReviewableItemsForFlashcardsBatch: vi.fn(),
       findReviewableItemsByUserId: vi.fn(),
       findReviewableItemsByUserIdAndVideoId: vi.fn(),
+      findReviewableItemsByStudySetId: vi.fn(),
       findReviewableItemByQuestionId: vi.fn(),
       findReviewableItemByFlashcardId: vi.fn(),
       findReviewableItemById: vi.fn(),
@@ -85,6 +86,7 @@ describe("InitializeReviewProgressUseCase", () => {
         questionId,
         null,
         1,
+        null,
         new Date().toISOString()
       );
 
@@ -115,6 +117,7 @@ describe("InitializeReviewProgressUseCase", () => {
         null,
         flashcardId,
         1,
+        null,
         new Date().toISOString()
       );
 

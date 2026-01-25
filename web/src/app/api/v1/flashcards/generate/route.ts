@@ -5,6 +5,7 @@ import { GenerateFlashcardsUseCase } from "@/clean-architecture/use-cases/flashc
 import { DrizzleVideoRepository } from "@/clean-architecture/infrastructure/repositories/video.repository.drizzle";
 import { DrizzleFlashcardRepository } from "@/clean-architecture/infrastructure/repositories/flashcard.repository.drizzle";
 import { DrizzleReviewableItemRepository } from "@/clean-architecture/infrastructure/repositories/reviewable-item.repository.drizzle";
+import { DrizzleStudySetRepository } from "@/clean-architecture/infrastructure/repositories/study-set.repository.drizzle";
 import { DrizzleTranscriptRepository } from "@/clean-architecture/infrastructure/repositories/transcript.repository.drizzle";
 import { YoutubeTranscriptVideoTranscriptService } from "@/clean-architecture/infrastructure/services/video-transcript.service.youtube-transcript";
 import { TranscriptResolverService } from "@/clean-architecture/infrastructure/services/transcript-resolver.service";
@@ -43,7 +44,8 @@ export async function POST(request: NextRequest) {
                 new YoutubeTranscriptVideoTranscriptService()
             ),
             new LangChainFlashcardGeneratorService(),
-            new DrizzleReviewableItemRepository()
+            new DrizzleReviewableItemRepository(),
+            new DrizzleStudySetRepository()
         );
 
         const result = await useCase.execute(user.id, videoId, count);

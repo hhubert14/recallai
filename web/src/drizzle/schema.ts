@@ -1,4 +1,5 @@
-import { pgTable, foreignKey, unique, uuid, text, timestamp, bigint, boolean, integer, index, date, jsonb, vector } from "drizzle-orm/pg-core"
+import { pgTable, foreignKey, unique, uuid, text, timestamp, bigint, boolean, integer, index, date, jsonb, vector, check } from "drizzle-orm/pg-core"
+import { sql } from "drizzle-orm";
 
 
 export const videos = pgTable("videos", {
@@ -18,6 +19,33 @@ export const videos = pgTable("videos", {
 			name: "videos_user_id_fkey"
 		}).onUpdate("cascade").onDelete("cascade"),
 	unique("videos_public_id_key").on(table.publicId),
+]);
+
+export const studySets = pgTable("study_sets", {
+	id: bigint({ mode: "number" }).primaryKey().generatedByDefaultAsIdentity({ name: "study_sets_id_seq", startWith: 1, increment: 1, minValue: 1, cache: 1 }),
+	publicId: uuid("public_id").defaultRandom().notNull(),
+	userId: uuid("user_id").notNull(),
+	name: text().notNull(),
+	description: text(),
+	sourceType: text("source_type").notNull(), // 'video' | 'manual' | 'pdf'
+	videoId: bigint("video_id", { mode: "number" }),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+}, (table) => [
+	foreignKey({
+		columns: [table.userId],
+		foreignColumns: [users.id],
+		name: "study_sets_user_id_fkey"
+	}).onUpdate("cascade").onDelete("cascade"),
+	foreignKey({
+		columns: [table.videoId],
+		foreignColumns: [videos.id],
+		name: "study_sets_video_id_fkey"
+	}).onUpdate("cascade").onDelete("set null"),
+	unique("study_sets_public_id_key").on(table.publicId),
+	check("study_sets_source_type_check", sql`source_type IN ('video', 'manual', 'pdf')`),
+	index("idx_study_sets_user_id").using("btree", table.userId.asc().nullsLast()),
+	index("idx_study_sets_video_id").using("btree", table.videoId.asc().nullsLast()),
 ]);
 
 // NOTE: id references auth.users(id) ON DELETE CASCADE
@@ -49,7 +77,8 @@ export const questions = pgTable("questions", {
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
 	id: bigint({ mode: "number" }).primaryKey().generatedByDefaultAsIdentity({ name: "questions_id_seq", startWith: 1, increment: 1, minValue: 1, cache: 1 }),
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
-	videoId: bigint("video_id", { mode: "number" }).notNull(),
+	// NOTE: nullable to support manual study sets without video source
+	videoId: bigint("video_id", { mode: "number" }),
 	questionText: text("question_text").notNull(),
 	questionType: text("question_type").notNull(),
 	sourceQuote: text("source_quote"),
@@ -127,7 +156,8 @@ export const flashcards = pgTable("flashcards", {
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
 	id: bigint({ mode: "number" }).primaryKey().generatedByDefaultAsIdentity({ name: "flashcards_id_seq", startWith: 1, increment: 1, minValue: 1, cache: 1 }),
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
-	videoId: bigint("video_id", { mode: "number" }).notNull(),
+	// NOTE: nullable to support manual study sets without video source
+	videoId: bigint("video_id", { mode: "number" }),
 	userId: uuid("user_id").notNull(),
 	front: text().notNull(),
 	back: text().notNull(),
@@ -208,7 +238,9 @@ export const reviewableItems = pgTable("reviewable_items", {
 	itemType: text("item_type").notNull(), // 'question' | 'flashcard'
 	questionId: bigint("question_id", { mode: "number" }),
 	flashcardId: bigint("flashcard_id", { mode: "number" }),
-	videoId: bigint("video_id", { mode: "number" }).notNull(),
+	// NOTE: nullable to support manual study sets without video source
+	videoId: bigint("video_id", { mode: "number" }),
+	studySetId: bigint("study_set_id", { mode: "number" }),
 	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 }, (table) => [
 	foreignKey({
@@ -231,11 +263,17 @@ export const reviewableItems = pgTable("reviewable_items", {
 		foreignColumns: [videos.id],
 		name: "reviewable_items_video_id_fkey"
 	}).onUpdate("cascade").onDelete("cascade"),
+	foreignKey({
+		columns: [table.studySetId],
+		foreignColumns: [studySets.id],
+		name: "reviewable_items_study_set_id_fkey"
+	}).onUpdate("cascade").onDelete("cascade"),
 	// Ensure one reviewable item per question/flashcard (questions are user-scoped via video ownership)
 	unique("reviewable_items_question_id_key").on(table.questionId),
 	unique("reviewable_items_flashcard_id_key").on(table.flashcardId),
 	index("idx_reviewable_items_user_id").using("btree", table.userId.asc().nullsLast()),
 	index("idx_reviewable_items_video_id").using("btree", table.videoId.asc().nullsLast()),
+	index("idx_reviewable_items_study_set_id").using("btree", table.studySetId.asc().nullsLast()),
 ]);
 
 export const reviewProgress = pgTable("review_progress", {

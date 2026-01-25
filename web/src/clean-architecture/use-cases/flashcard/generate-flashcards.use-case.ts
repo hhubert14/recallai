@@ -2,6 +2,7 @@ import { extractYouTubeVideoId } from "@/lib/youtube";
 import { IVideoRepository } from "@/clean-architecture/domain/repositories/video.repository.interface";
 import { IFlashcardRepository } from "@/clean-architecture/domain/repositories/flashcard.repository.interface";
 import { IReviewableItemRepository } from "@/clean-architecture/domain/repositories/reviewable-item.repository.interface";
+import { IStudySetRepository } from "@/clean-architecture/domain/repositories/study-set.repository.interface";
 import { ITranscriptResolverService } from "@/clean-architecture/domain/services/transcript-resolver.interface";
 import { IFlashcardGeneratorService } from "@/clean-architecture/domain/services/flashcard-generator.interface";
 import { FlashcardEntity } from "@/clean-architecture/domain/entities/flashcard.entity";
@@ -21,7 +22,8 @@ export class GenerateFlashcardsUseCase {
         private readonly flashcardRepository: IFlashcardRepository,
         private readonly transcriptResolverService: ITranscriptResolverService,
         private readonly flashcardGeneratorService: IFlashcardGeneratorService,
-        private readonly reviewableItemRepository: IReviewableItemRepository
+        private readonly reviewableItemRepository: IReviewableItemRepository,
+        private readonly studySetRepository: IStudySetRepository
     ) {}
 
     async execute(
@@ -96,10 +98,15 @@ export class GenerateFlashcardsUseCase {
 
         // Create reviewable items for spaced repetition tracking
         if (savedFlashcards.length > 0) {
+            // Look up the study set for this video
+            const studySet = await this.studySetRepository.findStudySetByVideoId(videoId);
+            const studySetId = studySet?.id ?? null;
+
             const reviewableItemsData = savedFlashcards.map((flashcard) => ({
                 userId,
                 flashcardId: flashcard.id,
                 videoId,
+                studySetId,
             }));
             await this.reviewableItemRepository.createReviewableItemsForFlashcardsBatch(
                 reviewableItemsData

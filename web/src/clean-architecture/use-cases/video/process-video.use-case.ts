@@ -3,16 +3,19 @@ import { extractYouTubeVideoId } from "@/lib/youtube";
 import { IVideoRepository } from "@/clean-architecture/domain/repositories/video.repository.interface";
 import { ISummaryRepository } from "@/clean-architecture/domain/repositories/summary.repository.interface";
 import { ITranscriptRepository } from "@/clean-architecture/domain/repositories/transcript.repository.interface";
+import { IStudySetRepository } from "@/clean-architecture/domain/repositories/study-set.repository.interface";
 import { IVideoInfoService } from "@/clean-architecture/domain/services/video-info.interface";
 import { IVideoTranscriptService } from "@/clean-architecture/domain/services/video-transcript.interface";
 import { IVideoSummarizerService } from "@/clean-architecture/domain/services/video-summarizer.interface";
 import { VideoEntity } from "@/clean-architecture/domain/entities/video.entity";
 import { SummaryEntity } from "@/clean-architecture/domain/entities/summary.entity";
+import { StudySetEntity } from "@/clean-architecture/domain/entities/study-set.entity";
 import { ITranscriptWindowGeneratorService } from "@/clean-architecture/domain/services/transcript-window-generator.interface";
 
 export type ProcessVideoResult = {
     video: VideoEntity;
     summary: SummaryEntity;
+    studySet: StudySetEntity;
     alreadyExists: boolean;
 };
 
@@ -21,6 +24,7 @@ export class ProcessVideoUseCase {
         private readonly videoRepository: IVideoRepository,
         private readonly summaryRepository: ISummaryRepository,
         private readonly transcriptRepository: ITranscriptRepository,
+        private readonly studySetRepository: IStudySetRepository,
         private readonly videoInfoService: IVideoInfoService,
         private readonly videoTranscriptService: IVideoTranscriptService,
         private readonly videoSummarizerService: IVideoSummarizerService,
@@ -51,9 +55,27 @@ export class ProcessVideoUseCase {
                 throw new Error("Video exists but summary not found");
             }
 
+            // Fetch existing study set (or create one if migration hasn't happened yet)
+            let existingStudySet = await this.studySetRepository.findStudySetByVideoId(existingVideo.id);
+            if (!existingStudySet) {
+                // Create study set for legacy video that doesn't have one
+                existingStudySet = await this.studySetRepository.createStudySet({
+                    userId,
+                    name: existingVideo.title,
+                    description: null,
+                    sourceType: "video",
+                    videoId: existingVideo.id,
+                });
+                logger.extension.info("Created study set for legacy video", {
+                    videoId: existingVideo.id,
+                    studySetId: existingStudySet.id,
+                });
+            }
+
             return {
                 video: existingVideo,
                 summary: existingSummary,
+                studySet: existingStudySet,
                 alreadyExists: true,
             };
         }
@@ -83,7 +105,21 @@ export class ProcessVideoUseCase {
         );
         logger.extension.info("Video created successfully", { videoId: video.id });
 
-        // 5. Store transcript for future use (non-blocking)
+        // 5. Create study set for the video
+        logger.extension.debug("Creating study set for video");
+        const studySet = await this.studySetRepository.createStudySet({
+            userId,
+            name: title,
+            description: null,
+            sourceType: "video",
+            videoId: video.id,
+        });
+        logger.extension.info("Study set created successfully", {
+            videoId: video.id,
+            studySetId: studySet.id,
+        });
+
+        // 6. Store transcript for future use (non-blocking)
         try {
             await this.transcriptRepository.createTranscript(
                 video.id,
@@ -129,6 +165,7 @@ export class ProcessVideoUseCase {
         return {
             video,
             summary,
+            studySet,
             alreadyExists: false,
         };
     }

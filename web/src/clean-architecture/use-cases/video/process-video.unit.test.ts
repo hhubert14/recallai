@@ -3,12 +3,14 @@ import { ProcessVideoUseCase } from "./process-video.use-case";
 import { IVideoRepository } from "@/clean-architecture/domain/repositories/video.repository.interface";
 import { ISummaryRepository } from "@/clean-architecture/domain/repositories/summary.repository.interface";
 import { ITranscriptRepository } from "@/clean-architecture/domain/repositories/transcript.repository.interface";
+import { IStudySetRepository } from "@/clean-architecture/domain/repositories/study-set.repository.interface";
 import { IVideoInfoService } from "@/clean-architecture/domain/services/video-info.interface";
 import { IVideoTranscriptService } from "@/clean-architecture/domain/services/video-transcript.interface";
 import { IVideoSummarizerService } from "@/clean-architecture/domain/services/video-summarizer.interface";
 import { ITranscriptWindowGeneratorService } from "@/clean-architecture/domain/services/transcript-window-generator.interface";
 import { VideoEntity } from "@/clean-architecture/domain/entities/video.entity";
 import { SummaryEntity } from "@/clean-architecture/domain/entities/summary.entity";
+import { StudySetEntity } from "@/clean-architecture/domain/entities/study-set.entity";
 
 // Helper to create mock VideoEntity
 function createMockVideo(overrides: Partial<VideoEntity> = {}): VideoEntity {
@@ -32,11 +34,27 @@ function createMockSummary(overrides: Partial<SummaryEntity> = {}): SummaryEntit
     );
 }
 
+// Helper to create mock StudySetEntity
+function createMockStudySet(overrides: Partial<StudySetEntity> = {}): StudySetEntity {
+    return new StudySetEntity(
+        overrides.id ?? 1,
+        overrides.publicId ?? "study-set-public-id",
+        overrides.userId ?? "user-1",
+        overrides.name ?? "Test Video Title",
+        overrides.description ?? null,
+        overrides.sourceType ?? "video",
+        overrides.videoId ?? 1,
+        overrides.createdAt ?? new Date().toISOString(),
+        overrides.updatedAt ?? new Date().toISOString(),
+    );
+}
+
 describe("ProcessVideoUseCase", () => {
     let useCase: ProcessVideoUseCase;
     let mockVideoRepo: IVideoRepository;
     let mockSummaryRepo: ISummaryRepository;
     let mockTranscriptRepo: ITranscriptRepository;
+    let mockStudySetRepo: IStudySetRepository;
     let mockVideoInfoService: IVideoInfoService;
     let mockVideoTranscriptService: IVideoTranscriptService;
     let mockVideoSummarizerService: IVideoSummarizerService;
@@ -66,6 +84,15 @@ describe("ProcessVideoUseCase", () => {
             findTranscriptByVideoId: vi.fn(),
         };
 
+        mockStudySetRepo = {
+            createStudySet: vi.fn(),
+            findStudySetById: vi.fn(),
+            findStudySetByPublicId: vi.fn(),
+            findStudySetsByUserId: vi.fn(),
+            findStudySetByVideoId: vi.fn(),
+            updateStudySet: vi.fn(),
+        };
+
         // Create mock services
         mockVideoInfoService = {
             get: vi.fn(),
@@ -87,6 +114,7 @@ describe("ProcessVideoUseCase", () => {
             mockVideoRepo,
             mockSummaryRepo,
             mockTranscriptRepo,
+            mockStudySetRepo,
             mockVideoInfoService,
             mockVideoTranscriptService,
             mockVideoSummarizerService,
@@ -95,20 +123,47 @@ describe("ProcessVideoUseCase", () => {
     });
 
     describe("when video already exists", () => {
-        it("returns existing video and summary without creating new ones", async () => {
+        it("returns existing video, summary, and study set without creating new ones", async () => {
             const existingVideo = createMockVideo({ id: 42, url: testVideoUrl });
             const existingSummary = createMockSummary({ videoId: 42 });
+            const existingStudySet = createMockStudySet({ id: 10, videoId: 42 });
 
             vi.mocked(mockVideoRepo.findVideoByUserIdAndUrl).mockResolvedValue(existingVideo);
             vi.mocked(mockSummaryRepo.findSummaryByVideoId).mockResolvedValue(existingSummary);
+            vi.mocked(mockStudySetRepo.findStudySetByVideoId).mockResolvedValue(existingStudySet);
 
             const result = await useCase.execute(testUserId, testVideoUrl);
 
             expect(result.alreadyExists).toBe(true);
             expect(result.video).toEqual(existingVideo);
             expect(result.summary).toEqual(existingSummary);
+            expect(result.studySet).toEqual(existingStudySet);
             expect(mockVideoRepo.createVideo).not.toHaveBeenCalled();
             expect(mockSummaryRepo.createSummary).not.toHaveBeenCalled();
+            expect(mockStudySetRepo.createStudySet).not.toHaveBeenCalled();
+        });
+
+        it("creates study set for legacy video without one", async () => {
+            const existingVideo = createMockVideo({ id: 42, url: testVideoUrl, title: "Legacy Video" });
+            const existingSummary = createMockSummary({ videoId: 42 });
+            const newStudySet = createMockStudySet({ id: 10, videoId: 42, name: "Legacy Video" });
+
+            vi.mocked(mockVideoRepo.findVideoByUserIdAndUrl).mockResolvedValue(existingVideo);
+            vi.mocked(mockSummaryRepo.findSummaryByVideoId).mockResolvedValue(existingSummary);
+            vi.mocked(mockStudySetRepo.findStudySetByVideoId).mockResolvedValue(null);
+            vi.mocked(mockStudySetRepo.createStudySet).mockResolvedValue(newStudySet);
+
+            const result = await useCase.execute(testUserId, testVideoUrl);
+
+            expect(result.alreadyExists).toBe(true);
+            expect(result.studySet).toEqual(newStudySet);
+            expect(mockStudySetRepo.createStudySet).toHaveBeenCalledWith({
+                userId: testUserId,
+                name: "Legacy Video",
+                description: null,
+                sourceType: "video",
+                videoId: 42,
+            });
         });
 
         it("throws error if video exists but summary is missing", async () => {
@@ -149,7 +204,7 @@ describe("ProcessVideoUseCase", () => {
             });
         });
 
-        it("creates video and summary for new educational video", async () => {
+        it("creates video, summary, and study set for new educational video", async () => {
             const newVideo = createMockVideo({
                 id: 1,
                 title: "Learn TypeScript",
@@ -159,15 +214,22 @@ describe("ProcessVideoUseCase", () => {
                 videoId: 1,
                 content: "This is a summary of the TypeScript tutorial.",
             });
+            const newStudySet = createMockStudySet({
+                id: 1,
+                videoId: 1,
+                name: "Learn TypeScript",
+            });
 
             vi.mocked(mockVideoRepo.createVideo).mockResolvedValue(newVideo);
             vi.mocked(mockSummaryRepo.createSummary).mockResolvedValue(newSummary);
+            vi.mocked(mockStudySetRepo.createStudySet).mockResolvedValue(newStudySet);
 
             const result = await useCase.execute(testUserId, testVideoUrl);
 
             expect(result.alreadyExists).toBe(false);
             expect(result.video).toEqual(newVideo);
             expect(result.summary).toEqual(newSummary);
+            expect(result.studySet).toEqual(newStudySet);
 
             // Verify video was created with correct parameters
             expect(mockVideoRepo.createVideo).toHaveBeenCalledWith(
@@ -176,6 +238,15 @@ describe("ProcessVideoUseCase", () => {
                 testVideoUrl,
                 "Code Channel"
             );
+
+            // Verify study set was created
+            expect(mockStudySetRepo.createStudySet).toHaveBeenCalledWith({
+                userId: testUserId,
+                name: "Learn TypeScript",
+                description: null,
+                sourceType: "video",
+                videoId: 1,
+            });
 
             // Verify summary was created
             expect(mockSummaryRepo.createSummary).toHaveBeenCalledWith(
@@ -194,9 +265,11 @@ describe("ProcessVideoUseCase", () => {
         it("stores transcript after creating video", async () => {
             const newVideo = createMockVideo({ id: 1 });
             const newSummary = createMockSummary({ videoId: 1 });
+            const newStudySet = createMockStudySet({ id: 1, videoId: 1 });
 
             vi.mocked(mockVideoRepo.createVideo).mockResolvedValue(newVideo);
             vi.mocked(mockSummaryRepo.createSummary).mockResolvedValue(newSummary);
+            vi.mocked(mockStudySetRepo.createStudySet).mockResolvedValue(newStudySet);
 
             await useCase.execute(testUserId, testVideoUrl);
 
@@ -210,9 +283,11 @@ describe("ProcessVideoUseCase", () => {
         it("continues successfully even if transcript storage fails", async () => {
             const newVideo = createMockVideo({ id: 1 });
             const newSummary = createMockSummary({ videoId: 1 });
+            const newStudySet = createMockStudySet({ id: 1, videoId: 1 });
 
             vi.mocked(mockVideoRepo.createVideo).mockResolvedValue(newVideo);
             vi.mocked(mockSummaryRepo.createSummary).mockResolvedValue(newSummary);
+            vi.mocked(mockStudySetRepo.createStudySet).mockResolvedValue(newStudySet);
             vi.mocked(mockTranscriptRepo.createTranscript).mockRejectedValue(
                 new Error("Transcript storage failed")
             );
@@ -227,9 +302,11 @@ describe("ProcessVideoUseCase", () => {
         it("generates transcript windows after creating video", async () => {
             const newVideo = createMockVideo({ id: 1 });
             const newSummary = createMockSummary({ videoId: 1 });
+            const newStudySet = createMockStudySet({ id: 1, videoId: 1 });
 
             vi.mocked(mockVideoRepo.createVideo).mockResolvedValue(newVideo);
             vi.mocked(mockSummaryRepo.createSummary).mockResolvedValue(newSummary);
+            vi.mocked(mockStudySetRepo.createStudySet).mockResolvedValue(newStudySet);
 
             await useCase.execute(testUserId, testVideoUrl);
 
@@ -242,9 +319,11 @@ describe("ProcessVideoUseCase", () => {
         it("continues successfully even if transcript window generation fails", async () => {
             const newVideo = createMockVideo({ id: 1 });
             const newSummary = createMockSummary({ videoId: 1 });
+            const newStudySet = createMockStudySet({ id: 1, videoId: 1 });
 
             vi.mocked(mockVideoRepo.createVideo).mockResolvedValue(newVideo);
             vi.mocked(mockSummaryRepo.createSummary).mockResolvedValue(newSummary);
+            vi.mocked(mockStudySetRepo.createStudySet).mockResolvedValue(newStudySet);
             vi.mocked(mockTranscriptWindowGeneratorService.generate).mockRejectedValue(
                 new Error("Window generation failed")
             );
@@ -299,6 +378,7 @@ describe("ProcessVideoUseCase", () => {
                 segments: [],
             });
             vi.mocked(mockVideoRepo.createVideo).mockResolvedValue(createMockVideo());
+            vi.mocked(mockStudySetRepo.createStudySet).mockResolvedValue(createMockStudySet());
             vi.mocked(mockVideoSummarizerService.generate).mockResolvedValue(undefined);
 
             await expect(useCase.execute(testUserId, testVideoUrl)).rejects.toThrow(
