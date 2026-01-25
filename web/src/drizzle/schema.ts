@@ -300,3 +300,40 @@ export const reviewProgress = pgTable("review_progress", {
 	index("idx_review_progress_user_id").using("btree", table.userId.asc().nullsLast()),
 	index("idx_review_progress_next_review_date").using("btree", table.nextReviewDate.asc().nullsLast()),
 ]);
+
+export const folders = pgTable("folders", {
+	id: bigint({ mode: "number" }).primaryKey().generatedByDefaultAsIdentity({ name: "folders_id_seq", startWith: 1, increment: 1, minValue: 1, cache: 1 }),
+	userId: uuid("user_id").notNull(),
+	name: text().notNull(),
+	description: text(),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+}, (table) => [
+	foreignKey({
+		columns: [table.userId],
+		foreignColumns: [users.id],
+		name: "folders_user_id_fkey"
+	}).onUpdate("cascade").onDelete("cascade"),
+	index("idx_folders_user_id").using("btree", table.userId.asc().nullsLast()),
+]);
+
+export const folderStudySets = pgTable("folder_study_sets", {
+	id: bigint({ mode: "number" }).primaryKey().generatedByDefaultAsIdentity({ name: "folder_study_sets_id_seq", startWith: 1, increment: 1, minValue: 1, cache: 1 }),
+	folderId: bigint("folder_id", { mode: "number" }).notNull(),
+	studySetId: bigint("study_set_id", { mode: "number" }).notNull(),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+}, (table) => [
+	foreignKey({
+		columns: [table.folderId],
+		foreignColumns: [folders.id],
+		name: "folder_study_sets_folder_id_fkey"
+	}).onUpdate("cascade").onDelete("cascade"),
+	foreignKey({
+		columns: [table.studySetId],
+		foreignColumns: [studySets.id],
+		name: "folder_study_sets_study_set_id_fkey"
+	}).onUpdate("cascade").onDelete("cascade"),
+	unique("folder_study_sets_folder_study_set_key").on(table.folderId, table.studySetId),
+	index("idx_folder_study_sets_folder_id").using("btree", table.folderId.asc().nullsLast()),
+	index("idx_folder_study_sets_study_set_id").using("btree", table.studySetId.asc().nullsLast()),
+]);

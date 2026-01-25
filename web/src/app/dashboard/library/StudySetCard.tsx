@@ -2,13 +2,13 @@
 
 import Link from "next/link";
 import { Video, HelpCircle, Layers, BookOpen } from "lucide-react";
-import { StudySetWithCounts } from "./ClientLibraryStudySetList";
+import { StudySetWithCounts } from "./ClientStudySetList";
 
-interface LibraryStudySetCardProps {
+interface StudySetCardProps {
     studySet: StudySetWithCounts;
 }
 
-export function LibraryStudySetCard({ studySet }: LibraryStudySetCardProps) {
+export function StudySetCard({ studySet }: StudySetCardProps) {
 
     // Format date as "June 13, 2025"
     const formatDate = (dateString: string): string => {

@@ -1,19 +1,19 @@
 import { StudySetEntity, StudySetSourceType } from "@/clean-architecture/domain/entities/study-set.entity";
 import { DrizzleQuestionRepository } from "@/clean-architecture/infrastructure/repositories/question.repository.drizzle";
 import { DrizzleFlashcardRepository } from "@/clean-architecture/infrastructure/repositories/flashcard.repository.drizzle";
-import { ClientLibraryStudySetList, StudySetWithCounts } from "@/app/dashboard/library/ClientLibraryStudySetList";
+import { ClientStudySetList, StudySetWithCounts } from "@/app/dashboard/library/ClientStudySetList";
 import { BookOpen, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-interface LibraryStudySetListProps {
+interface StudySetListProps {
     studySets: StudySetEntity[];
     userId: string;
 }
 
-export async function LibraryStudySetList({
+export async function StudySetList({
     studySets,
     userId,
-}: LibraryStudySetListProps) {
+}: StudySetListProps) {
     if (studySets.length === 0) {
         return (
             <div className="rounded-lg border border-dashed border-border p-8 text-center">
@@ -65,6 +65,6 @@ export async function LibraryStudySetList({
     }));
 
     return (
-        <ClientLibraryStudySetList studySets={studySetsWithCounts} />
+        <ClientStudySetList studySets={studySetsWithCounts} />
     );
 }
