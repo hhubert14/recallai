@@ -36,7 +36,8 @@ function createMockReviewableItem(
     itemType,
     itemType === "question" ? (overrides.questionId ?? 1) : null,
     itemType === "flashcard" ? (overrides.flashcardId ?? 1) : null,
-    overrides.videoId ?? 1,
+    // Use 'in' check to distinguish between "not provided" (use default) and "explicitly null"
+    "videoId" in overrides ? (overrides.videoId as number | null) : 1,
     overrides.studySetId ?? 1,
     overrides.createdAt ?? "2026-01-01T00:00:00Z"
   );
