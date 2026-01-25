@@ -194,7 +194,9 @@ export class GetItemsForReviewUseCase {
       } else if (item.itemType === "flashcard" && item.flashcardId) {
         flashcardIds.push(item.flashcardId);
       }
-      videoIds.add(item.videoId);
+      if (item.videoId !== null) {
+        videoIds.add(item.videoId);
+      }
     }
 
     // Fetch in parallel
@@ -230,7 +232,7 @@ export class GetItemsForReviewUseCase {
 
     for (const item of reviewableItems) {
       const progress = progressByItemId.get(item.id) ?? null;
-      const video = videoById.get(item.videoId);
+      const video = item.videoId !== null ? videoById.get(item.videoId) : undefined;
 
       if (!video) continue;
 

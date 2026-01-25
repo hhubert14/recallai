@@ -38,6 +38,7 @@ describe("toReviewItemApiResponse", () => {
       10,  // questionId
       null, // flashcardId
       1,    // videoId
+      null, // studySetId
       "2025-01-01T00:00:00Z"
     );
 
@@ -122,6 +123,7 @@ describe("toReviewItemApiResponse", () => {
       null, // questionId
       20,   // flashcardId
       1,    // videoId
+      null, // studySetId
       "2025-01-01T00:00:00Z"
     );
 
@@ -202,6 +204,7 @@ describe("toReviewItemApiResponse", () => {
         null, // questionId
         20,   // flashcardId
         1,    // videoId
+        null, // studySetId
         "2025-01-01T00:00:00Z"
       );
 

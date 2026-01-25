@@ -18,6 +18,7 @@ function toReviewableItemEntity(
     record.questionId,
     record.flashcardId,
     record.videoId,
+    record.studySetId,
     record.createdAt
   );
 }
@@ -31,7 +32,8 @@ export class DrizzleReviewableItemRepository
     items: Array<{
       userId: string;
       questionId: number;
-      videoId: number;
+      videoId: number | null;
+      studySetId: number | null;
     }>
   ): Promise<ReviewableItemEntity[]> {
     if (items.length === 0) {
@@ -47,6 +49,7 @@ export class DrizzleReviewableItemRepository
           questionId: item.questionId,
           flashcardId: null,
           videoId: item.videoId,
+          studySetId: item.studySetId,
         }))
       )
       .returning();
@@ -58,7 +61,8 @@ export class DrizzleReviewableItemRepository
     items: Array<{
       userId: string;
       flashcardId: number;
-      videoId: number;
+      videoId: number | null;
+      studySetId: number | null;
     }>
   ): Promise<ReviewableItemEntity[]> {
     if (items.length === 0) {
@@ -74,6 +78,7 @@ export class DrizzleReviewableItemRepository
           questionId: null,
           flashcardId: item.flashcardId,
           videoId: item.videoId,
+          studySetId: item.studySetId,
         }))
       )
       .returning();
@@ -105,6 +110,17 @@ export class DrizzleReviewableItemRepository
           eq(reviewableItems.videoId, videoId)
         )
       );
+
+    return results.map(toReviewableItemEntity);
+  }
+
+  async findReviewableItemsByStudySetId(
+    studySetId: number
+  ): Promise<ReviewableItemEntity[]> {
+    const results = await this.db
+      .select()
+      .from(reviewableItems)
+      .where(eq(reviewableItems.studySetId, studySetId));
 
     return results.map(toReviewableItemEntity);
   }

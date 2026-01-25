@@ -4,11 +4,13 @@ import { IVideoRepository } from "@/clean-architecture/domain/repositories/video
 import { IQuestionRepository } from "@/clean-architecture/domain/repositories/question.repository.interface";
 import { ITranscriptWindowRepository, WindowMatchResult } from "@/clean-architecture/domain/repositories/transcript-window.repository.interface";
 import { IReviewableItemRepository } from "@/clean-architecture/domain/repositories/reviewable-item.repository.interface";
+import { IStudySetRepository } from "@/clean-architecture/domain/repositories/study-set.repository.interface";
 import { ITranscriptResolverService } from "@/clean-architecture/domain/services/transcript-resolver.interface";
 import { IQuestionGeneratorService } from "@/clean-architecture/domain/services/question-generator.interface";
 import { IEmbeddingService } from "@/clean-architecture/domain/services/embedding.interface";
 import { VideoEntity } from "@/clean-architecture/domain/entities/video.entity";
 import { TranscriptWindowEntity } from "@/clean-architecture/domain/entities/transcript-window.entity";
+import { StudySetEntity } from "@/clean-architecture/domain/entities/study-set.entity";
 import {
     MultipleChoiceQuestionEntity,
     MultipleChoiceOption,
@@ -72,12 +74,28 @@ function createMockWindowMatch(startTime: number): WindowMatchResult {
     };
 }
 
+// Helper to create mock StudySetEntity
+function createMockStudySet(overrides: Partial<StudySetEntity> = {}): StudySetEntity {
+    return new StudySetEntity(
+        overrides.id ?? 1,
+        overrides.publicId ?? "study-set-public-id",
+        overrides.userId ?? "user-1",
+        overrides.name ?? "Test Study Set",
+        overrides.description ?? null,
+        overrides.sourceType ?? "video",
+        overrides.videoId ?? 1,
+        overrides.createdAt ?? new Date().toISOString(),
+        overrides.updatedAt ?? new Date().toISOString()
+    );
+}
+
 describe("GenerateMultipleChoiceQuestionsUseCase", () => {
     let useCase: GenerateMultipleChoiceQuestionsUseCase;
     let mockVideoRepo: IVideoRepository;
     let mockQuestionRepo: IQuestionRepository;
     let mockTranscriptWindowRepo: ITranscriptWindowRepository;
     let mockReviewableItemRepo: IReviewableItemRepository;
+    let mockStudySetRepo: IStudySetRepository;
     let mockTranscriptResolverService: ITranscriptResolverService;
     let mockQuestionGeneratorService: IQuestionGeneratorService;
     let mockEmbeddingService: IEmbeddingService;
@@ -117,10 +135,20 @@ describe("GenerateMultipleChoiceQuestionsUseCase", () => {
             createReviewableItemsForFlashcardsBatch: vi.fn().mockResolvedValue([]),
             findReviewableItemsByUserId: vi.fn(),
             findReviewableItemsByUserIdAndVideoId: vi.fn(),
+            findReviewableItemsByStudySetId: vi.fn(),
             findReviewableItemByQuestionId: vi.fn(),
             findReviewableItemByFlashcardId: vi.fn(),
             findReviewableItemById: vi.fn(),
             findReviewableItemsByIds: vi.fn(),
+        };
+
+        mockStudySetRepo = {
+            createStudySet: vi.fn(),
+            findStudySetById: vi.fn(),
+            findStudySetByPublicId: vi.fn(),
+            findStudySetsByUserId: vi.fn(),
+            findStudySetByVideoId: vi.fn(),
+            updateStudySet: vi.fn(),
         };
 
         mockTranscriptResolverService = {
@@ -143,7 +171,8 @@ describe("GenerateMultipleChoiceQuestionsUseCase", () => {
             mockQuestionGeneratorService,
             mockEmbeddingService,
             mockTranscriptWindowRepo,
-            mockReviewableItemRepo
+            mockReviewableItemRepo,
+            mockStudySetRepo
         );
     });
 
@@ -229,6 +258,9 @@ describe("GenerateMultipleChoiceQuestionsUseCase", () => {
                 createMockVideo({ userId: testUserId, title: "TypeScript Tutorial" })
             );
             vi.mocked(mockQuestionRepo.findQuestionsByVideoId).mockResolvedValue([]);
+            vi.mocked(mockStudySetRepo.findStudySetByVideoId).mockResolvedValue(
+                createMockStudySet({ id: 10, videoId: testVideoId })
+            );
             vi.mocked(mockTranscriptResolverService.getTranscript).mockResolvedValue({
                 fullText: "This is the full transcript about TypeScript...",
                 segments: [{ text: "segment", startTime: 0, endTime: 10 }],
@@ -339,12 +371,46 @@ describe("GenerateMultipleChoiceQuestionsUseCase", () => {
                 null // sourceTimestamp is null due to embedding failure
             );
         });
+
+        it("creates reviewable items with study set ID", async () => {
+            const savedQuestion1 = createMockQuestion({ id: 1 });
+            const savedQuestion2 = createMockQuestion({ id: 2 });
+            vi.mocked(mockQuestionRepo.createMultipleChoiceQuestion)
+                .mockResolvedValueOnce(savedQuestion1)
+                .mockResolvedValueOnce(savedQuestion2);
+
+            await useCase.execute(testUserId, testVideoId, 5);
+
+            expect(mockReviewableItemRepo.createReviewableItemsForQuestionsBatch).toHaveBeenCalledWith([
+                { userId: testUserId, questionId: 1, videoId: testVideoId, studySetId: 10 },
+                { userId: testUserId, questionId: 2, videoId: testVideoId, studySetId: 10 },
+            ]);
+        });
+
+        it("creates reviewable items with null study set ID when no study set exists", async () => {
+            vi.mocked(mockStudySetRepo.findStudySetByVideoId).mockResolvedValue(null);
+            const savedQuestion1 = createMockQuestion({ id: 1 });
+            const savedQuestion2 = createMockQuestion({ id: 2 });
+            vi.mocked(mockQuestionRepo.createMultipleChoiceQuestion)
+                .mockResolvedValueOnce(savedQuestion1)
+                .mockResolvedValueOnce(savedQuestion2);
+
+            await useCase.execute(testUserId, testVideoId, 5);
+
+            expect(mockReviewableItemRepo.createReviewableItemsForQuestionsBatch).toHaveBeenCalledWith([
+                { userId: testUserId, questionId: 1, videoId: testVideoId, studySetId: null },
+                { userId: testUserId, questionId: 2, videoId: testVideoId, studySetId: null },
+            ]);
+        });
     });
 
     describe("duplicate prevention", () => {
         beforeEach(() => {
             vi.mocked(mockVideoRepo.findVideoById).mockResolvedValue(
                 createMockVideo({ userId: testUserId, title: "TypeScript Tutorial" })
+            );
+            vi.mocked(mockStudySetRepo.findStudySetByVideoId).mockResolvedValue(
+                createMockStudySet({ id: 10, videoId: testVideoId })
             );
             vi.mocked(mockTranscriptResolverService.getTranscript).mockResolvedValue({
                 fullText: "This is the full transcript about TypeScript...",

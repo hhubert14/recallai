@@ -6,7 +6,7 @@ import { QuizProgress, QuizResult, QuizSummary } from "@/components/quiz";
 
 type Flashcard = {
     id: number;
-    videoId: number;
+    videoId: number | null;
     front: string;
     back: string;
 };

@@ -121,8 +121,7 @@ learnsync/
 │   │       └── supabase/          # Supabase clients (auth only)
 │   ├── docs/                      # Project documentation
 │   │   ├── drizzle-migration-guide.md
-│   │   ├── complex-query-migrations.md
-│   │   └── testing-priorities.md
+│   │   └── complex-query-migrations.md
 │   └── vitest.config.mts
 │
 └── extension/                 # Chrome extension (WXT + React)
@@ -344,8 +343,7 @@ npm run test -- <filename>      # Run specific test file
 - Setup file: `src/vitest-setup.ts`
 - Config: `vitest.config.mts`
 
-**Current Coverage:** Minimal
-- See `docs/testing-priorities.md` for testing roadmap
+**Current Coverage:** Minimal - TDD workflow builds coverage organically
 
 ### Database (Drizzle)
 
@@ -944,6 +942,80 @@ describe("GetUserStatsUseCase", () => {
 });
 ```
 
+### Mocking Philosophy
+
+**Mock at boundaries, not everywhere.** The goal is tests that catch real bugs, not tests that verify your mocks match your assumptions.
+
+**What to mock by test type:**
+
+| Test Type | What to Mock | What NOT to Mock |
+|-----------|--------------|------------------|
+| Unit (use cases) | Repository interfaces, external services | Internal helpers, domain entities |
+| Unit (pure logic) | Nothing needed | - |
+| Component | API calls, external services | Child components (usually) |
+| Integration | Nothing | Database, repositories |
+
+**The key principle: Mock dependencies to isolate the unit. Don't mock the unit itself.**
+
+```typescript
+// ✅ Good - mocks the boundary (repository), tests YOUR logic
+it("skips processing if video already exists", async () => {
+  mockVideoRepo.findByUrl.mockResolvedValue(existingVideo);
+
+  const result = await useCase.execute(url);
+
+  expect(result).toEqual(existingVideo);
+  expect(mockSummaryService.generate).not.toHaveBeenCalled();
+});
+
+// ❌ Bad - mocks internal code, what are you even testing?
+it("processes video", async () => {
+  vi.mock("./parseTranscript", () => ({ parse: vi.fn() }));
+  vi.mock("./formatSummary", () => ({ format: vi.fn() }));
+  // Now you're just testing glue code
+});
+```
+
+**Mocking in use case tests is fine** because wiring and logic overlap. When you mock repositories and test conditional behavior, you're testing real logic with mocked boundaries:
+
+```typescript
+// This tests real logic (the conditional skip) with mocked boundaries
+it("returns cached summary if exists", async () => {
+  mockSummaryRepo.findByVideoId.mockResolvedValue(cachedSummary);
+
+  const result = await useCase.execute(videoId);
+
+  expect(mockAiService.generateSummary).not.toHaveBeenCalled();  // Logic!
+  expect(result).toEqual(cachedSummary);
+});
+```
+
+**Warning signs you're over-mocking:**
+- Test needs 4+ mocks → probably an integration test in disguise
+- Mocks encode detailed external API shapes → one integration test should verify those assumptions
+- Test passes but production breaks → mocks didn't reflect reality
+
+**If mocks require detailed knowledge of external API shapes**, consider one integration test to verify those assumptions are correct.
+
+### Snapshot Testing
+
+**Avoid snapshot tests for components.** They tend to:
+- Break on any markup change, creating noise
+- Get blindly updated without review (`-u` to make the error go away)
+- Test implementation details rather than behavior
+
+**Test behavior instead:**
+```typescript
+// ❌ Snapshot - breaks on any change, doesn't test behavior
+expect(component).toMatchSnapshot();
+
+// ✅ Behavior - tests what users actually experience
+expect(screen.getByRole("button", { name: "Submit" })).toBeEnabled();
+expect(screen.getByText("Error: Invalid email")).toBeInTheDocument();
+```
+
+**Rare acceptable uses:** Error message formatting, serialized configuration objects, CLI output.
+
 ### Integration Tests
 
 Integration tests test against the real test database. Use for:
@@ -979,14 +1051,102 @@ describe("SomeRepository (integration)", () => {
 npm run test:integration  # Runs *.integration.test.ts files
 ```
 
+### Component Tests
+
+Component tests verify React components render correctly and respond to user interactions. Use React Testing Library.
+
+**What to test:**
+- User interactions (clicks, form submissions, keyboard navigation)
+- Conditional rendering based on props/state
+- Loading and error states
+- Accessibility (roles, labels, focus management)
+
+**Example:**
+```typescript
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { describe, it, expect, vi } from "vitest";
+import { LoginForm } from "./LoginForm";
+
+describe("LoginForm", () => {
+  it("submits form with email and password", async () => {
+    const user = userEvent.setup();
+    const handleSubmit = vi.fn();
+
+    render(<LoginForm onSubmit={handleSubmit} />);
+
+    await user.type(screen.getByLabelText(/email/i), "test@example.com");
+    await user.type(screen.getByLabelText(/password/i), "password123");
+    await user.click(screen.getByRole("button", { name: /sign in/i }));
+
+    expect(handleSubmit).toHaveBeenCalledWith({
+      email: "test@example.com",
+      password: "password123",
+    });
+  });
+
+  it("shows validation error for invalid email", async () => {
+    const user = userEvent.setup();
+    render(<LoginForm onSubmit={vi.fn()} />);
+
+    await user.type(screen.getByLabelText(/email/i), "invalid");
+    await user.click(screen.getByRole("button", { name: /sign in/i }));
+
+    expect(screen.getByText(/valid email/i)).toBeInTheDocument();
+  });
+
+  it("disables submit button while loading", () => {
+    render(<LoginForm onSubmit={vi.fn()} isLoading={true} />);
+
+    expect(screen.getByRole("button", { name: /sign in/i })).toBeDisabled();
+  });
+});
+```
+
+**Key patterns:**
+- Use `userEvent` over `fireEvent` (more realistic user simulation)
+- Query by accessible roles/labels, not test IDs or CSS classes
+- Test from the user's perspective, not implementation details
+
+### E2E Tests (Playwright)
+
+E2E tests verify complete user flows through the real application. Use sparingly - they're slow and expensive to maintain.
+
+**When to use E2E:**
+- Critical user journeys (login → dashboard → core feature)
+- Flows involving multiple pages/systems
+- Smoke tests for deployment verification
+
+**When NOT to use E2E:**
+- Testing every UI variation (use component tests)
+- Edge cases and error handling (use unit tests)
+- API correctness (use integration tests)
+
+**Test pyramid:** Many unit tests, fewer integration tests, minimal E2E tests.
+
+```
+        /\
+       /E2E\        ← Few (critical paths only)
+      /------\
+     /  Integ \     ← Some (DB queries, API routes)
+    /----------\
+   /    Unit    \   ← Many (business logic, components)
+  /--------------\
+```
+
+**File naming:** `<name>.e2e.test.ts`
+
+**Running E2E tests:**
+```bash
+npm run test:e2e  # Runs *.e2e.test.ts files (requires app running)
+```
+
 ### Critical Areas Requiring Tests (Priority Order)
 
 1. Spaced repetition engine (`process-spaced-repetition-answer.ts`, `utils.ts`)
 2. Video processing pipeline (`process-video.ts`)
 3. Use cases with business logic
 4. Complex query functions (see `docs/complex-query-migrations.md`)
-
-See `docs/testing-priorities.md` for comprehensive testing roadmap.
 
 ## Migration Notes
 

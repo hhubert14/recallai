@@ -6,6 +6,7 @@ import { ProcessVideoUseCase } from "@/clean-architecture/use-cases/video/proces
 import { DrizzleVideoRepository } from "@/clean-architecture/infrastructure/repositories/video.repository.drizzle";
 import { DrizzleSummaryRepository } from "@/clean-architecture/infrastructure/repositories/summary.repository.drizzle";
 import { DrizzleTranscriptRepository } from "@/clean-architecture/infrastructure/repositories/transcript.repository.drizzle";
+import { DrizzleStudySetRepository } from "@/clean-architecture/infrastructure/repositories/study-set.repository.drizzle";
 import { YouTubeVideoInfoService } from "@/clean-architecture/infrastructure/services/video-info.service.youtube";
 import { YoutubeTranscriptVideoTranscriptService } from "@/clean-architecture/infrastructure/services/video-transcript.service.youtube-transcript";
 import { LangChainVideoSummarizerService } from "@/clean-architecture/infrastructure/services/video-summarizer.service.langchain";
@@ -37,6 +38,7 @@ export async function POST(
             new DrizzleVideoRepository(),
             new DrizzleSummaryRepository(),
             new DrizzleTranscriptRepository(),
+            new DrizzleStudySetRepository(),
             new YouTubeVideoInfoService(),
             new YoutubeTranscriptVideoTranscriptService(),
             new LangChainVideoSummarizerService(),

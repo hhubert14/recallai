@@ -3,6 +3,7 @@ import { IVideoRepository } from "@/clean-architecture/domain/repositories/video
 import { IQuestionRepository } from "@/clean-architecture/domain/repositories/question.repository.interface";
 import { ITranscriptWindowRepository } from "@/clean-architecture/domain/repositories/transcript-window.repository.interface";
 import { IReviewableItemRepository } from "@/clean-architecture/domain/repositories/reviewable-item.repository.interface";
+import { IStudySetRepository } from "@/clean-architecture/domain/repositories/study-set.repository.interface";
 import { ITranscriptResolverService } from "@/clean-architecture/domain/services/transcript-resolver.interface";
 import { IQuestionGeneratorService } from "@/clean-architecture/domain/services/question-generator.interface";
 import { IEmbeddingService } from "@/clean-architecture/domain/services/embedding.interface";
@@ -26,7 +27,8 @@ export class GenerateMultipleChoiceQuestionsUseCase {
         private readonly questionGeneratorService: IQuestionGeneratorService,
         private readonly embeddingService: IEmbeddingService,
         private readonly transcriptWindowRepository: ITranscriptWindowRepository,
-        private readonly reviewableItemRepository: IReviewableItemRepository
+        private readonly reviewableItemRepository: IReviewableItemRepository,
+        private readonly studySetRepository: IStudySetRepository
     ) {}
 
     async execute(
@@ -131,10 +133,15 @@ export class GenerateMultipleChoiceQuestionsUseCase {
 
         // Create reviewable items for spaced repetition tracking
         if (savedQuestions.length > 0) {
+            // Look up the study set for this video
+            const studySet = await this.studySetRepository.findStudySetByVideoId(videoId);
+            const studySetId = studySet?.id ?? null;
+
             const reviewableItemsData = savedQuestions.map((question) => ({
                 userId,
                 questionId: question.id,
                 videoId,
+                studySetId,
             }));
             await this.reviewableItemRepository.createReviewableItemsForQuestionsBatch(
                 reviewableItemsData

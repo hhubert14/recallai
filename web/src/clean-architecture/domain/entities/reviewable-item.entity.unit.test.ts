@@ -11,6 +11,7 @@ describe("ReviewableItemEntity", () => {
         42,
         null,
         100,
+        50,
         "2025-01-20T10:00:00Z"
       );
 
@@ -20,6 +21,7 @@ describe("ReviewableItemEntity", () => {
       expect(entity.questionId).toBe(42);
       expect(entity.flashcardId).toBeNull();
       expect(entity.videoId).toBe(100);
+      expect(entity.studySetId).toBe(50);
       expect(entity.createdAt).toBe("2025-01-20T10:00:00Z");
     });
 
@@ -31,6 +33,7 @@ describe("ReviewableItemEntity", () => {
         null,
         99,
         200,
+        60,
         "2025-01-21T14:30:00Z"
       );
 
@@ -40,7 +43,24 @@ describe("ReviewableItemEntity", () => {
       expect(entity.questionId).toBeNull();
       expect(entity.flashcardId).toBe(99);
       expect(entity.videoId).toBe(200);
+      expect(entity.studySetId).toBe(60);
       expect(entity.createdAt).toBe("2025-01-21T14:30:00Z");
+    });
+
+    it("creates a reviewable item with nullable videoId for manual study sets", () => {
+      const entity = new ReviewableItemEntity(
+        3,
+        "user-789",
+        "flashcard" as ReviewableItemType,
+        null,
+        101,
+        null,
+        70,
+        "2025-01-22T09:00:00Z"
+      );
+
+      expect(entity.videoId).toBeNull();
+      expect(entity.studySetId).toBe(70);
     });
   });
 
@@ -53,6 +73,7 @@ describe("ReviewableItemEntity", () => {
         42,
         null,
         100,
+        50,
         "2025-01-20T10:00:00Z"
       );
 
@@ -67,6 +88,7 @@ describe("ReviewableItemEntity", () => {
         null,
         42,
         100,
+        50,
         "2025-01-20T10:00:00Z"
       );
 
@@ -83,6 +105,7 @@ describe("ReviewableItemEntity", () => {
         null,
         42,
         100,
+        50,
         "2025-01-20T10:00:00Z"
       );
 
@@ -97,6 +120,7 @@ describe("ReviewableItemEntity", () => {
         42,
         null,
         100,
+        50,
         "2025-01-20T10:00:00Z"
       );
 

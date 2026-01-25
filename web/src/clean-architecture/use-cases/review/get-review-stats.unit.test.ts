@@ -12,7 +12,8 @@ function createMockReviewableItem(
     itemType: "question" | "flashcard";
     questionId: number | null;
     flashcardId: number | null;
-    videoId: number;
+    videoId: number | null;
+    studySetId: number | null;
     createdAt: string;
   }> = {}
 ): ReviewableItemEntity {
@@ -24,6 +25,7 @@ function createMockReviewableItem(
     itemType === "question" ? (overrides.questionId ?? 1) : null,
     itemType === "flashcard" ? (overrides.flashcardId ?? 1) : null,
     overrides.videoId ?? 1,
+    overrides.studySetId ?? null,
     overrides.createdAt ?? "2026-01-01T00:00:00Z"
   );
 }
@@ -65,6 +67,7 @@ describe("GetReviewStatsUseCase", () => {
       createReviewableItemsForFlashcardsBatch: vi.fn(),
       findReviewableItemsByUserId: vi.fn(),
       findReviewableItemsByUserIdAndVideoId: vi.fn(),
+      findReviewableItemsByStudySetId: vi.fn(),
       findReviewableItemByQuestionId: vi.fn(),
       findReviewableItemByFlashcardId: vi.fn(),
       findReviewableItemById: vi.fn(),
