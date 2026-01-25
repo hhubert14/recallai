@@ -10,7 +10,7 @@ export interface IReviewableItemRepository {
       userId: string;
       questionId: number;
       videoId: number | null;
-      studySetId: number | null;
+      studySetId: number;
     }>
   ): Promise<ReviewableItemEntity[]>;
 
@@ -23,7 +23,7 @@ export interface IReviewableItemRepository {
       userId: string;
       flashcardId: number;
       videoId: number | null;
-      studySetId: number | null;
+      studySetId: number;
     }>
   ): Promise<ReviewableItemEntity[]>;
 

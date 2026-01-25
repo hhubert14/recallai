@@ -133,15 +133,17 @@ export class GenerateMultipleChoiceQuestionsUseCase {
 
         // Create reviewable items for spaced repetition tracking
         if (savedQuestions.length > 0) {
-            // Look up the study set for this video
+            // Look up the study set for this video (required)
             const studySet = await this.studySetRepository.findStudySetByVideoId(videoId);
-            const studySetId = studySet?.id ?? null;
+            if (!studySet) {
+                throw new Error("Study set not found for this video. Video may not have been processed correctly.");
+            }
 
             const reviewableItemsData = savedQuestions.map((question) => ({
                 userId,
                 questionId: question.id,
                 videoId,
-                studySetId,
+                studySetId: studySet.id,
             }));
             await this.reviewableItemRepository.createReviewableItemsForQuestionsBatch(
                 reviewableItemsData

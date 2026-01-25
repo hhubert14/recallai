@@ -13,7 +13,7 @@ function createMockReviewableItem(
     questionId: number | null;
     flashcardId: number | null;
     videoId: number | null;
-    studySetId: number | null;
+    studySetId: number;
     createdAt: string;
   }> = {}
 ): ReviewableItemEntity {
@@ -25,7 +25,7 @@ function createMockReviewableItem(
     itemType === "question" ? (overrides.questionId ?? 1) : null,
     itemType === "flashcard" ? (overrides.flashcardId ?? 1) : null,
     overrides.videoId ?? 1,
-    overrides.studySetId ?? null,
+    overrides.studySetId ?? 1,
     overrides.createdAt ?? "2026-01-01T00:00:00Z"
   );
 }

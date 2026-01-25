@@ -33,7 +33,7 @@ export class DrizzleReviewableItemRepository
       userId: string;
       questionId: number;
       videoId: number | null;
-      studySetId: number | null;
+      studySetId: number;
     }>
   ): Promise<ReviewableItemEntity[]> {
     if (items.length === 0) {
@@ -62,7 +62,7 @@ export class DrizzleReviewableItemRepository
       userId: string;
       flashcardId: number;
       videoId: number | null;
-      studySetId: number | null;
+      studySetId: number;
     }>
   ): Promise<ReviewableItemEntity[]> {
     if (items.length === 0) {

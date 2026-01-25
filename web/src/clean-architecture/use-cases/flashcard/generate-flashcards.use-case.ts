@@ -98,15 +98,17 @@ export class GenerateFlashcardsUseCase {
 
         // Create reviewable items for spaced repetition tracking
         if (savedFlashcards.length > 0) {
-            // Look up the study set for this video
+            // Look up the study set for this video (required)
             const studySet = await this.studySetRepository.findStudySetByVideoId(videoId);
-            const studySetId = studySet?.id ?? null;
+            if (!studySet) {
+                throw new Error("Study set not found for this video. Video may not have been processed correctly.");
+            }
 
             const reviewableItemsData = savedFlashcards.map((flashcard) => ({
                 userId,
                 flashcardId: flashcard.id,
                 videoId,
-                studySetId,
+                studySetId: studySet.id,
             }));
             await this.reviewableItemRepository.createReviewableItemsForFlashcardsBatch(
                 reviewableItemsData
