@@ -389,14 +389,17 @@ describe("GenerateMultipleChoiceQuestionsUseCase", () => {
 
         it("creates reviewable items with null study set ID when no study set exists", async () => {
             vi.mocked(mockStudySetRepo.findStudySetByVideoId).mockResolvedValue(null);
-            const savedQuestion = createMockQuestion({ id: 1 });
-            vi.mocked(mockQuestionRepo.createMultipleChoiceQuestion).mockResolvedValue(savedQuestion);
+            const savedQuestion1 = createMockQuestion({ id: 1 });
+            const savedQuestion2 = createMockQuestion({ id: 2 });
+            vi.mocked(mockQuestionRepo.createMultipleChoiceQuestion)
+                .mockResolvedValueOnce(savedQuestion1)
+                .mockResolvedValueOnce(savedQuestion2);
 
             await useCase.execute(testUserId, testVideoId, 5);
 
             expect(mockReviewableItemRepo.createReviewableItemsForQuestionsBatch).toHaveBeenCalledWith([
                 { userId: testUserId, questionId: 1, videoId: testVideoId, studySetId: null },
-                { userId: testUserId, questionId: 1, videoId: testVideoId, studySetId: null },
+                { userId: testUserId, questionId: 2, videoId: testVideoId, studySetId: null },
             ]);
         });
     });
