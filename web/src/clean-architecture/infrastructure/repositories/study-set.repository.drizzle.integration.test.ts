@@ -301,4 +301,85 @@ describe("DrizzleStudySetRepository (integration)", () => {
       expect(result).toBeNull();
     });
   });
+
+  describe("unique constraint on video_id", () => {
+    it("prevents creating duplicate study sets for the same video", async () => {
+      // Create first study set for the video
+      await repository.createStudySet({
+        userId: testUserId,
+        name: "First Study Set",
+        description: null,
+        sourceType: "video",
+        videoId: testVideoId,
+      });
+
+      // Attempt to create second study set for the same video should fail
+      await expect(
+        repository.createStudySet({
+          userId: testUserId,
+          name: "Second Study Set",
+          description: null,
+          sourceType: "video",
+          videoId: testVideoId,
+        })
+      ).rejects.toThrow();
+    });
+
+    it("allows multiple study sets with null video_id (manual study sets)", async () => {
+      // Create two manual study sets (no video)
+      const first = await repository.createStudySet({
+        userId: testUserId,
+        name: "Manual Set 1",
+        description: null,
+        sourceType: "manual",
+        videoId: null,
+      });
+
+      const second = await repository.createStudySet({
+        userId: testUserId,
+        name: "Manual Set 2",
+        description: null,
+        sourceType: "manual",
+        videoId: null,
+      });
+
+      // Both should succeed since null video_id is allowed to have duplicates
+      expect(first.id).toBeDefined();
+      expect(second.id).toBeDefined();
+      expect(first.id).not.toBe(second.id);
+    });
+
+    it("allows different videos to each have one study set", async () => {
+      // Create second video
+      const [video2] = await ctx.db
+        .insert(videos)
+        .values({
+          userId: testUserId,
+          title: "Second Video",
+          channelName: "Channel",
+          url: "https://youtube.com/watch?v=second",
+        })
+        .returning();
+
+      // Create study sets for different videos
+      const first = await repository.createStudySet({
+        userId: testUserId,
+        name: "Study Set for Video 1",
+        description: null,
+        sourceType: "video",
+        videoId: testVideoId,
+      });
+
+      const second = await repository.createStudySet({
+        userId: testUserId,
+        name: "Study Set for Video 2",
+        description: null,
+        sourceType: "video",
+        videoId: video2.id,
+      });
+
+      expect(first.videoId).toBe(testVideoId);
+      expect(second.videoId).toBe(video2.id);
+    });
+  });
 });

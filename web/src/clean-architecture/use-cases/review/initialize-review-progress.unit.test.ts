@@ -86,7 +86,7 @@ describe("InitializeReviewProgressUseCase", () => {
         questionId,
         null,
         1,
-        null,
+        1, // studySetId is required
         new Date().toISOString()
       );
 
@@ -117,7 +117,7 @@ describe("InitializeReviewProgressUseCase", () => {
         null,
         flashcardId,
         1,
-        null,
+        1, // studySetId is required
         new Date().toISOString()
       );
 

@@ -54,8 +54,8 @@ describe("ReviewableItemEntity", () => {
         "flashcard" as ReviewableItemType,
         null,
         101,
-        null,
-        70,
+        null, // videoId can be null for manual study sets
+        70,   // studySetId is always required
         "2025-01-22T09:00:00Z"
       );
 

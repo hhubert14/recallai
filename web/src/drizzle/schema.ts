@@ -240,7 +240,7 @@ export const reviewableItems = pgTable("reviewable_items", {
 	flashcardId: bigint("flashcard_id", { mode: "number" }),
 	// NOTE: nullable to support manual study sets without video source
 	videoId: bigint("video_id", { mode: "number" }),
-	studySetId: bigint("study_set_id", { mode: "number" }),
+	studySetId: bigint("study_set_id", { mode: "number" }).notNull(),
 	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 }, (table) => [
 	foreignKey({

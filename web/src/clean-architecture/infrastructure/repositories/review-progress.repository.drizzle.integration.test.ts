@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { users, videos, questions } from "@/drizzle/schema";
+import { users, videos, questions, studySets } from "@/drizzle/schema";
 import { DrizzleReviewProgressRepository } from "./review-progress.repository.drizzle";
 import { DrizzleReviewableItemRepository } from "./reviewable-item.repository.drizzle";
 import {
@@ -37,6 +37,7 @@ describe("DrizzleReviewProgressRepository (integration)", () => {
   // Test data
   let testUserId: string;
   let testVideoId: number;
+  let testStudySetId: number;
   let testQuestionIds: number[] = [];
   let testReviewableItemIds: number[] = [];
 
@@ -65,6 +66,18 @@ describe("DrizzleReviewProgressRepository (integration)", () => {
       .returning();
     testVideoId = video.id;
 
+    // Create test study set
+    const [studySet] = await ctx.db
+      .insert(studySets)
+      .values({
+        userId: testUserId,
+        name: "Test Study Set",
+        sourceType: "video",
+        videoId: testVideoId,
+      })
+      .returning();
+    testStudySetId = studySet.id;
+
     // Create test questions
     const questionResults = await ctx.db
       .insert(questions)
@@ -83,7 +96,7 @@ describe("DrizzleReviewProgressRepository (integration)", () => {
           userId: testUserId,
           questionId,
           videoId: testVideoId,
-          studySetId: null,
+          studySetId: testStudySetId,
         }))
       );
     testReviewableItemIds = reviewableItemResults.map((r) => r.id);

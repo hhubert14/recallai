@@ -8,7 +8,7 @@ export class ReviewableItemEntity {
     public readonly questionId: number | null,
     public readonly flashcardId: number | null,
     public readonly videoId: number | null,
-    public readonly studySetId: number | null,
+    public readonly studySetId: number,
     public readonly createdAt: string
   ) {}
 

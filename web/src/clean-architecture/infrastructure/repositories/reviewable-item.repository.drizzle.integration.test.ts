@@ -326,4 +326,46 @@ describe("DrizzleReviewableItemRepository (integration)", () => {
       expect(result).toHaveLength(0);
     });
   });
+
+  describe("studySetId constraint", () => {
+    it("all created reviewable items have non-null studySetId", async () => {
+      // Create items for both questions and flashcards
+      const questionItems = await repository.createReviewableItemsForQuestionsBatch([
+        { userId: testUserId, questionId: testQuestionIds[0], videoId: testVideoId, studySetId: testStudySetId },
+        { userId: testUserId, questionId: testQuestionIds[1], videoId: testVideoId, studySetId: testStudySetId },
+      ]);
+      const flashcardItems = await repository.createReviewableItemsForFlashcardsBatch([
+        { userId: testUserId, flashcardId: testFlashcardIds[0], videoId: testVideoId, studySetId: testStudySetId },
+      ]);
+
+      // Verify all items have non-null studySetId
+      const allItems = [...questionItems, ...flashcardItems];
+      for (const item of allItems) {
+        expect(item.studySetId).not.toBeNull();
+        expect(typeof item.studySetId).toBe("number");
+      }
+    });
+
+    it("items retrieved by userId have non-null studySetId", async () => {
+      await repository.createReviewableItemsForQuestionsBatch([
+        { userId: testUserId, questionId: testQuestionIds[0], videoId: testVideoId, studySetId: testStudySetId },
+      ]);
+
+      const items = await repository.findReviewableItemsByUserId(testUserId);
+
+      expect(items).toHaveLength(1);
+      expect(items[0].studySetId).toBe(testStudySetId);
+    });
+
+    it("items retrieved by studySetId have correct studySetId", async () => {
+      await repository.createReviewableItemsForQuestionsBatch([
+        { userId: testUserId, questionId: testQuestionIds[0], videoId: testVideoId, studySetId: testStudySetId },
+      ]);
+
+      const items = await repository.findReviewableItemsByStudySetId(testStudySetId);
+
+      expect(items).toHaveLength(1);
+      expect(items[0].studySetId).toBe(testStudySetId);
+    });
+  });
 });
