@@ -4,9 +4,10 @@ import { createClient } from "@/lib/supabase/server";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { DrizzleAnswerRepository } from "@/clean-architecture/infrastructure/repositories/answer.repository.drizzle";
 import { DrizzleVideoRepository } from "@/clean-architecture/infrastructure/repositories/video.repository.drizzle";
+import { DrizzleStudySetRepository } from "@/clean-architecture/infrastructure/repositories/study-set.repository.drizzle";
 import { DrizzleReviewableItemRepository } from "@/clean-architecture/infrastructure/repositories/reviewable-item.repository.drizzle";
 import { DrizzleReviewProgressRepository } from "@/clean-architecture/infrastructure/repositories/review-progress.repository.drizzle";
-import { FindVideosByUserIdUseCase } from "@/clean-architecture/use-cases/video/find-videos-by-user-id.use-case";
+import { FindStudySetsByUserIdUseCase } from "@/clean-architecture/use-cases/study-set/find-study-sets-by-user-id.use-case";
 import { OnboardingSurveyWrapper } from "./OnboardingSurvey/OnboardingSurveyWrapper";
 import { WelcomeModalWrapper } from "./WelcomeModal/WelcomeModalWrapper";
 import { GetUserStatsUseCase } from "@/clean-architecture/use-cases/user-stats/get-user-stats.use-case";
@@ -14,7 +15,7 @@ import { GetReviewStatsUseCase } from "@/clean-architecture/use-cases/review/get
 import { ReviewHeroCard } from "./ReviewHeroCard";
 import { QuickStatsRow } from "./QuickStatsRow";
 import { WhatsNewCard } from "./WhatsNewCard";
-import { RecentVideosCard } from "./RecentVideosCard";
+import { RecentStudySetsCard } from "./RecentStudySetsCard";
 import { DashboardTour } from "./DashboardTour";
 
 export const metadata: Metadata = {
@@ -32,10 +33,9 @@ export default async function DashboardPage() {
     redirect("/auth/login");
   }
 
-  const [videos, userStats, reviewStats] = await Promise.all([
-    new FindVideosByUserIdUseCase(new DrizzleVideoRepository()).execute(
-      user.id,
-      4
+  const [allStudySets, userStats, reviewStats] = await Promise.all([
+    new FindStudySetsByUserIdUseCase(new DrizzleStudySetRepository()).execute(
+      user.id
     ),
     new GetUserStatsUseCase(
       new DrizzleVideoRepository(),
@@ -66,20 +66,21 @@ export default async function DashboardPage() {
             quizAccuracy={userStats.quizAccuracy}
           />
 
-          {/* What's New + Recent Videos */}
+          {/* What's New + Recent Study Sets */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* What's New Card */}
             <div className="lg:col-span-1">
               <WhatsNewCard />
             </div>
 
-            {/* Recent Videos */}
-            <RecentVideosCard
-              videos={videos.map((v) => ({
-                id: v.id,
-                publicId: v.publicId,
-                title: v.title,
-                channelName: v.channelName,
+            {/* Recent Study Sets */}
+            <RecentStudySetsCard
+              studySets={allStudySets.slice(0, 4).map((s) => ({
+                id: s.id,
+                publicId: s.publicId,
+                name: s.name,
+                description: s.description,
+                sourceType: s.sourceType,
               }))}
             />
           </div>

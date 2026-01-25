@@ -72,7 +72,11 @@ function createMockQuestionItem(
     video: {
       id: 1,
       title: "TypeScript Tutorial",
-      publicId: "abc-123",
+    },
+    studySet: {
+      id: 1,
+      publicId: "study-set-abc-123",
+      name: "TypeScript Study Set",
     },
     ...overrides,
   };
@@ -93,7 +97,11 @@ function createMockFlashcardItem(
     video: {
       id: 1,
       title: "React Basics",
-      publicId: "def-456",
+    },
+    studySet: {
+      id: 2,
+      publicId: "study-set-def-456",
+      name: "React Study Set",
     },
     ...overrides,
   };

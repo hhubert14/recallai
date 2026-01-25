@@ -14,7 +14,6 @@ import { StudySetEntity } from "@/clean-architecture/domain/entities/study-set.e
 function createMockVideo(overrides: Partial<VideoEntity> = {}): VideoEntity {
     return new VideoEntity(
         overrides.id ?? 1,
-        overrides.publicId ?? "550e8400-e29b-41d4-a716-446655440000",
         overrides.userId ?? "user-1",
         overrides.title ?? "Test Video",
         overrides.url ?? "https://www.youtube.com/watch?v=test123",
@@ -32,7 +31,6 @@ function createMockFlashcard(
         front: string;
         back: string;
         createdAt: string;
-        updatedAt: string;
     }> = {}
 ): FlashcardEntity {
     return new FlashcardEntity(
@@ -41,8 +39,7 @@ function createMockFlashcard(
         overrides.userId ?? "user-1",
         overrides.front ?? "What is the main concept?",
         overrides.back ?? "The main concept is...",
-        overrides.createdAt ?? new Date().toISOString(),
-        overrides.updatedAt ?? new Date().toISOString()
+        overrides.createdAt ?? new Date().toISOString()
     );
 }
 
@@ -77,16 +74,13 @@ describe("GenerateFlashcardsUseCase", () => {
         mockVideoRepo = {
             createVideo: vi.fn(),
             findVideoById: vi.fn(),
-            findVideoByPublicId: vi.fn(),
             findVideoByUserIdAndUrl: vi.fn(),
             findVideosByUserId: vi.fn(),
             findVideosByIds: vi.fn(),
         };
 
         mockFlashcardRepo = {
-            createFlashcard: vi.fn(),
             createFlashcards: vi.fn(),
-            findFlashcardById: vi.fn(),
             findFlashcardsByVideoId: vi.fn(),
             findFlashcardsByUserId: vi.fn(),
             findFlashcardsByIds: vi.fn(),
@@ -111,6 +105,7 @@ describe("GenerateFlashcardsUseCase", () => {
             findStudySetByPublicId: vi.fn(),
             findStudySetsByUserId: vi.fn(),
             findStudySetByVideoId: vi.fn(),
+            findStudySetsByIds: vi.fn(),
             updateStudySet: vi.fn(),
         };
 

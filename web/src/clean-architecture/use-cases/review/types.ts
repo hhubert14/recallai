@@ -37,7 +37,11 @@ export type ReviewItem = {
   video: {
     id: number;
     title: string;
+  } | null;
+  studySet: {
+    id: number;
     publicId: string;
+    name: string;
   };
 };
 
@@ -87,6 +91,10 @@ export type ReviewItemApiResponse = {
   video: {
     id: number;
     title: string;
+  } | null;
+  studySet: {
+    id: number;
     publicId: string;
+    name: string;
   };
 };

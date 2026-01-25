@@ -14,6 +14,7 @@ describe("FindStudySetByPublicIdUseCase", () => {
       findStudySetByPublicId: vi.fn(),
       findStudySetsByUserId: vi.fn(),
       findStudySetByVideoId: vi.fn(),
+      findStudySetsByIds: vi.fn(),
       updateStudySet: vi.fn(),
     };
     useCase = new FindStudySetByPublicIdUseCase(mockStudySetRepository);

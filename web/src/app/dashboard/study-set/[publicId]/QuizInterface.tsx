@@ -23,7 +23,8 @@ type QuestionWithOptions = {
 
 interface QuizInterfaceProps {
     questions: QuestionWithOptions[];
-    videoId: number;
+    videoId: number | null;
+    studySetId: number;
 }
 
 function formatTimestamp(seconds: number): string {
@@ -54,6 +55,7 @@ function shuffleQuestionsAndOptions(questions: QuestionWithOptions[]): QuestionW
 export function QuizInterface({
     questions,
     videoId,
+    studySetId,
 }: QuizInterfaceProps) {
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [selectedOptionId, setSelectedOptionId] = useState<number | null>(null);
@@ -119,8 +121,8 @@ export function QuizInterface({
         setShowResult(true);
         setIsSubmitting(false);
 
-        // Mark video as completed if this is the last question
-        if (currentQuestionIndex === shuffledQuestions.length - 1) {
+        // Mark video as completed if this is the last question (for video-sourced study sets)
+        if (currentQuestionIndex === shuffledQuestions.length - 1 && videoId) {
             markVideoAsCompleted(videoId);
         }
     };

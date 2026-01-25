@@ -13,7 +13,12 @@ describe("toReviewItemApiResponse", () => {
   const mockVideo = {
     id: 1,
     title: "Test Video",
-    publicId: "abc-123",
+  };
+
+  const mockStudySet = {
+    id: 1,
+    publicId: "study-set-123",
+    name: "Test Study Set",
   };
 
   describe("with question content", () => {
@@ -60,6 +65,7 @@ describe("toReviewItemApiResponse", () => {
         progress: mockProgress,
         content: { type: "question", data: mockQuestion },
         video: mockVideo,
+        studySet: mockStudySet,
       };
 
       const result = toReviewItemApiResponse(reviewItem);
@@ -67,6 +73,7 @@ describe("toReviewItemApiResponse", () => {
       expect(result.reviewableItemId).toBe(100);
       expect(result.itemType).toBe("question");
       expect(result.video).toEqual(mockVideo);
+      expect(result.studySet).toEqual(mockStudySet);
       expect(result.progress).toEqual({
         id: 200,
         boxLevel: 3,
@@ -94,6 +101,7 @@ describe("toReviewItemApiResponse", () => {
         progress: null,
         content: { type: "question", data: mockQuestion },
         video: mockVideo,
+        studySet: mockStudySet,
       };
 
       const result = toReviewItemApiResponse(reviewItem);
@@ -145,6 +153,7 @@ describe("toReviewItemApiResponse", () => {
         progress: mockProgress,
         content: { type: "flashcard", data: mockFlashcard },
         video: mockVideo,
+        studySet: mockStudySet,
       };
 
       const result = toReviewItemApiResponse(reviewItem);
@@ -152,6 +161,7 @@ describe("toReviewItemApiResponse", () => {
       expect(result.reviewableItemId).toBe(101);
       expect(result.itemType).toBe("flashcard");
       expect(result.video).toEqual(mockVideo);
+      expect(result.studySet).toEqual(mockStudySet);
       expect(result.progress).toEqual({
         id: 201,
         boxLevel: 5,
@@ -174,6 +184,7 @@ describe("toReviewItemApiResponse", () => {
         progress: null,
         content: { type: "flashcard", data: mockFlashcard },
         video: mockVideo,
+        studySet: mockStudySet,
       };
 
       const result = toReviewItemApiResponse(reviewItem);
@@ -225,6 +236,7 @@ describe("toReviewItemApiResponse", () => {
         progress: mockProgress,
         content: { type: "flashcard", data: mockFlashcard },
         video: mockVideo,
+        studySet: mockStudySet,
       };
 
       const result = toReviewItemApiResponse(reviewItem);

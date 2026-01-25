@@ -427,13 +427,17 @@ export function ReviewInterface({
         <QuizProgress current={currentItemIndex + 1} total={items.length} />
       </div>
 
-      {/* Video source badge */}
+      {/* Study set source badge */}
       <a
-        href={`/dashboard/video/${currentItem.video.publicId}`}
+        href={`/dashboard/study-set/${currentItem.studySet.publicId}`}
         className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
       >
-        <Video className="w-4 h-4" />
-        <span className="truncate hover:underline">{currentItem.video.title}</span>
+        {currentItem.video ? (
+          <Video className="w-4 h-4" />
+        ) : (
+          <BookOpen className="w-4 h-4" />
+        )}
+        <span className="truncate hover:underline">{currentItem.studySet.name}</span>
       </a>
 
       {/* Item type badge */}

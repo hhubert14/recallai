@@ -202,16 +202,16 @@ describe("useTour", () => {
   });
 
   describe("different tour IDs", () => {
-    it("uses correct storage key for video detail tour", () => {
+    it("uses correct storage key for study set detail tour", () => {
       const { result } = renderHook(() =>
-        useTour({ tourId: TOUR_IDS.videoDetail, autoStart: false })
+        useTour({ tourId: TOUR_IDS.studySetDetail, autoStart: false })
       );
 
       act(() => {
         result.current.completeTour();
       });
 
-      expect(localStorageMock[TOUR_STORAGE_KEYS[TOUR_IDS.videoDetail]]).toBe("true");
+      expect(localStorageMock[TOUR_STORAGE_KEYS[TOUR_IDS.studySetDetail]]).toBe("true");
     });
 
     it("uses correct storage key for review mode selector tour", () => {

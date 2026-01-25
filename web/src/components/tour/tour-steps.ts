@@ -166,7 +166,7 @@ export function getTourSteps(tourId: TourId): DriveStep[] {
   switch (tourId) {
     case TOUR_IDS.dashboard:
       return dashboardSteps;
-    case TOUR_IDS.videoDetail:
+    case TOUR_IDS.studySetDetail:
       return videoDetailSteps;
     case TOUR_IDS.reviewModeSelector:
       return reviewModeSelectorSteps;

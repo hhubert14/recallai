@@ -32,7 +32,8 @@ interface ContentTabsProps {
         front: string;
         back: string;
     }[];
-    videoId: number;
+    videoId: number | null;
+    studySetId: number;
 }
 
 export function ContentTabs({
@@ -40,6 +41,7 @@ export function ContentTabs({
     questions: initialQuestions,
     flashcards: initialFlashcards,
     videoId,
+    studySetId,
 }: ContentTabsProps) {
     const [activeTab, setActiveTab] = useState<"summary" | "qa" | "flashcards">("summary");
     const [questions, setQuestions] = useState(initialQuestions);
@@ -64,6 +66,7 @@ export function ContentTabs({
     const canGenerateFlashcards = remainingFlashcardCapacity > 0 && availableFlashcardCountOptions.length > 0;
 
     async function handleGenerateQuestions() {
+        if (!videoId) return;
         setIsGeneratingQuestions(true);
         setQuestionError(null);
 
@@ -71,7 +74,7 @@ export function ContentTabs({
             const response = await fetch("/api/v1/questions/generate", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ videoId, count: selectedQuestionCount }),
+                body: JSON.stringify({ videoId, studySetId, count: selectedQuestionCount }),
             });
 
             const data = await response.json();
@@ -89,6 +92,7 @@ export function ContentTabs({
     }
 
     async function handleGenerateFlashcards() {
+        if (!videoId) return;
         setIsGeneratingFlashcards(true);
         setFlashcardError(null);
 
@@ -96,7 +100,7 @@ export function ContentTabs({
             const response = await fetch("/api/v1/flashcards/generate", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ videoId, count: selectedFlashcardCount }),
+                body: JSON.stringify({ videoId, studySetId, count: selectedFlashcardCount }),
             });
 
             const data = await response.json();
@@ -163,7 +167,7 @@ export function ContentTabs({
                         ) : (
                             <div className="text-center py-12">
                                 <p className="text-muted-foreground text-lg">
-                                    No summary available for this video yet.
+                                    No summary available for this study set yet.
                                 </p>
                             </div>
                         )}
@@ -184,8 +188,9 @@ export function ContentTabs({
                                 <QuizInterface
                                     questions={questions}
                                     videoId={videoId}
+                                    studySetId={studySetId}
                                 />
-                                {canGenerateQuestions && (
+                                {canGenerateQuestions && videoId && (
                                     <div className="mt-6 pt-6 border-t border-border">
                                         <div className="flex items-center justify-center gap-3">
                                             <select
@@ -232,29 +237,35 @@ export function ContentTabs({
                                 <p className="text-muted-foreground text-lg mb-6">
                                     Generate practice questions
                                 </p>
-                                <div className="flex items-center gap-3">
-                                    <select
-                                        value={selectedQuestionCount}
-                                        onChange={(e) =>
-                                            setSelectedQuestionCount(
-                                                Number(e.target.value)
-                                            )
-                                        }
-                                        className="px-3 py-2 border border-border rounded-lg bg-card text-foreground"
-                                    >
-                                        {COUNT_OPTIONS.map((count) => (
-                                            <option key={count} value={count}>
-                                                {count} questions
-                                            </option>
-                                        ))}
-                                    </select>
-                                    <button
-                                        onClick={handleGenerateQuestions}
-                                        className="px-6 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg font-medium transition-colors"
-                                    >
-                                        Generate
-                                    </button>
-                                </div>
+                                {videoId ? (
+                                    <div className="flex items-center gap-3">
+                                        <select
+                                            value={selectedQuestionCount}
+                                            onChange={(e) =>
+                                                setSelectedQuestionCount(
+                                                    Number(e.target.value)
+                                                )
+                                            }
+                                            className="px-3 py-2 border border-border rounded-lg bg-card text-foreground"
+                                        >
+                                            {COUNT_OPTIONS.map((count) => (
+                                                <option key={count} value={count}>
+                                                    {count} questions
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <button
+                                            onClick={handleGenerateQuestions}
+                                            className="px-6 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg font-medium transition-colors"
+                                        >
+                                            Generate
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <p className="text-muted-foreground text-sm">
+                                        Questions are not available for this study set.
+                                    </p>
+                                )}
                                 {questionError && (
                                     <p className="text-sm text-red-600 dark:text-red-400 mt-4">
                                         {questionError}
@@ -277,7 +288,7 @@ export function ContentTabs({
                         ) : flashcards.length > 0 ? (
                             <>
                                 <FlashcardInterface flashcards={flashcards} />
-                                {canGenerateFlashcards && (
+                                {canGenerateFlashcards && videoId && (
                                     <div className="mt-6 pt-6 border-t border-border">
                                         <div className="flex items-center justify-center gap-3">
                                             <select
@@ -324,29 +335,35 @@ export function ContentTabs({
                                 <p className="text-muted-foreground text-lg mb-6">
                                     Generate flashcards
                                 </p>
-                                <div className="flex items-center gap-3">
-                                    <select
-                                        value={selectedFlashcardCount}
-                                        onChange={(e) =>
-                                            setSelectedFlashcardCount(
-                                                Number(e.target.value)
-                                            )
-                                        }
-                                        className="px-3 py-2 border border-border rounded-lg bg-card text-foreground"
-                                    >
-                                        {COUNT_OPTIONS.map((count) => (
-                                            <option key={count} value={count}>
-                                                {count} flashcards
-                                            </option>
-                                        ))}
-                                    </select>
-                                    <button
-                                        onClick={handleGenerateFlashcards}
-                                        className="px-6 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg font-medium transition-colors"
-                                    >
-                                        Generate
-                                    </button>
-                                </div>
+                                {videoId ? (
+                                    <div className="flex items-center gap-3">
+                                        <select
+                                            value={selectedFlashcardCount}
+                                            onChange={(e) =>
+                                                setSelectedFlashcardCount(
+                                                    Number(e.target.value)
+                                                )
+                                            }
+                                            className="px-3 py-2 border border-border rounded-lg bg-card text-foreground"
+                                        >
+                                            {COUNT_OPTIONS.map((count) => (
+                                                <option key={count} value={count}>
+                                                    {count} flashcards
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <button
+                                            onClick={handleGenerateFlashcards}
+                                            className="px-6 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg font-medium transition-colors"
+                                        >
+                                            Generate
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <p className="text-muted-foreground text-sm">
+                                        Flashcards are not available for this study set.
+                                    </p>
+                                )}
                                 {flashcardError && (
                                     <p className="text-sm text-red-600 dark:text-red-400 mt-4">
                                         {flashcardError}

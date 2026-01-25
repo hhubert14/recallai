@@ -6,15 +6,18 @@ type ProcessingStatus = 'idle' | 'processing' | 'success' | 'already_exists' | '
 export function useVideoProcessing() {
   const [status, setStatus] = useState<ProcessingStatus>('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [studySetPublicId, setStudySetPublicId] = useState<string | null>(null);
 
   const process = async (videoUrl: string) => {
     setStatus('processing');
     setErrorMessage(null);
+    setStudySetPublicId(null);
 
     try {
       const result = await processVideo(videoUrl);
       if (result.success) {
         setStatus(result.alreadyExists ? 'already_exists' : 'success');
+        setStudySetPublicId(result.studySetPublicId);
       } else {
         setStatus('error');
         setErrorMessage('Failed to process video');
@@ -28,7 +31,8 @@ export function useVideoProcessing() {
   const reset = () => {
     setStatus('idle');
     setErrorMessage(null);
+    setStudySetPublicId(null);
   };
 
-  return { status, errorMessage, process, reset };
+  return { status, errorMessage, studySetPublicId, process, reset };
 }
