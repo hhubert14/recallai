@@ -5,6 +5,7 @@ import { IReviewProgressRepository } from "@/clean-architecture/domain/repositor
 import { IQuestionRepository } from "@/clean-architecture/domain/repositories/question.repository.interface";
 import { IFlashcardRepository } from "@/clean-architecture/domain/repositories/flashcard.repository.interface";
 import { IVideoRepository } from "@/clean-architecture/domain/repositories/video.repository.interface";
+import { IStudySetRepository } from "@/clean-architecture/domain/repositories/study-set.repository.interface";
 import { ReviewableItemEntity } from "@/clean-architecture/domain/entities/reviewable-item.entity";
 import { ReviewProgressEntity } from "@/clean-architecture/domain/entities/review-progress.entity";
 import {
@@ -13,6 +14,7 @@ import {
 } from "@/clean-architecture/domain/entities/question.entity";
 import { FlashcardEntity } from "@/clean-architecture/domain/entities/flashcard.entity";
 import { VideoEntity } from "@/clean-architecture/domain/entities/video.entity";
+import { StudySetEntity } from "@/clean-architecture/domain/entities/study-set.entity";
 
 // Helper functions for creating mock entities
 function createMockReviewableItem(
@@ -101,11 +103,24 @@ function createMockFlashcard(
 function createMockVideo(id: number): VideoEntity {
   return new VideoEntity(
     id,
-    `public-id-${id}`,
     "user-1",
     `Video ${id}`,
     `https://youtube.com/watch?v=test${id}`,
     "Test Channel",
+    "2026-01-01T00:00:00Z"
+  );
+}
+
+function createMockStudySet(id: number): StudySetEntity {
+  return new StudySetEntity(
+    id,
+    `public-id-${id}`,
+    "user-1",
+    `Study Set ${id}`,
+    null,
+    "video",
+    id,
+    "2026-01-01T00:00:00Z",
     "2026-01-01T00:00:00Z"
   );
 }
@@ -117,6 +132,7 @@ describe("GetItemsForReviewUseCase", () => {
   let mockQuestionRepo: IQuestionRepository;
   let mockFlashcardRepo: IFlashcardRepository;
   let mockVideoRepo: IVideoRepository;
+  let mockStudySetRepo: IStudySetRepository;
 
   beforeEach(() => {
     mockReviewableItemRepo = {
@@ -158,10 +174,18 @@ describe("GetItemsForReviewUseCase", () => {
     mockVideoRepo = {
       createVideo: vi.fn(),
       findVideoById: vi.fn(),
-      findVideoByPublicId: vi.fn(),
       findVideoByUserIdAndUrl: vi.fn(),
       findVideosByUserId: vi.fn(),
       findVideosByIds: vi.fn(),
+    };
+    mockStudySetRepo = {
+      createStudySet: vi.fn(),
+      findStudySetById: vi.fn(),
+      findStudySetByPublicId: vi.fn(),
+      findStudySetsByUserId: vi.fn(),
+      findStudySetByVideoId: vi.fn(),
+      findStudySetsByIds: vi.fn(),
+      updateStudySet: vi.fn(),
     };
 
     useCase = new GetItemsForReviewUseCase(
@@ -169,7 +193,8 @@ describe("GetItemsForReviewUseCase", () => {
       mockReviewProgressRepo,
       mockQuestionRepo,
       mockFlashcardRepo,
-      mockVideoRepo
+      mockVideoRepo,
+      mockStudySetRepo
     );
   });
 
@@ -177,8 +202,8 @@ describe("GetItemsForReviewUseCase", () => {
     it("returns items that are due for review with progress", async () => {
       // Setup: 2 reviewable items with progress records that are due
       const reviewableItems = [
-        createMockReviewableItem({ id: 1, itemType: "question", questionId: 1, videoId: 1 }),
-        createMockReviewableItem({ id: 2, itemType: "flashcard", flashcardId: 1, videoId: 1 }),
+        createMockReviewableItem({ id: 1, itemType: "question", questionId: 1, videoId: 1, studySetId: 1 }),
+        createMockReviewableItem({ id: 2, itemType: "flashcard", flashcardId: 1, videoId: 1, studySetId: 1 }),
       ];
       const dueProgress = [
         createMockReviewProgress({ id: 1, reviewableItemId: 1 }),
@@ -187,12 +212,14 @@ describe("GetItemsForReviewUseCase", () => {
       const questions = [createMockQuestion(1)];
       const flashcards = [createMockFlashcard(1)];
       const videos = [createMockVideo(1)];
+      const studySets = [createMockStudySet(1)];
 
       vi.mocked(mockReviewProgressRepo.findReviewProgressDueForReview).mockResolvedValue(dueProgress);
       vi.mocked(mockReviewableItemRepo.findReviewableItemsByIds).mockResolvedValue(reviewableItems);
       vi.mocked(mockQuestionRepo.findQuestionsByIds).mockResolvedValue(questions);
       vi.mocked(mockFlashcardRepo.findFlashcardsByIds).mockResolvedValue(flashcards);
       vi.mocked(mockVideoRepo.findVideosByIds).mockResolvedValue(videos);
+      vi.mocked(mockStudySetRepo.findStudySetsByIds).mockResolvedValue(studySets);
 
       const result = await useCase.execute("user-1", { mode: "due" });
 
@@ -228,6 +255,7 @@ describe("GetItemsForReviewUseCase", () => {
       vi.mocked(mockQuestionRepo.findQuestionsByIds).mockResolvedValue(questions);
       vi.mocked(mockFlashcardRepo.findFlashcardsByIds).mockResolvedValue([]);
       vi.mocked(mockVideoRepo.findVideosByIds).mockResolvedValue(videos);
+      vi.mocked(mockStudySetRepo.findStudySetsByIds).mockResolvedValue([createMockStudySet(1)]);
 
       const result = await useCase.execute("user-1", { mode: "due" }, 2);
 
@@ -252,6 +280,7 @@ describe("GetItemsForReviewUseCase", () => {
       vi.mocked(mockQuestionRepo.findQuestionsByIds).mockResolvedValue(questions);
       vi.mocked(mockFlashcardRepo.findFlashcardsByIds).mockResolvedValue([]);
       vi.mocked(mockVideoRepo.findVideosByIds).mockResolvedValue(videos);
+      vi.mocked(mockStudySetRepo.findStudySetsByIds).mockResolvedValue([createMockStudySet(1)]);
 
       const result = await useCase.execute("user-1", { mode: "due" }, 2);
 
@@ -286,6 +315,7 @@ describe("GetItemsForReviewUseCase", () => {
       vi.mocked(mockQuestionRepo.findQuestionsByIds).mockResolvedValue(questions);
       vi.mocked(mockFlashcardRepo.findFlashcardsByIds).mockResolvedValue(flashcards);
       vi.mocked(mockVideoRepo.findVideosByIds).mockResolvedValue(videos);
+      vi.mocked(mockStudySetRepo.findStudySetsByIds).mockResolvedValue([createMockStudySet(1)]);
 
       const result = await useCase.execute("user-1", { mode: "new" });
 
@@ -329,6 +359,7 @@ describe("GetItemsForReviewUseCase", () => {
       vi.mocked(mockQuestionRepo.findQuestionsByIds).mockResolvedValue(questions);
       vi.mocked(mockFlashcardRepo.findFlashcardsByIds).mockResolvedValue([]);
       vi.mocked(mockVideoRepo.findVideosByIds).mockResolvedValue(videos);
+      vi.mocked(mockStudySetRepo.findStudySetsByIds).mockResolvedValue([createMockStudySet(1)]);
 
       const result = await useCase.execute("user-1", { mode: "new" }, 2);
 
@@ -356,6 +387,7 @@ describe("GetItemsForReviewUseCase", () => {
       vi.mocked(mockQuestionRepo.findQuestionsByIds).mockResolvedValue(questions);
       vi.mocked(mockFlashcardRepo.findFlashcardsByIds).mockResolvedValue(flashcards);
       vi.mocked(mockVideoRepo.findVideosByIds).mockResolvedValue(videos);
+      vi.mocked(mockStudySetRepo.findStudySetsByIds).mockResolvedValue([createMockStudySet(1)]);
 
       const result = await useCase.execute("user-1", { mode: "random" });
 
@@ -390,6 +422,7 @@ describe("GetItemsForReviewUseCase", () => {
       vi.mocked(mockQuestionRepo.findQuestionsByIds).mockResolvedValue(questions);
       vi.mocked(mockFlashcardRepo.findFlashcardsByIds).mockResolvedValue([]);
       vi.mocked(mockVideoRepo.findVideosByIds).mockResolvedValue(videos);
+      vi.mocked(mockStudySetRepo.findStudySetsByIds).mockResolvedValue([createMockStudySet(1)]);
 
       const result = await useCase.execute("user-1", { mode: "random" }, 3);
 
@@ -423,6 +456,7 @@ describe("GetItemsForReviewUseCase", () => {
       vi.mocked(mockQuestionRepo.findQuestionsByIds).mockResolvedValue(questions);
       vi.mocked(mockFlashcardRepo.findFlashcardsByIds).mockResolvedValue([]);
       vi.mocked(mockVideoRepo.findVideosByIds).mockResolvedValue(videos);
+      vi.mocked(mockStudySetRepo.findStudySetsByIds).mockResolvedValue([createMockStudySet(1)]);
 
       const result = await useCase.execute("user-1", { mode: "due", itemType: "question" });
 
@@ -447,6 +481,7 @@ describe("GetItemsForReviewUseCase", () => {
       vi.mocked(mockQuestionRepo.findQuestionsByIds).mockResolvedValue([]);
       vi.mocked(mockFlashcardRepo.findFlashcardsByIds).mockResolvedValue(flashcards);
       vi.mocked(mockVideoRepo.findVideosByIds).mockResolvedValue(videos);
+      vi.mocked(mockStudySetRepo.findStudySetsByIds).mockResolvedValue([createMockStudySet(1)]);
 
       const result = await useCase.execute("user-1", { mode: "due", itemType: "flashcard" });
 
@@ -472,6 +507,7 @@ describe("GetItemsForReviewUseCase", () => {
       vi.mocked(mockQuestionRepo.findQuestionsByIds).mockResolvedValue(questions);
       vi.mocked(mockFlashcardRepo.findFlashcardsByIds).mockResolvedValue(flashcards);
       vi.mocked(mockVideoRepo.findVideosByIds).mockResolvedValue(videos);
+      vi.mocked(mockStudySetRepo.findStudySetsByIds).mockResolvedValue([createMockStudySet(1)]);
 
       const result = await useCase.execute("user-1", { mode: "due", itemType: "all" });
 
@@ -510,6 +546,7 @@ describe("GetItemsForReviewUseCase", () => {
       vi.mocked(mockQuestionRepo.findQuestionsByIds).mockResolvedValue(questions);
       vi.mocked(mockFlashcardRepo.findFlashcardsByIds).mockResolvedValue(flashcards);
       vi.mocked(mockVideoRepo.findVideosByIds).mockResolvedValue(videos);
+      vi.mocked(mockStudySetRepo.findStudySetsByIds).mockResolvedValue([createMockStudySet(1)]);
 
       const result = await useCase.execute("user-1", { mode: "due" });
 
@@ -517,29 +554,34 @@ describe("GetItemsForReviewUseCase", () => {
     });
   });
 
-  describe("video info", () => {
-    it("includes video info for each item", async () => {
+  describe("video and study set info", () => {
+    it("includes video and study set info for each item", async () => {
       const reviewableItems = [
-        createMockReviewableItem({ id: 1, itemType: "question", questionId: 1, videoId: 1 }),
+        createMockReviewableItem({ id: 1, itemType: "question", questionId: 1, videoId: 1, studySetId: 1 }),
       ];
       const dueProgress = [
         createMockReviewProgress({ id: 1, reviewableItemId: 1 }),
       ];
       const questions = [createMockQuestion(1)];
       const videos = [createMockVideo(1)];
+      const studySets = [createMockStudySet(1)];
 
       vi.mocked(mockReviewProgressRepo.findReviewProgressDueForReview).mockResolvedValue(dueProgress);
       vi.mocked(mockReviewableItemRepo.findReviewableItemsByIds).mockResolvedValue(reviewableItems);
       vi.mocked(mockQuestionRepo.findQuestionsByIds).mockResolvedValue(questions);
       vi.mocked(mockFlashcardRepo.findFlashcardsByIds).mockResolvedValue([]);
       vi.mocked(mockVideoRepo.findVideosByIds).mockResolvedValue(videos);
+      vi.mocked(mockStudySetRepo.findStudySetsByIds).mockResolvedValue(studySets);
 
       const result = await useCase.execute("user-1", { mode: "due" });
 
       expect(result[0].video).toBeDefined();
-      expect(result[0].video.id).toBe(1);
-      expect(result[0].video.title).toBe("Video 1");
-      expect(result[0].video.publicId).toBe("public-id-1");
+      expect(result[0].video?.id).toBe(1);
+      expect(result[0].video?.title).toBe("Video 1");
+      expect(result[0].studySet).toBeDefined();
+      expect(result[0].studySet.id).toBe(1);
+      expect(result[0].studySet.publicId).toBe("public-id-1");
+      expect(result[0].studySet.name).toBe("Study Set 1");
     });
   });
 
@@ -561,6 +603,7 @@ describe("GetItemsForReviewUseCase", () => {
       vi.mocked(mockQuestionRepo.findQuestionsByIds).mockResolvedValue([]);
       vi.mocked(mockFlashcardRepo.findFlashcardsByIds).mockResolvedValue([]);
       vi.mocked(mockVideoRepo.findVideosByIds).mockResolvedValue([]);
+      vi.mocked(mockStudySetRepo.findStudySetsByIds).mockResolvedValue([]);
 
       const result = await useCase.execute("user-1", { mode: "due", itemType: "question" }, 1);
 
@@ -571,7 +614,7 @@ describe("GetItemsForReviewUseCase", () => {
     it("excludes items with missing content entity (question/flashcard not found)", async () => {
       const dueProgress = [createMockReviewProgress({ id: 1, reviewableItemId: 1, boxLevel: 1 })];
       const reviewableItems = [
-        createMockReviewableItem({ id: 1, itemType: "question", questionId: 999, videoId: 1 }),
+        createMockReviewableItem({ id: 1, itemType: "question", questionId: 999, videoId: 1, studySetId: 1 }),
       ];
 
       vi.mocked(mockReviewProgressRepo.findReviewProgressDueForReview).mockResolvedValue(dueProgress);
@@ -579,37 +622,60 @@ describe("GetItemsForReviewUseCase", () => {
       // Missing question entity
       vi.mocked(mockQuestionRepo.findQuestionsByIds).mockResolvedValue([]);
       vi.mocked(mockFlashcardRepo.findFlashcardsByIds).mockResolvedValue([]);
-      // Video exists but the item should still be excluded due to missing question
+      // Video and study set exist but the item should still be excluded due to missing question
       vi.mocked(mockVideoRepo.findVideosByIds).mockResolvedValue([createMockVideo(1)]);
+      vi.mocked(mockStudySetRepo.findStudySetsByIds).mockResolvedValue([createMockStudySet(1)]);
 
       const result = await useCase.execute("user-1", { mode: "due" });
 
       expect(result).toHaveLength(0);
     });
 
-    it("excludes items with missing video entity", async () => {
+    it("excludes items with missing study set entity", async () => {
       const dueProgress = [createMockReviewProgress({ id: 1, reviewableItemId: 1, boxLevel: 1 })];
       const reviewableItems = [
-        createMockReviewableItem({ id: 1, itemType: "question", questionId: 1, videoId: 999 }),
+        createMockReviewableItem({ id: 1, itemType: "question", questionId: 1, videoId: 1, studySetId: 999 }),
       ];
 
       vi.mocked(mockReviewProgressRepo.findReviewProgressDueForReview).mockResolvedValue(dueProgress);
       vi.mocked(mockReviewableItemRepo.findReviewableItemsByIds).mockResolvedValue(reviewableItems);
       vi.mocked(mockQuestionRepo.findQuestionsByIds).mockResolvedValue([createMockQuestion(1)]);
       vi.mocked(mockFlashcardRepo.findFlashcardsByIds).mockResolvedValue([]);
-      // Video not found
-      vi.mocked(mockVideoRepo.findVideosByIds).mockResolvedValue([]);
+      vi.mocked(mockVideoRepo.findVideosByIds).mockResolvedValue([createMockVideo(1)]);
+      // Study set not found
+      vi.mocked(mockStudySetRepo.findStudySetsByIds).mockResolvedValue([]);
 
       const result = await useCase.execute("user-1", { mode: "due" });
 
       expect(result).toHaveLength(0);
     });
 
+    it("includes items when video is null but study set exists", async () => {
+      const dueProgress = [createMockReviewProgress({ id: 1, reviewableItemId: 1, boxLevel: 1 })];
+      const reviewableItems = [
+        createMockReviewableItem({ id: 1, itemType: "question", questionId: 1, videoId: null, studySetId: 1 }),
+      ];
+
+      vi.mocked(mockReviewProgressRepo.findReviewProgressDueForReview).mockResolvedValue(dueProgress);
+      vi.mocked(mockReviewableItemRepo.findReviewableItemsByIds).mockResolvedValue(reviewableItems);
+      vi.mocked(mockQuestionRepo.findQuestionsByIds).mockResolvedValue([createMockQuestion(1)]);
+      vi.mocked(mockFlashcardRepo.findFlashcardsByIds).mockResolvedValue([]);
+      vi.mocked(mockVideoRepo.findVideosByIds).mockResolvedValue([]);
+      vi.mocked(mockStudySetRepo.findStudySetsByIds).mockResolvedValue([createMockStudySet(1)]);
+
+      const result = await useCase.execute("user-1", { mode: "due" });
+
+      expect(result).toHaveLength(1);
+      expect(result[0].video).toBeNull();
+      expect(result[0].studySet).toBeDefined();
+      expect(result[0].studySet.id).toBe(1);
+    });
+
     it("random mode respects itemType filter", async () => {
       const allReviewableItems = [
-        createMockReviewableItem({ id: 1, itemType: "question", questionId: 1, videoId: 1 }),
-        createMockReviewableItem({ id: 2, itemType: "flashcard", flashcardId: 2, videoId: 1 }),
-        createMockReviewableItem({ id: 3, itemType: "flashcard", flashcardId: 3, videoId: 1 }),
+        createMockReviewableItem({ id: 1, itemType: "question", questionId: 1, videoId: 1, studySetId: 1 }),
+        createMockReviewableItem({ id: 2, itemType: "flashcard", flashcardId: 2, videoId: 1, studySetId: 1 }),
+        createMockReviewableItem({ id: 3, itemType: "flashcard", flashcardId: 3, videoId: 1, studySetId: 1 }),
       ];
 
       vi.mocked(mockReviewableItemRepo.findReviewableItemsByUserId).mockResolvedValue(allReviewableItems);
@@ -620,6 +686,7 @@ describe("GetItemsForReviewUseCase", () => {
         createMockFlashcard(3, 1),
       ]);
       vi.mocked(mockVideoRepo.findVideosByIds).mockResolvedValue([createMockVideo(1)]);
+      vi.mocked(mockStudySetRepo.findStudySetsByIds).mockResolvedValue([createMockStudySet(1)]);
 
       const result = await useCase.execute("user-1", { mode: "random", itemType: "flashcard" });
 
@@ -629,9 +696,9 @@ describe("GetItemsForReviewUseCase", () => {
 
     it("random mode shuffles deterministically when Math.random is mocked", async () => {
       const allReviewableItems = [
-        createMockReviewableItem({ id: 1, itemType: "question", questionId: 1, videoId: 1 }),
-        createMockReviewableItem({ id: 2, itemType: "question", questionId: 2, videoId: 1 }),
-        createMockReviewableItem({ id: 3, itemType: "question", questionId: 3, videoId: 1 }),
+        createMockReviewableItem({ id: 1, itemType: "question", questionId: 1, videoId: 1, studySetId: 1 }),
+        createMockReviewableItem({ id: 2, itemType: "question", questionId: 2, videoId: 1, studySetId: 1 }),
+        createMockReviewableItem({ id: 3, itemType: "question", questionId: 3, videoId: 1, studySetId: 1 }),
       ];
 
       vi.mocked(mockReviewableItemRepo.findReviewableItemsByUserId).mockResolvedValue(allReviewableItems);
@@ -643,6 +710,7 @@ describe("GetItemsForReviewUseCase", () => {
       ]);
       vi.mocked(mockFlashcardRepo.findFlashcardsByIds).mockResolvedValue([]);
       vi.mocked(mockVideoRepo.findVideosByIds).mockResolvedValue([createMockVideo(1)]);
+      vi.mocked(mockStudySetRepo.findStudySetsByIds).mockResolvedValue([createMockStudySet(1)]);
 
       const randomSpy = vi.spyOn(Math, "random")
         .mockImplementationOnce(() => 0.0)   // i=2 -> j=0, swap [1,2,3] -> [3,2,1]

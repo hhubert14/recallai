@@ -19,6 +19,7 @@ export function toReviewItemApiResponse(item: ReviewItem): ReviewItemApiResponse
         }
       : null,
     video: item.video,
+    studySet: item.studySet,
   };
 
   if (item.content.type === "question") {

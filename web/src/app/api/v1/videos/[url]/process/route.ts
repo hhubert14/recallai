@@ -51,6 +51,7 @@ export async function POST(
             video_id: result.video.id,
             summary: result.summary.content,
             alreadyExists: result.alreadyExists,
+            studySetPublicId: result.studySet.publicId,
         });
     } catch (error) {
         const errorMessage =

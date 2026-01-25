@@ -7,7 +7,7 @@ import { driver, type Driver, type DriveStep } from "driver.js";
  */
 export const TOUR_IDS = {
   dashboard: "dashboard",
-  videoDetail: "video-detail",
+  studySetDetail: "study-set-detail",
   reviewModeSelector: "review-mode-selector",
   reviewSession: "review-session",
 } as const;
@@ -19,7 +19,7 @@ export type TourId = (typeof TOUR_IDS)[keyof typeof TOUR_IDS];
  */
 export const TOUR_STORAGE_KEYS = {
   [TOUR_IDS.dashboard]: "tour_dashboard_completed",
-  [TOUR_IDS.videoDetail]: "tour_video_detail_completed",
+  [TOUR_IDS.studySetDetail]: "tour_study_set_detail_completed",
   [TOUR_IDS.reviewModeSelector]: "tour_review_mode_selector_completed",
   [TOUR_IDS.reviewSession]: "tour_review_session_completed",
 } as const;

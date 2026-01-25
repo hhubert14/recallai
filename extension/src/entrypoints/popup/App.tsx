@@ -178,12 +178,15 @@ function VideoProcessingSection({
             </p>
           </div>
           <a
-            href={`${BASE_URL}/dashboard`}
+            href={processing.studySetPublicId
+              ? `${BASE_URL}/dashboard/study-set/${processing.studySetPublicId}`
+              : `${BASE_URL}/dashboard`
+            }
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
           >
-            View in Dashboard
+            View Study Set
             <ArrowRightIcon className="w-3 h-3" />
           </a>
         </div>
@@ -198,12 +201,15 @@ function VideoProcessingSection({
             </p>
           </div>
           <a
-            href={`${BASE_URL}/dashboard`}
+            href={processing.studySetPublicId
+              ? `${BASE_URL}/dashboard/study-set/${processing.studySetPublicId}`
+              : `${BASE_URL}/dashboard`
+            }
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
           >
-            View in Dashboard
+            View Study Set
             <ArrowRightIcon className="w-3 h-3" />
           </a>
         </div>

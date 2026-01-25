@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render } from "@testing-library/react";
-import { VideoDetailTour } from "./VideoDetailTour";
+import { StudySetDetailTour } from "./StudySetDetailTour";
 import * as useTourModule from "@/hooks/useTour";
 import { TOUR_IDS } from "@/components/tour/tour-constants";
 
 vi.mock("@/hooks/useTour");
 
-describe("VideoDetailTour", () => {
+describe("StudySetDetailTour", () => {
   const mockUseTourReturn: useTourModule.UseTourReturn = {
     isRunning: false,
     isCompleted: false,
@@ -22,15 +22,15 @@ describe("VideoDetailTour", () => {
   });
 
   it("initializes tour with correct tourId", () => {
-    render(<VideoDetailTour />);
+    render(<StudySetDetailTour />);
 
     expect(useTourModule.useTour).toHaveBeenCalledWith(
-      expect.objectContaining({ tourId: TOUR_IDS.videoDetail })
+      expect.objectContaining({ tourId: TOUR_IDS.studySetDetail })
     );
   });
 
   it("configures tour to auto-start", () => {
-    render(<VideoDetailTour />);
+    render(<StudySetDetailTour />);
 
     expect(useTourModule.useTour).toHaveBeenCalledWith(
       expect.objectContaining({ autoStart: true })
@@ -38,7 +38,7 @@ describe("VideoDetailTour", () => {
   });
 
   it("uses 800ms auto-start delay", () => {
-    render(<VideoDetailTour />);
+    render(<StudySetDetailTour />);
 
     expect(useTourModule.useTour).toHaveBeenCalledWith(
       expect.objectContaining({ autoStartDelay: 800 })
@@ -46,7 +46,7 @@ describe("VideoDetailTour", () => {
   });
 
   it("renders null (no visible output)", () => {
-    const { container } = render(<VideoDetailTour />);
+    const { container } = render(<StudySetDetailTour />);
 
     expect(container.firstChild).toBeNull();
   });

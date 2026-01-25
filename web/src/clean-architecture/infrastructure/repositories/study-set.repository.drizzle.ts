@@ -7,7 +7,7 @@ import {
 } from "@/clean-architecture/domain/entities/study-set.entity";
 import { db as defaultDb } from "@/drizzle";
 import { studySets } from "@/drizzle/schema";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, inArray } from "drizzle-orm";
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 export class DrizzleStudySetRepository implements IStudySetRepository {
@@ -98,6 +98,24 @@ export class DrizzleStudySetRepository implements IStudySetRepository {
       return this.toEntity(data);
     } catch (error) {
       console.error("Error finding study set by video ID:", error);
+      throw error;
+    }
+  }
+
+  async findStudySetsByIds(ids: number[]): Promise<StudySetEntity[]> {
+    if (ids.length === 0) {
+      return [];
+    }
+
+    try {
+      const data = await this.db
+        .select()
+        .from(studySets)
+        .where(inArray(studySets.id, ids));
+
+      return data.map((studySet) => this.toEntity(studySet));
+    } catch (error) {
+      console.error("Error finding study sets by IDs:", error);
       throw error;
     }
   }

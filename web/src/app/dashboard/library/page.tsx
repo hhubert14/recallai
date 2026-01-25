@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { LibraryVideoList } from "@/app/dashboard/library/LibraryVideoList";
+import { LibraryStudySetList } from "@/app/dashboard/library/LibraryStudySetList";
 import { TextRefreshButton } from "../TextRefreshButton";
-import { DrizzleVideoRepository } from "@/clean-architecture/infrastructure/repositories/video.repository.drizzle";
-import { FindVideosByUserIdUseCase } from "@/clean-architecture/use-cases/video/find-videos-by-user-id.use-case";
+import { DrizzleStudySetRepository } from "@/clean-architecture/infrastructure/repositories/study-set.repository.drizzle";
+import { FindStudySetsByUserIdUseCase } from "@/clean-architecture/use-cases/study-set/find-study-sets-by-user-id.use-case";
 import { DashboardHeader } from "@/components/DashboardHeader";
 
 export const metadata: Metadata = {
     title: "My Library | RecallAI",
-    description: "Browse all your saved videos",
+    description: "Browse all your study sets",
 };
 
 export default async function LibraryPage() {
@@ -23,8 +23,8 @@ export default async function LibraryPage() {
         redirect("/auth/login");
     }
 
-    // Get all user videos
-    const allVideos = await new FindVideosByUserIdUseCase(new DrizzleVideoRepository()).execute(user.id);
+    // Get all user study sets
+    const allStudySets = await new FindStudySetsByUserIdUseCase(new DrizzleStudySetRepository()).execute(user.id);
 
     return (
         <div className="flex min-h-screen flex-col bg-background">
@@ -37,7 +37,7 @@ export default async function LibraryPage() {
                             My Library
                         </h1>
                         <p className="text-lg text-muted-foreground">
-                            Browse all your saved videos and track your learning
+                            Browse all your study sets and track your learning
                             progress.
                         </p>
                     </div>
@@ -48,7 +48,7 @@ export default async function LibraryPage() {
                     </div>
                 </div>
 
-                <LibraryVideoList videos={allVideos} userId={user.id} />
+                <LibraryStudySetList studySets={allStudySets} userId={user.id} />
             </main>
         </div>
     );

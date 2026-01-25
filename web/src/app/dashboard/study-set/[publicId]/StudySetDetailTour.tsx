@@ -4,12 +4,12 @@ import { useTour } from "@/hooks/useTour";
 import { TOUR_IDS } from "@/components/tour/tour-constants";
 
 /**
- * Video detail page tour component
- * Auto-starts on first visit to a video detail page
+ * Study set detail page tour component
+ * Auto-starts on first visit to a study set detail page
  */
-export function VideoDetailTour() {
+export function StudySetDetailTour() {
   useTour({
-    tourId: TOUR_IDS.videoDetail,
+    tourId: TOUR_IDS.studySetDetail,
     autoStart: true,
     autoStartDelay: 800,
   });

@@ -22,6 +22,7 @@ export async function checkAuthStatus(): Promise<boolean> {
 export type ProcessVideoResult = {
   success: boolean;
   alreadyExists: boolean;
+  studySetPublicId: string | null;
 };
 
 /**
@@ -39,16 +40,17 @@ export async function processVideo(videoUrl: string): Promise<ProcessVideoResult
     });
 
     if (!response.ok) {
-      return { success: false, alreadyExists: false };
+      return { success: false, alreadyExists: false, studySetPublicId: null };
     }
 
     const data = await response.json();
     return {
       success: true,
       alreadyExists: data.data.alreadyExists,
+      studySetPublicId: data.data.studySetPublicId,
     };
   } catch (error) {
     console.error('Video processing error:', error);
-    return { success: false, alreadyExists: false };
+    return { success: false, alreadyExists: false, studySetPublicId: null };
   }
 }

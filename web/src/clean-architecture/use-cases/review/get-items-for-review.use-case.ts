@@ -3,11 +3,13 @@ import { IReviewProgressRepository } from "@/clean-architecture/domain/repositor
 import { IQuestionRepository } from "@/clean-architecture/domain/repositories/question.repository.interface";
 import { IFlashcardRepository } from "@/clean-architecture/domain/repositories/flashcard.repository.interface";
 import { IVideoRepository } from "@/clean-architecture/domain/repositories/video.repository.interface";
+import { IStudySetRepository } from "@/clean-architecture/domain/repositories/study-set.repository.interface";
 import { ReviewableItemEntity } from "@/clean-architecture/domain/entities/reviewable-item.entity";
 import { ReviewProgressEntity } from "@/clean-architecture/domain/entities/review-progress.entity";
 import { MultipleChoiceQuestionEntity } from "@/clean-architecture/domain/entities/question.entity";
 import { FlashcardEntity } from "@/clean-architecture/domain/entities/flashcard.entity";
 import { VideoEntity } from "@/clean-architecture/domain/entities/video.entity";
+import { StudySetEntity } from "@/clean-architecture/domain/entities/study-set.entity";
 import { StudyMode, ItemTypeFilter, ReviewItem, ReviewItemContent } from "./types";
 
 export type GetItemsParams = {
@@ -21,7 +23,8 @@ export class GetItemsForReviewUseCase {
     private reviewProgressRepository: IReviewProgressRepository,
     private questionRepository: IQuestionRepository,
     private flashcardRepository: IFlashcardRepository,
-    private videoRepository: IVideoRepository
+    private videoRepository: IVideoRepository,
+    private studySetRepository: IStudySetRepository
   ) {}
 
   async execute(
@@ -77,13 +80,13 @@ export class GetItemsForReviewUseCase {
       progressRecords = progressRecords.filter((p) => filteredItemIds.has(p.reviewableItemId));
     }
 
-    // Fetch content and videos
-    const { questions, flashcards, videos } = await this.fetchContentAndVideos(
+    // Fetch content, videos, and study sets
+    const { questions, flashcards, videos, studySets } = await this.fetchContentAndVideosAndStudySets(
       reviewableItems
     );
 
     // Build the result
-    return this.buildReviewItems(reviewableItems, progressRecords, questions, flashcards, videos);
+    return this.buildReviewItems(reviewableItems, progressRecords, questions, flashcards, videos, studySets);
   }
 
   private async getNewItems(
@@ -126,13 +129,13 @@ export class GetItemsForReviewUseCase {
     const newReviewableItems =
       await this.reviewableItemRepository.findReviewableItemsByIds(limitedIds);
 
-    // Fetch content and videos
-    const { questions, flashcards, videos } = await this.fetchContentAndVideos(
+    // Fetch content, videos, and study sets
+    const { questions, flashcards, videos, studySets } = await this.fetchContentAndVideosAndStudySets(
       newReviewableItems
     );
 
     // Build the result (no progress for new items)
-    return this.buildReviewItems(newReviewableItems, [], questions, flashcards, videos);
+    return this.buildReviewItems(newReviewableItems, [], questions, flashcards, videos, studySets);
   }
 
   private async getRandomItems(
@@ -169,24 +172,26 @@ export class GetItemsForReviewUseCase {
         itemIds
       );
 
-    // Fetch content and videos
-    const { questions, flashcards, videos } = await this.fetchContentAndVideos(
+    // Fetch content, videos, and study sets
+    const { questions, flashcards, videos, studySets } = await this.fetchContentAndVideosAndStudySets(
       shuffledItems
     );
 
     // Build the result
-    return this.buildReviewItems(shuffledItems, progressRecords, questions, flashcards, videos);
+    return this.buildReviewItems(shuffledItems, progressRecords, questions, flashcards, videos, studySets);
   }
 
-  private async fetchContentAndVideos(reviewableItems: ReviewableItemEntity[]): Promise<{
+  private async fetchContentAndVideosAndStudySets(reviewableItems: ReviewableItemEntity[]): Promise<{
     questions: MultipleChoiceQuestionEntity[];
     flashcards: FlashcardEntity[];
     videos: VideoEntity[];
+    studySets: StudySetEntity[];
   }> {
     // Separate question and flashcard IDs
     const questionIds: number[] = [];
     const flashcardIds: number[] = [];
     const videoIds = new Set<number>();
+    const studySetIds = new Set<number>();
 
     for (const item of reviewableItems) {
       if (item.itemType === "question" && item.questionId) {
@@ -197,10 +202,11 @@ export class GetItemsForReviewUseCase {
       if (item.videoId !== null) {
         videoIds.add(item.videoId);
       }
+      studySetIds.add(item.studySetId);
     }
 
     // Fetch in parallel
-    const [questions, flashcards, videos] = await Promise.all([
+    const [questions, flashcards, videos, studySets] = await Promise.all([
       questionIds.length > 0
         ? this.questionRepository.findQuestionsByIds(questionIds)
         : Promise.resolve([]),
@@ -208,9 +214,10 @@ export class GetItemsForReviewUseCase {
         ? this.flashcardRepository.findFlashcardsByIds(flashcardIds)
         : Promise.resolve([]),
       this.videoRepository.findVideosByIds(Array.from(videoIds)),
+      this.studySetRepository.findStudySetsByIds(Array.from(studySetIds)),
     ]);
 
-    return { questions, flashcards, videos };
+    return { questions, flashcards, videos, studySets };
   }
 
   private buildReviewItems(
@@ -218,7 +225,8 @@ export class GetItemsForReviewUseCase {
     progressRecords: ReviewProgressEntity[],
     questions: MultipleChoiceQuestionEntity[],
     flashcards: FlashcardEntity[],
-    videos: VideoEntity[]
+    videos: VideoEntity[],
+    studySets: StudySetEntity[]
   ): ReviewItem[] {
     // Create lookup maps
     const progressByItemId = new Map(
@@ -227,14 +235,17 @@ export class GetItemsForReviewUseCase {
     const questionById = new Map(questions.map((q) => [q.id, q]));
     const flashcardById = new Map(flashcards.map((f) => [f.id, f]));
     const videoById = new Map(videos.map((v) => [v.id, v]));
+    const studySetById = new Map(studySets.map((s) => [s.id, s]));
 
     const result: ReviewItem[] = [];
 
     for (const item of reviewableItems) {
       const progress = progressByItemId.get(item.id) ?? null;
       const video = item.videoId !== null ? videoById.get(item.videoId) : undefined;
+      const studySet = studySetById.get(item.studySetId);
 
-      if (!video) continue;
+      // Study set is required
+      if (!studySet) continue;
 
       let content: ReviewItemContent;
 
@@ -254,10 +265,14 @@ export class GetItemsForReviewUseCase {
         reviewableItem: item,
         progress,
         content,
-        video: {
+        video: video ? {
           id: video.id,
           title: video.title,
-          publicId: video.publicId,
+        } : null,
+        studySet: {
+          id: studySet.id,
+          publicId: studySet.publicId,
+          name: studySet.name,
         },
       });
     }

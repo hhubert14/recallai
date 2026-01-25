@@ -29,8 +29,8 @@ export function DashboardHeader() {
     if (pathname === "/dashboard") {
       return TOUR_IDS.dashboard;
     }
-    if (pathname.startsWith("/dashboard/video/")) {
-      return TOUR_IDS.videoDetail;
+    if (pathname.startsWith("/dashboard/study-set/")) {
+      return TOUR_IDS.studySetDetail;
     }
     if (pathname === "/dashboard/review") {
       return TOUR_IDS.reviewModeSelector;

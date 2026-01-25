@@ -6,6 +6,7 @@ import { DrizzleReviewProgressRepository } from "@/clean-architecture/infrastruc
 import { DrizzleQuestionRepository } from "@/clean-architecture/infrastructure/repositories/question.repository.drizzle";
 import { DrizzleFlashcardRepository } from "@/clean-architecture/infrastructure/repositories/flashcard.repository.drizzle";
 import { DrizzleVideoRepository } from "@/clean-architecture/infrastructure/repositories/video.repository.drizzle";
+import { DrizzleStudySetRepository } from "@/clean-architecture/infrastructure/repositories/study-set.repository.drizzle";
 import { jsendSuccess, jsendFail, jsendError } from "@/lib/jsend";
 import {
   StudyMode,
@@ -60,7 +61,8 @@ export async function GET(request: NextRequest) {
       new DrizzleReviewProgressRepository(),
       new DrizzleQuestionRepository(),
       new DrizzleFlashcardRepository(),
-      new DrizzleVideoRepository()
+      new DrizzleVideoRepository(),
+      new DrizzleStudySetRepository()
     );
 
     const items = await useCase.execute(

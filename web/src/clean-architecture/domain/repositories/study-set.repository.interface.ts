@@ -37,6 +37,11 @@ export interface IStudySetRepository {
   findStudySetByVideoId(videoId: number): Promise<StudySetEntity | null>;
 
   /**
+   * Find study sets by their IDs.
+   */
+  findStudySetsByIds(ids: number[]): Promise<StudySetEntity[]>;
+
+  /**
    * Update a study set's name and description.
    */
   updateStudySet(
