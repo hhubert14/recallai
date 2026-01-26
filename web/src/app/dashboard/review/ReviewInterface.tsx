@@ -1,29 +1,23 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { QuizProgress, QuizQuestion, QuizResult, QuizSummary } from "@/components/quiz";
+import { QuizProgress } from "@/components/quiz";
 import { StudyModeSelector, StudyModeStats, ProgressStats } from "./StudyModeSelector";
-import { StudyMode, ReviewItemApiResponse } from "@/clean-architecture/use-cases/review/types";
-import { BookOpen, Video, RotateCcw } from "lucide-react";
+import { BookOpen, Video } from "lucide-react";
 import { TOUR_TARGETS } from "@/components/tour/tour-constants";
 import { ReviewModeSelectorTour } from "./ReviewModeSelectorTour";
 import { ReviewSessionTour } from "./ReviewSessionTour";
-
-interface SessionResults {
-  correct: number;
-  incorrect: number;
-  movedUp: number;
-  needsReview: number;
-}
+import { useReviewSession } from "@/hooks/useReviewSession";
+import { QuestionReview } from "./QuestionReview";
+import { FlashcardReview } from "./FlashcardReview";
+import { EmptyReviewState } from "./EmptyReviewState";
+import { SessionComplete } from "./SessionComplete";
 
 interface ReviewInterfaceProps {
   studyModeStats: StudyModeStats;
   progressStats: ProgressStats;
 }
-
-const SESSION_LIMIT = 10;
 
 export function ReviewInterface({
   studyModeStats,
@@ -31,221 +25,59 @@ export function ReviewInterface({
 }: ReviewInterfaceProps) {
   const router = useRouter();
 
-  // Mode selection state
-  const [selectedMode, setSelectedMode] = useState<StudyMode>(
-    studyModeStats.dueCount > 0 ? "due" : studyModeStats.newCount > 0 ? "new" : "random"
-  );
-  const [sessionStarted, setSessionStarted] = useState(false);
-  const [isLoadingItems, setIsLoadingItems] = useState(false);
+  const {
+    // Mode selection
+    selectedMode,
+    setSelectedMode,
+    sessionStarted,
+    isLoadingItems,
 
-  // Review state
-  const [items, setItems] = useState<ReviewItemApiResponse[]>([]);
-  const [currentItemIndex, setCurrentItemIndex] = useState(0);
-  const [selectedOptionId, setSelectedOptionId] = useState<number | null>(null);
-  const [flashcardFlipped, setFlashcardFlipped] = useState(false);
-  const [selfAssessment, setSelfAssessment] = useState<boolean | null>(null);
-  const [showResult, setShowResult] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+    // Review state
+    items,
+    currentItem,
+    currentItemIndex,
+    selectedOptionId,
+    setSelectedOptionId,
+    flashcardFlipped,
+    setFlashcardFlipped,
+    selfAssessment,
+    setSelfAssessment,
+    showResult,
+    isSubmitting,
 
-  // Error states
-  const [fetchError, setFetchError] = useState<string | null>(null);
-  const [submitError, setSubmitError] = useState<string | null>(null);
+    // Errors
+    fetchError,
+    submitError,
 
-  // Session tracking
-  const [sessionResults, setSessionResults] = useState<SessionResults>({
-    correct: 0,
-    incorrect: 0,
-    movedUp: 0,
-    needsReview: 0,
+    // Session results
+    sessionResults,
+
+    // Computed
+    isSessionComplete,
+    isLastItem,
+    hasMoreItems,
+
+    // Handlers
+    handleStartSession,
+    handleSubmit,
+    handleNext,
+    handleFinish,
+    handleContinue,
+    handleBackToModeSelection,
+    fetchItems,
+  } = useReviewSession({
+    studyModeStats,
+    onRefresh: () => router.refresh(),
   });
-
-  const currentItem = items[currentItemIndex];
-  const isSessionComplete = sessionStarted && currentItemIndex >= items.length;
-  const isLastItem = currentItemIndex === items.length - 1;
-  const hasMoreItems = items.length >= SESSION_LIMIT;
-
-  const fetchItems = async (mode: StudyMode): Promise<boolean> => {
-    setIsLoadingItems(true);
-    setFetchError(null);
-    try {
-      const response = await fetch(`/api/v1/reviews?mode=${mode}&limit=${SESSION_LIMIT}`);
-      const data = await response.json();
-      if (data.status === "success") {
-        setItems(data.data.items);
-        return true;
-      } else {
-        setFetchError(data.data?.error || "Failed to load items");
-        return false;
-      }
-    } catch {
-      setFetchError("Failed to load items. Please try again.");
-      return false;
-    } finally {
-      setIsLoadingItems(false);
-    }
-  };
-
-  const handleStartSession = async () => {
-    const success = await fetchItems(selectedMode);
-    if (!success) return;
-
-    setSessionStarted(true);
-    setCurrentItemIndex(0);
-    setSelectedOptionId(null);
-    setFlashcardFlipped(false);
-    setSelfAssessment(null);
-    setShowResult(false);
-    setSessionResults({ correct: 0, incorrect: 0, movedUp: 0, needsReview: 0 });
-  };
-
-  const handleSubmit = async () => {
-    if (!currentItem) return;
-
-    // For questions, require option selection
-    if (currentItem.itemType === "question" && !selectedOptionId) return;
-    // For flashcards, require self-assessment
-    if (currentItem.itemType === "flashcard" && selfAssessment === null) return;
-
-    setIsSubmitting(true);
-    setSubmitError(null);
-
-    let isCorrect: boolean;
-
-    if (currentItem.itemType === "question" && currentItem.question) {
-      const selectedOption = currentItem.question.options.find(
-        (option) => option.id === selectedOptionId
-      );
-      if (!selectedOption) {
-        setIsSubmitting(false);
-        return;
-      }
-      isCorrect = selectedOption.isCorrect;
-    } else {
-      // Flashcard - use self-assessment
-      isCorrect = selfAssessment === true;
-    }
-
-    // Random mode: show feedback but don't update progress
-    if (selectedMode === "random") {
-      setSessionResults((prev) => ({
-        ...prev,
-        correct: prev.correct + (isCorrect ? 1 : 0),
-        incorrect: prev.incorrect + (isCorrect ? 0 : 1),
-      }));
-      setShowResult(true);
-      setIsSubmitting(false);
-      return;
-    }
-
-    // Due/New modes: update spaced repetition progress
-    const previousBoxLevel = currentItem.progress?.boxLevel ?? 0;
-
-    try {
-      const response = await fetch("/api/v1/reviews/submit-review-answer", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          reviewableItemId: currentItem.reviewableItemId,
-          isCorrect,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (data.status === "success") {
-        const newBoxLevel = data.data?.progress?.boxLevel ?? previousBoxLevel;
-
-        // Update session results
-        setSessionResults((prev) => {
-          const newResults = { ...prev };
-          if (isCorrect) {
-            newResults.correct++;
-            if (newBoxLevel > previousBoxLevel) {
-              newResults.movedUp++;
-            }
-          } else {
-            newResults.incorrect++;
-            newResults.needsReview++;
-          }
-          return newResults;
-        });
-      } else {
-        setSubmitError(data.data?.error || "Failed to save your answer");
-      }
-    } catch {
-      setSubmitError("Failed to save your answer. Your progress may not be recorded.");
-    }
-
-    setShowResult(true);
-    setIsSubmitting(false);
-  };
-
-  const handleNext = () => {
-    if (currentItemIndex < items.length - 1) {
-      setCurrentItemIndex(currentItemIndex + 1);
-      setSelectedOptionId(null);
-      setFlashcardFlipped(false);
-      setSelfAssessment(null);
-      setShowResult(false);
-    }
-  };
-
-  const handleFinish = () => {
-    setCurrentItemIndex(items.length); // Trigger session complete
-  };
-
-  const handleContinue = async () => {
-    const success = await fetchItems(selectedMode);
-    if (!success) return;
-
-    setCurrentItemIndex(0);
-    setSelectedOptionId(null);
-    setFlashcardFlipped(false);
-    setSelfAssessment(null);
-    setShowResult(false);
-    // Keep cumulative results
-  };
-
-  const handleBackToModeSelection = () => {
-    // Reset client state
-    setSessionStarted(false);
-    setItems([]);
-    setCurrentItemIndex(0);
-    setSelectedOptionId(null);
-    setFlashcardFlipped(false);
-    setSelfAssessment(null);
-    setShowResult(false);
-    setSessionResults({ correct: 0, incorrect: 0, movedUp: 0, needsReview: 0 });
-    setFetchError(null);
-    setSubmitError(null);
-    // Refresh server data (stats)
-    router.refresh();
-  };
 
   // Mode selection screen
   if (!sessionStarted) {
     // No items at all - empty state
     if (studyModeStats.totalCount === 0) {
       return (
-        <div className="max-w-2xl mx-auto">
-          <div className="text-center py-16 animate-fade-up">
-            <div className="w-20 h-20 mx-auto bg-primary/10 rounded-full flex items-center justify-center mb-6">
-              <BookOpen className="w-10 h-10 text-primary" />
-            </div>
-            <h2 className="text-2xl font-bold text-foreground mb-3">
-              No Items Yet
-            </h2>
-            <p className="text-muted-foreground max-w-md mx-auto mb-6">
-              Complete some video quizzes or create flashcards to add items to your spaced repetition system.
-            </p>
-            <Button
-              onClick={() => router.push("/dashboard")}
-              variant="outline"
-            >
-              Go to Dashboard
-            </Button>
-          </div>
-        </div>
+        <EmptyReviewState
+          onNavigateToDashboard={() => router.push("/dashboard")}
+        />
       );
     }
 
@@ -268,30 +100,12 @@ export function ReviewInterface({
   // Session complete screen
   if (isSessionComplete) {
     return (
-      <div className="max-w-2xl mx-auto">
-        <QuizSummary
-          correct={sessionResults.correct}
-          total={sessionResults.correct + sessionResults.incorrect}
-          movedUp={sessionResults.movedUp}
-          needsReview={sessionResults.needsReview}
-          actions={[
-            {
-              label: "Back to Review",
-              onClick: handleBackToModeSelection,
-              variant: "outline",
-            },
-            ...(hasMoreItems
-              ? [
-                  {
-                    label: "Continue",
-                    onClick: handleContinue,
-                    variant: "default" as const,
-                  },
-                ]
-              : []),
-          ]}
-        />
-      </div>
+      <SessionComplete
+        sessionResults={sessionResults}
+        hasMoreItems={hasMoreItems}
+        onBackToModeSelection={handleBackToModeSelection}
+        onContinue={handleContinue}
+      />
     );
   }
 
@@ -314,109 +128,6 @@ export function ReviewInterface({
       </div>
     );
   }
-
-  // Render based on item type
-  const renderQuestionReview = () => {
-    if (!currentItem.question) return null;
-
-    const selectedOption = currentItem.question.options.find(
-      (option) => option.id === selectedOptionId
-    );
-
-    return (
-      <>
-        {/* Question */}
-        <QuizQuestion
-          questionText={currentItem.question.questionText}
-          options={currentItem.question.options}
-          selectedOptionId={selectedOptionId}
-          onSelect={setSelectedOptionId}
-          disabled={showResult}
-          showResult={showResult}
-        />
-
-        {/* Result feedback */}
-        {showResult && selectedOption && (
-          <QuizResult
-            isCorrect={selectedOption.isCorrect}
-            explanation={
-              currentItem.question.options.find((opt) => opt.isCorrect)?.explanation
-            }
-          />
-        )}
-      </>
-    );
-  };
-
-  const renderFlashcardReview = () => {
-    if (!currentItem.flashcard) return null;
-
-    return (
-      <div className="space-y-4">
-        {/* Flashcard */}
-        <div
-          className={`p-6 rounded-xl border-2 transition-all duration-300 cursor-pointer ${
-            flashcardFlipped
-              ? "bg-primary/5 border-primary"
-              : "bg-card border-border hover:border-primary/50"
-          }`}
-          onClick={() => !showResult && setFlashcardFlipped(!flashcardFlipped)}
-        >
-          <div className="text-center min-h-[200px] flex flex-col items-center justify-center">
-            <p className="text-xs uppercase tracking-wider text-muted-foreground mb-4">
-              {flashcardFlipped ? "Back" : "Front"}
-            </p>
-            <p className="text-xl font-medium text-foreground">
-              {flashcardFlipped ? currentItem.flashcard.back : currentItem.flashcard.front}
-            </p>
-            {!flashcardFlipped && !showResult && (
-              <p className="text-sm text-muted-foreground mt-4 flex items-center gap-2">
-                <RotateCcw className="w-4 h-4" />
-                Click to flip
-              </p>
-            )}
-          </div>
-        </div>
-
-        {/* Self-assessment buttons (only after flipping, before result) */}
-        {flashcardFlipped && !showResult && (
-          <div className="space-y-3">
-            <p className="text-sm text-muted-foreground text-center">
-              Did you know the answer?
-            </p>
-            <div className="flex gap-3 justify-center">
-              <Button
-                variant={selfAssessment === false ? "destructive" : "outline"}
-                onClick={() => setSelfAssessment(false)}
-                className="flex-1 max-w-32"
-              >
-                Not Yet
-              </Button>
-              <Button
-                variant={selfAssessment === true ? "default" : "outline"}
-                onClick={() => setSelfAssessment(true)}
-                className="flex-1 max-w-32"
-              >
-                Got It!
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {/* Result feedback */}
-        {showResult && (
-          <QuizResult
-            isCorrect={selfAssessment === true}
-            explanation={
-              selfAssessment
-                ? "Great job! Keep it up!"
-                : "No worries - you'll see this card again soon."
-            }
-          />
-        )}
-      </div>
-    );
-  };
 
   // Review interface
   return (
@@ -455,7 +166,23 @@ export function ReviewInterface({
 
       {/* Content based on item type */}
       <div data-tour-id={TOUR_TARGETS.reviewContent}>
-        {currentItem.itemType === "question" ? renderQuestionReview() : renderFlashcardReview()}
+        {currentItem.itemType === "question" && currentItem.question ? (
+          <QuestionReview
+            question={currentItem.question}
+            selectedOptionId={selectedOptionId}
+            onSelectOption={setSelectedOptionId}
+            showResult={showResult}
+          />
+        ) : currentItem.flashcard ? (
+          <FlashcardReview
+            flashcard={currentItem.flashcard}
+            isFlipped={flashcardFlipped}
+            onFlip={() => setFlashcardFlipped(!flashcardFlipped)}
+            selfAssessment={selfAssessment}
+            onSelfAssess={setSelfAssessment}
+            showResult={showResult}
+          />
+        ) : null}
       </div>
 
       {/* Submit error message */}
