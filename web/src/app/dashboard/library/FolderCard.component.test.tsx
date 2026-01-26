@@ -112,6 +112,61 @@ describe("FolderCard", () => {
     });
   });
 
+  describe("keyboard accessibility", () => {
+    it("has a focusable button with accessible label", () => {
+      const folder = createMockFolder({ name: "My Folder" });
+
+      render(<FolderCard folder={folder} studySetCount={0} />);
+
+      const button = screen.getByRole("button", { name: /open folder my folder/i });
+      expect(button).toBeInTheDocument();
+    });
+
+    it("calls onClick when Enter is pressed", async () => {
+      const user = userEvent.setup();
+      const folder = createMockFolder();
+      const onClick = vi.fn();
+
+      render(
+        <FolderCard folder={folder} studySetCount={0} onClick={onClick} />
+      );
+
+      const button = screen.getByRole("button", { name: /open folder/i });
+      button.focus();
+      await user.keyboard("{Enter}");
+
+      expect(onClick).toHaveBeenCalledTimes(1);
+    });
+
+    it("calls onClick when Space is pressed", async () => {
+      const user = userEvent.setup();
+      const folder = createMockFolder();
+      const onClick = vi.fn();
+
+      render(
+        <FolderCard folder={folder} studySetCount={0} onClick={onClick} />
+      );
+
+      const button = screen.getByRole("button", { name: /open folder/i });
+      button.focus();
+      await user.keyboard(" ");
+
+      expect(onClick).toHaveBeenCalledTimes(1);
+    });
+
+    it("is focusable via tab", async () => {
+      const user = userEvent.setup();
+      const folder = createMockFolder();
+
+      render(<FolderCard folder={folder} studySetCount={0} />);
+
+      await user.tab();
+
+      const button = screen.getByRole("button", { name: /open folder/i });
+      expect(button).toHaveFocus();
+    });
+  });
+
   describe("actions menu", () => {
     it("renders more options button", () => {
       const folder = createMockFolder();

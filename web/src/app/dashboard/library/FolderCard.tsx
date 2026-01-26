@@ -40,7 +40,12 @@ export function FolderCard({
       role="article"
     >
       {/* Clickable area */}
-      <div className="cursor-pointer" onClick={onClick}>
+      <button
+        type="button"
+        className="w-full text-left cursor-pointer"
+        onClick={onClick}
+        aria-label={`Open folder ${folder.name}`}
+      >
         <div className="flex items-center gap-3">
           <div className="flex-shrink-0 transition-transform duration-300 group-hover:scale-110">
             <Folder className="h-5 w-5 text-muted-foreground transition-colors group-hover:text-foreground" />
@@ -59,7 +64,7 @@ export function FolderCard({
             {folder.description}
           </p>
         )}
-      </div>
+      </button>
 
       {/* Actions menu */}
       <div className="absolute top-2 right-2">
