@@ -92,7 +92,9 @@
       "mcp__github__add_issue_comment",
       "mcp__playwright__browser_run_code",
       "Bash(npm run test:integration:*)",
-      "Bash(PGPASSWORD=postgres psql:*)"
+      "Bash(PGPASSWORD=postgres psql:*)",
+      "Bash(dir:*)",
+      "Bash(npx vitest:*)"
     ],
     "deny": [],
     "ask": []
