@@ -120,7 +120,10 @@ export async function PUT(
     return jsendSuccess({ message: "Folders updated" });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    if (message === "Study set not found" || message === "Invalid folder") {
+    if (message === "Study set not found") {
+      return jsendFail({ error: message }, 404);
+    }
+    if (message === "Invalid folder") {
       return jsendFail({ error: message }, 400);
     }
     return jsendError(message);

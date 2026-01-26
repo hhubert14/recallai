@@ -67,7 +67,7 @@ export function StudySetCard({ studySet }: StudySetCardProps) {
                                 size="sm"
                                 className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
                                 aria-label="More options"
-                                onClick={(e) => e.preventDefault()}
+                                onClick={(e) => e.stopPropagation()}
                             >
                                 <MoreVertical className="h-4 w-4" />
                             </Button>
