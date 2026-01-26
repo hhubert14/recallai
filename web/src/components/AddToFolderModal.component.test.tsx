@@ -232,4 +232,31 @@ describe("AddToFolderModal", () => {
       expect(screen.getByLabelText("Personal")).not.toBeChecked();
     });
   });
+
+  describe("error state", () => {
+    it("displays error message when error prop is provided", () => {
+      render(
+        <AddToFolderModal
+          {...defaultProps}
+          error="Failed to update folders. Please try again."
+        />
+      );
+
+      expect(screen.getByRole("alert")).toHaveTextContent(
+        "Failed to update folders. Please try again."
+      );
+    });
+
+    it("does not display error when error prop is null", () => {
+      render(<AddToFolderModal {...defaultProps} error={null} />);
+
+      expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    });
+
+    it("does not display error when error prop is undefined", () => {
+      render(<AddToFolderModal {...defaultProps} />);
+
+      expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    });
+  });
 });

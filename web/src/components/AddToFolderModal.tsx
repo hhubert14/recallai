@@ -25,6 +25,7 @@ interface AddToFolderModalProps {
   onClose: () => void;
   onSave: (folderIds: number[]) => Promise<void>;
   isLoading: boolean;
+  error?: string | null;
 }
 
 export function AddToFolderModal({
@@ -34,6 +35,7 @@ export function AddToFolderModal({
   onClose,
   onSave,
   isLoading,
+  error,
 }: AddToFolderModalProps) {
   const [selectedFolderIds, setSelectedFolderIds] = useState<Set<number>>(
     new Set()
@@ -110,6 +112,12 @@ export function AddToFolderModal({
             </div>
           )}
         </div>
+
+        {error && (
+          <p className="text-sm text-destructive" role="alert">
+            {error}
+          </p>
+        )}
 
         <DialogFooter>
           <Button

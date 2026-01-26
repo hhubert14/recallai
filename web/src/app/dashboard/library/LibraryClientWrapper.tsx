@@ -55,6 +55,7 @@ export function LibraryClientWrapper({
   );
   const [isAddToFolderLoading, setIsAddToFolderLoading] = useState(false);
   const [isFetchingFolders, setIsFetchingFolders] = useState(false);
+  const [addToFolderError, setAddToFolderError] = useState<string | null>(null);
 
   const handleFolderClick = useCallback(
     (folder: FolderData) => {
@@ -114,6 +115,7 @@ export function LibraryClientWrapper({
     async (studySet: StudySetWithCounts) => {
       setAddToFolderStudySet(studySet);
       setIsFetchingFolders(true);
+      setAddToFolderError(null);
 
       try {
         // Fetch which folders this study set is already in
@@ -166,6 +168,7 @@ export function LibraryClientWrapper({
       if (!addToFolderStudySet) return;
 
       setIsAddToFolderLoading(true);
+      setAddToFolderError(null);
 
       try {
         const response = await fetch(
@@ -209,7 +212,15 @@ export function LibraryClientWrapper({
           );
 
           setAddToFolderStudySet(null);
+        } else {
+          // Handle error response
+          const data = await response.json().catch(() => ({}));
+          setAddToFolderError(
+            data.data?.error || "Failed to update folders. Please try again."
+          );
         }
+      } catch {
+        setAddToFolderError("An error occurred. Please try again.");
       } finally {
         setIsAddToFolderLoading(false);
       }
@@ -270,6 +281,7 @@ export function LibraryClientWrapper({
         onClose={() => setAddToFolderStudySet(null)}
         onSave={handleSaveFolders}
         isLoading={isAddToFolderLoading || isFetchingFolders}
+        error={addToFolderError}
       />
     </StudySetActionsContext.Provider>
   );
