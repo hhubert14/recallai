@@ -12,7 +12,7 @@ import { GetFoldersByUserIdUseCase } from "@/clean-architecture/use-cases/folder
 import { GetFolderWithStudySetsUseCase } from "@/clean-architecture/use-cases/folder/get-folder-with-study-sets.use-case";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { LibraryClientWrapper } from "./LibraryClientWrapper";
-import { ClientStudySetList, StudySetWithCounts } from "./ClientStudySetList";
+import { StudySetWithCounts } from "./ClientStudySetList";
 import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -174,12 +174,11 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
                     </div>
                 </div>
 
-                <LibraryClientWrapper folders={foldersWithCounts}>
-                    <ClientStudySetList
-                        studySets={studySetsWithCounts}
-                        isViewingFolder={!!currentFolder}
-                    />
-                </LibraryClientWrapper>
+                <LibraryClientWrapper
+                    folders={foldersWithCounts}
+                    studySets={studySetsWithCounts}
+                    isViewingFolder={!!currentFolder}
+                />
             </main>
         </div>
     );
