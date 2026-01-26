@@ -1,9 +1,9 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { StudySetCard } from "./StudySetCard";
 import { StudySetWithCounts } from "./ClientStudySetList";
-import { LibraryClientWrapper } from "./LibraryClientWrapper";
+import { StudySetActionsContext, StudySetActionsContextType } from "./LibraryClientWrapper";
 
 // Mock lucide-react icons to make them testable
 vi.mock("lucide-react", () => ({
@@ -46,16 +46,25 @@ function createMockStudySet(
     };
 }
 
+// Mock context value for tests
+const mockContextValue: StudySetActionsContextType = {
+    onAddToFolder: vi.fn(),
+};
+
 // Wrapper component that provides the context
 function WithLibraryContext({ children }: { children: React.ReactNode }) {
     return (
-        <LibraryClientWrapper folders={[]}>
+        <StudySetActionsContext.Provider value={mockContextValue}>
             {children}
-        </LibraryClientWrapper>
+        </StudySetActionsContext.Provider>
     );
 }
 
 describe("StudySetCard", () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
+
     describe("icon rendering based on sourceType", () => {
         it("renders Video icon when sourceType is 'video'", () => {
             const studySet = createMockStudySet({ sourceType: "video" });

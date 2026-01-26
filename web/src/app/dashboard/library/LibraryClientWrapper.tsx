@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useCallback, createContext, useContext } from "react";
+import { useState, useCallback, useMemo, createContext, useContext } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FoldersView } from "./FoldersView";
 import { CreateFolderModal } from "@/components/CreateFolderModal";
 import { EditFolderModal } from "@/components/EditFolderModal";
 import { AddToFolderModal, FolderOption } from "@/components/AddToFolderModal";
-import { StudySetWithCounts } from "./ClientStudySetList";
+import { ClientStudySetList, StudySetWithCounts } from "./ClientStudySetList";
+import { LibrarySearchSort, SortOption } from "./LibrarySearchSort";
 
 interface FolderData {
   id: number;
@@ -18,11 +19,11 @@ interface FolderData {
 }
 
 // Context for study set actions
-interface StudySetActionsContextType {
+export interface StudySetActionsContextType {
   onAddToFolder: (studySet: StudySetWithCounts) => void;
 }
 
-const StudySetActionsContext = createContext<StudySetActionsContextType | null>(
+export const StudySetActionsContext = createContext<StudySetActionsContextType | null>(
   null
 );
 
@@ -32,12 +33,14 @@ export function useStudySetActions() {
 
 interface LibraryClientWrapperProps {
   folders: FolderData[];
-  children: React.ReactNode;
+  studySets: StudySetWithCounts[];
+  isViewingFolder: boolean;
 }
 
 export function LibraryClientWrapper({
   folders: initialFolders,
-  children,
+  studySets,
+  isViewingFolder,
 }: LibraryClientWrapperProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -46,6 +49,32 @@ export function LibraryClientWrapper({
   const [folders, setFolders] = useState(initialFolders);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingFolder, setEditingFolder] = useState<FolderData | null>(null);
+
+  // Search and sort state
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortOption, setSortOption] = useState<SortOption>("recent");
+
+  // Filter and sort study sets
+  const filteredAndSortedStudySets = useMemo(() => {
+    // Filter by search query (case-insensitive name match)
+    const filtered = studySets.filter((s) =>
+      s.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    // Sort by selected option
+    return [...filtered].sort((a, b) => {
+      if (sortOption === "recent") {
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      }
+      // alphabetical
+      return a.name.localeCompare(b.name);
+    });
+  }, [studySets, searchQuery, sortOption]);
+
+  // Check if search yielded no results (vs empty library)
+  const hasSearchResults = filteredAndSortedStudySets.length > 0;
+  const hasStudySets = studySets.length > 0;
+  const isSearchActive = searchQuery.trim().length > 0;
 
   // Add to folder modal state
   const [addToFolderStudySet, setAddToFolderStudySet] =
@@ -104,7 +133,7 @@ export function LibraryClientWrapper({
       setEditingFolder(null);
 
       // If we're viewing the deleted folder, go back to library
-      if (searchParams.get("folder") === String(deletedFolderId)) {
+      if (folderId === String(deletedFolderId)) {
         router.push("/dashboard/library");
       }
     },
@@ -234,11 +263,6 @@ export function LibraryClientWrapper({
     [addToFolderStudySet, addToFolderOptions]
   );
 
-  // If viewing a specific folder, show study sets in that folder
-  // (handled by parent component passing filtered children)
-  // Here we just render the folders section when not in a folder view
-  const isViewingFolder = !!folderId;
-
   return (
     <StudySetActionsContext.Provider value={{ onAddToFolder: handleAddToFolder }}>
       {!isViewingFolder && (
@@ -258,7 +282,30 @@ export function LibraryClientWrapper({
         {!isViewingFolder && (
           <h2 className="text-lg font-semibold mb-4">Study Sets</h2>
         )}
-        {children}
+
+        {/* Search and Sort controls */}
+        {hasStudySets && (
+          <LibrarySearchSort
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            sortOption={sortOption}
+            onSortChange={setSortOption}
+          />
+        )}
+
+        {/* Study sets list or empty state */}
+        {isSearchActive && !hasSearchResults ? (
+          <div className="rounded-lg border border-dashed border-border p-8 text-center">
+            <p className="text-sm text-muted-foreground">
+              No study sets match &quot;{searchQuery}&quot;
+            </p>
+          </div>
+        ) : (
+          <ClientStudySetList
+            studySets={filteredAndSortedStudySets}
+            isViewingFolder={isViewingFolder}
+          />
+        )}
       </div>
 
       {/* Create Folder Modal */}
