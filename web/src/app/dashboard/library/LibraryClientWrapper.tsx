@@ -138,7 +138,7 @@ export function LibraryClientWrapper({
 
           setAddToFolderOptions(options);
         } else {
-          // If error fetching, show all folders as unchecked
+          // If error fetching, show all folders as unchecked with error message
           setAddToFolderOptions(
             folders.map((folder) => ({
               id: folder.id,
@@ -146,15 +146,21 @@ export function LibraryClientWrapper({
               isChecked: false,
             }))
           );
+          setAddToFolderError(
+            "Failed to load current folder assignments. Showing all folders as unchecked."
+          );
         }
       } catch {
-        // On error, show all folders as unchecked
+        // On error, show all folders as unchecked with error message
         setAddToFolderOptions(
           folders.map((folder) => ({
             id: folder.id,
             name: folder.name,
             isChecked: false,
           }))
+        );
+        setAddToFolderError(
+          "Failed to load current folder assignments. Showing all folders as unchecked."
         );
       } finally {
         setIsFetchingFolders(false);

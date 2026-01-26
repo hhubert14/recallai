@@ -88,6 +88,11 @@ export async function PUT(
       return jsendFail({ error: "folderIds must be an array" }, 400);
     }
 
+    // Validate array size to prevent DoS
+    if (folderIds.length > 100) {
+      return jsendFail({ error: "Too many folder IDs (max 100)" }, 400);
+    }
+
     // Validate all folder IDs are numbers
     if (!folderIds.every((id) => typeof id === "number")) {
       return jsendFail({ error: "All folder IDs must be numbers" }, 400);
