@@ -133,7 +133,7 @@ export function LibraryClientWrapper({
       setEditingFolder(null);
 
       // If we're viewing the deleted folder, go back to library
-      if (searchParams.get("folder") === String(deletedFolderId)) {
+      if (folderId === String(deletedFolderId)) {
         router.push("/dashboard/library");
       }
     },
