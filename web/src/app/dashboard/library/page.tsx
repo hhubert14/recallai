@@ -2,15 +2,17 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { StudySetList } from "@/app/dashboard/library/StudySetList";
 import { TextRefreshButton } from "../TextRefreshButton";
 import { DrizzleStudySetRepository } from "@/clean-architecture/infrastructure/repositories/study-set.repository.drizzle";
 import { DrizzleFolderRepository } from "@/clean-architecture/infrastructure/repositories/folder.repository.drizzle";
+import { DrizzleQuestionRepository } from "@/clean-architecture/infrastructure/repositories/question.repository.drizzle";
+import { DrizzleFlashcardRepository } from "@/clean-architecture/infrastructure/repositories/flashcard.repository.drizzle";
 import { FindStudySetsByUserIdUseCase } from "@/clean-architecture/use-cases/study-set/find-study-sets-by-user-id.use-case";
 import { GetFoldersByUserIdUseCase } from "@/clean-architecture/use-cases/folder/get-folders-by-user-id.use-case";
 import { GetFolderWithStudySetsUseCase } from "@/clean-architecture/use-cases/folder/get-folder-with-study-sets.use-case";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { LibraryClientWrapper } from "./LibraryClientWrapper";
+import { ClientStudySetList, StudySetWithCounts } from "./ClientStudySetList";
 import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -90,6 +92,40 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
         studySets = await new FindStudySetsByUserIdUseCase(studySetRepo).execute(user.id);
     }
 
+    // Fetch counts for study sets
+    const questionRepo = new DrizzleQuestionRepository();
+    const flashcardRepo = new DrizzleFlashcardRepository();
+
+    const videoIds = studySets
+        .filter((s) => s.videoId !== null)
+        .map((s) => s.videoId as number);
+
+    const [questionCounts, flashcardCounts] = await Promise.all([
+        videoIds.length > 0
+            ? questionRepo.countQuestionsByVideoIds(videoIds)
+            : Promise.resolve({} as Record<number, number>),
+        videoIds.length > 0
+            ? flashcardRepo.countFlashcardsByVideoIds(videoIds)
+            : Promise.resolve({} as Record<number, number>),
+    ]);
+
+    const studySetsWithCounts: StudySetWithCounts[] = studySets.map(
+        (studySet) => ({
+            id: studySet.id,
+            publicId: studySet.publicId,
+            name: studySet.name,
+            description: studySet.description,
+            sourceType: studySet.sourceType,
+            createdAt: studySet.createdAt,
+            questionCount: studySet.videoId
+                ? (questionCounts[studySet.videoId] ?? 0)
+                : 0,
+            flashcardCount: studySet.videoId
+                ? (flashcardCounts[studySet.videoId] ?? 0)
+                : 0,
+        })
+    );
+
     return (
         <div className="flex min-h-screen flex-col bg-background">
             <DashboardHeader />
@@ -139,7 +175,10 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
                 </div>
 
                 <LibraryClientWrapper folders={foldersWithCounts}>
-                    <StudySetList studySets={studySets} userId={user.id} />
+                    <ClientStudySetList
+                        studySets={studySetsWithCounts}
+                        isViewingFolder={!!currentFolder}
+                    />
                 </LibraryClientWrapper>
             </main>
         </div>

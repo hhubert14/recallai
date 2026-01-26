@@ -14,3 +14,9 @@ export type { UpdateFolderInput } from "./update-folder.use-case";
 
 export { DeleteFolderUseCase } from "./delete-folder.use-case";
 export type { DeleteFolderInput } from "./delete-folder.use-case";
+
+export { GetStudySetFoldersUseCase } from "./get-study-set-folders.use-case";
+export type { GetStudySetFoldersInput } from "./get-study-set-folders.use-case";
+
+export { UpdateStudySetFoldersUseCase } from "./update-study-set-folders.use-case";
+export type { UpdateStudySetFoldersInput } from "./update-study-set-folders.use-case";

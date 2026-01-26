@@ -1,7 +1,9 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { StudySetCard } from "./StudySetCard";
 import { StudySetWithCounts } from "./ClientStudySetList";
+import { LibraryClientWrapper } from "./LibraryClientWrapper";
 
 // Mock lucide-react icons to make them testable
 vi.mock("lucide-react", () => ({
@@ -9,6 +11,23 @@ vi.mock("lucide-react", () => ({
     BookOpen: () => <svg data-testid="book-open-icon" aria-label="Book open icon" />,
     HelpCircle: () => <svg data-testid="help-circle-icon" />,
     Layers: () => <svg data-testid="layers-icon" />,
+    MoreVertical: () => <svg data-testid="more-vertical-icon" />,
+    FolderPlus: () => <svg data-testid="folder-plus-icon" />,
+    Plus: () => <svg data-testid="plus-icon" />,
+    Folder: () => <svg data-testid="folder-icon" />,
+    ArrowRight: () => <svg data-testid="arrow-right-icon" />,
+    XIcon: () => <svg data-testid="x-icon" />,
+    Check: () => <svg data-testid="check-icon" />,
+}));
+
+// Mock next/navigation
+vi.mock("next/navigation", () => ({
+    useRouter: () => ({
+        push: vi.fn(),
+    }),
+    useSearchParams: () => ({
+        get: vi.fn().mockReturnValue(null),
+    }),
 }));
 
 function createMockStudySet(
@@ -25,6 +44,15 @@ function createMockStudySet(
         flashcardCount: 10,
         ...overrides,
     };
+}
+
+// Wrapper component that provides the context
+function WithLibraryContext({ children }: { children: React.ReactNode }) {
+    return (
+        <LibraryClientWrapper folders={[]}>
+            {children}
+        </LibraryClientWrapper>
+    );
 }
 
 describe("StudySetCard", () => {
@@ -101,30 +129,17 @@ describe("StudySetCard", () => {
             ).toBeInTheDocument();
         });
 
-        it("renders question count", () => {
-            const studySet = createMockStudySet({ questionCount: 15 });
-
-            render(<StudySetCard studySet={studySet} />);
-
-            expect(screen.getByText("15")).toBeInTheDocument();
-        });
-
-        it("renders flashcard count", () => {
-            const studySet = createMockStudySet({ flashcardCount: 20 });
-
-            render(<StudySetCard studySet={studySet} />);
-
-            expect(screen.getByText("20")).toBeInTheDocument();
-        });
-
-        it("renders formatted date", () => {
+        it("renders question and flashcard counts", () => {
             const studySet = createMockStudySet({
-                createdAt: "2026-06-15T10:00:00Z",
+                questionCount: 15,
+                flashcardCount: 20,
             });
 
             render(<StudySetCard studySet={studySet} />);
 
-            expect(screen.getByText("June 15, 2026")).toBeInTheDocument();
+            expect(
+                screen.getByText("15 questions · 20 flashcards")
+            ).toBeInTheDocument();
         });
     });
 
@@ -143,6 +158,65 @@ describe("StudySetCard", () => {
             render(<StudySetCard studySet={studySet} />);
 
             expect(screen.getByTestId("book-open-icon")).toBeInTheDocument();
+        });
+    });
+
+    describe("dropdown menu", () => {
+        it("renders dropdown menu trigger when context is provided", () => {
+            const studySet = createMockStudySet();
+
+            render(
+                <WithLibraryContext>
+                    <StudySetCard studySet={studySet} />
+                </WithLibraryContext>
+            );
+
+            expect(
+                screen.getByRole("button", { name: /more options/i })
+            ).toBeInTheDocument();
+        });
+
+        it("does not render dropdown menu trigger when context is not provided", () => {
+            const studySet = createMockStudySet();
+
+            render(<StudySetCard studySet={studySet} />);
+
+            expect(
+                screen.queryByRole("button", { name: /more options/i })
+            ).not.toBeInTheDocument();
+        });
+
+        it("shows Add to Folder option when dropdown is opened", async () => {
+            const user = userEvent.setup();
+            const studySet = createMockStudySet();
+
+            render(
+                <WithLibraryContext>
+                    <StudySetCard studySet={studySet} />
+                </WithLibraryContext>
+            );
+
+            await user.click(screen.getByRole("button", { name: /more options/i }));
+
+            expect(
+                screen.getByRole("menuitem", { name: /add to folder/i })
+            ).toBeInTheDocument();
+        });
+    });
+
+    describe("card click navigation", () => {
+        it("navigates to study set page when card is clicked", async () => {
+            const studySet = createMockStudySet({ publicId: "my-study-set-789" });
+
+            render(
+                <WithLibraryContext>
+                    <StudySetCard studySet={studySet} />
+                </WithLibraryContext>
+            );
+
+            // The card link should still work
+            const link = screen.getByRole("link");
+            expect(link).toHaveAttribute("href", "/dashboard/study-set/my-study-set-789");
         });
     });
 });
