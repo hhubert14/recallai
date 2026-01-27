@@ -2,14 +2,16 @@
 
 import { TermCard } from "./TermCard";
 import { StudyDropdown } from "./StudyDropdown";
-import type { Term, StudyMode } from "./types";
+import { ProgressOverview } from "./ProgressOverview";
+import type { TermWithMastery, StudyMode, StudySetProgress } from "./types";
 
 interface TermsListProps {
-    terms: Term[];
+    terms: TermWithMastery[];
     onStudy: (mode: StudyMode) => void;
+    progress: StudySetProgress;
 }
 
-export function TermsList({ terms, onStudy }: TermsListProps) {
+export function TermsList({ terms, onStudy, progress }: TermsListProps) {
     const hasFlashcards = terms.some((t) => t.itemType === "flashcard");
     const hasQuestions = terms.some((t) => t.itemType === "question");
 
@@ -28,6 +30,9 @@ export function TermsList({ terms, onStudy }: TermsListProps) {
 
     return (
         <section className="space-y-4">
+            {/* Progress Overview */}
+            {progress.total > 0 && <ProgressOverview progress={progress} />}
+
             <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold text-foreground">
                     Terms in this set <span className="text-muted-foreground">({terms.length})</span>

@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Plus, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { VideoPlayer } from "./VideoPlayer";
 import { CollapsibleSummary } from "./CollapsibleSummary";
 import { TermsList } from "./TermsList";
 import { StudySession } from "./StudySession";
-import type { Term, StudyMode } from "./types";
+import type { TermWithMastery, StudyMode, StudySetProgress } from "./types";
 
 const MAX_QUESTIONS = 20;
 const MAX_FLASHCARDS = 20;
@@ -18,7 +18,7 @@ interface StudySetContentProps {
     youtubeVideoId: string | null;
     isVideoSourced: boolean;
     summary: { id: number; videoId: number; content: string } | null;
-    terms: Term[];
+    terms: TermWithMastery[];
     videoId: number | null;
     studySetId: number;
 }
@@ -33,7 +33,7 @@ export function StudySetContent({
     videoId,
     studySetId,
 }: StudySetContentProps) {
-    const [terms, setTerms] = useState<Term[]>(initialTerms);
+    const [terms, setTerms] = useState<TermWithMastery[]>(initialTerms);
     const [activeMode, setActiveMode] = useState<StudyMode | null>(null);
     const [isGeneratingQuestions, setIsGeneratingQuestions] = useState(false);
     const [isGeneratingFlashcards, setIsGeneratingFlashcards] = useState(false);
@@ -43,6 +43,14 @@ export function StudySetContent({
     const flashcardCount = terms.filter((t) => t.itemType === "flashcard").length;
     const canGenerateQuestions = questionCount < MAX_QUESTIONS && videoId;
     const canGenerateFlashcards = flashcardCount < MAX_FLASHCARDS && videoId;
+
+    // Compute progress from current terms state so it updates when new terms are added
+    const currentProgress = useMemo(() => ({
+        mastered: terms.filter((t) => t.masteryStatus === "mastered").length,
+        learning: terms.filter((t) => t.masteryStatus === "learning").length,
+        notStarted: terms.filter((t) => t.masteryStatus === "not_started").length,
+        total: terms.length,
+    }), [terms]);
 
     async function handleGenerateQuestions() {
         if (!videoId) return;
@@ -59,7 +67,7 @@ export function StudySetContent({
             const data = await response.json();
 
             if (data.status === "success") {
-                const newTerms: Term[] = data.data.questions.map((q: {
+                const newTerms: TermWithMastery[] = data.data.questions.map((q: {
                     id: number;
                     questionText: string;
                     sourceTimestamp: number | null;
@@ -73,6 +81,7 @@ export function StudySetContent({
                         options: q.options,
                         sourceTimestamp: q.sourceTimestamp,
                     },
+                    masteryStatus: "not_started" as const,
                 }));
                 setTerms((prev) => [...prev, ...newTerms]);
             } else {
@@ -101,7 +110,7 @@ export function StudySetContent({
             const data = await response.json();
 
             if (data.status === "success") {
-                const newTerms: Term[] = data.data.flashcards.map((f: {
+                const newTerms: TermWithMastery[] = data.data.flashcards.map((f: {
                     id: number;
                     front: string;
                     back: string;
@@ -109,6 +118,7 @@ export function StudySetContent({
                     id: f.id,
                     itemType: "flashcard" as const,
                     flashcard: { id: f.id, front: f.front, back: f.back },
+                    masteryStatus: "not_started" as const,
                 }));
                 setTerms((prev) => [...prev, ...newTerms]);
             } else {
@@ -181,7 +191,7 @@ export function StudySetContent({
             {summary && <CollapsibleSummary content={summary.content} />}
 
             {/* Terms List */}
-            <TermsList terms={terms} onStudy={handleStudy} />
+            <TermsList terms={terms} onStudy={handleStudy} progress={currentProgress} />
 
             {/* Generate More Terms */}
             {isVideoSourced && (canGenerateQuestions || canGenerateFlashcards) && (

@@ -1,14 +1,37 @@
 import { Check } from "lucide-react";
-import type { Term } from "./types";
+import type { TermWithMastery, MasteryStatus } from "./types";
 
 interface TermCardProps {
-    term: Term;
+    term: TermWithMastery;
+}
+
+function getMasteryIndicatorClass(status: MasteryStatus): string {
+    switch (status) {
+        case "mastered":
+            return "bg-green-500";
+        case "learning":
+            return "bg-amber-500";
+        case "not_started":
+            return "bg-muted-foreground";
+    }
+}
+
+function MasteryIndicator({ status }: { status: MasteryStatus }) {
+    return (
+        <div className="flex items-center justify-center px-3 border-r border-border">
+            <div
+                data-testid="mastery-indicator"
+                className={`w-2.5 h-2.5 rounded-full ${getMasteryIndicatorClass(status)}`}
+            />
+        </div>
+    );
 }
 
 export function TermCard({ term }: TermCardProps) {
     if (term.itemType === "flashcard" && term.flashcard) {
         return (
             <article className="flex border border-border rounded-lg bg-card overflow-hidden">
+                <MasteryIndicator status={term.masteryStatus} />
                 <div className="flex-1 p-4 border-r border-border">
                     <p className="text-sm text-foreground">{term.flashcard.front}</p>
                 </div>
@@ -22,6 +45,7 @@ export function TermCard({ term }: TermCardProps) {
     if (term.itemType === "question" && term.question) {
         return (
             <article className="flex border border-border rounded-lg bg-card overflow-hidden">
+                <MasteryIndicator status={term.masteryStatus} />
                 <div className="flex-1 p-4 border-r border-border">
                     <p className="text-sm text-foreground">{term.question.questionText}</p>
                 </div>

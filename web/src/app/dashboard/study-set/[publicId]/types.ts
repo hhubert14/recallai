@@ -26,3 +26,16 @@ export type Term = {
 };
 
 export type StudyMode = "flashcards" | "quiz" | "both";
+
+// Import and re-export domain types for convenience
+import type {
+    MasteryStatus as MasteryStatusType,
+    StudySetProgress as StudySetProgressType,
+} from "@/clean-architecture/use-cases/study-set/get-study-set-progress.use-case";
+
+export type MasteryStatus = MasteryStatusType;
+export type StudySetProgress = StudySetProgressType;
+
+export type TermWithMastery = Term & {
+    masteryStatus: MasteryStatus;
+};

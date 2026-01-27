@@ -125,6 +125,23 @@ export class DrizzleReviewableItemRepository
     return results.map(toReviewableItemEntity);
   }
 
+  async findReviewableItemsByUserIdAndStudySetId(
+    userId: string,
+    studySetId: number
+  ): Promise<ReviewableItemEntity[]> {
+    const results = await this.db
+      .select()
+      .from(reviewableItems)
+      .where(
+        and(
+          eq(reviewableItems.userId, userId),
+          eq(reviewableItems.studySetId, studySetId)
+        )
+      );
+
+    return results.map(toReviewableItemEntity);
+  }
+
   async findReviewableItemByQuestionId(
     questionId: number
   ): Promise<ReviewableItemEntity | null> {

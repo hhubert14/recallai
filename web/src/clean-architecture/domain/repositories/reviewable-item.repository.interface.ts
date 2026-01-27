@@ -48,6 +48,14 @@ export interface IReviewableItemRepository {
   ): Promise<ReviewableItemEntity[]>;
 
   /**
+   * Find all reviewable items for a user within a specific study set.
+   */
+  findReviewableItemsByUserIdAndStudySetId(
+    userId: string,
+    studySetId: number
+  ): Promise<ReviewableItemEntity[]>;
+
+  /**
    * Find the reviewable item for a specific question.
    * Returns null if the question hasn't been added to the review system.
    */

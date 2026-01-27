@@ -1,11 +1,11 @@
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
 import { TermCard } from "./TermCard";
-import type { Term } from "./types";
+import type { TermWithMastery } from "./types";
 
 describe("TermCard", () => {
     describe("flashcard term", () => {
-        const flashcardTerm: Term = {
+        const flashcardTerm: TermWithMastery = {
             id: 1,
             itemType: "flashcard",
             flashcard: {
@@ -13,6 +13,7 @@ describe("TermCard", () => {
                 front: "What is React?",
                 back: "A JavaScript library for building user interfaces",
             },
+            masteryStatus: "not_started",
         };
 
         it("renders flashcard front on the left side", () => {
@@ -31,7 +32,7 @@ describe("TermCard", () => {
     });
 
     describe("question term", () => {
-        const questionTerm: Term = {
+        const questionTerm: TermWithMastery = {
             id: 2,
             itemType: "question",
             question: {
@@ -65,6 +66,7 @@ describe("TermCard", () => {
                     },
                 ],
             },
+            masteryStatus: "learning",
         };
 
         it("renders question text on the left side", () => {
@@ -91,7 +93,7 @@ describe("TermCard", () => {
     });
 
     describe("accessibility", () => {
-        const flashcardTerm: Term = {
+        const flashcardTerm: TermWithMastery = {
             id: 1,
             itemType: "flashcard",
             flashcard: {
@@ -99,12 +101,62 @@ describe("TermCard", () => {
                 front: "Term",
                 back: "Definition",
             },
+            masteryStatus: "mastered",
         };
 
         it("has accessible structure with term and definition sections", () => {
             render(<TermCard term={flashcardTerm} />);
             const card = screen.getByRole("article");
             expect(card).toBeInTheDocument();
+        });
+    });
+
+    describe("mastery status indicator", () => {
+        const baseTerm: TermWithMastery = {
+            id: 1,
+            itemType: "flashcard",
+            flashcard: {
+                id: 1,
+                front: "What is React?",
+                back: "A JavaScript library",
+            },
+            masteryStatus: "not_started",
+        };
+
+        it("renders green indicator for mastered terms", () => {
+            const masteredTerm: TermWithMastery = {
+                ...baseTerm,
+                masteryStatus: "mastered",
+            };
+
+            render(<TermCard term={masteredTerm} />);
+
+            const indicator = screen.getByTestId("mastery-indicator");
+            expect(indicator).toHaveClass("bg-green-500");
+        });
+
+        it("renders amber indicator for learning terms", () => {
+            const learningTerm: TermWithMastery = {
+                ...baseTerm,
+                masteryStatus: "learning",
+            };
+
+            render(<TermCard term={learningTerm} />);
+
+            const indicator = screen.getByTestId("mastery-indicator");
+            expect(indicator).toHaveClass("bg-amber-500");
+        });
+
+        it("renders gray indicator for not started terms", () => {
+            const notStartedTerm: TermWithMastery = {
+                ...baseTerm,
+                masteryStatus: "not_started",
+            };
+
+            render(<TermCard term={notStartedTerm} />);
+
+            const indicator = screen.getByTestId("mastery-indicator");
+            expect(indicator).toHaveClass("bg-muted-foreground");
         });
     });
 });

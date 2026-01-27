@@ -6,16 +6,19 @@ import { VideoPlayerProvider } from "./VideoPlayerContext";
 import { ChatButton } from "./ChatButton";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { StudySetContent } from "./StudySetContent";
-import type { Term } from "./types";
+import type { TermWithMastery } from "./types";
 import { DrizzleStudySetRepository } from "@/clean-architecture/infrastructure/repositories/study-set.repository.drizzle";
 import { DrizzleVideoRepository } from "@/clean-architecture/infrastructure/repositories/video.repository.drizzle";
 import { DrizzleSummaryRepository } from "@/clean-architecture/infrastructure/repositories/summary.repository.drizzle";
 import { DrizzleQuestionRepository } from "@/clean-architecture/infrastructure/repositories/question.repository.drizzle";
 import { DrizzleFlashcardRepository } from "@/clean-architecture/infrastructure/repositories/flashcard.repository.drizzle";
+import { DrizzleReviewableItemRepository } from "@/clean-architecture/infrastructure/repositories/reviewable-item.repository.drizzle";
+import { DrizzleReviewProgressRepository } from "@/clean-architecture/infrastructure/repositories/review-progress.repository.drizzle";
 import { FindStudySetByPublicIdUseCase } from "@/clean-architecture/use-cases/study-set/find-study-set-by-public-id.use-case";
 import { FindSummaryByVideoIdUseCase } from "@/clean-architecture/use-cases/summary/find-summary-by-video-id.use-case";
 import { FindQuestionsByVideoIdUseCase } from "@/clean-architecture/use-cases/question/find-questions-by-video-id.use-case";
 import { FindFlashcardsByVideoIdUseCase } from "@/clean-architecture/use-cases/flashcard/find-flashcards-by-video-id.use-case";
+import { GetStudySetProgressUseCase } from "@/clean-architecture/use-cases/study-set/get-study-set-progress.use-case";
 
 export const metadata: Metadata = {
     title: "Study Set | RecallAI",
@@ -107,12 +110,24 @@ export default async function StudySetDetailPage({
         back: f.back,
     }));
 
-    // Transform questions and flashcards into unified terms
-    const terms: Term[] = [
+    // Fetch progress data for mastery indicators
+    const progressResult = await new GetStudySetProgressUseCase(
+        new DrizzleReviewableItemRepository(),
+        new DrizzleReviewProgressRepository()
+    ).execute(user.id, studySet.id);
+
+    // Create a map for quick lookup of mastery status
+    const masteryMap = new Map(
+        progressResult.terms.map((t) => [`${t.itemType}-${t.itemId}`, t.masteryStatus])
+    );
+
+    // Transform questions and flashcards into unified terms with mastery status
+    const terms: TermWithMastery[] = [
         ...flashcards.map((f) => ({
             id: f.id,
             itemType: "flashcard" as const,
             flashcard: { id: f.id, front: f.front, back: f.back },
+            masteryStatus: masteryMap.get(`flashcard-${f.id}`) ?? "not_started" as const,
         })),
         ...questions.map((q) => ({
             id: q.id,
@@ -123,6 +138,7 @@ export default async function StudySetDetailPage({
                 options: q.options,
                 sourceTimestamp: q.sourceTimestamp,
             },
+            masteryStatus: masteryMap.get(`question-${q.id}`) ?? "not_started" as const,
         })),
     ];
 
