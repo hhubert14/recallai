@@ -1,6 +1,14 @@
 import { IReviewableItemRepository } from "@/clean-architecture/domain/repositories/reviewable-item.repository.interface";
 import { IReviewProgressRepository } from "@/clean-architecture/domain/repositories/review-progress.repository.interface";
-import { MasteryStatus, StudySetProgress } from "@/app/dashboard/study-set/[publicId]/types";
+
+export type MasteryStatus = "mastered" | "learning" | "not_started";
+
+export type StudySetProgress = {
+    mastered: number;
+    learning: number;
+    notStarted: number;
+    total: number;
+};
 
 export type TermProgress = {
     itemType: "question" | "flashcard";
@@ -17,7 +25,7 @@ function getMasteryStatusFromBoxLevel(boxLevel: number | null): MasteryStatus {
     if (boxLevel === null) {
         return "not_started";
     }
-    if (boxLevel >= 4) {
+    if (boxLevel >= 5) {
         return "mastered";
     }
     return "learning";

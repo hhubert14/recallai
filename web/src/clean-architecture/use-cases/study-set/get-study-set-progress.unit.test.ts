@@ -180,7 +180,7 @@ describe("GetStudySetProgressUseCase", () => {
         expect(result.summary.learning).toBe(3);
     });
 
-    it("marks items with boxLevel 4-5 as mastered", async () => {
+    it("marks items with boxLevel 5 as mastered", async () => {
         const reviewableItems = [
             new ReviewableItemEntity(
                 1,
@@ -209,9 +209,9 @@ describe("GetStudySetProgressUseCase", () => {
                 1,
                 userId,
                 1,
-                4,
-                "2025-01-15",
-                4,
+                5,
+                "2025-01-31",
+                5,
                 0,
                 "2025-01-01",
                 "2025-01-01"
@@ -302,7 +302,7 @@ describe("GetStudySetProgressUseCase", () => {
         // Item 1: mastered (box 5)
         // Item 2: learning (box 2)
         // Item 3: no progress (not_started)
-        // Item 4: mastered (box 4)
+        // Item 4: learning (box 4) - only box 5 is mastered
         // Item 5: learning (box 1)
         const progressRecords = [
             new ReviewProgressEntity(
@@ -361,11 +361,48 @@ describe("GetStudySetProgressUseCase", () => {
         const result = await useCase.execute(userId, studySetId);
 
         expect(result.summary).toEqual({
-            mastered: 2,
-            learning: 2,
+            mastered: 1,
+            learning: 3,
             notStarted: 1,
             total: 5,
         });
+    });
+
+    it("marks boxLevel 4 as learning", async () => {
+        const reviewableItem = new ReviewableItemEntity(
+            1,
+            userId,
+            "question",
+            10,
+            null,
+            null,
+            studySetId,
+            "2025-01-01"
+        );
+
+        const progressRecord = new ReviewProgressEntity(
+            1,
+            userId,
+            1,
+            4,
+            "2025-01-15",
+            4,
+            0,
+            "2025-01-01",
+            "2025-01-01"
+        );
+
+        vi.mocked(
+            mockReviewableItemRepo.findReviewableItemsByStudySetId
+        ).mockResolvedValue([reviewableItem]);
+        vi.mocked(
+            mockReviewProgressRepo.findReviewProgressByReviewableItemIds
+        ).mockResolvedValue([progressRecord]);
+
+        const result = await useCase.execute(userId, studySetId);
+
+        expect(result.terms[0].masteryStatus).toBe("learning");
+        expect(result.summary.learning).toBe(1);
     });
 
     it("correctly maps question items to their itemId", async () => {
