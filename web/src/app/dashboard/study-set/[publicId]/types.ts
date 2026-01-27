@@ -26,3 +26,16 @@ export type Term = {
 };
 
 export type StudyMode = "flashcards" | "quiz" | "both";
+
+export type MasteryStatus = "mastered" | "learning" | "not_started";
+
+export type TermWithMastery = Term & {
+    masteryStatus: MasteryStatus;
+};
+
+export type StudySetProgress = {
+    mastered: number;
+    learning: number;
+    notStarted: number;
+    total: number;
+};

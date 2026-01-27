@@ -7,7 +7,7 @@ import { VideoPlayer } from "./VideoPlayer";
 import { CollapsibleSummary } from "./CollapsibleSummary";
 import { TermsList } from "./TermsList";
 import { StudySession } from "./StudySession";
-import type { Term, StudyMode } from "./types";
+import type { TermWithMastery, StudyMode, StudySetProgress } from "./types";
 
 const MAX_QUESTIONS = 20;
 const MAX_FLASHCARDS = 20;
@@ -18,9 +18,10 @@ interface StudySetContentProps {
     youtubeVideoId: string | null;
     isVideoSourced: boolean;
     summary: { id: number; videoId: number; content: string } | null;
-    terms: Term[];
+    terms: TermWithMastery[];
     videoId: number | null;
     studySetId: number;
+    progress: StudySetProgress;
 }
 
 export function StudySetContent({
@@ -32,8 +33,9 @@ export function StudySetContent({
     terms: initialTerms,
     videoId,
     studySetId,
+    progress,
 }: StudySetContentProps) {
-    const [terms, setTerms] = useState<Term[]>(initialTerms);
+    const [terms, setTerms] = useState<TermWithMastery[]>(initialTerms);
     const [activeMode, setActiveMode] = useState<StudyMode | null>(null);
     const [isGeneratingQuestions, setIsGeneratingQuestions] = useState(false);
     const [isGeneratingFlashcards, setIsGeneratingFlashcards] = useState(false);
@@ -59,7 +61,7 @@ export function StudySetContent({
             const data = await response.json();
 
             if (data.status === "success") {
-                const newTerms: Term[] = data.data.questions.map((q: {
+                const newTerms: TermWithMastery[] = data.data.questions.map((q: {
                     id: number;
                     questionText: string;
                     sourceTimestamp: number | null;
@@ -73,6 +75,7 @@ export function StudySetContent({
                         options: q.options,
                         sourceTimestamp: q.sourceTimestamp,
                     },
+                    masteryStatus: "not_started" as const,
                 }));
                 setTerms((prev) => [...prev, ...newTerms]);
             } else {
@@ -101,7 +104,7 @@ export function StudySetContent({
             const data = await response.json();
 
             if (data.status === "success") {
-                const newTerms: Term[] = data.data.flashcards.map((f: {
+                const newTerms: TermWithMastery[] = data.data.flashcards.map((f: {
                     id: number;
                     front: string;
                     back: string;
@@ -109,6 +112,7 @@ export function StudySetContent({
                     id: f.id,
                     itemType: "flashcard" as const,
                     flashcard: { id: f.id, front: f.front, back: f.back },
+                    masteryStatus: "not_started" as const,
                 }));
                 setTerms((prev) => [...prev, ...newTerms]);
             } else {
@@ -181,7 +185,7 @@ export function StudySetContent({
             {summary && <CollapsibleSummary content={summary.content} />}
 
             {/* Terms List */}
-            <TermsList terms={terms} onStudy={handleStudy} />
+            <TermsList terms={terms} onStudy={handleStudy} progress={progress} />
 
             {/* Generate More Terms */}
             {isVideoSourced && (canGenerateQuestions || canGenerateFlashcards) && (

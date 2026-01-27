@@ -45,6 +45,17 @@ export default function Loading() {
 
                     {/* Terms List skeleton */}
                     <section className="space-y-4">
+                        {/* Progress Overview skeleton */}
+                        <div className="border border-border rounded-lg bg-card p-4">
+                            <div className="h-4 w-16 rounded bg-muted animate-pulse mb-3" />
+                            <div className="h-2 w-full rounded-full bg-muted animate-pulse" />
+                            <div className="flex items-center gap-6 mt-3">
+                                <div className="h-4 w-24 rounded bg-muted animate-pulse" />
+                                <div className="h-4 w-28 rounded bg-muted animate-pulse" />
+                                <div className="h-4 w-24 rounded bg-muted animate-pulse" />
+                            </div>
+                        </div>
+
                         {/* Terms header */}
                         <div className="flex items-center justify-between">
                             <div className="h-6 w-48 rounded bg-muted animate-pulse" />
