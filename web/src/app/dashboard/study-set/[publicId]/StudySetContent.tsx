@@ -342,7 +342,6 @@ export function StudySetContent({
             {/* Edit Flashcard Modal */}
             {editingFlashcard && (
                 <EditFlashcardModal
-                    isOpen={!!editingFlashcard}
                     onClose={() => setEditingFlashcard(null)}
                     onFlashcardUpdated={handleFlashcardUpdated}
                     flashcard={editingFlashcard}

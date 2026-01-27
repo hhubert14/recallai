@@ -295,4 +295,40 @@ describe("EditFlashcardUseCase", () => {
 
         expect(result).toEqual(updatedFlashcard);
     });
+
+    it("trims whitespace from front and back before saving", async () => {
+        const existingFlashcard = new FlashcardEntity(
+            flashcardId,
+            null,
+            userId,
+            "Front",
+            "Back",
+            "2025-01-20T10:00:00Z"
+        );
+
+        const updatedFlashcard = new FlashcardEntity(
+            flashcardId,
+            null,
+            userId,
+            "Trimmed front",
+            "Trimmed back",
+            "2025-01-20T10:00:00Z"
+        );
+
+        vi.mocked(mockFlashcardRepository.findFlashcardById).mockResolvedValue(existingFlashcard);
+        vi.mocked(mockFlashcardRepository.updateFlashcard).mockResolvedValue(updatedFlashcard);
+
+        await useCase.execute({
+            userId,
+            flashcardId,
+            front: "  Trimmed front  ",
+            back: "  Trimmed back  ",
+        });
+
+        expect(mockFlashcardRepository.updateFlashcard).toHaveBeenCalledWith(
+            flashcardId,
+            "Trimmed front",
+            "Trimmed back"
+        );
+    });
 });

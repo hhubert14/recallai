@@ -39,7 +39,7 @@ export class EditFlashcardUseCase {
             throw new Error("Back of flashcard cannot exceed 2000 characters");
         }
 
-        // Update the flashcard
-        return this.flashcardRepository.updateFlashcard(flashcardId, front, back);
+        // Update the flashcard (trim whitespace before saving)
+        return this.flashcardRepository.updateFlashcard(flashcardId, front.trim(), back.trim());
     }
 }

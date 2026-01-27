@@ -15,11 +15,10 @@ describe("EditFlashcardModal", () => {
         vi.clearAllMocks();
     });
 
-    describe("when open", () => {
+    describe("rendering", () => {
         it("renders the modal title", () => {
             render(
                 <EditFlashcardModal
-                    isOpen={true}
                     onClose={vi.fn()}
                     onFlashcardUpdated={vi.fn()}
                     flashcard={flashcard}
@@ -34,7 +33,6 @@ describe("EditFlashcardModal", () => {
         it("pre-populates the front input with existing value", () => {
             render(
                 <EditFlashcardModal
-                    isOpen={true}
                     onClose={vi.fn()}
                     onFlashcardUpdated={vi.fn()}
                     flashcard={flashcard}
@@ -47,7 +45,6 @@ describe("EditFlashcardModal", () => {
         it("pre-populates the back input with existing value", () => {
             render(
                 <EditFlashcardModal
-                    isOpen={true}
                     onClose={vi.fn()}
                     onFlashcardUpdated={vi.fn()}
                     flashcard={flashcard}
@@ -60,7 +57,6 @@ describe("EditFlashcardModal", () => {
         it("renders cancel button", () => {
             render(
                 <EditFlashcardModal
-                    isOpen={true}
                     onClose={vi.fn()}
                     onFlashcardUpdated={vi.fn()}
                     flashcard={flashcard}
@@ -75,7 +71,6 @@ describe("EditFlashcardModal", () => {
         it("renders save button", () => {
             render(
                 <EditFlashcardModal
-                    isOpen={true}
                     onClose={vi.fn()}
                     onFlashcardUpdated={vi.fn()}
                     flashcard={flashcard}
@@ -88,29 +83,11 @@ describe("EditFlashcardModal", () => {
         });
     });
 
-    describe("when closed", () => {
-        it("does not render the modal content", () => {
-            render(
-                <EditFlashcardModal
-                    isOpen={false}
-                    onClose={vi.fn()}
-                    onFlashcardUpdated={vi.fn()}
-                    flashcard={flashcard}
-                />
-            );
-
-            expect(
-                screen.queryByRole("heading", { name: /edit flashcard/i })
-            ).not.toBeInTheDocument();
-        });
-    });
-
     describe("form validation", () => {
         it("disables save button when front is empty", async () => {
             const user = userEvent.setup();
             render(
                 <EditFlashcardModal
-                    isOpen={true}
                     onClose={vi.fn()}
                     onFlashcardUpdated={vi.fn()}
                     flashcard={flashcard}
@@ -127,7 +104,6 @@ describe("EditFlashcardModal", () => {
             const user = userEvent.setup();
             render(
                 <EditFlashcardModal
-                    isOpen={true}
                     onClose={vi.fn()}
                     onFlashcardUpdated={vi.fn()}
                     flashcard={flashcard}
@@ -143,7 +119,6 @@ describe("EditFlashcardModal", () => {
         it("enables save button when both front and back are provided", () => {
             render(
                 <EditFlashcardModal
-                    isOpen={true}
                     onClose={vi.fn()}
                     onFlashcardUpdated={vi.fn()}
                     flashcard={flashcard}
@@ -159,7 +134,6 @@ describe("EditFlashcardModal", () => {
             const user = userEvent.setup();
             render(
                 <EditFlashcardModal
-                    isOpen={true}
                     onClose={vi.fn()}
                     onFlashcardUpdated={vi.fn()}
                     flashcard={flashcard}
@@ -177,7 +151,6 @@ describe("EditFlashcardModal", () => {
             const user = userEvent.setup();
             render(
                 <EditFlashcardModal
-                    isOpen={true}
                     onClose={vi.fn()}
                     onFlashcardUpdated={vi.fn()}
                     flashcard={flashcard}
@@ -218,7 +191,6 @@ describe("EditFlashcardModal", () => {
 
             render(
                 <EditFlashcardModal
-                    isOpen={true}
                     onClose={onClose}
                     onFlashcardUpdated={onFlashcardUpdated}
                     flashcard={flashcard}
@@ -271,7 +243,6 @@ describe("EditFlashcardModal", () => {
 
             render(
                 <EditFlashcardModal
-                    isOpen={true}
                     onClose={vi.fn()}
                     onFlashcardUpdated={vi.fn()}
                     flashcard={flashcard}
@@ -297,7 +268,6 @@ describe("EditFlashcardModal", () => {
 
             render(
                 <EditFlashcardModal
-                    isOpen={true}
                     onClose={vi.fn()}
                     onFlashcardUpdated={vi.fn()}
                     flashcard={flashcard}
@@ -322,7 +292,6 @@ describe("EditFlashcardModal", () => {
             const onClose = vi.fn();
             render(
                 <EditFlashcardModal
-                    isOpen={true}
                     onClose={onClose}
                     onFlashcardUpdated={vi.fn()}
                     flashcard={flashcard}
@@ -339,7 +308,6 @@ describe("EditFlashcardModal", () => {
         it("resets form when a different flashcard is provided", () => {
             const { rerender } = render(
                 <EditFlashcardModal
-                    isOpen={true}
                     onClose={vi.fn()}
                     onFlashcardUpdated={vi.fn()}
                     flashcard={flashcard}
@@ -356,7 +324,6 @@ describe("EditFlashcardModal", () => {
 
             rerender(
                 <EditFlashcardModal
-                    isOpen={true}
                     onClose={vi.fn()}
                     onFlashcardUpdated={vi.fn()}
                     flashcard={newFlashcard}

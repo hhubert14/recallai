@@ -11,18 +11,17 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import type { TermFlashcard } from "./types";
 
 interface EditFlashcardModalProps {
-    isOpen: boolean;
     onClose: () => void;
     onFlashcardUpdated: (flashcard: { id: number; front: string; back: string }) => void;
     flashcard: TermFlashcard;
 }
 
 export function EditFlashcardModal({
-    isOpen,
     onClose,
     onFlashcardUpdated,
     flashcard,
@@ -80,7 +79,7 @@ export function EditFlashcardModal({
     const canSubmit = front.trim().length > 0 && back.trim().length > 0;
 
     return (
-        <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+        <Dialog open onOpenChange={(open) => !open && onClose()}>
             <DialogContent className="max-w-lg">
                 <DialogHeader>
                     <DialogTitle>Edit Flashcard</DialogTitle>
@@ -92,7 +91,12 @@ export function EditFlashcardModal({
                 <form onSubmit={handleSubmit}>
                     <div className="space-y-4 py-4">
                         <div className="space-y-2">
-                            <Label htmlFor="edit-flashcard-front">Front</Label>
+                            <div className="flex items-center justify-between">
+                                <Label htmlFor="edit-flashcard-front">Front</Label>
+                                <span className="text-xs text-muted-foreground">
+                                    {front.length}/500
+                                </span>
+                            </div>
                             <Input
                                 id="edit-flashcard-front"
                                 value={front}
@@ -103,13 +107,19 @@ export function EditFlashcardModal({
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="edit-flashcard-back">Back</Label>
-                            <Input
+                            <div className="flex items-center justify-between">
+                                <Label htmlFor="edit-flashcard-back">Back</Label>
+                                <span className="text-xs text-muted-foreground">
+                                    {back.length}/2000
+                                </span>
+                            </div>
+                            <Textarea
                                 id="edit-flashcard-back"
                                 value={back}
                                 onChange={(e) => setBack(e.target.value)}
                                 placeholder="Answer or definition"
                                 disabled={isLoading}
+                                rows={4}
                             />
                         </div>
 
