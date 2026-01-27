@@ -8,6 +8,9 @@ import type { NextRequest } from "next/server";
 vi.mock("@/lib/auth-helpers");
 vi.mock("@/clean-architecture/use-cases/study-set/create-study-set.use-case");
 vi.mock("@/clean-architecture/infrastructure/repositories/study-set.repository.drizzle");
+vi.mock("@/drizzle", () => ({
+  db: {},
+}));
 
 function createMockRequest(body: unknown): NextRequest {
   return new Request("http://localhost/api/v1/study-sets", {
