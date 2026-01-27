@@ -41,6 +41,9 @@ export class AddQuestionToStudySetUseCase {
         if (!questionText.trim()) {
             throw new Error("Question text cannot be empty");
         }
+        if (questionText.length > 1000) {
+            throw new Error("Question text cannot exceed 1000 characters");
+        }
 
         // Validate options count
         if (options.length !== 4) {
@@ -56,6 +59,11 @@ export class AddQuestionToStudySetUseCase {
         // Validate all option texts are non-empty
         if (options.some(opt => !opt.optionText.trim())) {
             throw new Error("All option texts must be non-empty");
+        }
+
+        // Validate option text lengths
+        if (options.some(opt => opt.optionText.length > 500)) {
+            throw new Error("Option text cannot exceed 500 characters");
         }
 
         // Create the question (use study set's videoId which may be null)

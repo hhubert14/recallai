@@ -276,4 +276,62 @@ describe("AddFlashcardToStudySetUseCase", () => {
 
         expect(mockFlashcardRepository.createFlashcards).not.toHaveBeenCalled();
     });
+
+    it("throws error when front exceeds 500 characters", async () => {
+        const studySet = new StudySetEntity(
+            1,
+            studySetPublicId,
+            userId,
+            "My Set",
+            null,
+            "manual",
+            null,
+            "2025-01-20T10:00:00Z",
+            "2025-01-20T10:00:00Z"
+        );
+
+        vi.mocked(mockStudySetRepository.findStudySetByPublicId).mockResolvedValue(studySet);
+
+        const longFront = "a".repeat(501);
+
+        await expect(
+            useCase.execute({
+                userId,
+                studySetPublicId,
+                front: longFront,
+                back: "Answer",
+            })
+        ).rejects.toThrow("Front of flashcard cannot exceed 500 characters");
+
+        expect(mockFlashcardRepository.createFlashcards).not.toHaveBeenCalled();
+    });
+
+    it("throws error when back exceeds 2000 characters", async () => {
+        const studySet = new StudySetEntity(
+            1,
+            studySetPublicId,
+            userId,
+            "My Set",
+            null,
+            "manual",
+            null,
+            "2025-01-20T10:00:00Z",
+            "2025-01-20T10:00:00Z"
+        );
+
+        vi.mocked(mockStudySetRepository.findStudySetByPublicId).mockResolvedValue(studySet);
+
+        const longBack = "a".repeat(2001);
+
+        await expect(
+            useCase.execute({
+                userId,
+                studySetPublicId,
+                front: "Question",
+                back: longBack,
+            })
+        ).rejects.toThrow("Back of flashcard cannot exceed 2000 characters");
+
+        expect(mockFlashcardRepository.createFlashcards).not.toHaveBeenCalled();
+    });
 });

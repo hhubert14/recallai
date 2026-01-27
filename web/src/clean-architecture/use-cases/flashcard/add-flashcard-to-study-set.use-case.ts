@@ -38,6 +38,12 @@ export class AddFlashcardToStudySetUseCase {
         if (!back.trim()) {
             throw new Error("Back of flashcard cannot be empty");
         }
+        if (front.length > 500) {
+            throw new Error("Front of flashcard cannot exceed 500 characters");
+        }
+        if (back.length > 2000) {
+            throw new Error("Back of flashcard cannot exceed 2000 characters");
+        }
 
         // Create the flashcard (use study set's videoId which may be null)
         const [flashcard] = await this.flashcardRepository.createFlashcards([

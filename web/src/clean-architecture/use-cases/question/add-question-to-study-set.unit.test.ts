@@ -392,4 +392,67 @@ describe("AddQuestionToStudySetUseCase", () => {
 
         expect(mockQuestionRepository.createMultipleChoiceQuestion).not.toHaveBeenCalled();
     });
+
+    it("throws error when question text exceeds 1000 characters", async () => {
+        const studySet = new StudySetEntity(
+            1,
+            studySetPublicId,
+            userId,
+            "My Set",
+            null,
+            "manual",
+            null,
+            "2025-01-20T10:00:00Z",
+            "2025-01-20T10:00:00Z"
+        );
+
+        vi.mocked(mockStudySetRepository.findStudySetByPublicId).mockResolvedValue(studySet);
+
+        const longQuestionText = "a".repeat(1001);
+
+        await expect(
+            useCase.execute({
+                userId,
+                studySetPublicId,
+                questionText: longQuestionText,
+                options: validOptions,
+            })
+        ).rejects.toThrow("Question text cannot exceed 1000 characters");
+
+        expect(mockQuestionRepository.createMultipleChoiceQuestion).not.toHaveBeenCalled();
+    });
+
+    it("throws error when option text exceeds 500 characters", async () => {
+        const studySet = new StudySetEntity(
+            1,
+            studySetPublicId,
+            userId,
+            "My Set",
+            null,
+            "manual",
+            null,
+            "2025-01-20T10:00:00Z",
+            "2025-01-20T10:00:00Z"
+        );
+
+        vi.mocked(mockStudySetRepository.findStudySetByPublicId).mockResolvedValue(studySet);
+
+        const longOptionText = "a".repeat(501);
+
+        await expect(
+            useCase.execute({
+                userId,
+                studySetPublicId,
+                questionText: "Question?",
+                options: [
+                    { optionText: longOptionText, isCorrect: true, explanation: null },
+                    { optionText: "B", isCorrect: false, explanation: null },
+                    { optionText: "C", isCorrect: false, explanation: null },
+                    { optionText: "D", isCorrect: false, explanation: null },
+                ],
+            })
+        ).rejects.toThrow("Option text cannot exceed 500 characters");
+
+        expect(mockQuestionRepository.createMultipleChoiceQuestion).not.toHaveBeenCalled();
+    });
 });
