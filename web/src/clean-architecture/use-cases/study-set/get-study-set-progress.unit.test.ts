@@ -24,6 +24,7 @@ describe("GetStudySetProgressUseCase", () => {
             findReviewableItemsByUserId: vi.fn(),
             findReviewableItemsByUserIdAndVideoId: vi.fn(),
             findReviewableItemsByStudySetId: vi.fn(),
+            findReviewableItemsByUserIdAndStudySetId: vi.fn(),
             findReviewableItemByQuestionId: vi.fn(),
             findReviewableItemByFlashcardId: vi.fn(),
             findReviewableItemById: vi.fn(),
@@ -47,7 +48,7 @@ describe("GetStudySetProgressUseCase", () => {
 
     it("returns empty summary when study set has no items", async () => {
         vi.mocked(
-            mockReviewableItemRepo.findReviewableItemsByStudySetId
+            mockReviewableItemRepo.findReviewableItemsByUserIdAndStudySetId
         ).mockResolvedValue([]);
         vi.mocked(
             mockReviewProgressRepo.findReviewProgressByReviewableItemIds
@@ -77,7 +78,7 @@ describe("GetStudySetProgressUseCase", () => {
         );
 
         vi.mocked(
-            mockReviewableItemRepo.findReviewableItemsByStudySetId
+            mockReviewableItemRepo.findReviewableItemsByUserIdAndStudySetId
         ).mockResolvedValue([reviewableItem]);
         vi.mocked(
             mockReviewProgressRepo.findReviewProgressByReviewableItemIds
@@ -165,7 +166,7 @@ describe("GetStudySetProgressUseCase", () => {
         ];
 
         vi.mocked(
-            mockReviewableItemRepo.findReviewableItemsByStudySetId
+            mockReviewableItemRepo.findReviewableItemsByUserIdAndStudySetId
         ).mockResolvedValue(reviewableItems);
         vi.mocked(
             mockReviewProgressRepo.findReviewProgressByReviewableItemIds
@@ -230,7 +231,7 @@ describe("GetStudySetProgressUseCase", () => {
         ];
 
         vi.mocked(
-            mockReviewableItemRepo.findReviewableItemsByStudySetId
+            mockReviewableItemRepo.findReviewableItemsByUserIdAndStudySetId
         ).mockResolvedValue(reviewableItems);
         vi.mocked(
             mockReviewProgressRepo.findReviewProgressByReviewableItemIds
@@ -352,7 +353,7 @@ describe("GetStudySetProgressUseCase", () => {
         ];
 
         vi.mocked(
-            mockReviewableItemRepo.findReviewableItemsByStudySetId
+            mockReviewableItemRepo.findReviewableItemsByUserIdAndStudySetId
         ).mockResolvedValue(reviewableItems);
         vi.mocked(
             mockReviewProgressRepo.findReviewProgressByReviewableItemIds
@@ -393,7 +394,7 @@ describe("GetStudySetProgressUseCase", () => {
         );
 
         vi.mocked(
-            mockReviewableItemRepo.findReviewableItemsByStudySetId
+            mockReviewableItemRepo.findReviewableItemsByUserIdAndStudySetId
         ).mockResolvedValue([reviewableItem]);
         vi.mocked(
             mockReviewProgressRepo.findReviewProgressByReviewableItemIds
@@ -418,7 +419,7 @@ describe("GetStudySetProgressUseCase", () => {
         );
 
         vi.mocked(
-            mockReviewableItemRepo.findReviewableItemsByStudySetId
+            mockReviewableItemRepo.findReviewableItemsByUserIdAndStudySetId
         ).mockResolvedValue([reviewableItem]);
         vi.mocked(
             mockReviewProgressRepo.findReviewProgressByReviewableItemIds
@@ -446,7 +447,7 @@ describe("GetStudySetProgressUseCase", () => {
         );
 
         vi.mocked(
-            mockReviewableItemRepo.findReviewableItemsByStudySetId
+            mockReviewableItemRepo.findReviewableItemsByUserIdAndStudySetId
         ).mockResolvedValue([reviewableItem]);
         vi.mocked(
             mockReviewProgressRepo.findReviewProgressByReviewableItemIds

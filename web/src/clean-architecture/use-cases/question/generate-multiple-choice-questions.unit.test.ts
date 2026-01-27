@@ -134,6 +134,7 @@ describe("GenerateMultipleChoiceQuestionsUseCase", () => {
             findReviewableItemsByUserId: vi.fn(),
             findReviewableItemsByUserIdAndVideoId: vi.fn(),
             findReviewableItemsByStudySetId: vi.fn(),
+            findReviewableItemsByUserIdAndStudySetId: vi.fn(),
             findReviewableItemByQuestionId: vi.fn(),
             findReviewableItemByFlashcardId: vi.fn(),
             findReviewableItemById: vi.fn(),

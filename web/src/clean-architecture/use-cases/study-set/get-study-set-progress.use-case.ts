@@ -42,7 +42,8 @@ export class GetStudySetProgressUseCase {
         studySetId: number
     ): Promise<GetStudySetProgressResult> {
         const reviewableItems =
-            await this.reviewableItemRepository.findReviewableItemsByStudySetId(
+            await this.reviewableItemRepository.findReviewableItemsByUserIdAndStudySetId(
+                userId,
                 studySetId
             );
 

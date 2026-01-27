@@ -6,7 +6,7 @@ import { VideoPlayerProvider } from "./VideoPlayerContext";
 import { ChatButton } from "./ChatButton";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { StudySetContent } from "./StudySetContent";
-import type { TermWithMastery, StudySetProgress } from "./types";
+import type { TermWithMastery } from "./types";
 import { DrizzleStudySetRepository } from "@/clean-architecture/infrastructure/repositories/study-set.repository.drizzle";
 import { DrizzleVideoRepository } from "@/clean-architecture/infrastructure/repositories/video.repository.drizzle";
 import { DrizzleSummaryRepository } from "@/clean-architecture/infrastructure/repositories/summary.repository.drizzle";
@@ -142,8 +142,6 @@ export default async function StudySetDetailPage({
         })),
     ];
 
-    const progress: StudySetProgress = progressResult.summary;
-
     return (
         <div className="flex min-h-screen flex-col bg-background">
             {/* TODO: Re-enable tour after updating targets for new layout */}
@@ -160,7 +158,6 @@ export default async function StudySetDetailPage({
                         terms={terms}
                         videoId={studySet.videoId}
                         studySetId={studySet.id}
-                        progress={progress}
                     />
                 </VideoPlayerProvider>
 

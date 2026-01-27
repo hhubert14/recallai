@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Plus, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { VideoPlayer } from "./VideoPlayer";
@@ -21,7 +21,6 @@ interface StudySetContentProps {
     terms: TermWithMastery[];
     videoId: number | null;
     studySetId: number;
-    progress: StudySetProgress;
 }
 
 export function StudySetContent({
@@ -33,7 +32,6 @@ export function StudySetContent({
     terms: initialTerms,
     videoId,
     studySetId,
-    progress,
 }: StudySetContentProps) {
     const [terms, setTerms] = useState<TermWithMastery[]>(initialTerms);
     const [activeMode, setActiveMode] = useState<StudyMode | null>(null);
@@ -45,6 +43,14 @@ export function StudySetContent({
     const flashcardCount = terms.filter((t) => t.itemType === "flashcard").length;
     const canGenerateQuestions = questionCount < MAX_QUESTIONS && videoId;
     const canGenerateFlashcards = flashcardCount < MAX_FLASHCARDS && videoId;
+
+    // Compute progress from current terms state so it updates when new terms are added
+    const currentProgress = useMemo(() => ({
+        mastered: terms.filter((t) => t.masteryStatus === "mastered").length,
+        learning: terms.filter((t) => t.masteryStatus === "learning").length,
+        notStarted: terms.filter((t) => t.masteryStatus === "not_started").length,
+        total: terms.length,
+    }), [terms]);
 
     async function handleGenerateQuestions() {
         if (!videoId) return;
@@ -185,7 +191,7 @@ export function StudySetContent({
             {summary && <CollapsibleSummary content={summary.content} />}
 
             {/* Terms List */}
-            <TermsList terms={terms} onStudy={handleStudy} progress={progress} />
+            <TermsList terms={terms} onStudy={handleStudy} progress={currentProgress} />
 
             {/* Generate More Terms */}
             {isVideoSourced && (canGenerateQuestions || canGenerateFlashcards) && (
