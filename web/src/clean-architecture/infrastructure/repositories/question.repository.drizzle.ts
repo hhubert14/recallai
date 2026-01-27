@@ -1,7 +1,7 @@
 import { IQuestionRepository } from "@/clean-architecture/domain/repositories/question.repository.interface";
 import { MultipleChoiceQuestionEntity, MultipleChoiceOption } from "@/clean-architecture/domain/entities/question.entity";
 import { db } from "@/drizzle";
-import { questions, questionOptions, videos } from "@/drizzle/schema";
+import { questions, questionOptions } from "@/drizzle/schema";
 import { eq, asc, inArray, count } from "drizzle-orm";
 
 export class DrizzleQuestionRepository implements IQuestionRepository {
@@ -107,44 +107,6 @@ export class DrizzleQuestionRepository implements IQuestionRepository {
             );
         } catch (error) {
             console.error("Error finding questions by video ID:", error);
-            throw error;
-        }
-    }
-
-    async findQuestionsByUserId(userId: string): Promise<MultipleChoiceQuestionEntity[]> {
-        try {
-            const rows = await db
-                .select()
-                .from(questions)
-                .innerJoin(videos, eq(videos.id, questions.videoId))
-                .leftJoin(questionOptions, eq(questionOptions.questionId, questions.id))
-                .where(eq(videos.userId, userId))
-                .orderBy(asc(questions.createdAt));
-
-            const questionsMap: {
-                [key: number]: {
-                    question: typeof questions.$inferSelect;
-                    options: typeof questionOptions.$inferSelect[];
-                }
-            } = {};
-
-            for (const row of rows) {
-                if (!questionsMap[row.questions.id]) {
-                    questionsMap[row.questions.id] = {
-                        question: row.questions,
-                        options: [],
-                    };
-                }
-                if (row.question_options) {
-                    questionsMap[row.questions.id].options.push(row.question_options);
-                }
-            }
-
-            return Object.values(questionsMap).map(({ question, options }) =>
-                this.toEntity(question, options)
-            );
-        } catch (error) {
-            console.error("Error finding questions by user ID:", error);
             throw error;
         }
     }

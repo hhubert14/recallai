@@ -42,20 +42,6 @@ export class DrizzleFlashcardRepository implements IFlashcardRepository {
         }
     }
 
-    async findFlashcardsByUserId(userId: string): Promise<FlashcardEntity[]> {
-        try {
-            const data = await this.db
-                .select()
-                .from(flashcards)
-                .where(eq(flashcards.userId, userId));
-
-            return data.map((flashcard) => this.toEntity(flashcard));
-        } catch (error) {
-            console.error("Error finding flashcards by user ID:", error);
-            throw error;
-        }
-    }
-
     async findFlashcardsByIds(flashcardIds: number[]): Promise<FlashcardEntity[]> {
         if (flashcardIds.length === 0) {
             return [];

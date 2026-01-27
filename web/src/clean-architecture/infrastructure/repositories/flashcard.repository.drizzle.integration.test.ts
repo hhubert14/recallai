@@ -166,26 +166,6 @@ describe("DrizzleFlashcardRepository (integration)", () => {
     });
   });
 
-  describe("findFlashcardsByUserId", () => {
-    it("finds all flashcards for a user", async () => {
-      await repository.createFlashcards([
-        { videoId: testVideoId, userId: testUserId, front: "Front 1", back: "Back 1" },
-        { videoId: testVideoId, userId: testUserId, front: "Front 2", back: "Back 2" },
-      ]);
-
-      const result = await repository.findFlashcardsByUserId(testUserId);
-
-      expect(result).toHaveLength(2);
-      expect(result.every((f) => f.userId === testUserId)).toBe(true);
-    });
-
-    it("returns empty array for user with no flashcards", async () => {
-      const nonExistentUserId = "00000000-0000-0000-0000-000000000000";
-      const result = await repository.findFlashcardsByUserId(nonExistentUserId);
-      expect(result).toHaveLength(0);
-    });
-  });
-
   describe("countFlashcardsByVideoIds", () => {
     it("counts flashcards grouped by video ID", async () => {
       // Create another video
