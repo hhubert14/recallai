@@ -82,6 +82,44 @@ export class DrizzleFlashcardRepository implements IFlashcardRepository {
         }
     }
 
+    async findFlashcardById(flashcardId: number): Promise<FlashcardEntity | null> {
+        try {
+            const [data] = await this.db
+                .select()
+                .from(flashcards)
+                .where(eq(flashcards.id, flashcardId))
+                .limit(1);
+
+            if (!data) {
+                return null;
+            }
+
+            return this.toEntity(data);
+        } catch (error) {
+            console.error("Error finding flashcard by ID:", error);
+            throw error;
+        }
+    }
+
+    async updateFlashcard(flashcardId: number, front: string, back: string): Promise<FlashcardEntity> {
+        try {
+            const [data] = await this.db
+                .update(flashcards)
+                .set({ front, back, updatedAt: new Date().toISOString() })
+                .where(eq(flashcards.id, flashcardId))
+                .returning();
+
+            if (!data) {
+                throw new Error("Flashcard not found");
+            }
+
+            return this.toEntity(data);
+        } catch (error) {
+            console.error("Error updating flashcard:", error);
+            throw error;
+        }
+    }
+
     private toEntity(data: typeof flashcards.$inferSelect): FlashcardEntity {
         return new FlashcardEntity(
             data.id,

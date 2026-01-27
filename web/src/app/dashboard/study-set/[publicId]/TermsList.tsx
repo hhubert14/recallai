@@ -3,15 +3,16 @@
 import { TermCard } from "./TermCard";
 import { StudyDropdown } from "./StudyDropdown";
 import { ProgressOverview } from "./ProgressOverview";
-import type { TermWithMastery, StudyMode, StudySetProgress } from "./types";
+import type { TermWithMastery, StudyMode, StudySetProgress, TermFlashcard } from "./types";
 
 interface TermsListProps {
     terms: TermWithMastery[];
     onStudy: (mode: StudyMode) => void;
     progress: StudySetProgress;
+    onEditFlashcard?: (flashcard: TermFlashcard) => void;
 }
 
-export function TermsList({ terms, onStudy, progress }: TermsListProps) {
+export function TermsList({ terms, onStudy, progress, onEditFlashcard }: TermsListProps) {
     const hasFlashcards = terms.some((t) => t.itemType === "flashcard");
     const hasQuestions = terms.some((t) => t.itemType === "question");
 
@@ -41,7 +42,11 @@ export function TermsList({ terms, onStudy, progress }: TermsListProps) {
             </div>
             <div className="space-y-3">
                 {terms.map((term) => (
-                    <TermCard key={`${term.itemType}-${term.id}`} term={term} />
+                    <TermCard
+                        key={`${term.itemType}-${term.id}`}
+                        term={term}
+                        onEditFlashcard={onEditFlashcard}
+                    />
                 ))}
             </div>
         </section>

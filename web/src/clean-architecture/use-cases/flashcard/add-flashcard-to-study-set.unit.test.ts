@@ -32,6 +32,8 @@ describe("AddFlashcardToStudySetUseCase", () => {
             findFlashcardsByVideoId: vi.fn(),
             findFlashcardsByIds: vi.fn(),
             countFlashcardsByVideoIds: vi.fn(),
+            findFlashcardById: vi.fn(),
+            updateFlashcard: vi.fn(),
         };
 
         mockReviewableItemRepository = {

@@ -8,7 +8,8 @@ import { CollapsibleSummary } from "./CollapsibleSummary";
 import { TermsList } from "./TermsList";
 import { StudySession } from "./StudySession";
 import { AddItemModal } from "./AddItemModal";
-import type { TermWithMastery, StudyMode, StudySetProgress } from "./types";
+import { EditFlashcardModal } from "./EditFlashcardModal";
+import type { TermWithMastery, StudyMode, StudySetProgress, TermFlashcard } from "./types";
 
 const MAX_QUESTIONS = 20;
 const MAX_FLASHCARDS = 20;
@@ -42,6 +43,7 @@ export function StudySetContent({
     const [isGeneratingFlashcards, setIsGeneratingFlashcards] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [isAddItemModalOpen, setIsAddItemModalOpen] = useState(false);
+    const [editingFlashcard, setEditingFlashcard] = useState<TermFlashcard | null>(null);
 
     const questionCount = terms.filter((t) => t.itemType === "question").length;
     const flashcardCount = terms.filter((t) => t.itemType === "flashcard").length;
@@ -183,6 +185,28 @@ export function StudySetContent({
         setTerms((prev) => [...prev, newTerm]);
     };
 
+    const handleEditFlashcard = (flashcard: TermFlashcard) => {
+        setEditingFlashcard(flashcard);
+    };
+
+    const handleFlashcardUpdated = (updated: { id: number; front: string; back: string }) => {
+        setTerms((prev) =>
+            prev.map((term) => {
+                if (term.itemType === "flashcard" && term.flashcard?.id === updated.id) {
+                    return {
+                        ...term,
+                        flashcard: {
+                            ...term.flashcard,
+                            front: updated.front,
+                            back: updated.back,
+                        },
+                    };
+                }
+                return term;
+            })
+        );
+    };
+
     // If a study session is active, show the study interface
     if (activeMode) {
         return (
@@ -234,7 +258,12 @@ export function StudySetContent({
             {summary && <CollapsibleSummary content={summary.content} />}
 
             {/* Terms List */}
-            <TermsList terms={terms} onStudy={handleStudy} progress={currentProgress} />
+            <TermsList
+                terms={terms}
+                onStudy={handleStudy}
+                progress={currentProgress}
+                onEditFlashcard={handleEditFlashcard}
+            />
 
             {/* Add More Terms */}
             <div className="border border-border rounded-lg bg-card p-6">
@@ -309,6 +338,16 @@ export function StudySetContent({
                 onQuestionAdded={handleQuestionAdded}
                 studySetPublicId={studySetPublicId}
             />
+
+            {/* Edit Flashcard Modal */}
+            {editingFlashcard && (
+                <EditFlashcardModal
+                    isOpen={!!editingFlashcard}
+                    onClose={() => setEditingFlashcard(null)}
+                    onFlashcardUpdated={handleFlashcardUpdated}
+                    flashcard={editingFlashcard}
+                />
+            )}
         </div>
     );
 }
