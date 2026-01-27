@@ -76,12 +76,20 @@ export class GetStudySetProgressUseCase {
                 progress?.boxLevel ?? null
             );
 
+            const itemId =
+                item.itemType === "question"
+                    ? item.questionId
+                    : item.flashcardId;
+
+            if (itemId === null) {
+                throw new Error(
+                    `Invalid reviewable item: ${item.itemType} (id: ${item.id}) is missing its ${item.itemType}Id`
+                );
+            }
+
             return {
                 itemType: item.itemType,
-                itemId:
-                    item.itemType === "question"
-                        ? item.questionId!
-                        : item.flashcardId!,
+                itemId,
                 masteryStatus,
             };
         });
