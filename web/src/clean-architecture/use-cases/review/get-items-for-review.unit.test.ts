@@ -162,14 +162,12 @@ describe("GetItemsForReviewUseCase", () => {
       createMultipleChoiceQuestion: vi.fn(),
       findQuestionById: vi.fn(),
       findQuestionsByVideoId: vi.fn(),
-      findQuestionsByUserId: vi.fn(),
       findQuestionsByIds: vi.fn(),
       countQuestionsByVideoIds: vi.fn(),
     };
     mockFlashcardRepo = {
       createFlashcards: vi.fn(),
       findFlashcardsByVideoId: vi.fn(),
-      findFlashcardsByUserId: vi.fn(),
       findFlashcardsByIds: vi.fn(),
       countFlashcardsByVideoIds: vi.fn(),
     };

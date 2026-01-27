@@ -82,7 +82,6 @@ describe("GenerateFlashcardsUseCase", () => {
         mockFlashcardRepo = {
             createFlashcards: vi.fn(),
             findFlashcardsByVideoId: vi.fn(),
-            findFlashcardsByUserId: vi.fn(),
             findFlashcardsByIds: vi.fn(),
             countFlashcardsByVideoIds: vi.fn(),
         };

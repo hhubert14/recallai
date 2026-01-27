@@ -2,7 +2,7 @@ import { MultipleChoiceQuestionEntity } from "@/clean-architecture/domain/entiti
 
 export interface IQuestionRepository {
     createMultipleChoiceQuestion(
-        videoId: number,
+        videoId: number | null,
         questionText: string,
         options: {
             optionText: string;
@@ -16,12 +16,6 @@ export interface IQuestionRepository {
     findQuestionById(questionId: number): Promise<MultipleChoiceQuestionEntity | null>;
 
     findQuestionsByVideoId(videoId: number): Promise<MultipleChoiceQuestionEntity[]>;
-
-    /**
-     * Find all questions for a user (across all their videos).
-     * Used for "new" and "random" study modes.
-     */
-    findQuestionsByUserId(userId: string): Promise<MultipleChoiceQuestionEntity[]>;
 
     /**
      * Find questions by their IDs.

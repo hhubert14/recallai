@@ -115,7 +115,6 @@ describe("GenerateMultipleChoiceQuestionsUseCase", () => {
             createMultipleChoiceQuestion: vi.fn(),
             findQuestionById: vi.fn(),
             findQuestionsByVideoId: vi.fn(),
-            findQuestionsByUserId: vi.fn(),
             findQuestionsByIds: vi.fn(),
             countQuestionsByVideoIds: vi.fn(),
         };
