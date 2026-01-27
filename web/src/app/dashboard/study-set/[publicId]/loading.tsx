@@ -24,39 +24,49 @@ export default function Loading() {
                 </div>
             </header>
 
-            <main className="flex-1 container py-4 px-6 md:px-8 max-w-7xl mx-auto">
-                {/* Title section */}
-                <div className="mb-6">
-                    <div className="h-9 w-96 max-w-full rounded bg-muted animate-pulse mb-3 mt-2" />
-                    <div className="h-5 w-48 rounded bg-muted animate-pulse" />
-                </div>
+            <main className="flex-1 container py-6 px-6 md:px-12 lg:px-16 max-w-5xl mx-auto">
+                <div className="space-y-6">
+                    {/* Title section */}
+                    <div className="mb-6">
+                        <div className="h-9 w-96 max-w-full rounded bg-muted animate-pulse mb-3 mt-2" />
+                        <div className="h-5 w-48 rounded bg-muted animate-pulse" />
+                    </div>
 
-                {/* Two-column layout */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 min-h-[calc(100vh-200px)]">
-                    {/* Video Player skeleton - Left Side */}
-                    <div className="bg-muted rounded-xl overflow-hidden aspect-video lg:aspect-auto animate-pulse shadow-lg min-h-[300px] lg:min-h-0" />
+                    {/* Video Player skeleton - Full width at top */}
+                    <div className="bg-muted rounded-xl overflow-hidden aspect-video animate-pulse shadow-lg max-w-4xl" />
 
-                    {/* Content Tabs skeleton - Right Side */}
-                    <div className="flex flex-col min-h-[500px] lg:min-h-0">
-                        {/* Tabs header */}
-                        <div className="flex gap-1 mb-4 border-b border-border pb-2">
-                            <div className="h-9 w-24 rounded-lg bg-muted animate-pulse" />
-                            <div className="h-9 w-20 rounded-lg bg-muted animate-pulse" />
-                            <div className="h-9 w-24 rounded-lg bg-muted animate-pulse" />
-                        </div>
-
-                        {/* Tab content skeleton */}
-                        <div className="flex-1 rounded-xl border border-border bg-card p-6 space-y-4">
-                            <div className="h-6 w-32 rounded bg-muted animate-pulse" />
-                            <div className="space-y-3">
-                                <div className="h-4 w-full rounded bg-muted animate-pulse" />
-                                <div className="h-4 w-full rounded bg-muted animate-pulse" />
-                                <div className="h-4 w-3/4 rounded bg-muted animate-pulse" />
-                                <div className="h-4 w-full rounded bg-muted animate-pulse" />
-                                <div className="h-4 w-5/6 rounded bg-muted animate-pulse" />
-                            </div>
+                    {/* Collapsible Summary skeleton */}
+                    <div className="border border-border rounded-lg bg-card">
+                        <div className="flex items-center justify-between p-4">
+                            <div className="h-6 w-24 rounded bg-muted animate-pulse" />
+                            <div className="h-5 w-5 rounded bg-muted animate-pulse" />
                         </div>
                     </div>
+
+                    {/* Terms List skeleton */}
+                    <section className="space-y-4">
+                        {/* Terms header */}
+                        <div className="flex items-center justify-between">
+                            <div className="h-6 w-48 rounded bg-muted animate-pulse" />
+                            <div className="h-9 w-24 rounded bg-muted animate-pulse" />
+                        </div>
+                        {/* Term cards */}
+                        <div className="space-y-3">
+                            {[1, 2, 3, 4].map((i) => (
+                                <div
+                                    key={i}
+                                    className="flex border border-border rounded-lg bg-card overflow-hidden"
+                                >
+                                    <div className="flex-1 p-4 border-r border-border">
+                                        <div className="h-4 w-3/4 rounded bg-muted animate-pulse" />
+                                    </div>
+                                    <div className="flex-1 p-4">
+                                        <div className="h-4 w-2/3 rounded bg-muted animate-pulse" />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
                 </div>
             </main>
         </div>

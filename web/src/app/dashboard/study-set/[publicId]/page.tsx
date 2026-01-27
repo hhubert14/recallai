@@ -2,12 +2,11 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { extractYouTubeVideoId } from "@/lib/youtube";
-import { VideoPlayer } from "./VideoPlayer";
-import { ContentTabs } from "./ContentTabs";
 import { VideoPlayerProvider } from "./VideoPlayerContext";
 import { ChatButton } from "./ChatButton";
-import { StudySetDetailTour } from "./StudySetDetailTour";
 import { DashboardHeader } from "@/components/DashboardHeader";
+import { StudySetContent } from "./StudySetContent";
+import type { Term } from "./types";
 import { DrizzleStudySetRepository } from "@/clean-architecture/infrastructure/repositories/study-set.repository.drizzle";
 import { DrizzleVideoRepository } from "@/clean-architecture/infrastructure/repositories/video.repository.drizzle";
 import { DrizzleSummaryRepository } from "@/clean-architecture/infrastructure/repositories/summary.repository.drizzle";
@@ -108,45 +107,42 @@ export default async function StudySetDetailPage({
         back: f.back,
     }));
 
+    // Transform questions and flashcards into unified terms
+    const terms: Term[] = [
+        ...flashcards.map((f) => ({
+            id: f.id,
+            itemType: "flashcard" as const,
+            flashcard: { id: f.id, front: f.front, back: f.back },
+        })),
+        ...questions.map((q) => ({
+            id: q.id,
+            itemType: "question" as const,
+            question: {
+                id: q.id,
+                questionText: q.questionText,
+                options: q.options,
+                sourceTimestamp: q.sourceTimestamp,
+            },
+        })),
+    ];
+
     return (
         <div className="flex min-h-screen flex-col bg-background">
-            <StudySetDetailTour />
+            {/* TODO: Re-enable tour after updating targets for new layout */}
             <DashboardHeader />
 
-            <main className="flex-1 container py-4 px-6 md:px-8 max-w-7xl mx-auto">
-                <div className="mb-6">
-                    <h1 className="text-3xl font-bold text-foreground mb-3 mt-2">
-                        {videoTitle}
-                    </h1>
-                    {channelName && (
-                        <p className="text-lg text-muted-foreground">
-                            by {channelName}
-                        </p>
-                    )}
-                </div>{" "}
+            <main className="flex-1 container py-6 px-6 md:px-12 lg:px-16 max-w-5xl mx-auto">
                 <VideoPlayerProvider>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 min-h-[calc(100vh-200px)]">
-                        {/* Video Player - Left Side on Desktop, Top on Mobile */}
-                        {studySet.isVideoSourced() && youtubeVideoId && (
-                            <div className="bg-black rounded-xl overflow-hidden aspect-video lg:aspect-auto shadow-lg">
-                                <VideoPlayer
-                                    videoId={youtubeVideoId}
-                                    title={videoTitle}
-                                />
-                            </div>
-                        )}
-
-                        {/* Content Tabs - Right Side on Desktop, Bottom on Mobile */}
-                        <div className={`flex flex-col min-h-[500px] lg:min-h-0 ${!studySet.isVideoSourced() || !youtubeVideoId ? 'lg:col-span-2' : ''}`}>
-                            <ContentTabs
-                                summary={summary}
-                                questions={questions}
-                                flashcards={flashcards}
-                                videoId={studySet.videoId}
-                                studySetId={studySet.id}
-                            />
-                        </div>
-                    </div>
+                    <StudySetContent
+                        title={videoTitle}
+                        channelName={channelName}
+                        youtubeVideoId={youtubeVideoId}
+                        isVideoSourced={studySet.isVideoSourced()}
+                        summary={summary}
+                        terms={terms}
+                        videoId={studySet.videoId}
+                        studySetId={studySet.id}
+                    />
                 </VideoPlayerProvider>
 
                 {/* Floating Chat Button - only for video-sourced study sets */}
