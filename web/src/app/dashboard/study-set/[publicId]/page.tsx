@@ -16,8 +16,7 @@ import { DrizzleReviewableItemRepository } from "@/clean-architecture/infrastruc
 import { DrizzleReviewProgressRepository } from "@/clean-architecture/infrastructure/repositories/review-progress.repository.drizzle";
 import { FindStudySetByPublicIdUseCase } from "@/clean-architecture/use-cases/study-set/find-study-set-by-public-id.use-case";
 import { FindSummaryByVideoIdUseCase } from "@/clean-architecture/use-cases/summary/find-summary-by-video-id.use-case";
-import { FindQuestionsByVideoIdUseCase } from "@/clean-architecture/use-cases/question/find-questions-by-video-id.use-case";
-import { FindFlashcardsByVideoIdUseCase } from "@/clean-architecture/use-cases/flashcard/find-flashcards-by-video-id.use-case";
+import { GetStudySetItemsUseCase } from "@/clean-architecture/use-cases/study-set/get-study-set-items.use-case";
 import { GetStudySetProgressUseCase } from "@/clean-architecture/use-cases/study-set/get-study-set-progress.use-case";
 
 export const metadata: Metadata = {
@@ -69,46 +68,26 @@ export default async function StudySetDetailPage({
         }
     }
 
-    // Fetch content by videoId (for video-sourced study sets)
-    const [summaryEntity, questionEntities, flashcardEntities] = await Promise.all([
+    // Fetch study set items (works for both video-sourced and manual study sets)
+    const [summaryEntity, studySetItems] = await Promise.all([
+        // Summary only exists for video-sourced study sets
         studySet.videoId
             ? new FindSummaryByVideoIdUseCase(new DrizzleSummaryRepository()).execute(studySet.videoId)
             : Promise.resolve(null),
-        studySet.videoId
-            ? new FindQuestionsByVideoIdUseCase(new DrizzleQuestionRepository()).execute(studySet.videoId)
-            : Promise.resolve([]),
-        studySet.videoId
-            ? new FindFlashcardsByVideoIdUseCase(new DrizzleFlashcardRepository()).execute(studySet.videoId)
-            : Promise.resolve([]),
+        // Items are fetched by study set ID (works for all study sets)
+        new GetStudySetItemsUseCase(
+            new DrizzleReviewableItemRepository(),
+            new DrizzleFlashcardRepository(),
+            new DrizzleQuestionRepository()
+        ).execute(studySet.id),
     ]);
 
-    // Convert entities to plain objects for client components
+    // Convert summary entity to plain object for client components
     const summary = summaryEntity ? {
         id: summaryEntity.id,
         videoId: summaryEntity.videoId,
         content: summaryEntity.content,
     } : null;
-
-    const questions = questionEntities.map(q => ({
-        id: q.id,
-        videoId: q.videoId,
-        questionText: q.questionText,
-        questionType: q.questionType,
-        sourceTimestamp: q.sourceTimestamp,
-        options: q.options.map(opt => ({
-            id: opt.id,
-            optionText: opt.optionText,
-            isCorrect: opt.isCorrect,
-            explanation: opt.explanation,
-        })),
-    }));
-
-    const flashcards = flashcardEntities.map(f => ({
-        id: f.id,
-        videoId: f.videoId,
-        front: f.front,
-        back: f.back,
-    }));
 
     // Fetch progress data for mastery indicators
     const progressResult = await new GetStudySetProgressUseCase(
@@ -121,26 +100,36 @@ export default async function StudySetDetailPage({
         progressResult.terms.map((t) => [`${t.itemType}-${t.itemId}`, t.masteryStatus])
     );
 
-    // Transform questions and flashcards into unified terms with mastery status
-    const terms: TermWithMastery[] = [
-        ...flashcards.map((f) => ({
-            id: f.id,
-            itemType: "flashcard" as const,
-            flashcard: { id: f.id, front: f.front, back: f.back },
-            masteryStatus: masteryMap.get(`flashcard-${f.id}`) ?? "not_started" as const,
-        })),
-        ...questions.map((q) => ({
-            id: q.id,
-            itemType: "question" as const,
-            question: {
+    // Transform items into unified terms with mastery status (preserves insertion order)
+    const terms: TermWithMastery[] = studySetItems.items.map((item) => {
+        if (item.itemType === "flashcard") {
+            const f = item.flashcard;
+            return {
+                id: f.id,
+                itemType: "flashcard" as const,
+                flashcard: { id: f.id, front: f.front, back: f.back },
+                masteryStatus: masteryMap.get(`flashcard-${f.id}`) ?? "not_started" as const,
+            };
+        } else {
+            const q = item.question;
+            return {
                 id: q.id,
-                questionText: q.questionText,
-                options: q.options,
-                sourceTimestamp: q.sourceTimestamp,
-            },
-            masteryStatus: masteryMap.get(`question-${q.id}`) ?? "not_started" as const,
-        })),
-    ];
+                itemType: "question" as const,
+                question: {
+                    id: q.id,
+                    questionText: q.questionText,
+                    options: q.options.map(opt => ({
+                        id: opt.id,
+                        optionText: opt.optionText,
+                        isCorrect: opt.isCorrect,
+                        explanation: opt.explanation,
+                    })),
+                    sourceTimestamp: q.sourceTimestamp,
+                },
+                masteryStatus: masteryMap.get(`question-${q.id}`) ?? "not_started" as const,
+            };
+        }
+    });
 
     return (
         <div className="flex min-h-screen flex-col bg-background">

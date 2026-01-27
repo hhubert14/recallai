@@ -170,6 +170,8 @@ describe("GetItemsForReviewUseCase", () => {
       findFlashcardsByVideoId: vi.fn(),
       findFlashcardsByIds: vi.fn(),
       countFlashcardsByVideoIds: vi.fn(),
+      findFlashcardById: vi.fn(),
+      updateFlashcard: vi.fn(),
     };
     mockVideoRepo = {
       createVideo: vi.fn(),

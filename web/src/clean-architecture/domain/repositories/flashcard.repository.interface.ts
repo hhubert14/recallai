@@ -18,4 +18,16 @@ export interface IFlashcardRepository {
      * Returns a map of videoId -> count.
      */
     countFlashcardsByVideoIds(videoIds: number[]): Promise<Record<number, number>>;
+
+    /**
+     * Find a flashcard by its ID.
+     * Used to validate ownership before editing.
+     */
+    findFlashcardById(flashcardId: number): Promise<FlashcardEntity | null>;
+
+    /**
+     * Update a flashcard's front and back text.
+     * Returns the updated flashcard.
+     */
+    updateFlashcard(flashcardId: number, front: string, back: string): Promise<FlashcardEntity>;
 }

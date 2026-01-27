@@ -94,7 +94,8 @@
       "Bash(npm run test:integration:*)",
       "Bash(PGPASSWORD=postgres psql:*)",
       "Bash(dir:*)",
-      "Bash(npx vitest:*)"
+      "Bash(npx vitest:*)",
+      "Bash(npx next lint)"
     ],
     "deny": [],
     "ask": []

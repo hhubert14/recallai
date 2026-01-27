@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect } from "vitest";
+import userEvent from "@testing-library/user-event";
+import { describe, it, expect, vi } from "vitest";
 import { TermCard } from "./TermCard";
 import type { TermWithMastery } from "./types";
 
@@ -157,6 +158,68 @@ describe("TermCard", () => {
 
             const indicator = screen.getByTestId("mastery-indicator");
             expect(indicator).toHaveClass("bg-muted-foreground");
+        });
+    });
+
+    describe("edit functionality", () => {
+        const flashcardTerm: TermWithMastery = {
+            id: 1,
+            itemType: "flashcard",
+            flashcard: {
+                id: 1,
+                front: "What is React?",
+                back: "A JavaScript library for building user interfaces",
+            },
+            masteryStatus: "not_started",
+        };
+
+        const questionTerm: TermWithMastery = {
+            id: 2,
+            itemType: "question",
+            question: {
+                id: 2,
+                questionText: "Which hook is used for side effects?",
+                sourceTimestamp: null,
+                options: [
+                    { id: 1, optionText: "useState", isCorrect: false, explanation: null },
+                    { id: 2, optionText: "useEffect", isCorrect: true, explanation: null },
+                ],
+            },
+            masteryStatus: "learning",
+        };
+
+        it("renders edit button for flashcard terms when onEditFlashcard is provided", () => {
+            const onEditFlashcard = vi.fn();
+            render(<TermCard term={flashcardTerm} onEditFlashcard={onEditFlashcard} />);
+
+            expect(screen.getByRole("button", { name: /edit flashcard/i })).toBeInTheDocument();
+        });
+
+        it("does not render edit button for flashcard terms when onEditFlashcard is not provided", () => {
+            render(<TermCard term={flashcardTerm} />);
+
+            expect(screen.queryByRole("button", { name: /edit flashcard/i })).not.toBeInTheDocument();
+        });
+
+        it("calls onEditFlashcard with flashcard data when edit button is clicked", async () => {
+            const user = userEvent.setup();
+            const onEditFlashcard = vi.fn();
+            render(<TermCard term={flashcardTerm} onEditFlashcard={onEditFlashcard} />);
+
+            await user.click(screen.getByRole("button", { name: /edit flashcard/i }));
+
+            expect(onEditFlashcard).toHaveBeenCalledWith({
+                id: 1,
+                front: "What is React?",
+                back: "A JavaScript library for building user interfaces",
+            });
+        });
+
+        it("does not render edit button for question terms", () => {
+            const onEditFlashcard = vi.fn();
+            render(<TermCard term={questionTerm} onEditFlashcard={onEditFlashcard} />);
+
+            expect(screen.queryByRole("button", { name: /edit/i })).not.toBeInTheDocument();
         });
     });
 });

@@ -1,8 +1,10 @@
-import { Check } from "lucide-react";
-import type { TermWithMastery, MasteryStatus } from "./types";
+import { Check, Pencil } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import type { TermWithMastery, MasteryStatus, TermFlashcard } from "./types";
 
 interface TermCardProps {
     term: TermWithMastery;
+    onEditFlashcard?: (flashcard: TermFlashcard) => void;
 }
 
 function getMasteryIndicatorClass(status: MasteryStatus): string {
@@ -27,7 +29,7 @@ function MasteryIndicator({ status }: { status: MasteryStatus }) {
     );
 }
 
-export function TermCard({ term }: TermCardProps) {
+export function TermCard({ term, onEditFlashcard }: TermCardProps) {
     if (term.itemType === "flashcard" && term.flashcard) {
         return (
             <article className="flex border border-border rounded-lg bg-card overflow-hidden">
@@ -35,8 +37,19 @@ export function TermCard({ term }: TermCardProps) {
                 <div className="flex-1 p-4 border-r border-border">
                     <p className="text-sm text-foreground">{term.flashcard.front}</p>
                 </div>
-                <div className="flex-1 p-4">
+                <div className="flex-1 p-4 flex items-start justify-between gap-2">
                     <p className="text-sm text-foreground">{term.flashcard.back}</p>
+                    {onEditFlashcard && (
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 shrink-0"
+                            onClick={() => onEditFlashcard(term.flashcard!)}
+                            aria-label="Edit flashcard"
+                        >
+                            <Pencil className="h-4 w-4" />
+                        </Button>
+                    )}
                 </div>
             </article>
         );
