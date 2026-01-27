@@ -4,8 +4,11 @@ import { useState, useCallback, useMemo, createContext, useContext } from "react
 import { useRouter, useSearchParams } from "next/navigation";
 import { FoldersView } from "./FoldersView";
 import { CreateFolderModal } from "@/components/CreateFolderModal";
+import { CreateStudySetModal, StudySetData } from "@/components/CreateStudySetModal";
 import { EditFolderModal } from "@/components/EditFolderModal";
 import { AddToFolderModal, FolderOption } from "@/components/AddToFolderModal";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 import { ClientStudySetList, StudySetWithCounts } from "./ClientStudySetList";
 import { LibrarySearchSort, SortOption } from "./LibrarySearchSort";
 
@@ -47,7 +50,8 @@ export function LibraryClientWrapper({
   const folderId = searchParams.get("folder");
 
   const [folders, setFolders] = useState(initialFolders);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isCreateFolderModalOpen, setIsCreateFolderModalOpen] = useState(false);
+  const [isCreateStudySetModalOpen, setIsCreateStudySetModalOpen] = useState(false);
   const [editingFolder, setEditingFolder] = useState<FolderData | null>(null);
 
   // Search and sort state
@@ -102,9 +106,17 @@ export function LibraryClientWrapper({
       updatedAt: string;
     }) => {
       setFolders((prev) => [...prev, { ...newFolder, studySetCount: 0 }]);
-      setIsCreateModalOpen(false);
+      setIsCreateFolderModalOpen(false);
     },
     []
+  );
+
+  const handleCreateStudySetSuccess = useCallback(
+    (studySet: StudySetData) => {
+      setIsCreateStudySetModalOpen(false);
+      router.push(`/dashboard/study-set/${studySet.publicId}`);
+    },
+    [router]
   );
 
   const handleEditSuccess = useCallback(
@@ -270,7 +282,7 @@ export function LibraryClientWrapper({
           <FoldersView
             folders={folders}
             onFolderClick={handleFolderClick}
-            onCreateClick={() => setIsCreateModalOpen(true)}
+            onCreateClick={() => setIsCreateFolderModalOpen(true)}
             onEditFolder={setEditingFolder}
             onDeleteFolder={(folder) => setEditingFolder(folder)}
           />
@@ -280,7 +292,16 @@ export function LibraryClientWrapper({
       {/* Study sets section */}
       <div>
         {!isViewingFolder && (
-          <h2 className="text-lg font-semibold mb-4">Study Sets</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold">Study Sets</h2>
+            <Button
+              size="sm"
+              onClick={() => setIsCreateStudySetModalOpen(true)}
+            >
+              <Plus className="h-4 w-4 mr-1" />
+              New Study Set
+            </Button>
+          </div>
         )}
 
         {/* Search and Sort controls */}
@@ -304,15 +325,23 @@ export function LibraryClientWrapper({
           <ClientStudySetList
             studySets={filteredAndSortedStudySets}
             isViewingFolder={isViewingFolder}
+            onCreateStudySet={() => setIsCreateStudySetModalOpen(true)}
           />
         )}
       </div>
 
       {/* Create Folder Modal */}
       <CreateFolderModal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
+        isOpen={isCreateFolderModalOpen}
+        onClose={() => setIsCreateFolderModalOpen(false)}
         onSuccess={handleCreateSuccess}
+      />
+
+      {/* Create Study Set Modal */}
+      <CreateStudySetModal
+        isOpen={isCreateStudySetModalOpen}
+        onClose={() => setIsCreateStudySetModalOpen(false)}
+        onSuccess={handleCreateStudySetSuccess}
       />
 
       {/* Edit Folder Modal */}
