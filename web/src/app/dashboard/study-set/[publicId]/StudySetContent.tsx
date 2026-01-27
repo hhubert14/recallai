@@ -7,6 +7,7 @@ import { VideoPlayer } from "./VideoPlayer";
 import { CollapsibleSummary } from "./CollapsibleSummary";
 import { TermsList } from "./TermsList";
 import { StudySession } from "./StudySession";
+import { AddItemModal } from "./AddItemModal";
 import type { TermWithMastery, StudyMode, StudySetProgress } from "./types";
 
 const MAX_QUESTIONS = 20;
@@ -21,6 +22,7 @@ interface StudySetContentProps {
     terms: TermWithMastery[];
     videoId: number | null;
     studySetId: number;
+    studySetPublicId: string;
 }
 
 export function StudySetContent({
@@ -32,12 +34,14 @@ export function StudySetContent({
     terms: initialTerms,
     videoId,
     studySetId,
+    studySetPublicId,
 }: StudySetContentProps) {
     const [terms, setTerms] = useState<TermWithMastery[]>(initialTerms);
     const [activeMode, setActiveMode] = useState<StudyMode | null>(null);
     const [isGeneratingQuestions, setIsGeneratingQuestions] = useState(false);
     const [isGeneratingFlashcards, setIsGeneratingFlashcards] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [isAddItemModalOpen, setIsAddItemModalOpen] = useState(false);
 
     const questionCount = terms.filter((t) => t.itemType === "question").length;
     const flashcardCount = terms.filter((t) => t.itemType === "flashcard").length;
@@ -140,6 +144,45 @@ export function StudySetContent({
         setActiveMode(null);
     };
 
+    const handleFlashcardAdded = (flashcard: {
+        id: number;
+        videoId: number | null;
+        userId: string;
+        front: string;
+        back: string;
+        createdAt: string;
+    }) => {
+        const newTerm: TermWithMastery = {
+            id: flashcard.id,
+            itemType: "flashcard",
+            flashcard: { id: flashcard.id, front: flashcard.front, back: flashcard.back },
+            masteryStatus: "not_started",
+        };
+        setTerms((prev) => [...prev, newTerm]);
+    };
+
+    const handleQuestionAdded = (question: {
+        id: number;
+        videoId: number | null;
+        questionText: string;
+        options: { id: number; optionText: string; isCorrect: boolean; explanation: string | null }[];
+        sourceQuote: string | null;
+        sourceTimestamp: number | null;
+    }) => {
+        const newTerm: TermWithMastery = {
+            id: question.id,
+            itemType: "question",
+            question: {
+                id: question.id,
+                questionText: question.questionText,
+                options: question.options,
+                sourceTimestamp: question.sourceTimestamp,
+            },
+            masteryStatus: "not_started",
+        };
+        setTerms((prev) => [...prev, newTerm]);
+    };
+
     // If a study session is active, show the study interface
     if (activeMode) {
         return (
@@ -193,60 +236,79 @@ export function StudySetContent({
             {/* Terms List */}
             <TermsList terms={terms} onStudy={handleStudy} progress={currentProgress} />
 
-            {/* Generate More Terms */}
-            {isVideoSourced && (canGenerateQuestions || canGenerateFlashcards) && (
-                <div className="border border-border rounded-lg bg-card p-6">
-                    <h3 className="text-sm font-medium text-foreground mb-4">
-                        Add more terms
-                    </h3>
-                    <div className="flex flex-wrap gap-3">
-                        {canGenerateFlashcards && (
-                            <Button
-                                variant="outline"
-                                onClick={handleGenerateFlashcards}
-                                disabled={isGeneratingFlashcards || isGeneratingQuestions}
-                            >
-                                {isGeneratingFlashcards ? (
-                                    <>
-                                        <Loader2 className="h-4 w-4 animate-spin" />
-                                        Generating...
-                                    </>
-                                ) : (
-                                    <>
-                                        <Plus className="h-4 w-4" />
-                                        Generate 5 Flashcards
-                                    </>
-                                )}
-                            </Button>
-                        )}
-                        {canGenerateQuestions && (
-                            <Button
-                                variant="outline"
-                                onClick={handleGenerateQuestions}
-                                disabled={isGeneratingQuestions || isGeneratingFlashcards}
-                            >
-                                {isGeneratingQuestions ? (
-                                    <>
-                                        <Loader2 className="h-4 w-4 animate-spin" />
-                                        Generating...
-                                    </>
-                                ) : (
-                                    <>
-                                        <Plus className="h-4 w-4" />
-                                        Generate 5 Questions
-                                    </>
-                                )}
-                            </Button>
-                        )}
-                    </div>
-                    {error && (
-                        <p className="text-sm text-destructive mt-3">{error}</p>
+            {/* Add More Terms */}
+            <div className="border border-border rounded-lg bg-card p-6">
+                <h3 className="text-sm font-medium text-foreground mb-4">
+                    Add more terms
+                </h3>
+                <div className="flex flex-wrap gap-3">
+                    {/* Manual Add Item - always available */}
+                    <Button
+                        variant="outline"
+                        onClick={() => setIsAddItemModalOpen(true)}
+                    >
+                        <Plus className="h-4 w-4" />
+                        Add Item
+                    </Button>
+
+                    {/* Generate buttons - only for video-sourced study sets */}
+                    {isVideoSourced && canGenerateFlashcards && (
+                        <Button
+                            variant="outline"
+                            onClick={handleGenerateFlashcards}
+                            disabled={isGeneratingFlashcards || isGeneratingQuestions}
+                        >
+                            {isGeneratingFlashcards ? (
+                                <>
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                    Generating...
+                                </>
+                            ) : (
+                                <>
+                                    <Plus className="h-4 w-4" />
+                                    Generate 5 Flashcards
+                                </>
+                            )}
+                        </Button>
                     )}
+                    {isVideoSourced && canGenerateQuestions && (
+                        <Button
+                            variant="outline"
+                            onClick={handleGenerateQuestions}
+                            disabled={isGeneratingQuestions || isGeneratingFlashcards}
+                        >
+                            {isGeneratingQuestions ? (
+                                <>
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                    Generating...
+                                </>
+                            ) : (
+                                <>
+                                    <Plus className="h-4 w-4" />
+                                    Generate 5 Questions
+                                </>
+                            )}
+                        </Button>
+                    )}
+                </div>
+                {error && (
+                    <p className="text-sm text-destructive mt-3">{error}</p>
+                )}
+                {isVideoSourced && (
                     <p className="text-xs text-muted-foreground mt-3">
                         {flashcardCount}/{MAX_FLASHCARDS} flashcards · {questionCount}/{MAX_QUESTIONS} questions
                     </p>
-                </div>
-            )}
+                )}
+            </div>
+
+            {/* Add Item Modal */}
+            <AddItemModal
+                isOpen={isAddItemModalOpen}
+                onClose={() => setIsAddItemModalOpen(false)}
+                onFlashcardAdded={handleFlashcardAdded}
+                onQuestionAdded={handleQuestionAdded}
+                studySetPublicId={studySetPublicId}
+            />
         </div>
     );
 }

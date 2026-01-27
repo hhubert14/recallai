@@ -2,7 +2,7 @@ import { MultipleChoiceQuestionEntity } from "@/clean-architecture/domain/entiti
 
 export interface IQuestionRepository {
     createMultipleChoiceQuestion(
-        videoId: number,
+        videoId: number | null,
         questionText: string,
         options: {
             optionText: string;

@@ -6,7 +6,7 @@ import { eq, asc, inArray, count } from "drizzle-orm";
 
 export class DrizzleQuestionRepository implements IQuestionRepository {
     async createMultipleChoiceQuestion(
-        videoId: number,
+        videoId: number | null,
         questionText: string,
         options: {
             optionText: string;

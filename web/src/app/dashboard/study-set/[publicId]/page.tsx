@@ -158,6 +158,7 @@ export default async function StudySetDetailPage({
                         terms={terms}
                         videoId={studySet.videoId}
                         studySetId={studySet.id}
+                        studySetPublicId={studySet.publicId}
                     />
                 </VideoPlayerProvider>
 

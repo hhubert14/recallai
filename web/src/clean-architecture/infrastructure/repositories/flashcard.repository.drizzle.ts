@@ -9,7 +9,7 @@ export class DrizzleFlashcardRepository implements IFlashcardRepository {
     constructor(private readonly db: PostgresJsDatabase = defaultDb) {}
 
     async createFlashcards(
-        flashcardsData: { videoId: number; userId: string; front: string; back: string }[]
+        flashcardsData: { videoId: number | null; userId: string; front: string; back: string }[]
     ): Promise<FlashcardEntity[]> {
         try {
             if (flashcardsData.length === 0) {
