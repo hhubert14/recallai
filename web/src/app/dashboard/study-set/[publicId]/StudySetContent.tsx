@@ -78,7 +78,8 @@ export function StudySetContent({
             } else {
                 setError(data.data?.error || "Failed to generate questions");
             }
-        } catch {
+        } catch (err) {
+            console.error("Failed to generate questions:", err);
             setError("Failed to generate questions. Please try again.");
         } finally {
             setIsGeneratingQuestions(false);
@@ -113,7 +114,8 @@ export function StudySetContent({
             } else {
                 setError(data.data?.error || "Failed to generate flashcards");
             }
-        } catch {
+        } catch (err) {
+            console.error("Failed to generate flashcards:", err);
             setError("Failed to generate flashcards. Please try again.");
         } finally {
             setIsGeneratingFlashcards(false);
