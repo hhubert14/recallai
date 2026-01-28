@@ -1,6 +1,8 @@
 name: ci
 run-name: ${{ github.actor }} is running CI checks
 on: [push]
+permissions:
+  contents: read
 
 jobs:
   web-tests:
