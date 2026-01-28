@@ -57,3 +57,6 @@ export const CHARACTER_LIMITS = {
     questionText: 1000,
     optionText: 500,
 } as const;
+
+// Maximum number of items (flashcards + questions) per study set
+export const STUDY_SET_ITEM_LIMIT = 500;

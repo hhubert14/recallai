@@ -71,6 +71,7 @@ describe("EditQuestionUseCase", () => {
             findReviewableItemByFlashcardId: vi.fn(),
             findReviewableItemById: vi.fn(),
             findReviewableItemsByIds: vi.fn(),
+            countItemsByStudySetId: vi.fn(),
         };
 
         useCase = new EditQuestionUseCase(

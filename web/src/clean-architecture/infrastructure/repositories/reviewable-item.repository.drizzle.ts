@@ -5,7 +5,7 @@ import {
   ReviewableItemEntity,
   ReviewableItemType,
 } from "@/clean-architecture/domain/entities/reviewable-item.entity";
-import { eq, and, inArray } from "drizzle-orm";
+import { eq, and, inArray, count } from "drizzle-orm";
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 function toReviewableItemEntity(
@@ -191,5 +191,13 @@ export class DrizzleReviewableItemRepository
       .where(inArray(reviewableItems.id, ids));
 
     return results.map(toReviewableItemEntity);
+  }
+
+  async countItemsByStudySetId(studySetId: number): Promise<number> {
+    const result = await this.db
+      .select({ count: count() })
+      .from(reviewableItems)
+      .where(eq(reviewableItems.studySetId, studySetId));
+    return result[0]?.count ?? 0;
   }
 }

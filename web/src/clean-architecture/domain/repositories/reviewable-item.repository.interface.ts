@@ -80,4 +80,10 @@ export interface IReviewableItemRepository {
    * Find reviewable items by their IDs.
    */
   findReviewableItemsByIds(ids: number[]): Promise<ReviewableItemEntity[]>;
+
+  /**
+   * Count the total number of reviewable items in a study set.
+   * Used for enforcing the per-study-set item limit.
+   */
+  countItemsByStudySetId(studySetId: number): Promise<number>;
 }

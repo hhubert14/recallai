@@ -327,6 +327,71 @@ describe("DrizzleReviewableItemRepository (integration)", () => {
     });
   });
 
+  describe("countItemsByStudySetId", () => {
+    it("returns correct count for study set with items", async () => {
+      // Create 3 items: 2 questions, 1 flashcard
+      await repository.createReviewableItemsForQuestionsBatch([
+        { userId: testUserId, questionId: testQuestionIds[0], videoId: testVideoId, studySetId: testStudySetId },
+        { userId: testUserId, questionId: testQuestionIds[1], videoId: testVideoId, studySetId: testStudySetId },
+      ]);
+      await repository.createReviewableItemsForFlashcardsBatch([
+        { userId: testUserId, flashcardId: testFlashcardIds[0], videoId: testVideoId, studySetId: testStudySetId },
+      ]);
+
+      const count = await repository.countItemsByStudySetId(testStudySetId);
+
+      expect(count).toBe(3);
+    });
+
+    it("returns 0 for study set with no items", async () => {
+      const count = await repository.countItemsByStudySetId(testStudySetId);
+      expect(count).toBe(0);
+    });
+
+    it("returns 0 for non-existent study set", async () => {
+      const count = await repository.countItemsByStudySetId(99999);
+      expect(count).toBe(0);
+    });
+
+    it("only counts items in specified study set", async () => {
+      // Create another study set
+      const [studySet2] = await ctx.db
+        .insert(studySets)
+        .values({
+          userId: testUserId,
+          name: "Study Set 2",
+          sourceType: "manual",
+          videoId: null,
+        })
+        .returning();
+
+      // Create flashcards for study set 2
+      const [flashcard3] = await ctx.db
+        .insert(flashcards)
+        .values({
+          videoId: null,
+          userId: testUserId,
+          front: "Front 3",
+          back: "Back 3",
+        })
+        .returning();
+
+      // Add items to both study sets
+      await repository.createReviewableItemsForQuestionsBatch([
+        { userId: testUserId, questionId: testQuestionIds[0], videoId: testVideoId, studySetId: testStudySetId },
+      ]);
+      await repository.createReviewableItemsForFlashcardsBatch([
+        { userId: testUserId, flashcardId: flashcard3.id, videoId: null, studySetId: studySet2.id },
+      ]);
+
+      const count1 = await repository.countItemsByStudySetId(testStudySetId);
+      const count2 = await repository.countItemsByStudySetId(studySet2.id);
+
+      expect(count1).toBe(1);
+      expect(count2).toBe(1);
+    });
+  });
+
   describe("studySetId constraint", () => {
     it("all created reviewable items have non-null studySetId", async () => {
       // Create items for both questions and flashcards

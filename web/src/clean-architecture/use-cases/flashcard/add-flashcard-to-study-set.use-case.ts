@@ -2,6 +2,7 @@ import { IStudySetRepository } from "@/clean-architecture/domain/repositories/st
 import { IFlashcardRepository } from "@/clean-architecture/domain/repositories/flashcard.repository.interface";
 import { IReviewableItemRepository } from "@/clean-architecture/domain/repositories/reviewable-item.repository.interface";
 import { FlashcardEntity } from "@/clean-architecture/domain/entities/flashcard.entity";
+import { STUDY_SET_ITEM_LIMIT } from "@/app/dashboard/study-set/[publicId]/types";
 
 export interface AddFlashcardInput {
     userId: string;
@@ -29,6 +30,12 @@ export class AddFlashcardToStudySetUseCase {
         // Verify ownership
         if (studySet.userId !== userId) {
             throw new Error("Not authorized to add items to this study set");
+        }
+
+        // Check item limit
+        const currentCount = await this.reviewableItemRepository.countItemsByStudySetId(studySet.id);
+        if (currentCount >= STUDY_SET_ITEM_LIMIT) {
+            throw new Error(`Study set has reached the maximum limit of ${STUDY_SET_ITEM_LIMIT} items`);
         }
 
         // Validate inputs

@@ -6,6 +6,7 @@ import { IReviewableItemRepository } from "@/clean-architecture/domain/repositor
 import { StudySetEntity } from "@/clean-architecture/domain/entities/study-set.entity";
 import { FlashcardEntity } from "@/clean-architecture/domain/entities/flashcard.entity";
 import { ReviewableItemEntity } from "@/clean-architecture/domain/entities/reviewable-item.entity";
+import { STUDY_SET_ITEM_LIMIT } from "@/app/dashboard/study-set/[publicId]/types";
 
 describe("AddFlashcardToStudySetUseCase", () => {
     let useCase: AddFlashcardToStudySetUseCase;
@@ -47,6 +48,7 @@ describe("AddFlashcardToStudySetUseCase", () => {
             findReviewableItemByFlashcardId: vi.fn(),
             findReviewableItemById: vi.fn(),
             findReviewableItemsByIds: vi.fn(),
+            countItemsByStudySetId: vi.fn(),
         };
 
         useCase = new AddFlashcardToStudySetUseCase(
@@ -90,6 +92,7 @@ describe("AddFlashcardToStudySetUseCase", () => {
         );
 
         vi.mocked(mockStudySetRepository.findStudySetByPublicId).mockResolvedValue(manualStudySet);
+        vi.mocked(mockReviewableItemRepository.countItemsByStudySetId).mockResolvedValue(0);
         vi.mocked(mockFlashcardRepository.createFlashcards).mockResolvedValue([createdFlashcard]);
         vi.mocked(mockReviewableItemRepository.createReviewableItemsForFlashcardsBatch).mockResolvedValue([reviewableItem]);
 
@@ -153,6 +156,7 @@ describe("AddFlashcardToStudySetUseCase", () => {
         );
 
         vi.mocked(mockStudySetRepository.findStudySetByPublicId).mockResolvedValue(videoStudySet);
+        vi.mocked(mockReviewableItemRepository.countItemsByStudySetId).mockResolvedValue(0);
         vi.mocked(mockFlashcardRepository.createFlashcards).mockResolvedValue([createdFlashcard]);
         vi.mocked(mockReviewableItemRepository.createReviewableItemsForFlashcardsBatch).mockResolvedValue([reviewableItem]);
 
@@ -238,6 +242,7 @@ describe("AddFlashcardToStudySetUseCase", () => {
         );
 
         vi.mocked(mockStudySetRepository.findStudySetByPublicId).mockResolvedValue(studySet);
+        vi.mocked(mockReviewableItemRepository.countItemsByStudySetId).mockResolvedValue(0);
 
         await expect(
             useCase.execute({
@@ -265,6 +270,7 @@ describe("AddFlashcardToStudySetUseCase", () => {
         );
 
         vi.mocked(mockStudySetRepository.findStudySetByPublicId).mockResolvedValue(studySet);
+        vi.mocked(mockReviewableItemRepository.countItemsByStudySetId).mockResolvedValue(0);
 
         await expect(
             useCase.execute({
@@ -292,6 +298,7 @@ describe("AddFlashcardToStudySetUseCase", () => {
         );
 
         vi.mocked(mockStudySetRepository.findStudySetByPublicId).mockResolvedValue(studySet);
+        vi.mocked(mockReviewableItemRepository.countItemsByStudySetId).mockResolvedValue(0);
 
         const longFront = "a".repeat(501);
 
@@ -321,6 +328,7 @@ describe("AddFlashcardToStudySetUseCase", () => {
         );
 
         vi.mocked(mockStudySetRepository.findStudySetByPublicId).mockResolvedValue(studySet);
+        vi.mocked(mockReviewableItemRepository.countItemsByStudySetId).mockResolvedValue(0);
 
         const longBack = "a".repeat(2001);
 
@@ -334,5 +342,82 @@ describe("AddFlashcardToStudySetUseCase", () => {
         ).rejects.toThrow("Back of flashcard cannot exceed 2000 characters");
 
         expect(mockFlashcardRepository.createFlashcards).not.toHaveBeenCalled();
+    });
+
+    it("throws error when study set has reached item limit", async () => {
+        const studySet = new StudySetEntity(
+            1,
+            studySetPublicId,
+            userId,
+            "My Set",
+            null,
+            "manual",
+            null,
+            "2025-01-20T10:00:00Z",
+            "2025-01-20T10:00:00Z"
+        );
+
+        vi.mocked(mockStudySetRepository.findStudySetByPublicId).mockResolvedValue(studySet);
+        vi.mocked(mockReviewableItemRepository.countItemsByStudySetId).mockResolvedValue(STUDY_SET_ITEM_LIMIT);
+
+        await expect(
+            useCase.execute({
+                userId,
+                studySetPublicId,
+                front: "Question",
+                back: "Answer",
+            })
+        ).rejects.toThrow(`Study set has reached the maximum limit of ${STUDY_SET_ITEM_LIMIT} items`);
+
+        expect(mockFlashcardRepository.createFlashcards).not.toHaveBeenCalled();
+    });
+
+    it("allows adding flashcard when under item limit", async () => {
+        const studySet = new StudySetEntity(
+            1,
+            studySetPublicId,
+            userId,
+            "My Set",
+            null,
+            "manual",
+            null,
+            "2025-01-20T10:00:00Z",
+            "2025-01-20T10:00:00Z"
+        );
+
+        const createdFlashcard = new FlashcardEntity(
+            100,
+            null,
+            userId,
+            "What is TDD?",
+            "Test-Driven Development",
+            "2025-01-20T10:00:00Z"
+        );
+
+        const reviewableItem = new ReviewableItemEntity(
+            200,
+            userId,
+            "flashcard",
+            null,
+            100,
+            null,
+            1,
+            "2025-01-20T10:00:00Z"
+        );
+
+        vi.mocked(mockStudySetRepository.findStudySetByPublicId).mockResolvedValue(studySet);
+        vi.mocked(mockReviewableItemRepository.countItemsByStudySetId).mockResolvedValue(STUDY_SET_ITEM_LIMIT - 1);
+        vi.mocked(mockFlashcardRepository.createFlashcards).mockResolvedValue([createdFlashcard]);
+        vi.mocked(mockReviewableItemRepository.createReviewableItemsForFlashcardsBatch).mockResolvedValue([reviewableItem]);
+
+        const result = await useCase.execute({
+            userId,
+            studySetPublicId,
+            front: "What is TDD?",
+            back: "Test-Driven Development",
+        });
+
+        expect(result).toEqual(createdFlashcard);
+        expect(mockFlashcardRepository.createFlashcards).toHaveBeenCalled();
     });
 });

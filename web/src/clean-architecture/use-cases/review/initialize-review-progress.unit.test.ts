@@ -38,6 +38,7 @@ describe("InitializeReviewProgressUseCase", () => {
       findReviewableItemByFlashcardId: vi.fn(),
       findReviewableItemById: vi.fn(),
       findReviewableItemsByIds: vi.fn(),
+            countItemsByStudySetId: vi.fn(),
     };
     useCase = new InitializeReviewProgressUseCase(mockProgressRepo, mockItemRepo);
   });

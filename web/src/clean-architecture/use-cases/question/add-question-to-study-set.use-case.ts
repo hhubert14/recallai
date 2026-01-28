@@ -2,6 +2,7 @@ import { IStudySetRepository } from "@/clean-architecture/domain/repositories/st
 import { IQuestionRepository } from "@/clean-architecture/domain/repositories/question.repository.interface";
 import { IReviewableItemRepository } from "@/clean-architecture/domain/repositories/reviewable-item.repository.interface";
 import { MultipleChoiceQuestionEntity } from "@/clean-architecture/domain/entities/question.entity";
+import { STUDY_SET_ITEM_LIMIT } from "@/app/dashboard/study-set/[publicId]/types";
 
 export interface AddQuestionOption {
     optionText: string;
@@ -35,6 +36,12 @@ export class AddQuestionToStudySetUseCase {
         // Verify ownership
         if (studySet.userId !== userId) {
             throw new Error("Not authorized to add items to this study set");
+        }
+
+        // Check item limit
+        const currentCount = await this.reviewableItemRepository.countItemsByStudySetId(studySet.id);
+        if (currentCount >= STUDY_SET_ITEM_LIMIT) {
+            throw new Error(`Study set has reached the maximum limit of ${STUDY_SET_ITEM_LIMIT} items`);
         }
 
         // Validate question text

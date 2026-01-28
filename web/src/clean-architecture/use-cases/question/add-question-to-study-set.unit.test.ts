@@ -6,6 +6,7 @@ import { IReviewableItemRepository } from "@/clean-architecture/domain/repositor
 import { StudySetEntity } from "@/clean-architecture/domain/entities/study-set.entity";
 import { MultipleChoiceQuestionEntity, MultipleChoiceOption } from "@/clean-architecture/domain/entities/question.entity";
 import { ReviewableItemEntity } from "@/clean-architecture/domain/entities/reviewable-item.entity";
+import { STUDY_SET_ITEM_LIMIT } from "@/app/dashboard/study-set/[publicId]/types";
 
 describe("AddQuestionToStudySetUseCase", () => {
     let useCase: AddQuestionToStudySetUseCase;
@@ -54,6 +55,7 @@ describe("AddQuestionToStudySetUseCase", () => {
             findReviewableItemByFlashcardId: vi.fn(),
             findReviewableItemById: vi.fn(),
             findReviewableItemsByIds: vi.fn(),
+            countItemsByStudySetId: vi.fn(),
         };
 
         useCase = new AddQuestionToStudySetUseCase(
@@ -102,6 +104,7 @@ describe("AddQuestionToStudySetUseCase", () => {
         );
 
         vi.mocked(mockStudySetRepository.findStudySetByPublicId).mockResolvedValue(manualStudySet);
+        vi.mocked(mockReviewableItemRepository.countItemsByStudySetId).mockResolvedValue(0);
         vi.mocked(mockQuestionRepository.createMultipleChoiceQuestion).mockResolvedValue(createdQuestion);
         vi.mocked(mockReviewableItemRepository.createReviewableItemsForQuestionsBatch).mockResolvedValue([reviewableItem]);
 
@@ -169,6 +172,7 @@ describe("AddQuestionToStudySetUseCase", () => {
         );
 
         vi.mocked(mockStudySetRepository.findStudySetByPublicId).mockResolvedValue(videoStudySet);
+        vi.mocked(mockReviewableItemRepository.countItemsByStudySetId).mockResolvedValue(0);
         vi.mocked(mockQuestionRepository.createMultipleChoiceQuestion).mockResolvedValue(createdQuestion);
         vi.mocked(mockReviewableItemRepository.createReviewableItemsForQuestionsBatch).mockResolvedValue([reviewableItem]);
 
@@ -253,6 +257,7 @@ describe("AddQuestionToStudySetUseCase", () => {
         );
 
         vi.mocked(mockStudySetRepository.findStudySetByPublicId).mockResolvedValue(studySet);
+        vi.mocked(mockReviewableItemRepository.countItemsByStudySetId).mockResolvedValue(0);
 
         await expect(
             useCase.execute({
@@ -280,6 +285,7 @@ describe("AddQuestionToStudySetUseCase", () => {
         );
 
         vi.mocked(mockStudySetRepository.findStudySetByPublicId).mockResolvedValue(studySet);
+        vi.mocked(mockReviewableItemRepository.countItemsByStudySetId).mockResolvedValue(0);
 
         await expect(
             useCase.execute({
@@ -311,6 +317,7 @@ describe("AddQuestionToStudySetUseCase", () => {
         );
 
         vi.mocked(mockStudySetRepository.findStudySetByPublicId).mockResolvedValue(studySet);
+        vi.mocked(mockReviewableItemRepository.countItemsByStudySetId).mockResolvedValue(0);
 
         await expect(
             useCase.execute({
@@ -343,6 +350,7 @@ describe("AddQuestionToStudySetUseCase", () => {
         );
 
         vi.mocked(mockStudySetRepository.findStudySetByPublicId).mockResolvedValue(studySet);
+        vi.mocked(mockReviewableItemRepository.countItemsByStudySetId).mockResolvedValue(0);
 
         await expect(
             useCase.execute({
@@ -375,6 +383,7 @@ describe("AddQuestionToStudySetUseCase", () => {
         );
 
         vi.mocked(mockStudySetRepository.findStudySetByPublicId).mockResolvedValue(studySet);
+        vi.mocked(mockReviewableItemRepository.countItemsByStudySetId).mockResolvedValue(0);
 
         await expect(
             useCase.execute({
@@ -407,6 +416,7 @@ describe("AddQuestionToStudySetUseCase", () => {
         );
 
         vi.mocked(mockStudySetRepository.findStudySetByPublicId).mockResolvedValue(studySet);
+        vi.mocked(mockReviewableItemRepository.countItemsByStudySetId).mockResolvedValue(0);
 
         const longQuestionText = "a".repeat(1001);
 
@@ -436,6 +446,7 @@ describe("AddQuestionToStudySetUseCase", () => {
         );
 
         vi.mocked(mockStudySetRepository.findStudySetByPublicId).mockResolvedValue(studySet);
+        vi.mocked(mockReviewableItemRepository.countItemsByStudySetId).mockResolvedValue(0);
 
         const longOptionText = "a".repeat(501);
 
@@ -454,5 +465,87 @@ describe("AddQuestionToStudySetUseCase", () => {
         ).rejects.toThrow("Option text cannot exceed 500 characters");
 
         expect(mockQuestionRepository.createMultipleChoiceQuestion).not.toHaveBeenCalled();
+    });
+
+    it("throws error when study set has reached item limit", async () => {
+        const studySet = new StudySetEntity(
+            1,
+            studySetPublicId,
+            userId,
+            "My Set",
+            null,
+            "manual",
+            null,
+            "2025-01-20T10:00:00Z",
+            "2025-01-20T10:00:00Z"
+        );
+
+        vi.mocked(mockStudySetRepository.findStudySetByPublicId).mockResolvedValue(studySet);
+        vi.mocked(mockReviewableItemRepository.countItemsByStudySetId).mockResolvedValue(STUDY_SET_ITEM_LIMIT);
+
+        await expect(
+            useCase.execute({
+                userId,
+                studySetPublicId,
+                questionText: "Question?",
+                options: validOptions,
+            })
+        ).rejects.toThrow(`Study set has reached the maximum limit of ${STUDY_SET_ITEM_LIMIT} items`);
+
+        expect(mockQuestionRepository.createMultipleChoiceQuestion).not.toHaveBeenCalled();
+    });
+
+    it("allows adding question when under item limit", async () => {
+        const studySet = new StudySetEntity(
+            1,
+            studySetPublicId,
+            userId,
+            "My Set",
+            null,
+            "manual",
+            null,
+            "2025-01-20T10:00:00Z",
+            "2025-01-20T10:00:00Z"
+        );
+
+        const createdQuestion = new MultipleChoiceQuestionEntity(
+            100,
+            null,
+            "What is TDD?",
+            [
+                new MultipleChoiceOption(1, "Option A", true, "Correct because..."),
+                new MultipleChoiceOption(2, "Option B", false, null),
+                new MultipleChoiceOption(3, "Option C", false, null),
+                new MultipleChoiceOption(4, "Option D", false, null),
+            ],
+            null,
+            null
+        );
+
+        const reviewableItem = new ReviewableItemEntity(
+            200,
+            userId,
+            "question",
+            100,
+            null,
+            null,
+            1,
+            "2025-01-20T10:00:00Z"
+        );
+
+        vi.mocked(mockStudySetRepository.findStudySetByPublicId).mockResolvedValue(studySet);
+        vi.mocked(mockReviewableItemRepository.countItemsByStudySetId).mockResolvedValue(STUDY_SET_ITEM_LIMIT - 1);
+        vi.mocked(mockQuestionRepository.createMultipleChoiceQuestion).mockResolvedValue(createdQuestion);
+        vi.mocked(mockReviewableItemRepository.createReviewableItemsForQuestionsBatch).mockResolvedValue([reviewableItem]);
+
+        const result = await useCase.execute({
+            userId,
+            studySetPublicId,
+            questionText: "What is TDD?",
+            options: validOptions,
+        });
+
+        expect(result).toEqual(createdQuestion);
+        expect(mockQuestionRepository.createMultipleChoiceQuestion).toHaveBeenCalled();
     });
 });

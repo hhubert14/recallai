@@ -77,7 +77,8 @@ export async function POST(
         if (
             message.includes("cannot be empty") ||
             message.includes("must have exactly") ||
-            message.includes("must be non-empty")
+            message.includes("must be non-empty") ||
+            message.includes("maximum limit")
         ) {
             return jsendFail({ error: message }, 400);
         }
