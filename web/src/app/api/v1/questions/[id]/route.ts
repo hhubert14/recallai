@@ -128,9 +128,6 @@ export async function DELETE(
         if (message === "Question not found") {
             return jsendFail({ error: message }, 404);
         }
-        if (message === "Not authorized to delete this question") {
-            return jsendFail({ error: message }, 403);
-        }
 
         return jsendError(message);
     }

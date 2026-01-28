@@ -489,24 +489,6 @@ describe("DELETE /api/v1/questions/[id]", () => {
         expect(data.data.error).toBe("Question not found");
     });
 
-    it("returns 403 when user not authorized", async () => {
-        vi.mocked(getAuthenticatedUser).mockResolvedValue(mockAuthenticatedUser("user-123"));
-
-        const mockExecute = vi.fn().mockRejectedValue(new Error("Not authorized to delete this question"));
-        vi.mocked(DeleteQuestionUseCase).mockImplementation(() => ({
-            execute: mockExecute,
-        }) as unknown as DeleteQuestionUseCase);
-
-        const request = createDeleteRequest();
-
-        const response = await DELETE(request, { params: Promise.resolve({ id: questionId }) });
-        const data = await response.json();
-
-        expect(response.status).toBe(403);
-        expect(data.status).toBe("fail");
-        expect(data.data.error).toBe("Not authorized to delete this question");
-    });
-
     it("returns 500 for unexpected errors", async () => {
         vi.mocked(getAuthenticatedUser).mockResolvedValue(mockAuthenticatedUser("user-123"));
 
