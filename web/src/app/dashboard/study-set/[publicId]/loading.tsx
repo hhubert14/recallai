@@ -24,7 +24,7 @@ export default function Loading() {
                 </div>
             </header>
 
-            <main className="flex-1 container py-6 px-6 md:px-12 lg:px-16 max-w-5xl mx-auto">
+            <main className="flex-1 container py-6 px-10 md:px-20 lg:px-24 max-w-5xl mx-auto">
                 <div className="space-y-6">
                     {/* Title section */}
                     <div className="mb-6">

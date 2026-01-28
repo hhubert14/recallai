@@ -291,8 +291,12 @@ export function AIGenerateModal({
     };
 
     const handleAcceptAll = async () => {
+        // Filter out suggestions that are already being processed
+        const suggestionsToAccept = suggestions.filter(
+            (s) => !acceptingIds.has(s.tempId)
+        );
         // Accept all in parallel for better UX
-        await Promise.all(suggestions.map((suggestion) => handleAccept(suggestion)));
+        await Promise.all(suggestionsToAccept.map((suggestion) => handleAccept(suggestion)));
     };
 
     const handleRejectAll = () => {

@@ -196,6 +196,7 @@ export function TermCard({
                                     {option.isCorrect ? "Correct" : "Wrong"}
                                 </button>
                                 <Input
+                                    aria-label={`Option ${index + 1} text`}
                                     value={option.optionText}
                                     onChange={(e) => {
                                         const newOptions = [...currentOptions];

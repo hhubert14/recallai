@@ -159,8 +159,8 @@ export function StudySetContent({
                                     ...term,
                                     flashcard: {
                                         ...term.flashcard,
-                                        front: editedContent.front || term.flashcard.front,
-                                        back: editedContent.back || term.flashcard.back,
+                                        front: editedContent.front ?? term.flashcard.front,
+                                        back: editedContent.back ?? term.flashcard.back,
                                     },
                                 };
                             }
@@ -197,8 +197,8 @@ export function StudySetContent({
                                     ...term,
                                     question: {
                                         ...term.question,
-                                        questionText: editedContent.questionText || term.question.questionText,
-                                        options: (editedContent.options || term.question.options) as QuestionOption[],
+                                        questionText: editedContent.questionText ?? term.question.questionText,
+                                        options: (editedContent.options ?? term.question.options) as QuestionOption[],
                                     },
                                 };
                             }
