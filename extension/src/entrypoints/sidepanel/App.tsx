@@ -118,12 +118,7 @@ function Content({
   }
 
   if (status === 'not_processed') {
-    return (
-      <ProcessVideoPrompt
-        onProcess={sidePanel.processVideo}
-        isProcessing={false}
-      />
-    );
+    return <ProcessVideoPrompt onProcess={sidePanel.processVideo} />;
   }
 
   // Ready state - show content

@@ -42,13 +42,9 @@ export function ErrorState({
 
 type ProcessVideoPromptProps = {
   onProcess: () => void;
-  isProcessing: boolean;
 };
 
-export function ProcessVideoPrompt({
-  onProcess,
-  isProcessing,
-}: ProcessVideoPromptProps) {
+export function ProcessVideoPrompt({ onProcess }: ProcessVideoPromptProps) {
   return (
     <div className="flex flex-col items-center justify-center py-16 px-4">
       <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
@@ -67,20 +63,10 @@ export function ProcessVideoPrompt({
       </p>
       <button
         onClick={onProcess}
-        disabled={isProcessing}
-        className="flex items-center justify-center gap-2 px-6 py-2.5 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="flex items-center justify-center gap-2 px-6 py-2.5 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors"
       >
-        {isProcessing ? (
-          <>
-            <LoaderIcon className="w-4 h-4 animate-spin" />
-            Processing...
-          </>
-        ) : (
-          <>
-            <PlayCircleIcon className="w-4 h-4" />
-            Process Video
-          </>
-        )}
+        <PlayCircleIcon className="w-4 h-4" />
+        Process Video
       </button>
     </div>
   );

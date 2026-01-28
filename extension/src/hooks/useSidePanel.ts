@@ -73,7 +73,11 @@ export function useSidePanel() {
     setIsLoadingContent(true);
     setError(null);
     const result = await getStudySetByVideoUrl(videoUrl);
-    setContent(result);
+    if (result === null) {
+      setError('Failed to fetch content');
+    } else {
+      setContent(result);
+    }
     setIsLoadingContent(false);
   }, [videoUrl]);
 
