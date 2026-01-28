@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Plus, Loader2 } from "lucide-react";
+import { Plus, Loader2, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { VideoPlayer } from "./VideoPlayer";
 import { CollapsibleSummary } from "./CollapsibleSummary";
@@ -10,7 +10,9 @@ import { StudySession } from "./StudySession";
 import { AddItemModal } from "./AddItemModal";
 import { EditFlashcardModal } from "./EditFlashcardModal";
 import { EditQuestionModal } from "./EditQuestionModal";
+import { AIGenerateModal } from "./AIGenerateModal";
 import type { TermWithMastery, StudyMode, StudySetProgress, TermFlashcard, TermQuestion, QuestionOption } from "./types";
+import type { Suggestion } from "@/clean-architecture/domain/services/suggestion-generator.interface";
 
 const MAX_QUESTIONS = 20;
 const MAX_FLASHCARDS = 20;
@@ -44,6 +46,8 @@ export function StudySetContent({
     const [isGeneratingFlashcards, setIsGeneratingFlashcards] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [isAddItemModalOpen, setIsAddItemModalOpen] = useState(false);
+    const [isAIGenerateModalOpen, setIsAIGenerateModalOpen] = useState(false);
+    const [pendingSuggestions, setPendingSuggestions] = useState<Suggestion[]>([]);
     const [editingFlashcard, setEditingFlashcard] = useState<TermFlashcard | null>(null);
     const [editingQuestion, setEditingQuestion] = useState<TermQuestion | null>(null);
 
@@ -240,6 +244,12 @@ export function StudySetContent({
         );
     };
 
+    const handleSuggestionsGenerated = (suggestions: Suggestion[]) => {
+        setPendingSuggestions(suggestions);
+        // TODO: Issue #140 will implement the review UI for these suggestions
+        // For now, just store them in state
+    };
+
     // If a study session is active, show the study interface
     if (activeMode) {
         return (
@@ -314,7 +324,16 @@ export function StudySetContent({
                         Add Item
                     </Button>
 
-                    {/* Generate buttons - only for video-sourced study sets */}
+                    {/* Generate with AI - available for all study sets */}
+                    <Button
+                        variant="outline"
+                        onClick={() => setIsAIGenerateModalOpen(true)}
+                    >
+                        <Sparkles className="h-4 w-4" />
+                        Generate with AI
+                    </Button>
+
+                    {/* Legacy generate buttons - only for video-sourced study sets */}
                     {isVideoSourced && canGenerateFlashcards && (
                         <Button
                             variant="outline"
@@ -371,6 +390,15 @@ export function StudySetContent({
                 onFlashcardAdded={handleFlashcardAdded}
                 onQuestionAdded={handleQuestionAdded}
                 studySetPublicId={studySetPublicId}
+            />
+
+            {/* AI Generate Modal */}
+            <AIGenerateModal
+                isOpen={isAIGenerateModalOpen}
+                onClose={() => setIsAIGenerateModalOpen(false)}
+                onSuggestionsGenerated={handleSuggestionsGenerated}
+                studySetPublicId={studySetPublicId}
+                isVideoSourced={isVideoSourced}
             />
 
             {/* Edit Flashcard Modal */}
