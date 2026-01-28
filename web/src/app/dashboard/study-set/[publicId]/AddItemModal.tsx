@@ -11,9 +11,20 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { CHARACTER_LIMITS } from "./types";
 
 type ItemType = "flashcard" | "question";
+
+function CharacterCount({ current, max }: { current: number; max: number }) {
+    const isOverLimit = current > max;
+    return (
+        <span className={`text-xs ${isOverLimit ? "text-destructive font-medium" : "text-muted-foreground"}`}>
+            {current}/{max}
+        </span>
+    );
+}
 
 interface FlashcardData {
     id: number;
@@ -190,22 +201,28 @@ export function AddItemModal({
 
                 {/* Tab buttons */}
                 <div className="flex gap-2 border-b border-border pb-2">
-                    <Button
+                    <button
                         type="button"
-                        variant={activeTab === "flashcard" ? "default" : "ghost"}
-                        size="sm"
                         onClick={() => setActiveTab("flashcard")}
+                        className={`text-sm px-3 py-1.5 rounded-md border transition-colors ${
+                            activeTab === "flashcard"
+                                ? "border-primary bg-primary text-primary-foreground"
+                                : "border-border bg-background hover:bg-muted text-foreground"
+                        }`}
                     >
                         Flashcard
-                    </Button>
-                    <Button
+                    </button>
+                    <button
                         type="button"
-                        variant={activeTab === "question" ? "default" : "ghost"}
-                        size="sm"
                         onClick={() => setActiveTab("question")}
+                        className={`text-sm px-3 py-1.5 rounded-md border transition-colors ${
+                            activeTab === "question"
+                                ? "border-primary bg-primary text-primary-foreground"
+                                : "border-border bg-background hover:bg-muted text-foreground"
+                        }`}
                     >
                         Question
-                    </Button>
+                    </button>
                 </div>
 
                 <form onSubmit={handleSubmit}>
@@ -213,7 +230,10 @@ export function AddItemModal({
                         {activeTab === "flashcard" ? (
                             <>
                                 <div className="space-y-2">
-                                    <Label htmlFor="flashcard-front">Front</Label>
+                                    <div className="flex items-center justify-between">
+                                        <Label htmlFor="flashcard-front">Front</Label>
+                                        <CharacterCount current={front.length} max={CHARACTER_LIMITS.flashcardFront} />
+                                    </div>
                                     <Input
                                         id="flashcard-front"
                                         value={front}
@@ -224,118 +244,134 @@ export function AddItemModal({
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="flashcard-back">Back</Label>
-                                    <Input
+                                    <div className="flex items-center justify-between">
+                                        <Label htmlFor="flashcard-back">Back</Label>
+                                        <CharacterCount current={back.length} max={CHARACTER_LIMITS.flashcardBack} />
+                                    </div>
+                                    <Textarea
                                         id="flashcard-back"
                                         value={back}
                                         onChange={(e) => setBack(e.target.value)}
                                         placeholder="Answer or definition"
                                         disabled={isLoading}
+                                        rows={3}
                                     />
                                 </div>
                             </>
                         ) : (
                             <>
                                 <div className="space-y-2">
-                                    <Label htmlFor="question-text">Question Text</Label>
-                                    <Input
+                                    <div className="flex items-center justify-between">
+                                        <Label htmlFor="question-text">Question Text</Label>
+                                        <CharacterCount current={questionText.length} max={CHARACTER_LIMITS.questionText} />
+                                    </div>
+                                    <Textarea
                                         id="question-text"
                                         value={questionText}
                                         onChange={(e) => setQuestionText(e.target.value)}
                                         placeholder="Enter your question"
                                         disabled={isLoading}
+                                        rows={2}
                                     />
                                 </div>
 
                                 <div className="space-y-3">
-                                    <p className="text-sm font-medium">Options (select correct answer)</p>
+                                    <Label>Options (click badge to change correct answer)</Label>
 
-                                    <div className="space-y-2">
-                                        <div className="flex items-center gap-2">
-                                            <input
-                                                type="radio"
-                                                id="correct-a"
-                                                name="correctOption"
-                                                checked={correctOption === "A"}
-                                                onChange={() => setCorrectOption("A")}
-                                                disabled={isLoading}
-                                                aria-label="Option A is correct"
-                                            />
-                                            <Label htmlFor="option-a" className="flex-1">Option A</Label>
-                                        </div>
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => setCorrectOption("A")}
+                                            disabled={isLoading}
+                                            className={`text-xs px-1.5 py-0.5 rounded cursor-pointer transition-colors ${
+                                                correctOption === "A"
+                                                    ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                                                    : "bg-muted text-muted-foreground hover:bg-muted/80"
+                                            }`}
+                                        >
+                                            {correctOption === "A" ? "Correct" : "Wrong"}
+                                        </button>
                                         <Input
                                             id="option-a"
                                             value={optionA}
                                             onChange={(e) => setOptionA(e.target.value)}
                                             placeholder="Option A"
                                             disabled={isLoading}
+                                            className="flex-1"
                                         />
+                                        <CharacterCount current={optionA.length} max={CHARACTER_LIMITS.optionText} />
                                     </div>
 
-                                    <div className="space-y-2">
-                                        <div className="flex items-center gap-2">
-                                            <input
-                                                type="radio"
-                                                id="correct-b"
-                                                name="correctOption"
-                                                checked={correctOption === "B"}
-                                                onChange={() => setCorrectOption("B")}
-                                                disabled={isLoading}
-                                                aria-label="Option B is correct"
-                                            />
-                                            <Label htmlFor="option-b" className="flex-1">Option B</Label>
-                                        </div>
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => setCorrectOption("B")}
+                                            disabled={isLoading}
+                                            className={`text-xs px-1.5 py-0.5 rounded cursor-pointer transition-colors ${
+                                                correctOption === "B"
+                                                    ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                                                    : "bg-muted text-muted-foreground hover:bg-muted/80"
+                                            }`}
+                                        >
+                                            {correctOption === "B" ? "Correct" : "Wrong"}
+                                        </button>
                                         <Input
                                             id="option-b"
                                             value={optionB}
                                             onChange={(e) => setOptionB(e.target.value)}
                                             placeholder="Option B"
                                             disabled={isLoading}
+                                            className="flex-1"
                                         />
+                                        <CharacterCount current={optionB.length} max={CHARACTER_LIMITS.optionText} />
                                     </div>
 
-                                    <div className="space-y-2">
-                                        <div className="flex items-center gap-2">
-                                            <input
-                                                type="radio"
-                                                id="correct-c"
-                                                name="correctOption"
-                                                checked={correctOption === "C"}
-                                                onChange={() => setCorrectOption("C")}
-                                                disabled={isLoading}
-                                                aria-label="Option C is correct"
-                                            />
-                                            <Label htmlFor="option-c" className="flex-1">Option C</Label>
-                                        </div>
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => setCorrectOption("C")}
+                                            disabled={isLoading}
+                                            className={`text-xs px-1.5 py-0.5 rounded cursor-pointer transition-colors ${
+                                                correctOption === "C"
+                                                    ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                                                    : "bg-muted text-muted-foreground hover:bg-muted/80"
+                                            }`}
+                                        >
+                                            {correctOption === "C" ? "Correct" : "Wrong"}
+                                        </button>
                                         <Input
                                             id="option-c"
                                             value={optionC}
                                             onChange={(e) => setOptionC(e.target.value)}
                                             placeholder="Option C"
                                             disabled={isLoading}
+                                            className="flex-1"
                                         />
+                                        <CharacterCount current={optionC.length} max={CHARACTER_LIMITS.optionText} />
                                     </div>
 
-                                    <div className="space-y-2">
-                                        <div className="flex items-center gap-2">
-                                            <input
-                                                type="radio"
-                                                id="correct-d"
-                                                name="correctOption"
-                                                checked={correctOption === "D"}
-                                                onChange={() => setCorrectOption("D")}
-                                                disabled={isLoading}
-                                                aria-label="Option D is correct"
-                                            />
-                                            <Label htmlFor="option-d" className="flex-1">Option D</Label>
-                                        </div>
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => setCorrectOption("D")}
+                                            disabled={isLoading}
+                                            className={`text-xs px-1.5 py-0.5 rounded cursor-pointer transition-colors ${
+                                                correctOption === "D"
+                                                    ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                                                    : "bg-muted text-muted-foreground hover:bg-muted/80"
+                                            }`}
+                                        >
+                                            {correctOption === "D" ? "Correct" : "Wrong"}
+                                        </button>
                                         <Input
                                             id="option-d"
                                             value={optionD}
                                             onChange={(e) => setOptionD(e.target.value)}
                                             placeholder="Option D"
                                             disabled={isLoading}
+                                            className="flex-1"
                                         />
+                                        <CharacterCount current={optionD.length} max={CHARACTER_LIMITS.optionText} />
                                     </div>
                                 </div>
                             </>

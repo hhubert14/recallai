@@ -21,6 +21,7 @@ import type {
     QuestionSuggestion,
     QuestionOptionSuggestion,
 } from "@/clean-architecture/domain/services/suggestion-generator.interface";
+import { CHARACTER_LIMITS } from "./types";
 
 // Type for edited suggestion content - either flashcard or question fields
 type EditedSuggestionContent = {
@@ -29,6 +30,15 @@ type EditedSuggestionContent = {
     questionText?: string;
     options?: QuestionOptionSuggestion[];
 };
+
+function CharacterCount({ current, max }: { current: number; max: number }) {
+    const isOverLimit = current > max;
+    return (
+        <span className={`text-xs ${isOverLimit ? "text-destructive font-medium" : "text-muted-foreground"}`}>
+            {current}/{max}
+        </span>
+    );
+}
 
 const DEFAULT_COUNT = 5;
 const MIN_COUNT = 1;
@@ -578,7 +588,10 @@ function FlashcardSuggestionCard({
                     Flashcard
                 </div>
                 <div className="space-y-2">
-                    <Label htmlFor="edit-front">Front</Label>
+                    <div className="flex items-center justify-between">
+                        <Label htmlFor="edit-front">Front</Label>
+                        <CharacterCount current={(editedContent.front || "").length} max={CHARACTER_LIMITS.flashcardFront} />
+                    </div>
                     <Textarea
                         id="edit-front"
                         value={editedContent.front || ""}
@@ -589,7 +602,10 @@ function FlashcardSuggestionCard({
                     />
                 </div>
                 <div className="space-y-2">
-                    <Label htmlFor="edit-back">Back</Label>
+                    <div className="flex items-center justify-between">
+                        <Label htmlFor="edit-back">Back</Label>
+                        <CharacterCount current={(editedContent.back || "").length} max={CHARACTER_LIMITS.flashcardBack} />
+                    </div>
                     <Textarea
                         id="edit-back"
                         value={editedContent.back || ""}
@@ -702,7 +718,10 @@ function QuestionSuggestionCard({
                     Question
                 </div>
                 <div className="space-y-2">
-                    <Label htmlFor="edit-question">Question</Label>
+                    <div className="flex items-center justify-between">
+                        <Label htmlFor="edit-question">Question</Label>
+                        <CharacterCount current={(editedContent.questionText || "").length} max={CHARACTER_LIMITS.questionText} />
+                    </div>
                     <Textarea
                         id="edit-question"
                         value={editedContent.questionText || ""}
@@ -743,6 +762,7 @@ function QuestionSuggestionCard({
                                 }}
                                 className="flex-1"
                             />
+                            <CharacterCount current={option.optionText.length} max={CHARACTER_LIMITS.optionText} />
                         </div>
                     ))}
                 </div>
@@ -769,20 +789,21 @@ function QuestionSuggestionCard({
             <div>
                 <p className="text-sm font-medium">{suggestion.questionText}</p>
             </div>
-            <div className="space-y-1">
+            <ul className="space-y-1">
                 {suggestion.options.map((option, index) => (
-                    <div
+                    <li
                         key={index}
-                        className={`text-sm px-2 py-1 rounded ${
+                        className={`text-sm flex items-start gap-1.5 ${
                             option.isCorrect
-                                ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                                ? "text-green-600 dark:text-green-400 font-medium"
                                 : "text-muted-foreground"
                         }`}
                     >
-                        {option.optionText}
-                    </div>
+                        {option.isCorrect && <Check className="h-3.5 w-3.5 shrink-0 mt-0.5" />}
+                        <span>{option.optionText}</span>
+                    </li>
                 ))}
-            </div>
+            </ul>
             <div className="flex gap-2">
                 <Button
                     variant="outline"

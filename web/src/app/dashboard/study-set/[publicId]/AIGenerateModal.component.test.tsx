@@ -1456,5 +1456,64 @@ describe("AIGenerateModal", () => {
             expect(screen.getByText("What is React?")).toBeInTheDocument();
             expect(screen.queryByLabelText(/front/i)).not.toBeInTheDocument();
         });
+
+        it("displays character count for front field when editing flashcard", async () => {
+            const user = userEvent.setup();
+            const suggestions = [
+                createMockFlashcardSuggestion("temp-1", "Hello", "World"), // front is 5 chars
+            ];
+
+            await enterReviewPhase(user, suggestions);
+
+            await user.click(screen.getByRole("button", { name: /edit/i }));
+
+            // Should show character count for front (5/500)
+            expect(screen.getByText("5/500")).toBeInTheDocument();
+        });
+
+        it("displays character count for back field when editing flashcard", async () => {
+            const user = userEvent.setup();
+            const suggestions = [
+                createMockFlashcardSuggestion("temp-1", "Term", "A longer definition here"), // back is 24 chars
+            ];
+
+            await enterReviewPhase(user, suggestions);
+
+            await user.click(screen.getByRole("button", { name: /edit/i }));
+
+            // Should show character count for back (24/2000)
+            expect(screen.getByText("24/2000")).toBeInTheDocument();
+        });
+
+        it("displays character count for question text when editing question", async () => {
+            const user = userEvent.setup();
+            const suggestions = [
+                createMockQuestionSuggestion("temp-1", "What is TDD?"), // 12 chars
+            ];
+
+            await enterReviewPhase(user, suggestions);
+
+            await user.click(screen.getByRole("button", { name: /edit/i }));
+
+            // Should show character count for question (12/1000)
+            expect(screen.getByText("12/1000")).toBeInTheDocument();
+        });
+
+        it("displays character count for each option when editing question", async () => {
+            const user = userEvent.setup();
+            // Options from createMockQuestionSuggestion are:
+            // "Option A" (8), "Option B" (8), "Option C" (8), "Option D" (8)
+            const suggestions = [
+                createMockQuestionSuggestion("temp-1", "A question?"),
+            ];
+
+            await enterReviewPhase(user, suggestions);
+
+            await user.click(screen.getByRole("button", { name: /edit/i }));
+
+            // Should show 4 option counters with "8/500"
+            const optionCounters = screen.getAllByText("8/500");
+            expect(optionCounters).toHaveLength(4);
+        });
     });
 });

@@ -8,10 +8,8 @@ import { CollapsibleSummary } from "./CollapsibleSummary";
 import { TermsList } from "./TermsList";
 import { StudySession } from "./StudySession";
 import { AddItemModal } from "./AddItemModal";
-import { EditFlashcardModal } from "./EditFlashcardModal";
-import { EditQuestionModal } from "./EditQuestionModal";
 import { AIGenerateModal } from "./AIGenerateModal";
-import type { TermWithMastery, StudyMode, TermFlashcard, TermQuestion, QuestionOption } from "./types";
+import type { TermWithMastery, StudyMode, TermFlashcard, TermQuestion, QuestionOption, EditedTermContent } from "./types";
 
 interface StudySetContentProps {
     title: string;
@@ -40,8 +38,12 @@ export function StudySetContent({
     const [activeMode, setActiveMode] = useState<StudyMode | null>(null);
     const [isAddItemModalOpen, setIsAddItemModalOpen] = useState(false);
     const [isAIGenerateModalOpen, setIsAIGenerateModalOpen] = useState(false);
-    const [editingFlashcard, setEditingFlashcard] = useState<TermFlashcard | null>(null);
-    const [editingQuestion, setEditingQuestion] = useState<TermQuestion | null>(null);
+
+    // Inline editing state
+    const [editingTermId, setEditingTermId] = useState<{ id: number; type: "flashcard" | "question" } | null>(null);
+    const [editedContent, setEditedContent] = useState<EditedTermContent>({});
+    const [isSaving, setIsSaving] = useState(false);
+    const [editError, setEditError] = useState<string | null>(null);
 
     // Compute progress from current terms state so it updates when new terms are added
     const currentProgress = useMemo(() => ({
@@ -98,57 +100,122 @@ export function StudySetContent({
         setTerms((prev) => [...prev, newTerm]);
     };
 
+    // Start inline editing a flashcard
     const handleEditFlashcard = (flashcard: TermFlashcard) => {
-        setEditingFlashcard(flashcard);
+        setEditingTermId({ id: flashcard.id, type: "flashcard" });
+        setEditedContent({ front: flashcard.front, back: flashcard.back });
+        setEditError(null);
     };
 
-    const handleFlashcardUpdated = (updated: { id: number; front: string; back: string }) => {
-        setTerms((prev) =>
-            prev.map((term) => {
-                if (term.itemType === "flashcard" && term.flashcard?.id === updated.id) {
-                    return {
-                        ...term,
-                        flashcard: {
-                            ...term.flashcard,
-                            front: updated.front,
-                            back: updated.back,
-                        },
-                    };
-                }
-                return term;
-            })
-        );
-    };
-
+    // Start inline editing a question
     const handleEditQuestion = (question: TermQuestion) => {
-        setEditingQuestion(question);
+        setEditingTermId({ id: question.id, type: "question" });
+        setEditedContent({
+            questionText: question.questionText,
+            options: question.options,
+        });
+        setEditError(null);
     };
 
-    const handleQuestionUpdated = (updated: {
-        id: number;
-        questionText: string;
-        options: Array<{
-            id: number;
-            optionText: string;
-            isCorrect: boolean;
-            explanation: string | null;
-        }>;
-    }) => {
-        setTerms((prev) =>
-            prev.map((term) => {
-                if (term.itemType === "question" && term.question?.id === updated.id) {
-                    return {
-                        ...term,
-                        question: {
-                            ...term.question,
-                            questionText: updated.questionText,
-                            options: updated.options as QuestionOption[],
-                        },
-                    };
+    // Handle content changes during inline editing
+    const handleEditedContentChange = (content: EditedTermContent) => {
+        setEditedContent(content);
+        // Clear error when user starts typing
+        if (editError) setEditError(null);
+    };
+
+    // Cancel inline editing
+    const handleCancelEdit = () => {
+        setEditingTermId(null);
+        setEditedContent({});
+        setEditError(null);
+    };
+
+    // Save inline edit
+    const handleSaveEdit = async () => {
+        if (!editingTermId) return;
+
+        setIsSaving(true);
+        setEditError(null);
+
+        try {
+            if (editingTermId.type === "flashcard") {
+                const response = await fetch(`/api/v1/flashcards/${editingTermId.id}`, {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        front: editedContent.front,
+                        back: editedContent.back,
+                    }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.status === "success") {
+                    setTerms((prev) =>
+                        prev.map((term) => {
+                            if (term.itemType === "flashcard" && term.flashcard?.id === editingTermId.id) {
+                                return {
+                                    ...term,
+                                    flashcard: {
+                                        ...term.flashcard,
+                                        front: editedContent.front || term.flashcard.front,
+                                        back: editedContent.back || term.flashcard.back,
+                                    },
+                                };
+                            }
+                            return term;
+                        })
+                    );
+                    setEditingTermId(null);
+                    setEditedContent({});
+                } else {
+                    setEditError(data.data?.error || "Failed to save changes");
                 }
-                return term;
-            })
-        );
+            } else {
+                const response = await fetch(`/api/v1/questions/${editingTermId.id}`, {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        questionText: editedContent.questionText,
+                        options: editedContent.options?.map((opt) => ({
+                            id: opt.id,
+                            optionText: opt.optionText,
+                            isCorrect: opt.isCorrect,
+                            explanation: opt.explanation,
+                        })),
+                    }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.status === "success") {
+                    setTerms((prev) =>
+                        prev.map((term) => {
+                            if (term.itemType === "question" && term.question?.id === editingTermId.id) {
+                                return {
+                                    ...term,
+                                    question: {
+                                        ...term.question,
+                                        questionText: editedContent.questionText || term.question.questionText,
+                                        options: (editedContent.options || term.question.options) as QuestionOption[],
+                                    },
+                                };
+                            }
+                            return term;
+                        })
+                    );
+                    setEditingTermId(null);
+                    setEditedContent({});
+                } else {
+                    setEditError(data.data?.error || "Failed to save changes");
+                }
+            }
+        } catch {
+            setEditError("An error occurred. Please try again.");
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     // If a study session is active, show the study interface
@@ -208,6 +275,13 @@ export function StudySetContent({
                 progress={currentProgress}
                 onEditFlashcard={handleEditFlashcard}
                 onEditQuestion={handleEditQuestion}
+                editingTermId={editingTermId}
+                editedContent={editedContent}
+                isSaving={isSaving}
+                editError={editError}
+                onEditedContentChange={handleEditedContentChange}
+                onSaveEdit={handleSaveEdit}
+                onCancelEdit={handleCancelEdit}
             />
 
             {/* Add More Terms */}
@@ -254,24 +328,6 @@ export function StudySetContent({
                 studySetPublicId={studySetPublicId}
                 isVideoSourced={isVideoSourced}
             />
-
-            {/* Edit Flashcard Modal */}
-            {editingFlashcard && (
-                <EditFlashcardModal
-                    onClose={() => setEditingFlashcard(null)}
-                    onFlashcardUpdated={handleFlashcardUpdated}
-                    flashcard={editingFlashcard}
-                />
-            )}
-
-            {/* Edit Question Modal */}
-            {editingQuestion && (
-                <EditQuestionModal
-                    onClose={() => setEditingQuestion(null)}
-                    onQuestionUpdated={handleQuestionUpdated}
-                    question={editingQuestion}
-                />
-            )}
         </div>
     );
 }
