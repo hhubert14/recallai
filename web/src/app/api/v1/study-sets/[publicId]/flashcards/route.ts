@@ -69,7 +69,7 @@ export async function POST(
         if (message === "Not authorized to add items to this study set") {
             return jsendFail({ error: message }, 403);
         }
-        if (message.includes("cannot be empty")) {
+        if (message.includes("cannot be empty") || message.includes("maximum limit")) {
             return jsendFail({ error: message }, 400);
         }
 

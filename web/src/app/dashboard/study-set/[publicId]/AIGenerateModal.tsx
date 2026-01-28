@@ -22,7 +22,7 @@ import type {
     QuestionSuggestion,
     QuestionOptionSuggestion,
 } from "@/clean-architecture/domain/services/suggestion-generator.interface";
-import { CHARACTER_LIMITS } from "./types";
+import { CHARACTER_LIMITS, STUDY_SET_ITEM_LIMIT } from "./types";
 
 // Type for edited suggestion content - either flashcard or question fields
 type EditedSuggestionContent = {
@@ -295,8 +295,42 @@ export function AIGenerateModal({
         const suggestionsToAccept = suggestions.filter(
             (s) => !acceptingIds.has(s.tempId)
         );
-        // Accept all in parallel for better UX
-        await Promise.all(suggestionsToAccept.map((suggestion) => handleAccept(suggestion)));
+
+        if (suggestionsToAccept.length === 0) return;
+
+        setAcceptError(null);
+
+        try {
+            // Pre-check capacity by fetching current count
+            const countResponse = await fetch(`/api/v1/study-sets/${studySetPublicId}/count`);
+            const countData = await countResponse.json();
+
+            if (!countResponse.ok || countData.status !== "success") {
+                setAcceptError("Failed to check study set capacity. Please try again.");
+                return;
+            }
+
+            const currentCount = countData.data.count;
+            const remaining = STUDY_SET_ITEM_LIMIT - currentCount;
+
+            if (remaining <= 0) {
+                setAcceptError(`Study set has reached the maximum limit of ${STUDY_SET_ITEM_LIMIT} items. Remove some items to add more.`);
+                return;
+            }
+
+            // Only accept up to remaining capacity
+            const toAccept = suggestionsToAccept.slice(0, remaining);
+            const cannotAccept = suggestionsToAccept.length - toAccept.length;
+
+            // Accept in parallel (safe - we know we're under limit)
+            await Promise.all(toAccept.map((suggestion) => handleAccept(suggestion)));
+
+            if (cannotAccept > 0) {
+                setAcceptError(`Added ${toAccept.length} items. ${cannotAccept} could not be added (limit of ${STUDY_SET_ITEM_LIMIT} reached).`);
+            }
+        } catch {
+            setAcceptError("An error occurred while checking capacity. Please try again.");
+        }
     };
 
     const handleRejectAll = () => {

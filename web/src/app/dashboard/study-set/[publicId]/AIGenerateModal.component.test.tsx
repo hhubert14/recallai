@@ -3,6 +3,7 @@ import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { AIGenerateModal } from "./AIGenerateModal";
 import type { Suggestion } from "@/clean-architecture/domain/services/suggestion-generator.interface";
+import { STUDY_SET_ITEM_LIMIT } from "./types";
 
 // Helper to create mock suggestions
 const createMockFlashcardSuggestion = (id: string, front: string, back: string): Suggestion => ({
@@ -1102,8 +1103,18 @@ describe("AIGenerateModal", () => {
                 expect(screen.getByText(/review suggestions/i)).toBeInTheDocument();
             });
 
-            // Set up accept fetches for both cards
+            // Set up count and accept fetches
             global.fetch = vi.fn()
+                // First call is to count endpoint
+                .mockResolvedValueOnce({
+                    ok: true,
+                    json: () =>
+                        Promise.resolve({
+                            status: "success",
+                            data: { count: 0 },
+                        }),
+                })
+                // Then both flashcard accepts
                 .mockResolvedValueOnce({
                     ok: true,
                     json: () =>
@@ -1129,6 +1140,137 @@ describe("AIGenerateModal", () => {
 
             await waitFor(() => {
                 expect(onFlashcardAdded).toHaveBeenCalledTimes(2);
+            });
+        });
+
+        it("shows error when study set has reached item limit on Accept All", async () => {
+            const user = userEvent.setup();
+            const onFlashcardAdded = vi.fn();
+            const suggestions = [
+                createMockFlashcardSuggestion("temp-1", "Card 1", "Back 1"),
+                createMockFlashcardSuggestion("temp-2", "Card 2", "Back 2"),
+            ];
+
+            // Set up initial generation fetch
+            global.fetch = vi.fn().mockResolvedValueOnce({
+                ok: true,
+                json: () =>
+                    Promise.resolve({
+                        status: "success",
+                        data: { suggestions },
+                    }),
+            });
+
+            render(
+                <AIGenerateModal
+                    isOpen={true}
+                    onClose={vi.fn()}
+                    onFlashcardAdded={onFlashcardAdded}
+                    onQuestionAdded={vi.fn()}
+                    studySetPublicId="abc-123"
+                    isVideoSourced={false}
+                />
+            );
+
+            await user.type(
+                screen.getByLabelText(/what would you like to learn/i),
+                "Test prompt"
+            );
+            await user.click(screen.getByRole("button", { name: /generate/i }));
+
+            await waitFor(() => {
+                expect(screen.getByText(/review suggestions/i)).toBeInTheDocument();
+            });
+
+            // Set up count endpoint to return at limit
+            global.fetch = vi.fn().mockResolvedValueOnce({
+                ok: true,
+                json: () =>
+                    Promise.resolve({
+                        status: "success",
+                        data: { count: STUDY_SET_ITEM_LIMIT },
+                    }),
+            });
+
+            await user.click(screen.getByRole("button", { name: /accept all/i }));
+
+            await waitFor(() => {
+                expect(screen.getByText(/has reached the maximum limit/i)).toBeInTheDocument();
+            });
+            expect(onFlashcardAdded).not.toHaveBeenCalled();
+        });
+
+        it("partially accepts suggestions when nearing item limit on Accept All", async () => {
+            const user = userEvent.setup();
+            const onFlashcardAdded = vi.fn();
+            const suggestions = [
+                createMockFlashcardSuggestion("temp-1", "Card 1", "Back 1"),
+                createMockFlashcardSuggestion("temp-2", "Card 2", "Back 2"),
+                createMockFlashcardSuggestion("temp-3", "Card 3", "Back 3"),
+            ];
+
+            // Set up initial generation fetch
+            global.fetch = vi.fn().mockResolvedValueOnce({
+                ok: true,
+                json: () =>
+                    Promise.resolve({
+                        status: "success",
+                        data: { suggestions },
+                    }),
+            });
+
+            render(
+                <AIGenerateModal
+                    isOpen={true}
+                    onClose={vi.fn()}
+                    onFlashcardAdded={onFlashcardAdded}
+                    onQuestionAdded={vi.fn()}
+                    studySetPublicId="abc-123"
+                    isVideoSourced={false}
+                />
+            );
+
+            await user.type(
+                screen.getByLabelText(/what would you like to learn/i),
+                "Test prompt"
+            );
+            await user.click(screen.getByRole("button", { name: /generate/i }));
+
+            await waitFor(() => {
+                expect(screen.getByText(/review suggestions/i)).toBeInTheDocument();
+            });
+
+            // Set up count endpoint to return near limit (only 1 slot remaining)
+            global.fetch = vi.fn()
+                .mockResolvedValueOnce({
+                    ok: true,
+                    json: () =>
+                        Promise.resolve({
+                            status: "success",
+                            data: { count: STUDY_SET_ITEM_LIMIT - 1 },
+                        }),
+                })
+                // Only the first flashcard can be accepted
+                .mockResolvedValueOnce({
+                    ok: true,
+                    json: () =>
+                        Promise.resolve({
+                            status: "success",
+                            data: {
+                                flashcard: { id: 1, videoId: null, userId: "user-1", front: "Card 1", back: "Back 1", createdAt: "2025-01-01" },
+                            },
+                        }),
+                });
+
+            await user.click(screen.getByRole("button", { name: /accept all/i }));
+
+            await waitFor(() => {
+                expect(onFlashcardAdded).toHaveBeenCalledTimes(1);
+            });
+
+            // Should show message about items that couldn't be added
+            await waitFor(() => {
+                expect(screen.getByText(/could not be added/i)).toBeInTheDocument();
             });
         });
 

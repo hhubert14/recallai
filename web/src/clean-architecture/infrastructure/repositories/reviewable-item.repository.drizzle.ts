@@ -5,7 +5,7 @@ import {
   ReviewableItemEntity,
   ReviewableItemType,
 } from "@/clean-architecture/domain/entities/reviewable-item.entity";
-import { eq, and, inArray } from "drizzle-orm";
+import { eq, and, inArray, count } from "drizzle-orm";
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 function toReviewableItemEntity(
@@ -191,5 +191,51 @@ export class DrizzleReviewableItemRepository
       .where(inArray(reviewableItems.id, ids));
 
     return results.map(toReviewableItemEntity);
+  }
+
+  async countItemsByStudySetId(studySetId: number): Promise<number> {
+    const result = await this.db
+      .select({ count: count() })
+      .from(reviewableItems)
+      .where(eq(reviewableItems.studySetId, studySetId));
+    return result[0]?.count ?? 0;
+  }
+
+  async countItemsByStudySetIdsBatch(
+    studySetIds: number[]
+  ): Promise<Record<number, { questions: number; flashcards: number }>> {
+    if (studySetIds.length === 0) {
+      return {};
+    }
+
+    // Initialize all requested IDs with zero counts
+    const result: Record<number, { questions: number; flashcards: number }> = {};
+    for (const id of studySetIds) {
+      result[id] = { questions: 0, flashcards: 0 };
+    }
+
+    // Query with GROUP BY on studySetId and itemType
+    const rows = await this.db
+      .select({
+        studySetId: reviewableItems.studySetId,
+        itemType: reviewableItems.itemType,
+        count: count(),
+      })
+      .from(reviewableItems)
+      .where(inArray(reviewableItems.studySetId, studySetIds))
+      .groupBy(reviewableItems.studySetId, reviewableItems.itemType);
+
+    // Populate from query results
+    for (const row of rows) {
+      if (row.studySetId !== null && result[row.studySetId]) {
+        if (row.itemType === "question") {
+          result[row.studySetId].questions = row.count;
+        } else if (row.itemType === "flashcard") {
+          result[row.studySetId].flashcards = row.count;
+        }
+      }
+    }
+
+    return result;
   }
 }
