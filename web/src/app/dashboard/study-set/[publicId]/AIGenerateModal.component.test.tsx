@@ -1,7 +1,28 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { AIGenerateModal } from "./AIGenerateModal";
+import type { Suggestion } from "@/clean-architecture/domain/services/suggestion-generator.interface";
+
+// Helper to create mock suggestions
+const createMockFlashcardSuggestion = (id: string, front: string, back: string): Suggestion => ({
+    tempId: id,
+    itemType: "flashcard",
+    front,
+    back,
+});
+
+const createMockQuestionSuggestion = (id: string, questionText: string): Suggestion => ({
+    tempId: id,
+    itemType: "question",
+    questionText,
+    options: [
+        { optionText: "Option A", isCorrect: true, explanation: "Correct answer" },
+        { optionText: "Option B", isCorrect: false, explanation: "Wrong" },
+        { optionText: "Option C", isCorrect: false, explanation: "Wrong" },
+        { optionText: "Option D", isCorrect: false, explanation: "Wrong" },
+    ],
+});
 
 describe("AIGenerateModal", () => {
     beforeEach(() => {
@@ -14,7 +35,8 @@ describe("AIGenerateModal", () => {
                 <AIGenerateModal
                     isOpen={true}
                     onClose={vi.fn()}
-                    onSuggestionsGenerated={vi.fn()}
+                    onFlashcardAdded={vi.fn()}
+                    onQuestionAdded={vi.fn()}
                     studySetPublicId="abc-123"
                     isVideoSourced={false}
                 />
@@ -30,7 +52,8 @@ describe("AIGenerateModal", () => {
                 <AIGenerateModal
                     isOpen={true}
                     onClose={vi.fn()}
-                    onSuggestionsGenerated={vi.fn()}
+                    onFlashcardAdded={vi.fn()}
+                    onQuestionAdded={vi.fn()}
                     studySetPublicId="abc-123"
                     isVideoSourced={false}
                 />
@@ -46,7 +69,8 @@ describe("AIGenerateModal", () => {
                 <AIGenerateModal
                     isOpen={true}
                     onClose={vi.fn()}
-                    onSuggestionsGenerated={vi.fn()}
+                    onFlashcardAdded={vi.fn()}
+                    onQuestionAdded={vi.fn()}
                     studySetPublicId="abc-123"
                     isVideoSourced={false}
                 />
@@ -60,7 +84,8 @@ describe("AIGenerateModal", () => {
                 <AIGenerateModal
                     isOpen={true}
                     onClose={vi.fn()}
-                    onSuggestionsGenerated={vi.fn()}
+                    onFlashcardAdded={vi.fn()}
+                    onQuestionAdded={vi.fn()}
                     studySetPublicId="abc-123"
                     isVideoSourced={false}
                 />
@@ -76,7 +101,8 @@ describe("AIGenerateModal", () => {
                 <AIGenerateModal
                     isOpen={true}
                     onClose={vi.fn()}
-                    onSuggestionsGenerated={vi.fn()}
+                    onFlashcardAdded={vi.fn()}
+                    onQuestionAdded={vi.fn()}
                     studySetPublicId="abc-123"
                     isVideoSourced={false}
                 />
@@ -94,7 +120,8 @@ describe("AIGenerateModal", () => {
                 <AIGenerateModal
                     isOpen={false}
                     onClose={vi.fn()}
-                    onSuggestionsGenerated={vi.fn()}
+                    onFlashcardAdded={vi.fn()}
+                    onQuestionAdded={vi.fn()}
                     studySetPublicId="abc-123"
                     isVideoSourced={false}
                 />
@@ -112,7 +139,8 @@ describe("AIGenerateModal", () => {
                 <AIGenerateModal
                     isOpen={true}
                     onClose={vi.fn()}
-                    onSuggestionsGenerated={vi.fn()}
+                    onFlashcardAdded={vi.fn()}
+                    onQuestionAdded={vi.fn()}
                     studySetPublicId="abc-123"
                     isVideoSourced={true}
                 />
@@ -128,7 +156,8 @@ describe("AIGenerateModal", () => {
                 <AIGenerateModal
                     isOpen={true}
                     onClose={vi.fn()}
-                    onSuggestionsGenerated={vi.fn()}
+                    onFlashcardAdded={vi.fn()}
+                    onQuestionAdded={vi.fn()}
                     studySetPublicId="abc-123"
                     isVideoSourced={false}
                 />
@@ -144,7 +173,8 @@ describe("AIGenerateModal", () => {
                 <AIGenerateModal
                     isOpen={true}
                     onClose={vi.fn()}
-                    onSuggestionsGenerated={vi.fn()}
+                    onFlashcardAdded={vi.fn()}
+                    onQuestionAdded={vi.fn()}
                     studySetPublicId="abc-123"
                     isVideoSourced={true}
                 />
@@ -164,7 +194,8 @@ describe("AIGenerateModal", () => {
                 <AIGenerateModal
                     isOpen={true}
                     onClose={vi.fn()}
-                    onSuggestionsGenerated={vi.fn()}
+                    onFlashcardAdded={vi.fn()}
+                    onQuestionAdded={vi.fn()}
                     studySetPublicId="abc-123"
                     isVideoSourced={false}
                 />
@@ -180,7 +211,8 @@ describe("AIGenerateModal", () => {
                 <AIGenerateModal
                     isOpen={true}
                     onClose={vi.fn()}
-                    onSuggestionsGenerated={vi.fn()}
+                    onFlashcardAdded={vi.fn()}
+                    onQuestionAdded={vi.fn()}
                     studySetPublicId="abc-123"
                     isVideoSourced={false}
                 />
@@ -196,7 +228,8 @@ describe("AIGenerateModal", () => {
                 <AIGenerateModal
                     isOpen={true}
                     onClose={vi.fn()}
-                    onSuggestionsGenerated={vi.fn()}
+                    onFlashcardAdded={vi.fn()}
+                    onQuestionAdded={vi.fn()}
                     studySetPublicId="abc-123"
                     isVideoSourced={false}
                 />
@@ -213,7 +246,6 @@ describe("AIGenerateModal", () => {
 
         it("sends selected item type in API request", async () => {
             const user = userEvent.setup();
-            const onSuggestionsGenerated = vi.fn();
 
             global.fetch = vi.fn().mockResolvedValue({
                 ok: true,
@@ -242,7 +274,8 @@ describe("AIGenerateModal", () => {
                 <AIGenerateModal
                     isOpen={true}
                     onClose={vi.fn()}
-                    onSuggestionsGenerated={onSuggestionsGenerated}
+                    onFlashcardAdded={vi.fn()}
+                    onQuestionAdded={vi.fn()}
                     studySetPublicId="abc-123"
                     isVideoSourced={false}
                 />
@@ -277,7 +310,8 @@ describe("AIGenerateModal", () => {
                 <AIGenerateModal
                     isOpen={true}
                     onClose={vi.fn()}
-                    onSuggestionsGenerated={vi.fn()}
+                    onFlashcardAdded={vi.fn()}
+                    onQuestionAdded={vi.fn()}
                     studySetPublicId="abc-123"
                     isVideoSourced={false}
                 />
@@ -292,7 +326,8 @@ describe("AIGenerateModal", () => {
                 <AIGenerateModal
                     isOpen={true}
                     onClose={vi.fn()}
-                    onSuggestionsGenerated={vi.fn()}
+                    onFlashcardAdded={vi.fn()}
+                    onQuestionAdded={vi.fn()}
                     studySetPublicId="abc-123"
                     isVideoSourced={false}
                 />
@@ -312,7 +347,8 @@ describe("AIGenerateModal", () => {
                 <AIGenerateModal
                     isOpen={true}
                     onClose={vi.fn()}
-                    onSuggestionsGenerated={vi.fn()}
+                    onFlashcardAdded={vi.fn()}
+                    onQuestionAdded={vi.fn()}
                     studySetPublicId="abc-123"
                     isVideoSourced={false}
                 />
@@ -330,7 +366,8 @@ describe("AIGenerateModal", () => {
                 <AIGenerateModal
                     isOpen={true}
                     onClose={vi.fn()}
-                    onSuggestionsGenerated={vi.fn()}
+                    onFlashcardAdded={vi.fn()}
+                    onQuestionAdded={vi.fn()}
                     studySetPublicId="abc-123"
                     isVideoSourced={false}
                 />
@@ -353,7 +390,8 @@ describe("AIGenerateModal", () => {
                 <AIGenerateModal
                     isOpen={true}
                     onClose={vi.fn()}
-                    onSuggestionsGenerated={vi.fn()}
+                    onFlashcardAdded={vi.fn()}
+                    onQuestionAdded={vi.fn()}
                     studySetPublicId="abc-123"
                     isVideoSourced={false}
                 />
@@ -364,9 +402,8 @@ describe("AIGenerateModal", () => {
     });
 
     describe("form submission", () => {
-        it("calls API and onSuggestionsGenerated on successful generation", async () => {
+        it("calls API and transitions to review phase on successful generation", async () => {
             const user = userEvent.setup();
-            const onSuggestionsGenerated = vi.fn();
 
             global.fetch = vi.fn().mockResolvedValue({
                 ok: true,
@@ -401,7 +438,8 @@ describe("AIGenerateModal", () => {
                 <AIGenerateModal
                     isOpen={true}
                     onClose={vi.fn()}
-                    onSuggestionsGenerated={onSuggestionsGenerated}
+                    onFlashcardAdded={vi.fn()}
+                    onQuestionAdded={vi.fn()}
                     studySetPublicId="abc-123"
                     isVideoSourced={false}
                 />
@@ -413,27 +451,14 @@ describe("AIGenerateModal", () => {
             );
             await user.click(screen.getByRole("button", { name: /generate/i }));
 
+            // Should transition to review phase
             await waitFor(() => {
-                expect(onSuggestionsGenerated).toHaveBeenCalledWith([
-                    {
-                        tempId: "temp-1",
-                        itemType: "flashcard",
-                        front: "What is JavaScript?",
-                        back: "A programming language",
-                    },
-                    {
-                        tempId: "temp-2",
-                        itemType: "question",
-                        questionText: "Which is a JS framework?",
-                        options: [
-                            { optionText: "React", isCorrect: true, explanation: "Correct" },
-                            { optionText: "Django", isCorrect: false, explanation: "Python" },
-                            { optionText: "Rails", isCorrect: false, explanation: "Ruby" },
-                            { optionText: "Laravel", isCorrect: false, explanation: "PHP" },
-                        ],
-                    },
-                ]);
+                expect(screen.getByText(/review suggestions/i)).toBeInTheDocument();
             });
+
+            // Generated suggestions should be displayed
+            expect(screen.getByText("What is JavaScript?")).toBeInTheDocument();
+            expect(screen.getByText("Which is a JS framework?")).toBeInTheDocument();
 
             expect(global.fetch).toHaveBeenCalledWith(
                 "/api/v1/study-sets/abc-123/ai/generate",
@@ -464,7 +489,8 @@ describe("AIGenerateModal", () => {
                 <AIGenerateModal
                     isOpen={true}
                     onClose={vi.fn()}
-                    onSuggestionsGenerated={vi.fn()}
+                    onFlashcardAdded={vi.fn()}
+                    onQuestionAdded={vi.fn()}
                     studySetPublicId="abc-123"
                     isVideoSourced={false}
                 />
@@ -496,7 +522,8 @@ describe("AIGenerateModal", () => {
                 <AIGenerateModal
                     isOpen={true}
                     onClose={vi.fn()}
-                    onSuggestionsGenerated={vi.fn()}
+                    onFlashcardAdded={vi.fn()}
+                    onQuestionAdded={vi.fn()}
                     studySetPublicId="abc-123"
                     isVideoSourced={false}
                 />
@@ -533,7 +560,8 @@ describe("AIGenerateModal", () => {
                 <AIGenerateModal
                     isOpen={true}
                     onClose={vi.fn()}
-                    onSuggestionsGenerated={vi.fn()}
+                    onFlashcardAdded={vi.fn()}
+                    onQuestionAdded={vi.fn()}
                     studySetPublicId="abc-123"
                     isVideoSourced={false}
                 />
@@ -565,7 +593,8 @@ describe("AIGenerateModal", () => {
                 <AIGenerateModal
                     isOpen={true}
                     onClose={onClose}
-                    onSuggestionsGenerated={vi.fn()}
+                    onFlashcardAdded={vi.fn()}
+                    onQuestionAdded={vi.fn()}
                     studySetPublicId="abc-123"
                     isVideoSourced={false}
                 />
@@ -584,7 +613,8 @@ describe("AIGenerateModal", () => {
                 <AIGenerateModal
                     isOpen={true}
                     onClose={vi.fn()}
-                    onSuggestionsGenerated={vi.fn()}
+                    onFlashcardAdded={vi.fn()}
+                    onQuestionAdded={vi.fn()}
                     studySetPublicId="abc-123"
                     isVideoSourced={false}
                 />
@@ -600,7 +630,8 @@ describe("AIGenerateModal", () => {
                 <AIGenerateModal
                     isOpen={false}
                     onClose={vi.fn()}
-                    onSuggestionsGenerated={vi.fn()}
+                    onFlashcardAdded={vi.fn()}
+                    onQuestionAdded={vi.fn()}
                     studySetPublicId="abc-123"
                     isVideoSourced={false}
                 />
@@ -611,13 +642,819 @@ describe("AIGenerateModal", () => {
                 <AIGenerateModal
                     isOpen={true}
                     onClose={vi.fn()}
-                    onSuggestionsGenerated={vi.fn()}
+                    onFlashcardAdded={vi.fn()}
+                    onQuestionAdded={vi.fn()}
                     studySetPublicId="abc-123"
                     isVideoSourced={false}
                 />
             );
 
             expect(screen.getByLabelText(/what would you like to learn/i)).toHaveValue("");
+        });
+    });
+
+    describe("review phase", () => {
+        // Helper to generate suggestions and enter review phase
+        async function enterReviewPhase(
+            user: ReturnType<typeof userEvent.setup>,
+            suggestions: Suggestion[]
+        ) {
+            global.fetch = vi.fn().mockResolvedValue({
+                ok: true,
+                json: () =>
+                    Promise.resolve({
+                        status: "success",
+                        data: { suggestions },
+                    }),
+            });
+
+            render(
+                <AIGenerateModal
+                    isOpen={true}
+                    onClose={vi.fn()}
+                    onFlashcardAdded={vi.fn()}
+                    onQuestionAdded={vi.fn()}
+                    studySetPublicId="abc-123"
+                    isVideoSourced={false}
+                />
+            );
+
+            await user.type(
+                screen.getByLabelText(/what would you like to learn/i),
+                "Test prompt"
+            );
+            await user.click(screen.getByRole("button", { name: /generate/i }));
+
+            await waitFor(() => {
+                expect(screen.getByText(/review suggestions/i)).toBeInTheDocument();
+            });
+        }
+
+        it("shows review phase after successful generation", async () => {
+            const user = userEvent.setup();
+            const suggestions = [
+                createMockFlashcardSuggestion("temp-1", "What is React?", "A JavaScript library"),
+            ];
+
+            await enterReviewPhase(user, suggestions);
+
+            expect(screen.getByText(/review suggestions/i)).toBeInTheDocument();
+        });
+
+        it("displays flashcard suggestion with front and back", async () => {
+            const user = userEvent.setup();
+            const suggestions = [
+                createMockFlashcardSuggestion("temp-1", "What is React?", "A JavaScript library"),
+            ];
+
+            await enterReviewPhase(user, suggestions);
+
+            expect(screen.getByText("What is React?")).toBeInTheDocument();
+            expect(screen.getByText("A JavaScript library")).toBeInTheDocument();
+        });
+
+        it("displays question suggestion with question text and options", async () => {
+            const user = userEvent.setup();
+            const suggestions = [
+                createMockQuestionSuggestion("temp-1", "Which hook is used for side effects?"),
+            ];
+
+            await enterReviewPhase(user, suggestions);
+
+            expect(screen.getByText("Which hook is used for side effects?")).toBeInTheDocument();
+            expect(screen.getByText("Option A")).toBeInTheDocument();
+            expect(screen.getByText("Option B")).toBeInTheDocument();
+        });
+
+        it("shows accept, reject, and edit buttons for each suggestion", async () => {
+            const user = userEvent.setup();
+            const suggestions = [
+                createMockFlashcardSuggestion("temp-1", "What is React?", "A JavaScript library"),
+            ];
+
+            await enterReviewPhase(user, suggestions);
+
+            // Use exact name matching to avoid matching "Accept All"
+            const suggestionCard = screen.getByTestId("suggestion-card");
+            expect(within(suggestionCard).getByRole("button", { name: /^accept$/i })).toBeInTheDocument();
+            expect(within(suggestionCard).getByRole("button", { name: /^reject$/i })).toBeInTheDocument();
+            expect(within(suggestionCard).getByRole("button", { name: /^edit$/i })).toBeInTheDocument();
+        });
+
+        it("shows progress indicator with count", async () => {
+            const user = userEvent.setup();
+            const suggestions = [
+                createMockFlashcardSuggestion("temp-1", "Card 1", "Back 1"),
+                createMockFlashcardSuggestion("temp-2", "Card 2", "Back 2"),
+                createMockFlashcardSuggestion("temp-3", "Card 3", "Back 3"),
+            ];
+
+            await enterReviewPhase(user, suggestions);
+
+            // Should show "0 of 3 reviewed" initially
+            expect(screen.getByText(/0 of 3 reviewed/i)).toBeInTheDocument();
+        });
+
+        it("calls flashcard API and onFlashcardAdded when accepting flashcard", async () => {
+            const user = userEvent.setup();
+            const onFlashcardAdded = vi.fn();
+            const suggestions = [
+                createMockFlashcardSuggestion("temp-1", "What is React?", "A JavaScript library"),
+            ];
+
+            // Set up initial generation fetch
+            global.fetch = vi.fn().mockResolvedValueOnce({
+                ok: true,
+                json: () =>
+                    Promise.resolve({
+                        status: "success",
+                        data: { suggestions },
+                    }),
+            });
+
+            render(
+                <AIGenerateModal
+                    isOpen={true}
+                    onClose={vi.fn()}
+                    onFlashcardAdded={onFlashcardAdded}
+                    onQuestionAdded={vi.fn()}
+                    studySetPublicId="abc-123"
+                    isVideoSourced={false}
+                />
+            );
+
+            await user.type(
+                screen.getByLabelText(/what would you like to learn/i),
+                "Test prompt"
+            );
+            await user.click(screen.getByRole("button", { name: /generate/i }));
+
+            await waitFor(() => {
+                expect(screen.getByText(/review suggestions/i)).toBeInTheDocument();
+            });
+
+            // Set up accept fetch
+            global.fetch = vi.fn().mockResolvedValueOnce({
+                ok: true,
+                json: () =>
+                    Promise.resolve({
+                        status: "success",
+                        data: {
+                            flashcard: {
+                                id: 123,
+                                videoId: null,
+                                userId: "user-1",
+                                front: "What is React?",
+                                back: "A JavaScript library",
+                                createdAt: "2025-01-01T00:00:00Z",
+                            },
+                        },
+                    }),
+            });
+
+            // Use exact name matching to avoid matching "Accept All"
+            const suggestionCard = screen.getByTestId("suggestion-card");
+            await user.click(within(suggestionCard).getByRole("button", { name: /^accept$/i }));
+
+            await waitFor(() => {
+                expect(global.fetch).toHaveBeenCalledWith(
+                    "/api/v1/study-sets/abc-123/flashcards",
+                    expect.objectContaining({
+                        method: "POST",
+                        body: JSON.stringify({
+                            front: "What is React?",
+                            back: "A JavaScript library",
+                        }),
+                    })
+                );
+            });
+
+            await waitFor(() => {
+                expect(onFlashcardAdded).toHaveBeenCalledWith(
+                    expect.objectContaining({
+                        id: 123,
+                        front: "What is React?",
+                        back: "A JavaScript library",
+                    })
+                );
+            });
+        });
+
+        it("calls question API and onQuestionAdded when accepting question", async () => {
+            const user = userEvent.setup();
+            const onQuestionAdded = vi.fn();
+            const suggestions = [
+                createMockQuestionSuggestion("temp-1", "Which hook is for state?"),
+            ];
+
+            // Set up initial generation fetch
+            global.fetch = vi.fn().mockResolvedValueOnce({
+                ok: true,
+                json: () =>
+                    Promise.resolve({
+                        status: "success",
+                        data: { suggestions },
+                    }),
+            });
+
+            render(
+                <AIGenerateModal
+                    isOpen={true}
+                    onClose={vi.fn()}
+                    onFlashcardAdded={vi.fn()}
+                    onQuestionAdded={onQuestionAdded}
+                    studySetPublicId="abc-123"
+                    isVideoSourced={false}
+                />
+            );
+
+            await user.type(
+                screen.getByLabelText(/what would you like to learn/i),
+                "Test prompt"
+            );
+            await user.click(screen.getByRole("button", { name: /generate/i }));
+
+            await waitFor(() => {
+                expect(screen.getByText(/review suggestions/i)).toBeInTheDocument();
+            });
+
+            // Set up accept fetch
+            global.fetch = vi.fn().mockResolvedValueOnce({
+                ok: true,
+                json: () =>
+                    Promise.resolve({
+                        status: "success",
+                        data: {
+                            question: {
+                                id: 456,
+                                videoId: null,
+                                questionText: "Which hook is for state?",
+                                options: [
+                                    { id: 1, optionText: "Option A", isCorrect: true, explanation: "Correct answer" },
+                                    { id: 2, optionText: "Option B", isCorrect: false, explanation: "Wrong" },
+                                    { id: 3, optionText: "Option C", isCorrect: false, explanation: "Wrong" },
+                                    { id: 4, optionText: "Option D", isCorrect: false, explanation: "Wrong" },
+                                ],
+                                sourceQuote: null,
+                                sourceTimestamp: null,
+                            },
+                        },
+                    }),
+            });
+
+            // Use exact name matching to avoid matching "Accept All"
+            const suggestionCard = screen.getByTestId("suggestion-card");
+            await user.click(within(suggestionCard).getByRole("button", { name: /^accept$/i }));
+
+            await waitFor(() => {
+                expect(global.fetch).toHaveBeenCalledWith(
+                    "/api/v1/study-sets/abc-123/questions",
+                    expect.objectContaining({
+                        method: "POST",
+                    })
+                );
+            });
+
+            await waitFor(() => {
+                expect(onQuestionAdded).toHaveBeenCalledWith(
+                    expect.objectContaining({
+                        id: 456,
+                        questionText: "Which hook is for state?",
+                    })
+                );
+            });
+        });
+
+        it("removes suggestion from list when rejected", async () => {
+            const user = userEvent.setup();
+            const suggestions = [
+                createMockFlashcardSuggestion("temp-1", "What is React?", "A JavaScript library"),
+                createMockFlashcardSuggestion("temp-2", "What is Vue?", "Another JS framework"),
+            ];
+
+            await enterReviewPhase(user, suggestions);
+
+            // Find the first suggestion card and reject it
+            const firstCard = screen.getByText("What is React?").closest('[data-testid="suggestion-card"]');
+            expect(firstCard).toBeInTheDocument();
+            const rejectButton = within(firstCard as HTMLElement).getByRole("button", { name: /reject/i });
+            await user.click(rejectButton);
+
+            // First suggestion should be removed
+            expect(screen.queryByText("What is React?")).not.toBeInTheDocument();
+            // Second suggestion should still be there
+            expect(screen.getByText("What is Vue?")).toBeInTheDocument();
+        });
+
+        it("enables inline editing when edit button is clicked for flashcard", async () => {
+            const user = userEvent.setup();
+            const suggestions = [
+                createMockFlashcardSuggestion("temp-1", "What is React?", "A JavaScript library"),
+            ];
+
+            await enterReviewPhase(user, suggestions);
+
+            await user.click(screen.getByRole("button", { name: /edit/i }));
+
+            // Should show edit inputs
+            const frontInput = screen.getByLabelText(/front/i);
+            const backInput = screen.getByLabelText(/back/i);
+            expect(frontInput).toBeInTheDocument();
+            expect(backInput).toBeInTheDocument();
+            expect(frontInput).toHaveValue("What is React?");
+            expect(backInput).toHaveValue("A JavaScript library");
+        });
+
+        it("allows editing flashcard content and saving", async () => {
+            const user = userEvent.setup();
+            const onFlashcardAdded = vi.fn();
+            const suggestions = [
+                createMockFlashcardSuggestion("temp-1", "What is React?", "A JavaScript library"),
+            ];
+
+            // Set up initial generation fetch
+            global.fetch = vi.fn().mockResolvedValueOnce({
+                ok: true,
+                json: () =>
+                    Promise.resolve({
+                        status: "success",
+                        data: { suggestions },
+                    }),
+            });
+
+            render(
+                <AIGenerateModal
+                    isOpen={true}
+                    onClose={vi.fn()}
+                    onFlashcardAdded={onFlashcardAdded}
+                    onQuestionAdded={vi.fn()}
+                    studySetPublicId="abc-123"
+                    isVideoSourced={false}
+                />
+            );
+
+            await user.type(
+                screen.getByLabelText(/what would you like to learn/i),
+                "Test prompt"
+            );
+            await user.click(screen.getByRole("button", { name: /generate/i }));
+
+            await waitFor(() => {
+                expect(screen.getByText(/review suggestions/i)).toBeInTheDocument();
+            });
+
+            // Edit mode
+            await user.click(screen.getByRole("button", { name: /edit/i }));
+
+            const frontInput = screen.getByLabelText(/front/i);
+            await user.clear(frontInput);
+            await user.type(frontInput, "Updated question");
+
+            // Save edit
+            await user.click(screen.getByRole("button", { name: /save/i }));
+
+            // Set up accept fetch
+            global.fetch = vi.fn().mockResolvedValueOnce({
+                ok: true,
+                json: () =>
+                    Promise.resolve({
+                        status: "success",
+                        data: {
+                            flashcard: {
+                                id: 123,
+                                videoId: null,
+                                userId: "user-1",
+                                front: "Updated question",
+                                back: "A JavaScript library",
+                                createdAt: "2025-01-01T00:00:00Z",
+                            },
+                        },
+                    }),
+            });
+
+            // Accept the edited card - use exact name matching
+            const suggestionCard = screen.getByTestId("suggestion-card");
+            await user.click(within(suggestionCard).getByRole("button", { name: /^accept$/i }));
+
+            await waitFor(() => {
+                expect(global.fetch).toHaveBeenCalledWith(
+                    "/api/v1/study-sets/abc-123/flashcards",
+                    expect.objectContaining({
+                        method: "POST",
+                        body: JSON.stringify({
+                            front: "Updated question",
+                            back: "A JavaScript library",
+                        }),
+                    })
+                );
+            });
+        });
+
+        it("shows Accept All and Reject All buttons", async () => {
+            const user = userEvent.setup();
+            const suggestions = [
+                createMockFlashcardSuggestion("temp-1", "Card 1", "Back 1"),
+                createMockFlashcardSuggestion("temp-2", "Card 2", "Back 2"),
+            ];
+
+            await enterReviewPhase(user, suggestions);
+
+            expect(screen.getByRole("button", { name: /accept all/i })).toBeInTheDocument();
+            expect(screen.getByRole("button", { name: /reject all/i })).toBeInTheDocument();
+        });
+
+        it("accepts all remaining suggestions when Accept All is clicked", async () => {
+            const user = userEvent.setup();
+            const onFlashcardAdded = vi.fn();
+            const suggestions = [
+                createMockFlashcardSuggestion("temp-1", "Card 1", "Back 1"),
+                createMockFlashcardSuggestion("temp-2", "Card 2", "Back 2"),
+            ];
+
+            // Set up initial generation fetch
+            global.fetch = vi.fn().mockResolvedValueOnce({
+                ok: true,
+                json: () =>
+                    Promise.resolve({
+                        status: "success",
+                        data: { suggestions },
+                    }),
+            });
+
+            render(
+                <AIGenerateModal
+                    isOpen={true}
+                    onClose={vi.fn()}
+                    onFlashcardAdded={onFlashcardAdded}
+                    onQuestionAdded={vi.fn()}
+                    studySetPublicId="abc-123"
+                    isVideoSourced={false}
+                />
+            );
+
+            await user.type(
+                screen.getByLabelText(/what would you like to learn/i),
+                "Test prompt"
+            );
+            await user.click(screen.getByRole("button", { name: /generate/i }));
+
+            await waitFor(() => {
+                expect(screen.getByText(/review suggestions/i)).toBeInTheDocument();
+            });
+
+            // Set up accept fetches for both cards
+            global.fetch = vi.fn()
+                .mockResolvedValueOnce({
+                    ok: true,
+                    json: () =>
+                        Promise.resolve({
+                            status: "success",
+                            data: {
+                                flashcard: { id: 1, videoId: null, userId: "user-1", front: "Card 1", back: "Back 1", createdAt: "2025-01-01" },
+                            },
+                        }),
+                })
+                .mockResolvedValueOnce({
+                    ok: true,
+                    json: () =>
+                        Promise.resolve({
+                            status: "success",
+                            data: {
+                                flashcard: { id: 2, videoId: null, userId: "user-1", front: "Card 2", back: "Back 2", createdAt: "2025-01-01" },
+                            },
+                        }),
+                });
+
+            await user.click(screen.getByRole("button", { name: /accept all/i }));
+
+            await waitFor(() => {
+                expect(onFlashcardAdded).toHaveBeenCalledTimes(2);
+            });
+        });
+
+        it("removes all suggestions when Reject All is clicked", async () => {
+            const user = userEvent.setup();
+            const onClose = vi.fn();
+            const suggestions = [
+                createMockFlashcardSuggestion("temp-1", "Card 1", "Back 1"),
+                createMockFlashcardSuggestion("temp-2", "Card 2", "Back 2"),
+            ];
+
+            // Set up initial generation fetch
+            global.fetch = vi.fn().mockResolvedValueOnce({
+                ok: true,
+                json: () =>
+                    Promise.resolve({
+                        status: "success",
+                        data: { suggestions },
+                    }),
+            });
+
+            render(
+                <AIGenerateModal
+                    isOpen={true}
+                    onClose={onClose}
+                    onFlashcardAdded={vi.fn()}
+                    onQuestionAdded={vi.fn()}
+                    studySetPublicId="abc-123"
+                    isVideoSourced={false}
+                />
+            );
+
+            await user.type(
+                screen.getByLabelText(/what would you like to learn/i),
+                "Test prompt"
+            );
+            await user.click(screen.getByRole("button", { name: /generate/i }));
+
+            await waitFor(() => {
+                expect(screen.getByText(/review suggestions/i)).toBeInTheDocument();
+            });
+
+            await user.click(screen.getByRole("button", { name: /reject all/i }));
+
+            // Modal should close after rejecting all
+            await waitFor(() => {
+                expect(onClose).toHaveBeenCalled();
+            });
+        });
+
+        it("shows Regenerate button in review phase", async () => {
+            const user = userEvent.setup();
+            const suggestions = [
+                createMockFlashcardSuggestion("temp-1", "Card 1", "Back 1"),
+            ];
+
+            await enterReviewPhase(user, suggestions);
+
+            expect(screen.getByRole("button", { name: /regenerate/i })).toBeInTheDocument();
+        });
+
+        it("returns to generation phase when Regenerate is clicked", async () => {
+            const user = userEvent.setup();
+            const suggestions = [
+                createMockFlashcardSuggestion("temp-1", "Card 1", "Back 1"),
+            ];
+
+            await enterReviewPhase(user, suggestions);
+
+            await user.click(screen.getByRole("button", { name: /regenerate/i }));
+
+            // Should be back in generation phase
+            expect(screen.getByLabelText(/what would you like to learn/i)).toBeInTheDocument();
+            expect(screen.getByRole("button", { name: /generate/i })).toBeInTheDocument();
+            expect(screen.queryByText(/review suggestions/i)).not.toBeInTheDocument();
+        });
+
+        it("updates progress indicator when suggestions are accepted", async () => {
+            const user = userEvent.setup();
+            const suggestions = [
+                createMockFlashcardSuggestion("temp-1", "Card 1", "Back 1"),
+                createMockFlashcardSuggestion("temp-2", "Card 2", "Back 2"),
+            ];
+
+            // Set up initial generation fetch
+            global.fetch = vi.fn().mockResolvedValueOnce({
+                ok: true,
+                json: () =>
+                    Promise.resolve({
+                        status: "success",
+                        data: { suggestions },
+                    }),
+            });
+
+            render(
+                <AIGenerateModal
+                    isOpen={true}
+                    onClose={vi.fn()}
+                    onFlashcardAdded={vi.fn()}
+                    onQuestionAdded={vi.fn()}
+                    studySetPublicId="abc-123"
+                    isVideoSourced={false}
+                />
+            );
+
+            await user.type(
+                screen.getByLabelText(/what would you like to learn/i),
+                "Test prompt"
+            );
+            await user.click(screen.getByRole("button", { name: /generate/i }));
+
+            await waitFor(() => {
+                expect(screen.getByText(/0 of 2 reviewed/i)).toBeInTheDocument();
+            });
+
+            // Set up accept fetch
+            global.fetch = vi.fn().mockResolvedValueOnce({
+                ok: true,
+                json: () =>
+                    Promise.resolve({
+                        status: "success",
+                        data: {
+                            flashcard: { id: 1, videoId: null, userId: "user-1", front: "Card 1", back: "Back 1", createdAt: "2025-01-01" },
+                        },
+                    }),
+            });
+
+            // Accept first card
+            const firstCard = screen.getByText("Card 1").closest('[data-testid="suggestion-card"]');
+            const acceptButton = within(firstCard as HTMLElement).getByRole("button", { name: /accept/i });
+            await user.click(acceptButton);
+
+            await waitFor(() => {
+                expect(screen.getByText(/1 of 2 reviewed/i)).toBeInTheDocument();
+            });
+        });
+
+        it("closes modal when all suggestions are reviewed", async () => {
+            const user = userEvent.setup();
+            const onClose = vi.fn();
+            const suggestions = [
+                createMockFlashcardSuggestion("temp-1", "Card 1", "Back 1"),
+            ];
+
+            // Set up initial generation fetch
+            global.fetch = vi.fn().mockResolvedValueOnce({
+                ok: true,
+                json: () =>
+                    Promise.resolve({
+                        status: "success",
+                        data: { suggestions },
+                    }),
+            });
+
+            render(
+                <AIGenerateModal
+                    isOpen={true}
+                    onClose={onClose}
+                    onFlashcardAdded={vi.fn()}
+                    onQuestionAdded={vi.fn()}
+                    studySetPublicId="abc-123"
+                    isVideoSourced={false}
+                />
+            );
+
+            await user.type(
+                screen.getByLabelText(/what would you like to learn/i),
+                "Test prompt"
+            );
+            await user.click(screen.getByRole("button", { name: /generate/i }));
+
+            await waitFor(() => {
+                expect(screen.getByText(/review suggestions/i)).toBeInTheDocument();
+            });
+
+            // Set up accept fetch
+            global.fetch = vi.fn().mockResolvedValueOnce({
+                ok: true,
+                json: () =>
+                    Promise.resolve({
+                        status: "success",
+                        data: {
+                            flashcard: { id: 1, videoId: null, userId: "user-1", front: "Card 1", back: "Back 1", createdAt: "2025-01-01" },
+                        },
+                    }),
+            });
+
+            // Use exact name matching to avoid matching "Accept All"
+            const suggestionCard = screen.getByTestId("suggestion-card");
+            await user.click(within(suggestionCard).getByRole("button", { name: /^accept$/i }));
+
+            // Modal should close after last suggestion is reviewed
+            await waitFor(() => {
+                expect(onClose).toHaveBeenCalled();
+            });
+        });
+
+        it("shows loading state while accepting suggestion", async () => {
+            const user = userEvent.setup();
+            const suggestions = [
+                createMockFlashcardSuggestion("temp-1", "Card 1", "Back 1"),
+            ];
+
+            // Set up initial generation fetch
+            global.fetch = vi.fn().mockResolvedValueOnce({
+                ok: true,
+                json: () =>
+                    Promise.resolve({
+                        status: "success",
+                        data: { suggestions },
+                    }),
+            });
+
+            render(
+                <AIGenerateModal
+                    isOpen={true}
+                    onClose={vi.fn()}
+                    onFlashcardAdded={vi.fn()}
+                    onQuestionAdded={vi.fn()}
+                    studySetPublicId="abc-123"
+                    isVideoSourced={false}
+                />
+            );
+
+            await user.type(
+                screen.getByLabelText(/what would you like to learn/i),
+                "Test prompt"
+            );
+            await user.click(screen.getByRole("button", { name: /generate/i }));
+
+            await waitFor(() => {
+                expect(screen.getByText(/review suggestions/i)).toBeInTheDocument();
+            });
+
+            // Create a promise that we can control
+            let resolvePromise: (value: unknown) => void;
+            const pendingPromise = new Promise((resolve) => {
+                resolvePromise = resolve;
+            });
+
+            global.fetch = vi.fn().mockReturnValue(pendingPromise);
+
+            // Use exact name matching to avoid matching "Accept All"
+            const suggestionCard = screen.getByTestId("suggestion-card");
+            await user.click(within(suggestionCard).getByRole("button", { name: /^accept$/i }));
+
+            // Should show loading state on the button
+            expect(screen.getByRole("button", { name: /accepting/i })).toBeInTheDocument();
+
+            // Resolve to clean up
+            resolvePromise!({
+                ok: true,
+                json: () =>
+                    Promise.resolve({
+                        status: "success",
+                        data: {
+                            flashcard: { id: 1, videoId: null, userId: "user-1", front: "Card 1", back: "Back 1", createdAt: "2025-01-01" },
+                        },
+                    }),
+            });
+        });
+
+        it("enables inline editing when edit button is clicked for question", async () => {
+            const user = userEvent.setup();
+            const suggestions = [
+                createMockQuestionSuggestion("temp-1", "Which hook is for state?"),
+            ];
+
+            await enterReviewPhase(user, suggestions);
+
+            await user.click(screen.getByRole("button", { name: /edit/i }));
+
+            // Should show edit input for question text
+            const questionInput = screen.getByLabelText(/question/i);
+            expect(questionInput).toBeInTheDocument();
+            expect(questionInput).toHaveValue("Which hook is for state?");
+        });
+
+        it("allows changing the correct answer by clicking option badges", async () => {
+            const user = userEvent.setup();
+            const suggestions = [
+                createMockQuestionSuggestion("temp-1", "Which hook is for state?"),
+            ];
+
+            await enterReviewPhase(user, suggestions);
+
+            await user.click(screen.getByRole("button", { name: /edit/i }));
+
+            // Initially, first option (Option A) should be marked correct
+            const badges = screen.getAllByRole("button", { name: /correct|wrong/i });
+            expect(badges[0]).toHaveTextContent("Correct");
+            expect(badges[1]).toHaveTextContent("Wrong");
+            expect(badges[2]).toHaveTextContent("Wrong");
+            expect(badges[3]).toHaveTextContent("Wrong");
+
+            // Click on the second option's "Wrong" badge to make it correct
+            await user.click(badges[1]);
+
+            // Now second option should be correct, first should be wrong
+            const updatedBadges = screen.getAllByRole("button", { name: /correct|wrong/i });
+            expect(updatedBadges[0]).toHaveTextContent("Wrong");
+            expect(updatedBadges[1]).toHaveTextContent("Correct");
+            expect(updatedBadges[2]).toHaveTextContent("Wrong");
+            expect(updatedBadges[3]).toHaveTextContent("Wrong");
+        });
+
+        it("cancels editing when cancel button is clicked", async () => {
+            const user = userEvent.setup();
+            const suggestions = [
+                createMockFlashcardSuggestion("temp-1", "What is React?", "A JavaScript library"),
+            ];
+
+            await enterReviewPhase(user, suggestions);
+
+            await user.click(screen.getByRole("button", { name: /edit/i }));
+
+            const frontInput = screen.getByLabelText(/front/i);
+            await user.clear(frontInput);
+            await user.type(frontInput, "Modified text");
+
+            // Cancel the edit
+            await user.click(screen.getByRole("button", { name: /cancel/i }));
+
+            // Should show original text again
+            expect(screen.getByText("What is React?")).toBeInTheDocument();
+            expect(screen.queryByLabelText(/front/i)).not.toBeInTheDocument();
         });
     });
 });

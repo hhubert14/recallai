@@ -39,7 +39,11 @@ const questionSchema = z.object({
     options: z
         .array(questionOptionSchema)
         .length(4)
-        .describe("Four possible answer options with exactly one correct"),
+        .describe("Four possible answer options with exactly one correct")
+        .refine(
+            (options) => options.filter((o) => o.isCorrect).length === 1,
+            { message: "Exactly one option must be marked as correct" }
+        ),
 });
 
 // Discriminated union for suggestion type (used for "mix" mode)

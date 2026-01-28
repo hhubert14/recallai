@@ -12,7 +12,6 @@ import { EditFlashcardModal } from "./EditFlashcardModal";
 import { EditQuestionModal } from "./EditQuestionModal";
 import { AIGenerateModal } from "./AIGenerateModal";
 import type { TermWithMastery, StudyMode, TermFlashcard, TermQuestion, QuestionOption } from "./types";
-import type { Suggestion } from "@/clean-architecture/domain/services/suggestion-generator.interface";
 
 interface StudySetContentProps {
     title: string;
@@ -41,7 +40,6 @@ export function StudySetContent({
     const [activeMode, setActiveMode] = useState<StudyMode | null>(null);
     const [isAddItemModalOpen, setIsAddItemModalOpen] = useState(false);
     const [isAIGenerateModalOpen, setIsAIGenerateModalOpen] = useState(false);
-    const [pendingSuggestions, setPendingSuggestions] = useState<Suggestion[]>([]);
     const [editingFlashcard, setEditingFlashcard] = useState<TermFlashcard | null>(null);
     const [editingQuestion, setEditingQuestion] = useState<TermQuestion | null>(null);
 
@@ -153,12 +151,6 @@ export function StudySetContent({
         );
     };
 
-    const handleSuggestionsGenerated = (suggestions: Suggestion[]) => {
-        setPendingSuggestions(suggestions);
-        // TODO: Issue #140 will implement the review UI for these suggestions
-        // For now, just store them in state
-    };
-
     // If a study session is active, show the study interface
     if (activeMode) {
         return (
@@ -257,7 +249,8 @@ export function StudySetContent({
             <AIGenerateModal
                 isOpen={isAIGenerateModalOpen}
                 onClose={() => setIsAIGenerateModalOpen(false)}
-                onSuggestionsGenerated={handleSuggestionsGenerated}
+                onFlashcardAdded={handleFlashcardAdded}
+                onQuestionAdded={handleQuestionAdded}
                 studySetPublicId={studySetPublicId}
                 isVideoSourced={isVideoSourced}
             />
