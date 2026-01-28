@@ -29,6 +29,7 @@ describe("GetStudySetItemsUseCase", () => {
             findReviewableItemById: vi.fn(),
             findReviewableItemsByIds: vi.fn(),
             countItemsByStudySetId: vi.fn(),
+            countItemsByStudySetIdsBatch: vi.fn(),
         };
 
         mockFlashcardRepo = {

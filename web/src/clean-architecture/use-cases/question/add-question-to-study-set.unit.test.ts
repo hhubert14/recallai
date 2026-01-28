@@ -56,6 +56,7 @@ describe("AddQuestionToStudySetUseCase", () => {
             findReviewableItemById: vi.fn(),
             findReviewableItemsByIds: vi.fn(),
             countItemsByStudySetId: vi.fn(),
+            countItemsByStudySetIdsBatch: vi.fn(),
         };
 
         useCase = new AddQuestionToStudySetUseCase(

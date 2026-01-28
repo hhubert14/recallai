@@ -5,8 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { TextRefreshButton } from "../TextRefreshButton";
 import { DrizzleStudySetRepository } from "@/clean-architecture/infrastructure/repositories/study-set.repository.drizzle";
 import { DrizzleFolderRepository } from "@/clean-architecture/infrastructure/repositories/folder.repository.drizzle";
-import { DrizzleQuestionRepository } from "@/clean-architecture/infrastructure/repositories/question.repository.drizzle";
-import { DrizzleFlashcardRepository } from "@/clean-architecture/infrastructure/repositories/flashcard.repository.drizzle";
+import { DrizzleReviewableItemRepository } from "@/clean-architecture/infrastructure/repositories/reviewable-item.repository.drizzle";
 import { FindStudySetsByUserIdUseCase } from "@/clean-architecture/use-cases/study-set/find-study-sets-by-user-id.use-case";
 import { GetFoldersByUserIdUseCase } from "@/clean-architecture/use-cases/folder/get-folders-by-user-id.use-case";
 import { GetFolderWithStudySetsUseCase } from "@/clean-architecture/use-cases/folder/get-folder-with-study-sets.use-case";
@@ -92,22 +91,10 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
         studySets = await new FindStudySetsByUserIdUseCase(studySetRepo).execute(user.id);
     }
 
-    // Fetch counts for study sets
-    const questionRepo = new DrizzleQuestionRepository();
-    const flashcardRepo = new DrizzleFlashcardRepository();
-
-    const videoIds = studySets
-        .filter((s) => s.videoId !== null)
-        .map((s) => s.videoId as number);
-
-    const [questionCounts, flashcardCounts] = await Promise.all([
-        videoIds.length > 0
-            ? questionRepo.countQuestionsByVideoIds(videoIds)
-            : Promise.resolve({} as Record<number, number>),
-        videoIds.length > 0
-            ? flashcardRepo.countFlashcardsByVideoIds(videoIds)
-            : Promise.resolve({} as Record<number, number>),
-    ]);
+    // Fetch counts for study sets using reviewable items
+    const reviewableItemRepo = new DrizzleReviewableItemRepository();
+    const studySetIds = studySets.map((s) => s.id);
+    const itemCounts = await reviewableItemRepo.countItemsByStudySetIdsBatch(studySetIds);
 
     const studySetsWithCounts: StudySetWithCounts[] = studySets.map(
         (studySet) => ({
@@ -117,12 +104,8 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
             description: studySet.description,
             sourceType: studySet.sourceType,
             createdAt: studySet.createdAt,
-            questionCount: studySet.videoId
-                ? (questionCounts[studySet.videoId] ?? 0)
-                : 0,
-            flashcardCount: studySet.videoId
-                ? (flashcardCounts[studySet.videoId] ?? 0)
-                : 0,
+            questionCount: itemCounts[studySet.id]?.questions ?? 0,
+            flashcardCount: itemCounts[studySet.id]?.flashcards ?? 0,
         })
     );
 

@@ -392,6 +392,102 @@ describe("DrizzleReviewableItemRepository (integration)", () => {
     });
   });
 
+  describe("countItemsByStudySetIdsBatch", () => {
+    it("returns correct counts separated by type for multiple study sets", async () => {
+      // Create another study set
+      const [studySet2] = await ctx.db
+        .insert(studySets)
+        .values({
+          userId: testUserId,
+          name: "Study Set 2",
+          sourceType: "manual",
+          videoId: null,
+        })
+        .returning();
+
+      // Create flashcard for study set 2
+      const [flashcard3] = await ctx.db
+        .insert(flashcards)
+        .values({
+          videoId: null,
+          userId: testUserId,
+          front: "Front 3",
+          back: "Back 3",
+        })
+        .returning();
+
+      // Add items: 2 questions + 1 flashcard to studySet1, 1 flashcard to studySet2
+      await repository.createReviewableItemsForQuestionsBatch([
+        { userId: testUserId, questionId: testQuestionIds[0], videoId: testVideoId, studySetId: testStudySetId },
+        { userId: testUserId, questionId: testQuestionIds[1], videoId: testVideoId, studySetId: testStudySetId },
+      ]);
+      await repository.createReviewableItemsForFlashcardsBatch([
+        { userId: testUserId, flashcardId: testFlashcardIds[0], videoId: testVideoId, studySetId: testStudySetId },
+        { userId: testUserId, flashcardId: flashcard3.id, videoId: null, studySetId: studySet2.id },
+      ]);
+
+      const result = await repository.countItemsByStudySetIdsBatch([testStudySetId, studySet2.id]);
+
+      expect(result[testStudySetId]).toEqual({ questions: 2, flashcards: 1 });
+      expect(result[studySet2.id]).toEqual({ questions: 0, flashcards: 1 });
+    });
+
+    it("returns zeros for study sets with no items", async () => {
+      // Create another empty study set
+      const [emptyStudySet] = await ctx.db
+        .insert(studySets)
+        .values({
+          userId: testUserId,
+          name: "Empty Study Set",
+          sourceType: "manual",
+          videoId: null,
+        })
+        .returning();
+
+      const result = await repository.countItemsByStudySetIdsBatch([testStudySetId, emptyStudySet.id]);
+
+      expect(result[testStudySetId]).toEqual({ questions: 0, flashcards: 0 });
+      expect(result[emptyStudySet.id]).toEqual({ questions: 0, flashcards: 0 });
+    });
+
+    it("returns empty object for empty input", async () => {
+      const result = await repository.countItemsByStudySetIdsBatch([]);
+      expect(result).toEqual({});
+    });
+
+    it("works with manual study sets (no videoId)", async () => {
+      // Create manual study set
+      const [manualStudySet] = await ctx.db
+        .insert(studySets)
+        .values({
+          userId: testUserId,
+          name: "Manual Study Set",
+          sourceType: "manual",
+          videoId: null,
+        })
+        .returning();
+
+      // Create flashcards for manual study set
+      const manualFlashcards = await ctx.db
+        .insert(flashcards)
+        .values([
+          { videoId: null, userId: testUserId, front: "Manual 1", back: "Back 1" },
+          { videoId: null, userId: testUserId, front: "Manual 2", back: "Back 2" },
+        ])
+        .returning();
+
+      // Add flashcards to manual study set
+      await repository.createReviewableItemsForFlashcardsBatch([
+        { userId: testUserId, flashcardId: manualFlashcards[0].id, videoId: null, studySetId: manualStudySet.id },
+        { userId: testUserId, flashcardId: manualFlashcards[1].id, videoId: null, studySetId: manualStudySet.id },
+      ]);
+
+      const result = await repository.countItemsByStudySetIdsBatch([manualStudySet.id]);
+
+      expect(result[manualStudySet.id]).toEqual({ questions: 0, flashcards: 2 });
+    });
+  });
+
   describe("studySetId constraint", () => {
     it("all created reviewable items have non-null studySetId", async () => {
       // Create items for both questions and flashcards

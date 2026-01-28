@@ -86,4 +86,12 @@ export interface IReviewableItemRepository {
    * Used for enforcing the per-study-set item limit.
    */
   countItemsByStudySetId(studySetId: number): Promise<number>;
+
+  /**
+   * Count items by study set IDs in batch, separated by type.
+   * Used for displaying counts on the library page.
+   */
+  countItemsByStudySetIdsBatch(
+    studySetIds: number[]
+  ): Promise<Record<number, { questions: number; flashcards: number }>>;
 }

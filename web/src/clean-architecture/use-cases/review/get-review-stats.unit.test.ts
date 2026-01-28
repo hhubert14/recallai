@@ -74,6 +74,7 @@ describe("GetReviewStatsUseCase", () => {
       findReviewableItemById: vi.fn(),
       findReviewableItemsByIds: vi.fn(),
             countItemsByStudySetId: vi.fn(),
+      countItemsByStudySetIdsBatch: vi.fn(),
     };
     mockReviewProgressRepo = {
       createReviewProgressBatch: vi.fn(),
