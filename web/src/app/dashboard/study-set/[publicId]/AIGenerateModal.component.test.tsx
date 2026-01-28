@@ -1515,5 +1515,65 @@ describe("AIGenerateModal", () => {
             const optionCounters = screen.getAllByText("8/500");
             expect(optionCounters).toHaveLength(4);
         });
+
+        it("displays error message when accepting suggestion fails", async () => {
+            const user = userEvent.setup();
+            const suggestions = [
+                createMockFlashcardSuggestion("temp-1", "What is React?", "A JavaScript library"),
+            ];
+
+            // Set up initial generation fetch
+            global.fetch = vi.fn().mockResolvedValueOnce({
+                ok: true,
+                json: () =>
+                    Promise.resolve({
+                        status: "success",
+                        data: { suggestions },
+                    }),
+            });
+
+            render(
+                <AIGenerateModal
+                    isOpen={true}
+                    onClose={vi.fn()}
+                    onFlashcardAdded={vi.fn()}
+                    onQuestionAdded={vi.fn()}
+                    studySetPublicId="abc-123"
+                    isVideoSourced={false}
+                />
+            );
+
+            await user.type(
+                screen.getByLabelText(/what would you like to learn/i),
+                "Test prompt"
+            );
+            await user.click(screen.getByRole("button", { name: /generate/i }));
+
+            await waitFor(() => {
+                expect(screen.getByText(/review suggestions/i)).toBeInTheDocument();
+            });
+
+            // Set up failing accept fetch
+            global.fetch = vi.fn().mockResolvedValueOnce({
+                ok: false,
+                json: () =>
+                    Promise.resolve({
+                        status: "fail",
+                        data: { error: "Front text exceeds maximum length" },
+                    }),
+            });
+
+            // Click accept on the suggestion
+            const suggestionCard = screen.getByTestId("suggestion-card");
+            await user.click(within(suggestionCard).getByRole("button", { name: /^accept$/i }));
+
+            // Should show error message
+            await waitFor(() => {
+                expect(screen.getByRole("alert")).toHaveTextContent("Front text exceeds maximum length");
+            });
+
+            // Suggestion should still be visible (not removed)
+            expect(screen.getByText("What is React?")).toBeInTheDocument();
+        });
     });
 });

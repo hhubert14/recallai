@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { CharacterCount } from "@/components/ui/character-count";
 import type { TermWithMastery, MasteryStatus, TermFlashcard, TermQuestion, EditedTermContent } from "./types";
 import { CHARACTER_LIMITS } from "./types";
 
@@ -19,15 +20,6 @@ interface TermCardProps {
     onEditedContentChange?: (content: EditedTermContent) => void;
     onSaveEdit?: () => void;
     onCancelEdit?: () => void;
-}
-
-function CharacterCount({ current, max }: { current: number; max: number }) {
-    const isOverLimit = current > max;
-    return (
-        <span className={`text-xs ${isOverLimit ? "text-destructive font-medium" : "text-muted-foreground"}`}>
-            {current}/{max}
-        </span>
-    );
 }
 
 function getMasteryIndicatorClass(status: MasteryStatus): string {

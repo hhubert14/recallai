@@ -13,18 +13,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { CharacterCount } from "@/components/ui/character-count";
 import { CHARACTER_LIMITS } from "./types";
 
 type ItemType = "flashcard" | "question";
-
-function CharacterCount({ current, max }: { current: number; max: number }) {
-    const isOverLimit = current > max;
-    return (
-        <span className={`text-xs ${isOverLimit ? "text-destructive font-medium" : "text-muted-foreground"}`}>
-            {current}/{max}
-        </span>
-    );
-}
 
 interface FlashcardData {
     id: number;

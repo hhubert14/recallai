@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { CharacterCount } from "@/components/ui/character-count";
 import type {
     Suggestion,
     SuggestionItemType,
@@ -30,15 +31,6 @@ type EditedSuggestionContent = {
     questionText?: string;
     options?: QuestionOptionSuggestion[];
 };
-
-function CharacterCount({ current, max }: { current: number; max: number }) {
-    const isOverLimit = current > max;
-    return (
-        <span className={`text-xs ${isOverLimit ? "text-destructive font-medium" : "text-muted-foreground"}`}>
-            {current}/{max}
-        </span>
-    );
-}
 
 const DEFAULT_COUNT = 5;
 const MIN_COUNT = 1;
@@ -108,6 +100,7 @@ export function AIGenerateModal({
     const [editingSuggestionId, setEditingSuggestionId] = useState<string | null>(null);
     const [editedContent, setEditedContent] = useState<EditedSuggestionContent>({});
     const [acceptingIds, setAcceptingIds] = useState<Set<string>>(new Set());
+    const [acceptError, setAcceptError] = useState<string | null>(null);
 
     // Reset form when modal opens/closes
     useEffect(() => {
@@ -123,6 +116,7 @@ export function AIGenerateModal({
             setEditingSuggestionId(null);
             setEditedContent({});
             setAcceptingIds(new Set());
+            setAcceptError(null);
         }
     }, [isOpen]);
 
@@ -186,6 +180,7 @@ export function AIGenerateModal({
 
     const handleAccept = useCallback(async (suggestion: Suggestion) => {
         setAcceptingIds((prev) => new Set([...prev, suggestion.tempId]));
+        setAcceptError(null);
 
         try {
             if (suggestion.itemType === "flashcard") {
@@ -206,6 +201,9 @@ export function AIGenerateModal({
                 const data = await response.json();
                 if (response.ok && data.status === "success") {
                     onFlashcardAdded(data.data.flashcard);
+                    setSuggestions((prev) => prev.filter((s) => s.tempId !== suggestion.tempId));
+                } else {
+                    setAcceptError(data.data?.error || "Failed to add flashcard. Please try again.");
                 }
             } else {
                 const response = await fetch(
@@ -225,10 +223,13 @@ export function AIGenerateModal({
                 const data = await response.json();
                 if (response.ok && data.status === "success") {
                     onQuestionAdded(data.data.question);
+                    setSuggestions((prev) => prev.filter((s) => s.tempId !== suggestion.tempId));
+                } else {
+                    setAcceptError(data.data?.error || "Failed to add question. Please try again.");
                 }
             }
-
-            setSuggestions((prev) => prev.filter((s) => s.tempId !== suggestion.tempId));
+        } catch {
+            setAcceptError("An error occurred. Please try again.");
         } finally {
             setAcceptingIds((prev) => {
                 const next = new Set(prev);
@@ -443,6 +444,12 @@ export function AIGenerateModal({
                         {reviewedCount} of {initialSuggestionCount} reviewed
                     </DialogDescription>
                 </DialogHeader>
+
+                {acceptError && (
+                    <p className="text-sm text-destructive px-1" role="alert">
+                        {acceptError}
+                    </p>
+                )}
 
                 <div className="flex-1 overflow-y-auto space-y-4 py-4">
                     {suggestions.map((suggestion) => (
