@@ -164,6 +164,7 @@ describe("GetItemsForReviewUseCase", () => {
       findQuestionsByVideoId: vi.fn(),
       findQuestionsByIds: vi.fn(),
       countQuestionsByVideoIds: vi.fn(),
+      updateQuestion: vi.fn(),
     };
     mockFlashcardRepo = {
       createFlashcards: vi.fn(),

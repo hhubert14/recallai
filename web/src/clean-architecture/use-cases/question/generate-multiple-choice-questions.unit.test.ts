@@ -117,6 +117,7 @@ describe("GenerateMultipleChoiceQuestionsUseCase", () => {
             findQuestionsByVideoId: vi.fn(),
             findQuestionsByIds: vi.fn(),
             countQuestionsByVideoIds: vi.fn(),
+            updateQuestion: vi.fn(),
         };
 
         mockTranscriptWindowRepo = {

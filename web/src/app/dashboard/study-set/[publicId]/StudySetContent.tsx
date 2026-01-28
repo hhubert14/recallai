@@ -9,7 +9,8 @@ import { TermsList } from "./TermsList";
 import { StudySession } from "./StudySession";
 import { AddItemModal } from "./AddItemModal";
 import { EditFlashcardModal } from "./EditFlashcardModal";
-import type { TermWithMastery, StudyMode, StudySetProgress, TermFlashcard } from "./types";
+import { EditQuestionModal } from "./EditQuestionModal";
+import type { TermWithMastery, StudyMode, StudySetProgress, TermFlashcard, TermQuestion, QuestionOption } from "./types";
 
 const MAX_QUESTIONS = 20;
 const MAX_FLASHCARDS = 20;
@@ -44,6 +45,7 @@ export function StudySetContent({
     const [error, setError] = useState<string | null>(null);
     const [isAddItemModalOpen, setIsAddItemModalOpen] = useState(false);
     const [editingFlashcard, setEditingFlashcard] = useState<TermFlashcard | null>(null);
+    const [editingQuestion, setEditingQuestion] = useState<TermQuestion | null>(null);
 
     const questionCount = terms.filter((t) => t.itemType === "question").length;
     const flashcardCount = terms.filter((t) => t.itemType === "flashcard").length;
@@ -207,6 +209,37 @@ export function StudySetContent({
         );
     };
 
+    const handleEditQuestion = (question: TermQuestion) => {
+        setEditingQuestion(question);
+    };
+
+    const handleQuestionUpdated = (updated: {
+        id: number;
+        questionText: string;
+        options: Array<{
+            id: number;
+            optionText: string;
+            isCorrect: boolean;
+            explanation: string | null;
+        }>;
+    }) => {
+        setTerms((prev) =>
+            prev.map((term) => {
+                if (term.itemType === "question" && term.question?.id === updated.id) {
+                    return {
+                        ...term,
+                        question: {
+                            ...term.question,
+                            questionText: updated.questionText,
+                            options: updated.options as QuestionOption[],
+                        },
+                    };
+                }
+                return term;
+            })
+        );
+    };
+
     // If a study session is active, show the study interface
     if (activeMode) {
         return (
@@ -263,6 +296,7 @@ export function StudySetContent({
                 onStudy={handleStudy}
                 progress={currentProgress}
                 onEditFlashcard={handleEditFlashcard}
+                onEditQuestion={handleEditQuestion}
             />
 
             {/* Add More Terms */}
@@ -345,6 +379,15 @@ export function StudySetContent({
                     onClose={() => setEditingFlashcard(null)}
                     onFlashcardUpdated={handleFlashcardUpdated}
                     flashcard={editingFlashcard}
+                />
+            )}
+
+            {/* Edit Question Modal */}
+            {editingQuestion && (
+                <EditQuestionModal
+                    onClose={() => setEditingQuestion(null)}
+                    onQuestionUpdated={handleQuestionUpdated}
+                    question={editingQuestion}
                 />
             )}
         </div>
