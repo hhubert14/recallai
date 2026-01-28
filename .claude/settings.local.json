@@ -95,7 +95,9 @@
       "Bash(PGPASSWORD=postgres psql:*)",
       "Bash(dir:*)",
       "Bash(npx vitest:*)",
-      "Bash(npx next lint)"
+      "Bash(npx next lint)",
+      "Bash(gh api:*)",
+      "Bash(npx playwright test --list)"
     ],
     "deny": [],
     "ask": []

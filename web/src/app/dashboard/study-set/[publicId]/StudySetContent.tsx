@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Plus, Loader2 } from "lucide-react";
+import { Plus, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { VideoPlayer } from "./VideoPlayer";
 import { CollapsibleSummary } from "./CollapsibleSummary";
@@ -10,10 +10,9 @@ import { StudySession } from "./StudySession";
 import { AddItemModal } from "./AddItemModal";
 import { EditFlashcardModal } from "./EditFlashcardModal";
 import { EditQuestionModal } from "./EditQuestionModal";
-import type { TermWithMastery, StudyMode, StudySetProgress, TermFlashcard, TermQuestion, QuestionOption } from "./types";
-
-const MAX_QUESTIONS = 20;
-const MAX_FLASHCARDS = 20;
+import { AIGenerateModal } from "./AIGenerateModal";
+import type { TermWithMastery, StudyMode, TermFlashcard, TermQuestion, QuestionOption } from "./types";
+import type { Suggestion } from "@/clean-architecture/domain/services/suggestion-generator.interface";
 
 interface StudySetContentProps {
     title: string;
@@ -40,17 +39,11 @@ export function StudySetContent({
 }: StudySetContentProps) {
     const [terms, setTerms] = useState<TermWithMastery[]>(initialTerms);
     const [activeMode, setActiveMode] = useState<StudyMode | null>(null);
-    const [isGeneratingQuestions, setIsGeneratingQuestions] = useState(false);
-    const [isGeneratingFlashcards, setIsGeneratingFlashcards] = useState(false);
-    const [error, setError] = useState<string | null>(null);
     const [isAddItemModalOpen, setIsAddItemModalOpen] = useState(false);
+    const [isAIGenerateModalOpen, setIsAIGenerateModalOpen] = useState(false);
+    const [pendingSuggestions, setPendingSuggestions] = useState<Suggestion[]>([]);
     const [editingFlashcard, setEditingFlashcard] = useState<TermFlashcard | null>(null);
     const [editingQuestion, setEditingQuestion] = useState<TermQuestion | null>(null);
-
-    const questionCount = terms.filter((t) => t.itemType === "question").length;
-    const flashcardCount = terms.filter((t) => t.itemType === "flashcard").length;
-    const canGenerateQuestions = questionCount < MAX_QUESTIONS && videoId;
-    const canGenerateFlashcards = flashcardCount < MAX_FLASHCARDS && videoId;
 
     // Compute progress from current terms state so it updates when new terms are added
     const currentProgress = useMemo(() => ({
@@ -59,86 +52,6 @@ export function StudySetContent({
         notStarted: terms.filter((t) => t.masteryStatus === "not_started").length,
         total: terms.length,
     }), [terms]);
-
-    async function handleGenerateQuestions() {
-        if (!videoId) return;
-        setIsGeneratingQuestions(true);
-        setError(null);
-
-        try {
-            const response = await fetch("/api/v1/questions/generate", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ videoId, studySetId, count: 5 }),
-            });
-
-            const data = await response.json();
-
-            if (data.status === "success") {
-                const newTerms: TermWithMastery[] = data.data.questions.map((q: {
-                    id: number;
-                    questionText: string;
-                    sourceTimestamp: number | null;
-                    options: { id: number; optionText: string; isCorrect: boolean; explanation: string | null }[];
-                }) => ({
-                    id: q.id,
-                    itemType: "question" as const,
-                    question: {
-                        id: q.id,
-                        questionText: q.questionText,
-                        options: q.options,
-                        sourceTimestamp: q.sourceTimestamp,
-                    },
-                    masteryStatus: "not_started" as const,
-                }));
-                setTerms((prev) => [...prev, ...newTerms]);
-            } else {
-                setError(data.data?.error || "Failed to generate questions");
-            }
-        } catch (err) {
-            console.error("Failed to generate questions:", err);
-            setError("Failed to generate questions. Please try again.");
-        } finally {
-            setIsGeneratingQuestions(false);
-        }
-    }
-
-    async function handleGenerateFlashcards() {
-        if (!videoId) return;
-        setIsGeneratingFlashcards(true);
-        setError(null);
-
-        try {
-            const response = await fetch("/api/v1/flashcards/generate", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ videoId, studySetId, count: 5 }),
-            });
-
-            const data = await response.json();
-
-            if (data.status === "success") {
-                const newTerms: TermWithMastery[] = data.data.flashcards.map((f: {
-                    id: number;
-                    front: string;
-                    back: string;
-                }) => ({
-                    id: f.id,
-                    itemType: "flashcard" as const,
-                    flashcard: { id: f.id, front: f.front, back: f.back },
-                    masteryStatus: "not_started" as const,
-                }));
-                setTerms((prev) => [...prev, ...newTerms]);
-            } else {
-                setError(data.data?.error || "Failed to generate flashcards");
-            }
-        } catch (err) {
-            console.error("Failed to generate flashcards:", err);
-            setError("Failed to generate flashcards. Please try again.");
-        } finally {
-            setIsGeneratingFlashcards(false);
-        }
-    }
 
     const handleStudy = (mode: StudyMode) => {
         setActiveMode(mode);
@@ -240,6 +153,12 @@ export function StudySetContent({
         );
     };
 
+    const handleSuggestionsGenerated = (suggestions: Suggestion[]) => {
+        setPendingSuggestions(suggestions);
+        // TODO: Issue #140 will implement the review UI for these suggestions
+        // For now, just store them in state
+    };
+
     // If a study session is active, show the study interface
     if (activeMode) {
         return (
@@ -314,54 +233,15 @@ export function StudySetContent({
                         Add Item
                     </Button>
 
-                    {/* Generate buttons - only for video-sourced study sets */}
-                    {isVideoSourced && canGenerateFlashcards && (
-                        <Button
-                            variant="outline"
-                            onClick={handleGenerateFlashcards}
-                            disabled={isGeneratingFlashcards || isGeneratingQuestions}
-                        >
-                            {isGeneratingFlashcards ? (
-                                <>
-                                    <Loader2 className="h-4 w-4 animate-spin" />
-                                    Generating...
-                                </>
-                            ) : (
-                                <>
-                                    <Plus className="h-4 w-4" />
-                                    Generate 5 Flashcards
-                                </>
-                            )}
-                        </Button>
-                    )}
-                    {isVideoSourced && canGenerateQuestions && (
-                        <Button
-                            variant="outline"
-                            onClick={handleGenerateQuestions}
-                            disabled={isGeneratingQuestions || isGeneratingFlashcards}
-                        >
-                            {isGeneratingQuestions ? (
-                                <>
-                                    <Loader2 className="h-4 w-4 animate-spin" />
-                                    Generating...
-                                </>
-                            ) : (
-                                <>
-                                    <Plus className="h-4 w-4" />
-                                    Generate 5 Questions
-                                </>
-                            )}
-                        </Button>
-                    )}
+                    {/* Generate with AI - available for all study sets */}
+                    <Button
+                        variant="outline"
+                        onClick={() => setIsAIGenerateModalOpen(true)}
+                    >
+                        <Sparkles className="h-4 w-4" />
+                        Generate with AI
+                    </Button>
                 </div>
-                {error && (
-                    <p className="text-sm text-destructive mt-3">{error}</p>
-                )}
-                {isVideoSourced && (
-                    <p className="text-xs text-muted-foreground mt-3">
-                        {flashcardCount}/{MAX_FLASHCARDS} flashcards · {questionCount}/{MAX_QUESTIONS} questions
-                    </p>
-                )}
             </div>
 
             {/* Add Item Modal */}
@@ -371,6 +251,15 @@ export function StudySetContent({
                 onFlashcardAdded={handleFlashcardAdded}
                 onQuestionAdded={handleQuestionAdded}
                 studySetPublicId={studySetPublicId}
+            />
+
+            {/* AI Generate Modal */}
+            <AIGenerateModal
+                isOpen={isAIGenerateModalOpen}
+                onClose={() => setIsAIGenerateModalOpen(false)}
+                onSuggestionsGenerated={handleSuggestionsGenerated}
+                studySetPublicId={studySetPublicId}
+                isVideoSourced={isVideoSourced}
             />
 
             {/* Edit Flashcard Modal */}
