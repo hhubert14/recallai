@@ -94,16 +94,7 @@ export function EditQuestionModal({
                 return;
             }
 
-            onQuestionUpdated({
-                id: question.id,
-                questionText,
-                options: options.map(opt => ({
-                    id: opt.id,
-                    optionText: opt.optionText,
-                    isCorrect: opt.isCorrect,
-                    explanation: opt.explanation,
-                })),
-            });
+            onQuestionUpdated(data.data.question);
             onClose();
         } catch {
             setError("An error occurred. Please try again.");

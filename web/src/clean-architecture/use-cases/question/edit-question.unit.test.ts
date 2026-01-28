@@ -275,6 +275,52 @@ describe("EditQuestionUseCase", () => {
         expect(mockQuestionRepository.updateQuestion).not.toHaveBeenCalled();
     });
 
+    it("throws error when option ID does not belong to the question", async () => {
+        vi.mocked(mockQuestionRepository.findQuestionById).mockResolvedValue(existingQuestion);
+        vi.mocked(mockReviewableItemRepository.findReviewableItemByQuestionId).mockResolvedValue(reviewableItem);
+
+        const optionsWithInvalidId = [
+            { id: 1, optionText: "A", isCorrect: true, explanation: null },
+            { id: 2, optionText: "B", isCorrect: false, explanation: null },
+            { id: 3, optionText: "C", isCorrect: false, explanation: null },
+            { id: 999, optionText: "D", isCorrect: false, explanation: null }, // Invalid ID
+        ];
+
+        await expect(
+            useCase.execute({
+                userId,
+                questionId,
+                questionText: "Question text",
+                options: optionsWithInvalidId,
+            })
+        ).rejects.toThrow("Invalid option ID: option does not belong to this question");
+
+        expect(mockQuestionRepository.updateQuestion).not.toHaveBeenCalled();
+    });
+
+    it("throws error when all option IDs are from a different question", async () => {
+        vi.mocked(mockQuestionRepository.findQuestionById).mockResolvedValue(existingQuestion);
+        vi.mocked(mockReviewableItemRepository.findReviewableItemByQuestionId).mockResolvedValue(reviewableItem);
+
+        const optionsFromDifferentQuestion = [
+            { id: 100, optionText: "A", isCorrect: true, explanation: null },
+            { id: 101, optionText: "B", isCorrect: false, explanation: null },
+            { id: 102, optionText: "C", isCorrect: false, explanation: null },
+            { id: 103, optionText: "D", isCorrect: false, explanation: null },
+        ];
+
+        await expect(
+            useCase.execute({
+                userId,
+                questionId,
+                questionText: "Question text",
+                options: optionsFromDifferentQuestion,
+            })
+        ).rejects.toThrow("Invalid option ID: option does not belong to this question");
+
+        expect(mockQuestionRepository.updateQuestion).not.toHaveBeenCalled();
+    });
+
     it("throws 'Exactly one option must be marked as correct' when no option is correct", async () => {
         vi.mocked(mockQuestionRepository.findQuestionById).mockResolvedValue(existingQuestion);
         vi.mocked(mockReviewableItemRepository.findReviewableItemByQuestionId).mockResolvedValue(reviewableItem);

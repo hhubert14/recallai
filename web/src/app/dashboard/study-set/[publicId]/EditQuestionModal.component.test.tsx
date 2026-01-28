@@ -287,15 +287,19 @@ describe("EditQuestionModal", () => {
             await user.click(screen.getByRole("button", { name: /save/i }));
 
             await waitFor(() => {
+                // Should use the API response (source of truth), not local state
                 expect(onQuestionUpdated).toHaveBeenCalledWith({
                     id: 100,
+                    videoId: null,
                     questionText: "What is BDD?",
                     options: [
-                        { id: 1, optionText: "Behavior-Driven Development", isCorrect: false, explanation: "Correct!" },
+                        { id: 1, optionText: "Behavior-Driven Development", isCorrect: false, explanation: null },
                         { id: 2, optionText: "Time-Driven Development", isCorrect: true, explanation: null },
                         { id: 3, optionText: "Task-Driven Design", isCorrect: false, explanation: null },
                         { id: 4, optionText: "Test-Delayed Development", isCorrect: false, explanation: null },
                     ],
+                    sourceQuote: null,
+                    sourceTimestamp: null,
                 });
             });
 

@@ -48,6 +48,14 @@ export class EditQuestionUseCase {
             throw new Error("Must provide exactly 4 options");
         }
 
+        // Validate that all option IDs belong to this question
+        const existingOptionIds = new Set(question.options.map(opt => opt.id));
+        for (const option of options) {
+            if (!existingOptionIds.has(option.id)) {
+                throw new Error("Invalid option ID: option does not belong to this question");
+            }
+        }
+
         // Validate exactly one correct answer
         const correctCount = options.filter(opt => opt.isCorrect).length;
         if (correctCount !== 1) {

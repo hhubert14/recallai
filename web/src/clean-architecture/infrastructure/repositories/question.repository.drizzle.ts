@@ -1,10 +1,12 @@
 import { IQuestionRepository } from "@/clean-architecture/domain/repositories/question.repository.interface";
 import { MultipleChoiceQuestionEntity, MultipleChoiceOption } from "@/clean-architecture/domain/entities/question.entity";
-import { db } from "@/drizzle";
+import { db as defaultDb } from "@/drizzle";
 import { questions, questionOptions } from "@/drizzle/schema";
 import { eq, asc, inArray, count } from "drizzle-orm";
+import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 export class DrizzleQuestionRepository implements IQuestionRepository {
+    constructor(private readonly db: PostgresJsDatabase = defaultDb) {}
     async createMultipleChoiceQuestion(
         videoId: number | null,
         questionText: string,
@@ -18,7 +20,7 @@ export class DrizzleQuestionRepository implements IQuestionRepository {
     ): Promise<MultipleChoiceQuestionEntity> {
         try {
             // Create the question first
-            const [questionData] = await db
+            const [questionData] = await this.db
                 .insert(questions)
                 .values({
                     videoId,
@@ -32,7 +34,7 @@ export class DrizzleQuestionRepository implements IQuestionRepository {
             // Create all options
             const createdOptions = [];
             for (const option of options) {
-                const [optionData] = await db
+                const [optionData] = await this.db
                     .insert(questionOptions)
                     .values({
                         questionId: questionData.id,
@@ -54,7 +56,7 @@ export class DrizzleQuestionRepository implements IQuestionRepository {
 
     async findQuestionById(questionId: number): Promise<MultipleChoiceQuestionEntity | null> {
         try {
-            const rows = await db
+            const rows = await this.db
                 .select()
                 .from(questions)
                 .innerJoin(questionOptions, eq(questionOptions.questionId, questions.id))
@@ -76,7 +78,7 @@ export class DrizzleQuestionRepository implements IQuestionRepository {
 
     async findQuestionsByVideoId(videoId: number): Promise<MultipleChoiceQuestionEntity[]> {
         try {
-            const rows = await db
+            const rows = await this.db
                 .select()
                 .from(questions)
                 .leftJoin(questionOptions, eq(questionOptions.questionId, questions.id))
@@ -117,7 +119,7 @@ export class DrizzleQuestionRepository implements IQuestionRepository {
         }
 
         try {
-            const rows = await db
+            const rows = await this.db
                 .select()
                 .from(questions)
                 .leftJoin(questionOptions, eq(questionOptions.questionId, questions.id))
@@ -158,7 +160,7 @@ export class DrizzleQuestionRepository implements IQuestionRepository {
         }
 
         try {
-            const rows = await db
+            const rows = await this.db
                 .select({
                     videoId: questions.videoId,
                     count: count(),
@@ -185,23 +187,26 @@ export class DrizzleQuestionRepository implements IQuestionRepository {
         }>
     ): Promise<MultipleChoiceQuestionEntity> {
         try {
-            // Update the question text
-            await db
-                .update(questions)
-                .set({ questionText })
-                .where(eq(questions.id, questionId));
+            // Use transaction to ensure all updates succeed or fail together
+            await this.db.transaction(async (tx) => {
+                // Update the question text
+                await tx
+                    .update(questions)
+                    .set({ questionText })
+                    .where(eq(questions.id, questionId));
 
-            // Update each option by its ID
-            for (const option of options) {
-                await db
-                    .update(questionOptions)
-                    .set({
-                        optionText: option.optionText,
-                        isCorrect: option.isCorrect,
-                        explanation: option.explanation,
-                    })
-                    .where(eq(questionOptions.id, option.id));
-            }
+                // Update each option by its ID
+                for (const option of options) {
+                    await tx
+                        .update(questionOptions)
+                        .set({
+                            optionText: option.optionText,
+                            isCorrect: option.isCorrect,
+                            explanation: option.explanation,
+                        })
+                        .where(eq(questionOptions.id, option.id));
+                }
+            });
 
             // Fetch and return the updated question
             const updated = await this.findQuestionById(questionId);

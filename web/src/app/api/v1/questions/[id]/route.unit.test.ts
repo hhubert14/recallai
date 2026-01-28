@@ -361,6 +361,27 @@ describe("PATCH /api/v1/questions/[id]", () => {
         expect(data.data.error).toBe("Option text cannot exceed 500 characters");
     });
 
+    it("returns 400 when option ID does not belong to the question", async () => {
+        vi.mocked(getAuthenticatedUser).mockResolvedValue(mockAuthenticatedUser("user-123"));
+
+        const mockExecute = vi.fn().mockRejectedValue(new Error("Invalid option ID: option does not belong to this question"));
+        vi.mocked(EditQuestionUseCase).mockImplementation(() => ({
+            execute: mockExecute,
+        }) as unknown as EditQuestionUseCase);
+
+        const request = createMockRequest({
+            questionText: "New question?",
+            options: validOptions,
+        });
+
+        const response = await PATCH(request, { params: Promise.resolve({ id: questionId }) });
+        const data = await response.json();
+
+        expect(response.status).toBe(400);
+        expect(data.status).toBe("fail");
+        expect(data.data.error).toBe("Invalid option ID: option does not belong to this question");
+    });
+
     it("returns 500 for unexpected errors", async () => {
         vi.mocked(getAuthenticatedUser).mockResolvedValue(mockAuthenticatedUser("user-123"));
 

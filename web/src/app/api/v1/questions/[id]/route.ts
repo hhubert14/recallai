@@ -79,7 +79,8 @@ export async function PATCH(
             message.includes("cannot be empty") ||
             message.includes("cannot exceed") ||
             message.includes("Must provide exactly") ||
-            message.includes("Exactly one option")
+            message.includes("Exactly one option") ||
+            message.includes("Invalid option ID")
         ) {
             return jsendFail({ error: message }, 400);
         }
