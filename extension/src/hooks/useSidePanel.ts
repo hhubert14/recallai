@@ -57,7 +57,11 @@ export function useSidePanel() {
       const result = await processVideo(videoUrl);
       if (result.success) {
         const newContent = await getStudySetByVideoUrl(videoUrl);
-        setContent(newContent);
+        if (newContent === null) {
+          setError('Failed to load study set');
+        } else {
+          setContent(newContent);
+        }
       } else {
         setError('Failed to process video');
       }
