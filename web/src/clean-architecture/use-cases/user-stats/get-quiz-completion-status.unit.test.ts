@@ -31,6 +31,7 @@ describe("GetQuizCompletionStatusUseCase", () => {
 			findQuestionsByIds: vi.fn(),
 			countQuestionsByVideoIds: vi.fn(),
 			updateQuestion: vi.fn(),
+			deleteQuestion: vi.fn(),
 		};
 
 		mockAnswerRepo = {

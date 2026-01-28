@@ -18,6 +18,7 @@ describe("EditFlashcardUseCase", () => {
             countFlashcardsByVideoIds: vi.fn(),
             findFlashcardById: vi.fn(),
             updateFlashcard: vi.fn(),
+            deleteFlashcard: vi.fn(),
         };
 
         useCase = new EditFlashcardUseCase(mockFlashcardRepository);

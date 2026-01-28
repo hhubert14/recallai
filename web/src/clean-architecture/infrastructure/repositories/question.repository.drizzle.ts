@@ -220,6 +220,17 @@ export class DrizzleQuestionRepository implements IQuestionRepository {
         }
     }
 
+    async deleteQuestion(questionId: number): Promise<void> {
+        try {
+            await this.db
+                .delete(questions)
+                .where(eq(questions.id, questionId));
+        } catch (error) {
+            console.error("Error deleting question:", error);
+            throw error;
+        }
+    }
+
     private toEntity(
         questionData: typeof questions.$inferSelect,
         optionsData: typeof questionOptions.$inferSelect[]

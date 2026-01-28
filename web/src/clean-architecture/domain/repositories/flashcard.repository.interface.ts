@@ -30,4 +30,10 @@ export interface IFlashcardRepository {
      * Returns the updated flashcard.
      */
     updateFlashcard(flashcardId: number, front: string, back: string): Promise<FlashcardEntity>;
+
+    /**
+     * Delete a flashcard by its ID.
+     * Database cascades handle cleanup of related reviewable_items and review_progress.
+     */
+    deleteFlashcard(flashcardId: number): Promise<void>;
 }

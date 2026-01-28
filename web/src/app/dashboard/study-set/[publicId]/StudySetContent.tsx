@@ -131,6 +131,40 @@ export function StudySetContent({
         setEditError(null);
     };
 
+    // Delete a flashcard
+    const handleDeleteFlashcard = async (flashcardId: number) => {
+        try {
+            const response = await fetch(`/api/v1/flashcards/${flashcardId}`, {
+                method: "DELETE",
+            });
+
+            if (response.ok) {
+                setTerms((prev) => prev.filter(
+                    (term) => !(term.itemType === "flashcard" && term.flashcard?.id === flashcardId)
+                ));
+            }
+        } catch {
+            // Silently fail - user can retry
+        }
+    };
+
+    // Delete a question
+    const handleDeleteQuestion = async (questionId: number) => {
+        try {
+            const response = await fetch(`/api/v1/questions/${questionId}`, {
+                method: "DELETE",
+            });
+
+            if (response.ok) {
+                setTerms((prev) => prev.filter(
+                    (term) => !(term.itemType === "question" && term.question?.id === questionId)
+                ));
+            }
+        } catch {
+            // Silently fail - user can retry
+        }
+    };
+
     // Save inline edit
     const handleSaveEdit = async () => {
         if (!editingTermId) return;
@@ -275,6 +309,8 @@ export function StudySetContent({
                 progress={currentProgress}
                 onEditFlashcard={handleEditFlashcard}
                 onEditQuestion={handleEditQuestion}
+                onDeleteFlashcard={handleDeleteFlashcard}
+                onDeleteQuestion={handleDeleteQuestion}
                 editingTermId={editingTermId}
                 editedContent={editedContent}
                 isSaving={isSaving}

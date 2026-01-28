@@ -1,9 +1,20 @@
-import { Check, Pencil } from "lucide-react";
+import { useState } from "react";
+import { Check, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CharacterCount } from "@/components/ui/character-count";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import type { TermWithMastery, MasteryStatus, TermFlashcard, TermQuestion, EditedTermContent } from "./types";
 import { CHARACTER_LIMITS } from "./types";
 
@@ -12,6 +23,8 @@ interface TermCardProps {
     // View mode callbacks
     onEditFlashcard?: (flashcard: TermFlashcard) => void;
     onEditQuestion?: (question: TermQuestion) => void;
+    onDeleteFlashcard?: (flashcardId: number) => void;
+    onDeleteQuestion?: (questionId: number) => void;
     // Inline edit mode props
     isEditing?: boolean;
     editedContent?: EditedTermContent;
@@ -59,6 +72,8 @@ export function TermCard({
     term,
     onEditFlashcard,
     onEditQuestion,
+    onDeleteFlashcard,
+    onDeleteQuestion,
     isEditing = false,
     editedContent,
     isSaving = false,
@@ -67,6 +82,7 @@ export function TermCard({
     onSaveEdit,
     onCancelEdit,
 }: TermCardProps) {
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     if (term.itemType === "flashcard" && term.flashcard) {
         // Edit mode for flashcard
         if (isEditing && editedContent && onEditedContentChange && onSaveEdit && onCancelEdit) {
@@ -127,26 +143,64 @@ export function TermCard({
 
         // View mode for flashcard
         return (
-            <article className="flex border border-border rounded-lg bg-card overflow-hidden">
-                <MasteryIndicator status={term.masteryStatus} />
-                <div className="flex-1 min-w-0 p-4 border-r border-border">
-                    <p className="text-sm text-foreground break-words">{term.flashcard.front}</p>
-                </div>
-                <div className="flex-1 min-w-0 p-4 flex items-start justify-between gap-2">
-                    <p className="text-sm text-foreground break-words min-w-0">{term.flashcard.back}</p>
-                    {onEditFlashcard && (
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 shrink-0"
-                            onClick={() => onEditFlashcard(term.flashcard!)}
-                            aria-label="Edit flashcard"
-                        >
-                            <Pencil className="h-4 w-4" />
-                        </Button>
-                    )}
-                </div>
-            </article>
+            <>
+                <article className="flex border border-border rounded-lg bg-card overflow-hidden">
+                    <MasteryIndicator status={term.masteryStatus} />
+                    <div className="flex-1 min-w-0 p-4 border-r border-border">
+                        <p className="text-sm text-foreground break-words">{term.flashcard.front}</p>
+                    </div>
+                    <div className="flex-1 min-w-0 p-4 flex items-start justify-between gap-2">
+                        <p className="text-sm text-foreground break-words min-w-0">{term.flashcard.back}</p>
+                        <div className="flex gap-1 shrink-0">
+                            {onEditFlashcard && (
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8"
+                                    onClick={() => onEditFlashcard(term.flashcard!)}
+                                    aria-label="Edit flashcard"
+                                >
+                                    <Pencil className="h-4 w-4" />
+                                </Button>
+                            )}
+                            {onDeleteFlashcard && (
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                                    onClick={() => setShowDeleteDialog(true)}
+                                    aria-label="Delete flashcard"
+                                >
+                                    <Trash2 className="h-4 w-4" />
+                                </Button>
+                            )}
+                        </div>
+                    </div>
+                </article>
+
+                <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Delete Flashcard</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                Are you sure you want to delete this flashcard? This action cannot be undone.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                onClick={() => {
+                                    onDeleteFlashcard?.(term.flashcard!.id);
+                                    setShowDeleteDialog(false);
+                                }}
+                            >
+                                Delete
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+            </>
         );
     }
 
@@ -234,40 +288,78 @@ export function TermCard({
 
         // View mode for question
         return (
-            <article className="flex border border-border rounded-lg bg-card overflow-hidden">
-                <MasteryIndicator status={term.masteryStatus} />
-                <div className="flex-1 min-w-0 p-4 border-r border-border">
-                    <p className="text-sm text-foreground break-words">{term.question.questionText}</p>
-                </div>
-                <div className="flex-1 min-w-0 p-4 flex items-start justify-between gap-2">
-                    <ul className="space-y-1 min-w-0">
-                        {term.question.options.map((option) => (
-                            <li
-                                key={option.id}
-                                className={`text-sm flex items-start gap-1.5 ${
-                                    option.isCorrect
-                                        ? "text-green-600 dark:text-green-400 font-medium"
-                                        : "text-muted-foreground"
-                                }`}
+            <>
+                <article className="flex border border-border rounded-lg bg-card overflow-hidden">
+                    <MasteryIndicator status={term.masteryStatus} />
+                    <div className="flex-1 min-w-0 p-4 border-r border-border">
+                        <p className="text-sm text-foreground break-words">{term.question.questionText}</p>
+                    </div>
+                    <div className="flex-1 min-w-0 p-4 flex items-start justify-between gap-2">
+                        <ul className="space-y-1 min-w-0">
+                            {term.question.options.map((option) => (
+                                <li
+                                    key={option.id}
+                                    className={`text-sm flex items-start gap-1.5 ${
+                                        option.isCorrect
+                                            ? "text-green-600 dark:text-green-400 font-medium"
+                                            : "text-muted-foreground"
+                                    }`}
+                                >
+                                    {option.isCorrect && <Check className="h-3.5 w-3.5 shrink-0 mt-0.5" />}
+                                    <span className="break-words min-w-0">{option.optionText}</span>
+                                </li>
+                            ))}
+                        </ul>
+                        <div className="flex gap-1 shrink-0">
+                            {onEditQuestion && (
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8"
+                                    onClick={() => onEditQuestion(term.question!)}
+                                    aria-label="Edit question"
+                                >
+                                    <Pencil className="h-4 w-4" />
+                                </Button>
+                            )}
+                            {onDeleteQuestion && (
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                                    onClick={() => setShowDeleteDialog(true)}
+                                    aria-label="Delete question"
+                                >
+                                    <Trash2 className="h-4 w-4" />
+                                </Button>
+                            )}
+                        </div>
+                    </div>
+                </article>
+
+                <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Delete Question</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                Are you sure you want to delete this question? This action cannot be undone.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                onClick={() => {
+                                    onDeleteQuestion?.(term.question!.id);
+                                    setShowDeleteDialog(false);
+                                }}
                             >
-                                {option.isCorrect && <Check className="h-3.5 w-3.5 shrink-0 mt-0.5" />}
-                                <span className="break-words min-w-0">{option.optionText}</span>
-                            </li>
-                        ))}
-                    </ul>
-                    {onEditQuestion && (
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 shrink-0"
-                            onClick={() => onEditQuestion(term.question!)}
-                            aria-label="Edit question"
-                        >
-                            <Pencil className="h-4 w-4" />
-                        </Button>
-                    )}
-                </div>
-            </article>
+                                Delete
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+            </>
         );
     }
 

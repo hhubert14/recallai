@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { getAuthenticatedUser } from "@/lib/auth-helpers";
 import { jsendSuccess, jsendFail, jsendError } from "@/lib/jsend";
 import { EditFlashcardUseCase } from "@/clean-architecture/use-cases/flashcard/edit-flashcard.use-case";
+import { DeleteFlashcardUseCase } from "@/clean-architecture/use-cases/flashcard/delete-flashcard.use-case";
 import { DrizzleFlashcardRepository } from "@/clean-architecture/infrastructure/repositories/flashcard.repository.drizzle";
 
 /**
@@ -68,6 +69,46 @@ export async function PATCH(
         }
         if (message.includes("cannot be empty") || message.includes("cannot exceed")) {
             return jsendFail({ error: message }, 400);
+        }
+
+        return jsendError(message);
+    }
+}
+
+/**
+ * DELETE /api/v1/flashcards/[id]
+ * Delete a flashcard
+ */
+export async function DELETE(
+    request: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    try {
+        const { user, error } = await getAuthenticatedUser();
+        if (error || !user) {
+            return jsendFail({ error: "Unauthorized" }, 401);
+        }
+
+        const { id } = await params;
+        const flashcardId = parseInt(id, 10);
+
+        if (isNaN(flashcardId)) {
+            return jsendFail({ error: "Invalid flashcard ID" }, 400);
+        }
+
+        const useCase = new DeleteFlashcardUseCase(new DrizzleFlashcardRepository());
+
+        await useCase.execute({
+            flashcardId,
+            userId: user.id,
+        });
+
+        return jsendSuccess({ message: "Flashcard deleted" });
+    } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+
+        if (message === "Flashcard not found") {
+            return jsendFail({ error: message }, 404);
         }
 
         return jsendError(message);

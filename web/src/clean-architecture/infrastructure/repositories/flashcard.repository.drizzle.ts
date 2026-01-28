@@ -120,6 +120,17 @@ export class DrizzleFlashcardRepository implements IFlashcardRepository {
         }
     }
 
+    async deleteFlashcard(flashcardId: number): Promise<void> {
+        try {
+            await this.db
+                .delete(flashcards)
+                .where(eq(flashcards.id, flashcardId));
+        } catch (error) {
+            console.error("Error deleting flashcard:", error);
+            throw error;
+        }
+    }
+
     private toEntity(data: typeof flashcards.$inferSelect): FlashcardEntity {
         return new FlashcardEntity(
             data.id,

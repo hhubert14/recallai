@@ -167,6 +167,7 @@ describe("GetItemsForReviewUseCase", () => {
       findQuestionsByIds: vi.fn(),
       countQuestionsByVideoIds: vi.fn(),
       updateQuestion: vi.fn(),
+      deleteQuestion: vi.fn(),
     };
     mockFlashcardRepo = {
       createFlashcards: vi.fn(),
@@ -175,6 +176,7 @@ describe("GetItemsForReviewUseCase", () => {
       countFlashcardsByVideoIds: vi.fn(),
       findFlashcardById: vi.fn(),
       updateFlashcard: vi.fn(),
+      deleteFlashcard: vi.fn(),
     };
     mockVideoRepo = {
       createVideo: vi.fn(),
