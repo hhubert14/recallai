@@ -21,3 +21,16 @@ export function extractVideoId(url: string): string | null {
   }
   return null;
 }
+
+/**
+ * Normalize a YouTube URL by removing timestamp and other non-essential parameters.
+ * Returns a canonical URL format: https://www.youtube.com/watch?v=VIDEO_ID
+ * This ensures consistent URL matching regardless of timestamp or other params.
+ */
+export function normalizeYouTubeUrl(url: string): string | null {
+  const videoId = extractVideoId(url);
+  if (!videoId) {
+    return null;
+  }
+  return `https://www.youtube.com/watch?v=${videoId}`;
+}

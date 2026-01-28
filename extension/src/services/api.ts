@@ -54,3 +54,71 @@ export async function processVideo(videoUrl: string): Promise<ProcessVideoResult
     return { success: false, alreadyExists: false, studySetPublicId: null };
   }
 }
+
+// Types for study set content API response
+export type QuestionOption = {
+  id: number;
+  optionText: string;
+  isCorrect: boolean;
+  explanation: string | null;
+};
+
+export type Question = {
+  id: number;
+  questionText: string;
+  options: QuestionOption[];
+  sourceQuote: string | null;
+  sourceTimestamp: number | null;
+};
+
+export type Flashcard = {
+  id: number;
+  front: string;
+  back: string;
+};
+
+export type StudySetContent = {
+  exists: boolean;
+  studySet: {
+    id: number;
+    publicId: string;
+    name: string;
+  } | null;
+  video: {
+    id: number;
+    title: string;
+    channelName: string;
+  } | null;
+  summary: {
+    id: number;
+    content: string;
+  } | null;
+  questions: Question[];
+  flashcards: Flashcard[];
+};
+
+/**
+ * Fetch study set content for a video by URL
+ */
+export async function getStudySetByVideoUrl(videoUrl: string): Promise<StudySetContent | null> {
+  try {
+    const params = new URLSearchParams({ url: videoUrl });
+    const response = await fetch(
+      `${BASE_URL}/api/v1/study-sets/by-video-url?${params}`,
+      {
+        method: 'GET',
+        credentials: 'include',
+      }
+    );
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const json = await response.json();
+    return json.data as StudySetContent;
+  } catch (error) {
+    console.error('Error fetching study set:', error);
+    return null;
+  }
+}
