@@ -306,7 +306,7 @@ describe("AddItemModal", () => {
             expect(screen.getByPlaceholderText("Option D")).toBeInTheDocument();
         });
 
-        it("allows selecting which option is correct", async () => {
+        it("allows selecting which option is correct via clickable badges", async () => {
             const user = userEvent.setup();
             render(
                 <AddItemModal
@@ -320,11 +320,17 @@ describe("AddItemModal", () => {
 
             await user.click(screen.getByRole("button", { name: /^question$/i }));
 
-            // Find the radio inputs by their aria-label
-            const radioB = screen.getByRole("radio", { name: /option b is correct/i });
-            await user.click(radioB);
+            // Initially Option A is correct (one Correct badge, three Wrong badges)
+            expect(screen.getByRole("button", { name: /correct/i })).toBeInTheDocument();
+            expect(screen.getAllByRole("button", { name: /wrong/i })).toHaveLength(3);
 
-            expect(radioB).toBeChecked();
+            // Click on first Wrong badge (Option B) to make it correct
+            const wrongBadges = screen.getAllByRole("button", { name: /wrong/i });
+            await user.click(wrongBadges[0]);
+
+            // Now Option B should be correct (still one Correct badge, three Wrong badges)
+            expect(screen.getByRole("button", { name: /correct/i })).toBeInTheDocument();
+            expect(screen.getAllByRole("button", { name: /wrong/i })).toHaveLength(3);
         });
 
         it("submits question and calls onQuestionAdded", async () => {
@@ -446,6 +452,211 @@ describe("AddItemModal", () => {
             await user.click(screen.getByRole("button", { name: /cancel/i }));
 
             expect(onClose).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    describe("UI polish", () => {
+        it("uses Textarea for flashcard back field", () => {
+            render(
+                <AddItemModal
+                    isOpen={true}
+                    onClose={vi.fn()}
+                    onFlashcardAdded={vi.fn()}
+                    onQuestionAdded={vi.fn()}
+                    studySetPublicId="abc-123"
+                />
+            );
+
+            const backField = screen.getByLabelText(/back/i);
+            // Textarea elements have tagName "TEXTAREA"
+            expect(backField.tagName).toBe("TEXTAREA");
+        });
+
+        it("uses Textarea for question text field", async () => {
+            const user = userEvent.setup();
+            render(
+                <AddItemModal
+                    isOpen={true}
+                    onClose={vi.fn()}
+                    onFlashcardAdded={vi.fn()}
+                    onQuestionAdded={vi.fn()}
+                    studySetPublicId="abc-123"
+                />
+            );
+
+            await user.click(screen.getByRole("button", { name: /^question$/i }));
+
+            const questionField = screen.getByLabelText(/question text/i);
+            expect(questionField.tagName).toBe("TEXTAREA");
+        });
+
+        it("uses clickable Correct/Wrong badges instead of radio buttons for question options", async () => {
+            const user = userEvent.setup();
+            render(
+                <AddItemModal
+                    isOpen={true}
+                    onClose={vi.fn()}
+                    onFlashcardAdded={vi.fn()}
+                    onQuestionAdded={vi.fn()}
+                    studySetPublicId="abc-123"
+                />
+            );
+
+            await user.click(screen.getByRole("button", { name: /^question$/i }));
+
+            // Should have clickable "Correct" badge for option A (default)
+            expect(screen.getByRole("button", { name: /correct/i })).toBeInTheDocument();
+            // Should have clickable "Wrong" badges for options B, C, D
+            expect(screen.getAllByRole("button", { name: /wrong/i })).toHaveLength(3);
+        });
+
+        it("changes correct answer when badge is clicked", async () => {
+            const user = userEvent.setup();
+            render(
+                <AddItemModal
+                    isOpen={true}
+                    onClose={vi.fn()}
+                    onFlashcardAdded={vi.fn()}
+                    onQuestionAdded={vi.fn()}
+                    studySetPublicId="abc-123"
+                />
+            );
+
+            await user.click(screen.getByRole("button", { name: /^question$/i }));
+
+            // Initially, Option A is correct (one Correct badge, three Wrong badges)
+            expect(screen.getByRole("button", { name: /correct/i })).toBeInTheDocument();
+            expect(screen.getAllByRole("button", { name: /wrong/i })).toHaveLength(3);
+
+            // Click on first Wrong badge (Option B)
+            const wrongBadges = screen.getAllByRole("button", { name: /wrong/i });
+            await user.click(wrongBadges[0]);
+
+            // Now Option B should be correct (still one Correct, three Wrong badges)
+            expect(screen.getByRole("button", { name: /correct/i })).toBeInTheDocument();
+            expect(screen.getAllByRole("button", { name: /wrong/i })).toHaveLength(3);
+        });
+
+        it("applies active styling to selected tab", () => {
+            render(
+                <AddItemModal
+                    isOpen={true}
+                    onClose={vi.fn()}
+                    onFlashcardAdded={vi.fn()}
+                    onQuestionAdded={vi.fn()}
+                    studySetPublicId="abc-123"
+                />
+            );
+
+            const flashcardTab = screen.getByRole("button", { name: /^flashcard$/i });
+            // Active tab should have primary styling
+            expect(flashcardTab).toHaveClass("border-primary");
+            expect(flashcardTab).toHaveClass("bg-primary");
+        });
+
+        it("applies inactive styling to non-selected tab", () => {
+            render(
+                <AddItemModal
+                    isOpen={true}
+                    onClose={vi.fn()}
+                    onFlashcardAdded={vi.fn()}
+                    onQuestionAdded={vi.fn()}
+                    studySetPublicId="abc-123"
+                />
+            );
+
+            const questionTab = screen.getByRole("button", { name: /^question$/i });
+            // Inactive tab should have border-border and bg-background styling
+            expect(questionTab).toHaveClass("border-border");
+            expect(questionTab).toHaveClass("bg-background");
+        });
+    });
+
+    describe("character counts", () => {
+        it("displays character count for flashcard front field", async () => {
+            const user = userEvent.setup();
+            render(
+                <AddItemModal
+                    isOpen={true}
+                    onClose={vi.fn()}
+                    onFlashcardAdded={vi.fn()}
+                    onQuestionAdded={vi.fn()}
+                    studySetPublicId="abc-123"
+                />
+            );
+
+            // Initially 0/500
+            expect(screen.getByText("0/500")).toBeInTheDocument();
+
+            await user.type(screen.getByLabelText(/front/i), "Hello");
+
+            expect(screen.getByText("5/500")).toBeInTheDocument();
+        });
+
+        it("displays character count for flashcard back field", async () => {
+            const user = userEvent.setup();
+            render(
+                <AddItemModal
+                    isOpen={true}
+                    onClose={vi.fn()}
+                    onFlashcardAdded={vi.fn()}
+                    onQuestionAdded={vi.fn()}
+                    studySetPublicId="abc-123"
+                />
+            );
+
+            // Initially 0/2000
+            expect(screen.getByText("0/2000")).toBeInTheDocument();
+
+            await user.type(screen.getByLabelText(/back/i), "This is an answer");
+
+            expect(screen.getByText("17/2000")).toBeInTheDocument();
+        });
+
+        it("displays character count for question text field", async () => {
+            const user = userEvent.setup();
+            render(
+                <AddItemModal
+                    isOpen={true}
+                    onClose={vi.fn()}
+                    onFlashcardAdded={vi.fn()}
+                    onQuestionAdded={vi.fn()}
+                    studySetPublicId="abc-123"
+                />
+            );
+
+            await user.click(screen.getByRole("button", { name: /^question$/i }));
+
+            // Initially 0/1000
+            expect(screen.getByText("0/1000")).toBeInTheDocument();
+
+            await user.type(screen.getByLabelText(/question text/i), "What is TDD?");
+
+            expect(screen.getByText("12/1000")).toBeInTheDocument();
+        });
+
+        it("displays character count for each option field", async () => {
+            const user = userEvent.setup();
+            render(
+                <AddItemModal
+                    isOpen={true}
+                    onClose={vi.fn()}
+                    onFlashcardAdded={vi.fn()}
+                    onQuestionAdded={vi.fn()}
+                    studySetPublicId="abc-123"
+                />
+            );
+
+            await user.click(screen.getByRole("button", { name: /^question$/i }));
+
+            // All option fields should show 0/500 initially
+            const optionCounters = screen.getAllByText("0/500");
+            expect(optionCounters).toHaveLength(4);
+
+            await user.type(screen.getByPlaceholderText("Option A"), "Test answer");
+
+            // First option should now show 11/500
+            expect(screen.getByText("11/500")).toBeInTheDocument();
         });
     });
 });

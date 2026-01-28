@@ -136,7 +136,7 @@ export default async function StudySetDetailPage({
             {/* TODO: Re-enable tour after updating targets for new layout */}
             <DashboardHeader />
 
-            <main className="flex-1 container py-6 px-6 md:px-12 lg:px-16 max-w-5xl mx-auto">
+            <main className="flex-1 container py-6 px-10 md:px-20 lg:px-24 max-w-5xl mx-auto">
                 <VideoPlayerProvider>
                     <StudySetContent
                         title={videoTitle}

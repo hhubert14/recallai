@@ -3,7 +3,7 @@
 import { TermCard } from "./TermCard";
 import { StudyDropdown } from "./StudyDropdown";
 import { ProgressOverview } from "./ProgressOverview";
-import type { TermWithMastery, StudyMode, StudySetProgress, TermFlashcard, TermQuestion } from "./types";
+import type { TermWithMastery, StudyMode, StudySetProgress, TermFlashcard, TermQuestion, EditedTermContent } from "./types";
 
 interface TermsListProps {
     terms: TermWithMastery[];
@@ -11,9 +11,30 @@ interface TermsListProps {
     progress: StudySetProgress;
     onEditFlashcard?: (flashcard: TermFlashcard) => void;
     onEditQuestion?: (question: TermQuestion) => void;
+    // Inline editing props
+    editingTermId?: { id: number; type: "flashcard" | "question" } | null;
+    editedContent?: EditedTermContent;
+    isSaving?: boolean;
+    editError?: string | null;
+    onEditedContentChange?: (content: EditedTermContent) => void;
+    onSaveEdit?: () => void;
+    onCancelEdit?: () => void;
 }
 
-export function TermsList({ terms, onStudy, progress, onEditFlashcard, onEditQuestion }: TermsListProps) {
+export function TermsList({
+    terms,
+    onStudy,
+    progress,
+    onEditFlashcard,
+    onEditQuestion,
+    editingTermId,
+    editedContent,
+    isSaving,
+    editError,
+    onEditedContentChange,
+    onSaveEdit,
+    onCancelEdit,
+}: TermsListProps) {
     const hasFlashcards = terms.some((t) => t.itemType === "flashcard");
     const hasQuestions = terms.some((t) => t.itemType === "question");
 
@@ -42,14 +63,27 @@ export function TermsList({ terms, onStudy, progress, onEditFlashcard, onEditQue
                 <StudyDropdown onSelect={onStudy} disabledModes={disabledModes} />
             </div>
             <div className="space-y-3">
-                {terms.map((term) => (
-                    <TermCard
-                        key={`${term.itemType}-${term.id}`}
-                        term={term}
-                        onEditFlashcard={onEditFlashcard}
-                        onEditQuestion={onEditQuestion}
-                    />
-                ))}
+                {terms.map((term) => {
+                    const isEditing =
+                        editingTermId?.id === term.id &&
+                        editingTermId?.type === term.itemType;
+
+                    return (
+                        <TermCard
+                            key={`${term.itemType}-${term.id}`}
+                            term={term}
+                            onEditFlashcard={onEditFlashcard}
+                            onEditQuestion={onEditQuestion}
+                            isEditing={isEditing}
+                            editedContent={isEditing ? editedContent : undefined}
+                            isSaving={isSaving}
+                            editError={isEditing ? editError : undefined}
+                            onEditedContentChange={onEditedContentChange}
+                            onSaveEdit={onSaveEdit}
+                            onCancelEdit={onCancelEdit}
+                        />
+                    );
+                })}
             </div>
         </section>
     );
