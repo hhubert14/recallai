@@ -15,9 +15,9 @@ export default defineConfig({
   }),
   manifest: {
     name: 'RecallAI',
-    version: '1.1.5',
+    version: '1.2.0',
     description: 'Transform educational YouTube videos into summaries and Q&As for better learning.',
-    permissions: ['storage', 'tabs'],
+    permissions: ['storage', 'tabs', 'sidePanel'],
     host_permissions: [
       'https://www.recallai.io/*',
       'http://localhost:3000/*',
@@ -40,6 +40,9 @@ export default defineConfig({
         32: 'icons/icon32.png',
         48: 'icons/icon48.png',
       },
+    },
+    side_panel: {
+      default_path: 'sidepanel.html',
     },
   },
 });
