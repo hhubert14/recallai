@@ -28,4 +28,19 @@ export interface IQuestionRepository {
      * Returns a map of videoId -> count.
      */
     countQuestionsByVideoIds(videoIds: number[]): Promise<Record<number, number>>;
+
+    /**
+     * Update a question's text and options.
+     * Options are updated by their IDs to preserve references in user_answers.
+     */
+    updateQuestion(
+        questionId: number,
+        questionText: string,
+        options: Array<{
+            id: number;
+            optionText: string;
+            isCorrect: boolean;
+            explanation: string | null;
+        }>
+    ): Promise<MultipleChoiceQuestionEntity>;
 }

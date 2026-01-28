@@ -45,6 +45,7 @@ describe("GetStudySetItemsUseCase", () => {
             findQuestionsByVideoId: vi.fn(),
             findQuestionsByIds: vi.fn(),
             countQuestionsByVideoIds: vi.fn(),
+            updateQuestion: vi.fn(),
         };
 
         useCase = new GetStudySetItemsUseCase(

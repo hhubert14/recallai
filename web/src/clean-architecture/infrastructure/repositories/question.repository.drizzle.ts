@@ -174,6 +174,47 @@ export class DrizzleQuestionRepository implements IQuestionRepository {
         }
     }
 
+    async updateQuestion(
+        questionId: number,
+        questionText: string,
+        options: Array<{
+            id: number;
+            optionText: string;
+            isCorrect: boolean;
+            explanation: string | null;
+        }>
+    ): Promise<MultipleChoiceQuestionEntity> {
+        try {
+            // Update the question text
+            await db
+                .update(questions)
+                .set({ questionText })
+                .where(eq(questions.id, questionId));
+
+            // Update each option by its ID
+            for (const option of options) {
+                await db
+                    .update(questionOptions)
+                    .set({
+                        optionText: option.optionText,
+                        isCorrect: option.isCorrect,
+                        explanation: option.explanation,
+                    })
+                    .where(eq(questionOptions.id, option.id));
+            }
+
+            // Fetch and return the updated question
+            const updated = await this.findQuestionById(questionId);
+            if (!updated) {
+                throw new Error("Failed to fetch updated question");
+            }
+            return updated;
+        } catch (error) {
+            console.error("Error updating question:", error);
+            throw error;
+        }
+    }
+
     private toEntity(
         questionData: typeof questions.$inferSelect,
         optionsData: typeof questionOptions.$inferSelect[]

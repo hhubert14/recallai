@@ -215,11 +215,62 @@ describe("TermCard", () => {
             });
         });
 
-        it("does not render edit button for question terms", () => {
-            const onEditFlashcard = vi.fn();
-            render(<TermCard term={questionTerm} onEditFlashcard={onEditFlashcard} />);
+        it("renders edit button for question terms when onEditQuestion is provided", () => {
+            const onEditQuestion = vi.fn();
+            render(<TermCard term={questionTerm} onEditQuestion={onEditQuestion} />);
 
-            expect(screen.queryByRole("button", { name: /edit/i })).not.toBeInTheDocument();
+            expect(screen.getByRole("button", { name: /edit question/i })).toBeInTheDocument();
+        });
+
+        it("does not render edit button for question terms when onEditQuestion is not provided", () => {
+            render(<TermCard term={questionTerm} />);
+
+            expect(screen.queryByRole("button", { name: /edit question/i })).not.toBeInTheDocument();
+        });
+
+        it("calls onEditQuestion with question data when edit button is clicked", async () => {
+            const user = userEvent.setup();
+            const onEditQuestion = vi.fn();
+
+            const questionTermWithAllOptions: TermWithMastery = {
+                id: 2,
+                itemType: "question",
+                question: {
+                    id: 2,
+                    questionText: "Which hook is used for side effects?",
+                    sourceTimestamp: 120,
+                    options: [
+                        { id: 1, optionText: "useState", isCorrect: false, explanation: null },
+                        { id: 2, optionText: "useEffect", isCorrect: true, explanation: "Handles side effects" },
+                        { id: 3, optionText: "useRef", isCorrect: false, explanation: null },
+                        { id: 4, optionText: "useMemo", isCorrect: false, explanation: null },
+                    ],
+                },
+                masteryStatus: "learning",
+            };
+
+            render(<TermCard term={questionTermWithAllOptions} onEditQuestion={onEditQuestion} />);
+
+            await user.click(screen.getByRole("button", { name: /edit question/i }));
+
+            expect(onEditQuestion).toHaveBeenCalledWith({
+                id: 2,
+                questionText: "Which hook is used for side effects?",
+                sourceTimestamp: 120,
+                options: [
+                    { id: 1, optionText: "useState", isCorrect: false, explanation: null },
+                    { id: 2, optionText: "useEffect", isCorrect: true, explanation: "Handles side effects" },
+                    { id: 3, optionText: "useRef", isCorrect: false, explanation: null },
+                    { id: 4, optionText: "useMemo", isCorrect: false, explanation: null },
+                ],
+            });
+        });
+
+        it("does not render edit question button for flashcard terms", () => {
+            const onEditQuestion = vi.fn();
+            render(<TermCard term={flashcardTerm} onEditQuestion={onEditQuestion} />);
+
+            expect(screen.queryByRole("button", { name: /edit question/i })).not.toBeInTheDocument();
         });
     });
 });
