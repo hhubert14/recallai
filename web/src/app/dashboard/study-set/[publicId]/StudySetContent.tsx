@@ -45,6 +45,9 @@ export function StudySetContent({
     const [isSaving, setIsSaving] = useState(false);
     const [editError, setEditError] = useState<string | null>(null);
 
+    // Delete error state for optimistic UI rollback
+    const [deleteError, setDeleteError] = useState<string | null>(null);
+
     // Compute progress from current terms state so it updates when new terms are added
     const currentProgress = useMemo(() => ({
         mastered: terms.filter((t) => t.masteryStatus === "mastered").length,
@@ -131,37 +134,63 @@ export function StudySetContent({
         setEditError(null);
     };
 
-    // Delete a flashcard
+    // Delete a flashcard (optimistic UI)
     const handleDeleteFlashcard = async (flashcardId: number) => {
+        // Clear any previous error
+        setDeleteError(null);
+
+        // Save previous state for rollback
+        const previousTerms = terms;
+
+        // Optimistically remove the item
+        setTerms((prev) => prev.filter(
+            (term) => !(term.itemType === "flashcard" && term.flashcard?.id === flashcardId)
+        ));
+
         try {
             const response = await fetch(`/api/v1/flashcards/${flashcardId}`, {
                 method: "DELETE",
             });
 
-            if (response.ok) {
-                setTerms((prev) => prev.filter(
-                    (term) => !(term.itemType === "flashcard" && term.flashcard?.id === flashcardId)
-                ));
+            if (!response.ok) {
+                // Rollback on failure
+                setTerms(previousTerms);
+                setDeleteError("Failed to delete flashcard. Please try again.");
             }
         } catch {
-            // Silently fail - user can retry
+            // Rollback on network error
+            setTerms(previousTerms);
+            setDeleteError("Failed to delete flashcard. Please try again.");
         }
     };
 
-    // Delete a question
+    // Delete a question (optimistic UI)
     const handleDeleteQuestion = async (questionId: number) => {
+        // Clear any previous error
+        setDeleteError(null);
+
+        // Save previous state for rollback
+        const previousTerms = terms;
+
+        // Optimistically remove the item
+        setTerms((prev) => prev.filter(
+            (term) => !(term.itemType === "question" && term.question?.id === questionId)
+        ));
+
         try {
             const response = await fetch(`/api/v1/questions/${questionId}`, {
                 method: "DELETE",
             });
 
-            if (response.ok) {
-                setTerms((prev) => prev.filter(
-                    (term) => !(term.itemType === "question" && term.question?.id === questionId)
-                ));
+            if (!response.ok) {
+                // Rollback on failure
+                setTerms(previousTerms);
+                setDeleteError("Failed to delete question. Please try again.");
             }
         } catch {
-            // Silently fail - user can retry
+            // Rollback on network error
+            setTerms(previousTerms);
+            setDeleteError("Failed to delete question. Please try again.");
         }
     };
 
@@ -301,6 +330,13 @@ export function StudySetContent({
 
             {/* Summary - Collapsible */}
             {summary && <CollapsibleSummary content={summary.content} />}
+
+            {/* Delete Error */}
+            {deleteError && (
+                <div role="alert" className="text-sm text-destructive">
+                    {deleteError}
+                </div>
+            )}
 
             {/* Terms List */}
             <TermsList
