@@ -97,7 +97,8 @@
       "Bash(npx vitest:*)",
       "Bash(npx next lint)",
       "Bash(gh api:*)",
-      "Bash(npx playwright test --list)"
+      "Bash(npx playwright test --list)",
+      "Bash(git status:*)"
     ],
     "deny": [],
     "ask": []
