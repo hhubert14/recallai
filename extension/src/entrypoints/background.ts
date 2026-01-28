@@ -1,6 +1,22 @@
 export default defineBackground(() => {
   console.log('RecallAI background script loaded');
 
+  // Open side panel/sidebar when extension icon is clicked
+  // Chrome uses action + sidePanel API, Firefox uses browserAction + sidebarAction API
+  if (import.meta.env.FIREFOX) {
+    // Firefox: sidebar opens automatically via manifest, but we can toggle it
+    (browser as any).browserAction?.onClicked.addListener(async () => {
+      await (browser as any).sidebarAction?.open();
+    });
+  } else {
+    // Chrome/Edge: Use sidePanel API
+    browser.action?.onClicked.addListener(async (tab) => {
+      if (browser.sidePanel && tab.id) {
+        await browser.sidePanel.open({ tabId: tab.id });
+      }
+    });
+  }
+
   // Automatic video processing is disabled - using manual processing mode instead.
   // Users trigger processing via the popup UI.
   //
