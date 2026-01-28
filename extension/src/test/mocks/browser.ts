@@ -23,10 +23,10 @@ const tabActivatedListeners: TabActivatedListener[] = [];
 
 export const mockBrowser = {
   tabs: {
-    query: vi.fn<[{ active: boolean; currentWindow: boolean }], Promise<Tab[]>>(() =>
+    query: vi.fn<(query: { active: boolean; currentWindow: boolean }) => Promise<Tab[]>>(() =>
       Promise.resolve([])
     ),
-    get: vi.fn<[number], Promise<Tab>>(() => Promise.resolve({})),
+    get: vi.fn<(tabId: number) => Promise<Tab>>(() => Promise.resolve({})),
     onUpdated: {
       addListener: vi.fn((listener: TabUpdateListener) => {
         tabUpdateListeners.push(listener);
