@@ -1,8 +1,6 @@
 import { ArrowRightIcon } from '@/components/Icons';
 
-const BASE_URL = import.meta.env.DEV
-  ? 'http://localhost:3000'
-  : 'https://www.recallai.io';
+import { BASE_URL } from '@/lib/constants';
 
 type StudySetLinkProps = {
   studySetPublicId: string | null;
