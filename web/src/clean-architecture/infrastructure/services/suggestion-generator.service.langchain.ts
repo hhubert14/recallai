@@ -64,7 +64,7 @@ function createSuggestionsSchema(count: number, itemType: SuggestionItemType) {
               : `${count} learning items (mix of flashcards and questions)`;
 
     return z.object({
-        suggestions: z.array(itemSchema).length(count).describe(description),
+        suggestions: z.array(itemSchema).min(1).max(count).describe(description),
     });
 }
 
