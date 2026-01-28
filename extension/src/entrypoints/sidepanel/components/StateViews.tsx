@@ -1,4 +1,5 @@
 import { LoaderIcon, PlayCircleIcon, XCircleIcon } from '@/components/Icons';
+import { BASE_URL } from '@/lib/constants';
 
 type LoadingStateProps = {
   message?: string;
@@ -73,10 +74,6 @@ export function ProcessVideoPrompt({ onProcess }: ProcessVideoPromptProps) {
 }
 
 export function UnauthenticatedState() {
-  const baseUrl = import.meta.env.DEV
-    ? 'http://localhost:3000'
-    : 'https://www.recallai.io';
-
   return (
     <div className="flex flex-col items-center justify-center py-16 px-4">
       <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
@@ -94,7 +91,7 @@ export function UnauthenticatedState() {
         better learning.
       </p>
       <a
-        href={`${baseUrl}/auth/login`}
+        href={`${BASE_URL}/auth/login`}
         target="_blank"
         rel="noopener noreferrer"
         className="px-6 py-2.5 bg-primary text-primary-foreground rounded-lg font-medium text-center hover:bg-primary/90 transition-colors"

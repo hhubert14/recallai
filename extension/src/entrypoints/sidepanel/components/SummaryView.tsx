@@ -39,9 +39,14 @@ function timestampToSeconds(match: string): number {
  * Build YouTube URL with timestamp
  */
 function buildTimestampUrl(videoUrl: string, seconds: number): string {
-  const url = new URL(videoUrl);
-  url.searchParams.set('t', String(seconds));
-  return url.toString();
+  try {
+    const url = new URL(videoUrl);
+    url.searchParams.set('t', String(seconds));
+    return url.toString();
+  } catch (error) {
+    console.warn('Failed to build timestamp URL:', error, videoUrl);
+    return videoUrl;
+  }
 }
 
 export function SummaryView({ content, videoUrl }: SummaryViewProps) {

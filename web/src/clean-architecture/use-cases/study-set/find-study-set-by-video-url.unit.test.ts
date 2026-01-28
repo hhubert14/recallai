@@ -100,17 +100,18 @@ describe("FindStudySetByVideoUrlUseCase", () => {
       createMultipleChoiceQuestion: vi.fn(),
       findQuestionById: vi.fn(),
       findQuestionsByVideoId: vi.fn(),
-      findQuestionsByUserId: vi.fn(),
       findQuestionsByIds: vi.fn(),
       countQuestionsByVideoIds: vi.fn(),
+      updateQuestion: vi.fn(),
     };
 
     mockFlashcardRepository = {
       createFlashcards: vi.fn(),
       findFlashcardsByVideoId: vi.fn(),
-      findFlashcardsByUserId: vi.fn(),
       findFlashcardsByIds: vi.fn(),
       countFlashcardsByVideoIds: vi.fn(),
+      findFlashcardById: vi.fn(),
+      updateFlashcard: vi.fn(),
     };
 
     useCase = new FindStudySetByVideoUrlUseCase(
