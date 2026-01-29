@@ -8,14 +8,19 @@ export class GetReviewStatsUseCase {
     private reviewProgressRepository: IReviewProgressRepository
   ) {}
 
-  async execute(userId: string): Promise<ReviewStats> {
+  async execute(userId: string, studySetId?: number): Promise<ReviewStats> {
     const [allReviewableItems, dueProgress, allProgress, repoStats] =
       await Promise.all([
-        this.reviewableItemRepository.findReviewableItemsByUserId(userId),
+        studySetId !== undefined
+          ? this.reviewableItemRepository.findReviewableItemsByUserIdAndStudySetId(userId, studySetId)
+          : this.reviewableItemRepository.findReviewableItemsByUserId(userId),
         this.reviewProgressRepository.findReviewProgressDueForReview(userId),
         this.reviewProgressRepository.findReviewProgressByUserId(userId),
         this.reviewProgressRepository.getReviewStats(userId),
       ]);
+
+    // Create a set of valid item IDs for this scope (all items or study set items)
+    const validItemIds = new Set(allReviewableItems.map((item) => item.id));
 
     // Count items by type
     const questionCount = allReviewableItems.filter(
@@ -24,6 +29,11 @@ export class GetReviewStatsUseCase {
     const flashcardCount = allReviewableItems.filter(
       (item) => item.itemType === "flashcard"
     ).length;
+
+    // Filter due progress to only include items in scope
+    const filteredDueProgress = dueProgress.filter((p) =>
+      validItemIds.has(p.reviewableItemId)
+    );
 
     // Calculate new count (items without progress)
     const itemIdsWithProgress = new Set(
@@ -34,7 +44,7 @@ export class GetReviewStatsUseCase {
     ).length;
 
     return {
-      dueCount: dueProgress.length,
+      dueCount: filteredDueProgress.length,
       newCount,
       totalCount: allReviewableItems.length,
       byType: {

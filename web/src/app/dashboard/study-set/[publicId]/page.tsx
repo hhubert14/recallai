@@ -18,6 +18,7 @@ import { FindStudySetByPublicIdUseCase } from "@/clean-architecture/use-cases/st
 import { FindSummaryByVideoIdUseCase } from "@/clean-architecture/use-cases/summary/find-summary-by-video-id.use-case";
 import { GetStudySetItemsUseCase } from "@/clean-architecture/use-cases/study-set/get-study-set-items.use-case";
 import { GetStudySetProgressUseCase } from "@/clean-architecture/use-cases/study-set/get-study-set-progress.use-case";
+import { GetReviewStatsUseCase } from "@/clean-architecture/use-cases/review/get-review-stats.use-case";
 
 export const metadata: Metadata = {
     title: "Study Set | RecallAI",
@@ -89,11 +90,17 @@ export default async function StudySetDetailPage({
         content: summaryEntity.content,
     } : null;
 
-    // Fetch progress data for mastery indicators
-    const progressResult = await new GetStudySetProgressUseCase(
-        new DrizzleReviewableItemRepository(),
-        new DrizzleReviewProgressRepository()
-    ).execute(user.id, studySet.id);
+    // Fetch progress data for mastery indicators and review stats
+    const [progressResult, reviewStats] = await Promise.all([
+        new GetStudySetProgressUseCase(
+            new DrizzleReviewableItemRepository(),
+            new DrizzleReviewProgressRepository()
+        ).execute(user.id, studySet.id),
+        new GetReviewStatsUseCase(
+            new DrizzleReviewableItemRepository(),
+            new DrizzleReviewProgressRepository()
+        ).execute(user.id, studySet.id),
+    ]);
 
     // Create a map for quick lookup of mastery status
     const masteryMap = new Map(
@@ -148,6 +155,7 @@ export default async function StudySetDetailPage({
                         videoId={studySet.videoId}
                         studySetId={studySet.id}
                         studySetPublicId={studySet.publicId}
+                        dueCount={reviewStats.dueCount}
                     />
                 </VideoPlayerProvider>
 

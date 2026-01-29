@@ -7,6 +7,7 @@ import { DrizzleQuestionRepository } from "@/clean-architecture/infrastructure/r
 import { DrizzleFlashcardRepository } from "@/clean-architecture/infrastructure/repositories/flashcard.repository.drizzle";
 import { DrizzleVideoRepository } from "@/clean-architecture/infrastructure/repositories/video.repository.drizzle";
 import { DrizzleStudySetRepository } from "@/clean-architecture/infrastructure/repositories/study-set.repository.drizzle";
+import { FindStudySetByPublicIdUseCase } from "@/clean-architecture/use-cases/study-set/find-study-set-by-public-id.use-case";
 import { jsendSuccess, jsendFail, jsendError } from "@/lib/jsend";
 import {
   StudyMode,
@@ -34,6 +35,7 @@ export async function GET(request: NextRequest) {
     const modeParam = searchParams.get("mode") || "due";
     const typeParam = searchParams.get("type") || "all";
     const limitParam = searchParams.get("limit");
+    const studySetPublicIdParam = searchParams.get("studySetPublicId");
 
     if (!VALID_MODES.includes(modeParam as StudyMode)) {
       return jsendFail({
@@ -56,6 +58,18 @@ export async function GET(request: NextRequest) {
       limit = Math.min(parsedLimit, MAX_LIMIT);
     }
 
+    // Resolve studySetPublicId to studySetId if provided
+    let studySetId: number | undefined;
+    if (studySetPublicIdParam) {
+      const studySetRepository = new DrizzleStudySetRepository();
+      const findStudySetUseCase = new FindStudySetByPublicIdUseCase(studySetRepository);
+      const studySet = await findStudySetUseCase.execute(studySetPublicIdParam, user.id);
+      if (!studySet) {
+        return jsendFail({ error: "Study set not found" }, 404);
+      }
+      studySetId = studySet.id;
+    }
+
     const useCase = new GetItemsForReviewUseCase(
       new DrizzleReviewableItemRepository(),
       new DrizzleReviewProgressRepository(),
@@ -67,7 +81,7 @@ export async function GET(request: NextRequest) {
 
     const items = await useCase.execute(
       user.id,
-      { mode: modeParam as StudyMode, itemType: typeParam as ItemTypeFilter },
+      { mode: modeParam as StudyMode, itemType: typeParam as ItemTypeFilter, studySetId },
       limit
     );
 

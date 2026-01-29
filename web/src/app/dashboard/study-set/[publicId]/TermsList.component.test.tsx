@@ -48,6 +48,8 @@ const mockProgress: StudySetProgress = {
     total: 3,
 };
 
+const mockStudySetPublicId = "test-study-set-123";
+
 describe("TermsList", () => {
     const emptyProgress: StudySetProgress = {
         mastered: 0,
@@ -57,20 +59,20 @@ describe("TermsList", () => {
     };
 
     it("renders header with correct term count", () => {
-        render(<TermsList terms={mockTerms} onStudy={vi.fn()} progress={mockProgress} />);
+        render(<TermsList terms={mockTerms} onStudy={vi.fn()} progress={mockProgress} studySetPublicId={mockStudySetPublicId} />);
         expect(screen.getByText(/terms in this set/i)).toBeInTheDocument();
         expect(screen.getByText("(3)")).toBeInTheDocument();
     });
 
     it("renders all term cards", () => {
-        render(<TermsList terms={mockTerms} onStudy={vi.fn()} progress={mockProgress} />);
+        render(<TermsList terms={mockTerms} onStudy={vi.fn()} progress={mockProgress} studySetPublicId={mockStudySetPublicId} />);
         expect(screen.getByText("What is TypeScript?")).toBeInTheDocument();
         expect(screen.getByText("Which is a primitive type?")).toBeInTheDocument();
         expect(screen.getByText("What is React?")).toBeInTheDocument();
     });
 
     it("renders StudyDropdown", () => {
-        render(<TermsList terms={mockTerms} onStudy={vi.fn()} progress={mockProgress} />);
+        render(<TermsList terms={mockTerms} onStudy={vi.fn()} progress={mockProgress} studySetPublicId={mockStudySetPublicId} />);
         expect(
             screen.getByRole("button", { name: /study/i })
         ).toBeInTheDocument();
@@ -79,7 +81,7 @@ describe("TermsList", () => {
     it("calls onStudy when a study mode is selected", async () => {
         const user = userEvent.setup();
         const handleStudy = vi.fn();
-        render(<TermsList terms={mockTerms} onStudy={handleStudy} progress={mockProgress} />);
+        render(<TermsList terms={mockTerms} onStudy={handleStudy} progress={mockProgress} studySetPublicId={mockStudySetPublicId} />);
 
         await user.click(screen.getByRole("button", { name: /study/i }));
         await user.click(screen.getByText("Flashcards"));
@@ -102,7 +104,7 @@ describe("TermsList", () => {
             },
         ];
         const progress: StudySetProgress = { mastered: 0, learning: 0, notStarted: 1, total: 1 };
-        render(<TermsList terms={questionsOnly} onStudy={vi.fn()} progress={progress} />);
+        render(<TermsList terms={questionsOnly} onStudy={vi.fn()} progress={progress} studySetPublicId={mockStudySetPublicId} />);
         // The component should disable flashcards mode
         // We'll verify this by checking the disabledModes prop behavior
         expect(screen.getByText("(1)")).toBeInTheDocument();
@@ -118,18 +120,37 @@ describe("TermsList", () => {
             },
         ];
         const progress: StudySetProgress = { mastered: 0, learning: 0, notStarted: 1, total: 1 };
-        render(<TermsList terms={flashcardsOnly} onStudy={vi.fn()} progress={progress} />);
+        render(<TermsList terms={flashcardsOnly} onStudy={vi.fn()} progress={progress} studySetPublicId={mockStudySetPublicId} />);
         expect(screen.getByText("(1)")).toBeInTheDocument();
     });
 
     it("renders empty state when no terms exist", () => {
-        render(<TermsList terms={[]} onStudy={vi.fn()} progress={emptyProgress} />);
+        render(<TermsList terms={[]} onStudy={vi.fn()} progress={emptyProgress} studySetPublicId={mockStudySetPublicId} />);
         expect(screen.getByText(/no terms/i)).toBeInTheDocument();
     });
 
     it("renders ProgressOverview when terms exist", () => {
-        render(<TermsList terms={mockTerms} onStudy={vi.fn()} progress={mockProgress} />);
+        render(<TermsList terms={mockTerms} onStudy={vi.fn()} progress={mockProgress} studySetPublicId={mockStudySetPublicId} />);
         expect(screen.getByText(/progress/i)).toBeInTheDocument();
         expect(screen.getByRole("progressbar")).toBeInTheDocument();
+    });
+
+    it("renders Review button with link to review page", () => {
+        render(<TermsList terms={mockTerms} onStudy={vi.fn()} progress={mockProgress} studySetPublicId={mockStudySetPublicId} />);
+        const reviewLink = screen.getByRole("link", { name: /review/i });
+        expect(reviewLink).toBeInTheDocument();
+        expect(reviewLink).toHaveAttribute("href", `/dashboard/study-set/${mockStudySetPublicId}/review`);
+    });
+
+    it("shows due count in Review button when dueCount > 0", () => {
+        render(<TermsList terms={mockTerms} onStudy={vi.fn()} progress={mockProgress} studySetPublicId={mockStudySetPublicId} dueCount={5} />);
+        expect(screen.getByRole("link", { name: /review \(5\)/i })).toBeInTheDocument();
+    });
+
+    it("shows Review button without count when dueCount is 0", () => {
+        render(<TermsList terms={mockTerms} onStudy={vi.fn()} progress={mockProgress} studySetPublicId={mockStudySetPublicId} dueCount={0} />);
+        const reviewLink = screen.getByRole("link", { name: /review/i });
+        expect(reviewLink).toBeInTheDocument();
+        expect(reviewLink).not.toHaveTextContent("(");
     });
 });

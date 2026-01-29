@@ -15,6 +15,7 @@ import { StudyMode, ItemTypeFilter, ReviewItem, ReviewItemContent } from "./type
 export type GetItemsParams = {
   mode: StudyMode;
   itemType?: ItemTypeFilter;
+  studySetId?: number;
 };
 
 export class GetItemsForReviewUseCase {
@@ -33,23 +34,25 @@ export class GetItemsForReviewUseCase {
     limit?: number
   ): Promise<ReviewItem[]> {
     const itemType = params.itemType ?? "all";
+    const studySetId = params.studySetId;
 
     switch (params.mode) {
       case "due":
-        return this.getDueItems(userId, itemType, limit);
+        return this.getDueItems(userId, itemType, limit, studySetId);
       case "new":
-        return this.getNewItems(userId, itemType, limit);
+        return this.getNewItems(userId, itemType, limit, studySetId);
       case "random":
-        return this.getRandomItems(userId, itemType, limit);
+        return this.getRandomItems(userId, itemType, limit, studySetId);
       default:
-        return this.getDueItems(userId, itemType, limit);
+        return this.getDueItems(userId, itemType, limit, studySetId);
     }
   }
 
   private async getDueItems(
     userId: string,
     itemType: ItemTypeFilter,
-    limit?: number
+    limit?: number,
+    studySetId?: number
   ): Promise<ReviewItem[]> {
     // Get all progress records that are due
     let progressRecords =
@@ -72,6 +75,14 @@ export class GetItemsForReviewUseCase {
     let reviewableItems =
       await this.reviewableItemRepository.findReviewableItemsByIds(reviewableItemIds);
 
+    // Filter by study set if specified
+    if (studySetId !== undefined) {
+      reviewableItems = reviewableItems.filter((item) => item.studySetId === studySetId);
+      // Also filter progress to match
+      const filteredItemIds = new Set(reviewableItems.map((item) => item.id));
+      progressRecords = progressRecords.filter((p) => filteredItemIds.has(p.reviewableItemId));
+    }
+
     // Filter by item type if needed
     if (itemType !== "all") {
       reviewableItems = reviewableItems.filter((item) => item.itemType === itemType);
@@ -92,11 +103,13 @@ export class GetItemsForReviewUseCase {
   private async getNewItems(
     userId: string,
     itemType: ItemTypeFilter,
-    limit?: number
+    limit?: number,
+    studySetId?: number
   ): Promise<ReviewItem[]> {
-    // Get all reviewable items for the user
-    let allReviewableItems =
-      await this.reviewableItemRepository.findReviewableItemsByUserId(userId);
+    // Get all reviewable items for the user (filtered by study set if provided)
+    let allReviewableItems = studySetId !== undefined
+      ? await this.reviewableItemRepository.findReviewableItemsByUserIdAndStudySetId(userId, studySetId)
+      : await this.reviewableItemRepository.findReviewableItemsByUserId(userId);
 
     if (allReviewableItems.length === 0) {
       return [];
@@ -141,11 +154,13 @@ export class GetItemsForReviewUseCase {
   private async getRandomItems(
     userId: string,
     itemType: ItemTypeFilter,
-    limit?: number
+    limit?: number,
+    studySetId?: number
   ): Promise<ReviewItem[]> {
-    // Get all reviewable items for the user
-    let allReviewableItems =
-      await this.reviewableItemRepository.findReviewableItemsByUserId(userId);
+    // Get all reviewable items for the user (filtered by study set if provided)
+    let allReviewableItems = studySetId !== undefined
+      ? await this.reviewableItemRepository.findReviewableItemsByUserIdAndStudySetId(userId, studySetId)
+      : await this.reviewableItemRepository.findReviewableItemsByUserId(userId);
 
     if (allReviewableItems.length === 0) {
       return [];
