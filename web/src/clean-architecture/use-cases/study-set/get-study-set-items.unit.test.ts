@@ -39,6 +39,7 @@ describe("GetStudySetItemsUseCase", () => {
             countFlashcardsByVideoIds: vi.fn(),
             findFlashcardById: vi.fn(),
             updateFlashcard: vi.fn(),
+            deleteFlashcard: vi.fn(),
         };
 
         mockQuestionRepo = {
@@ -48,6 +49,7 @@ describe("GetStudySetItemsUseCase", () => {
             findQuestionsByIds: vi.fn(),
             countQuestionsByVideoIds: vi.fn(),
             updateQuestion: vi.fn(),
+            deleteQuestion: vi.fn(),
         };
 
         useCase = new GetStudySetItemsUseCase(

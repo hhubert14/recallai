@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { getAuthenticatedUser } from "@/lib/auth-helpers";
 import { jsendSuccess, jsendFail, jsendError } from "@/lib/jsend";
 import { EditQuestionUseCase } from "@/clean-architecture/use-cases/question/edit-question.use-case";
+import { DeleteQuestionUseCase } from "@/clean-architecture/use-cases/question/delete-question.use-case";
 import { DrizzleQuestionRepository } from "@/clean-architecture/infrastructure/repositories/question.repository.drizzle";
 import { DrizzleReviewableItemRepository } from "@/clean-architecture/infrastructure/repositories/reviewable-item.repository.drizzle";
 
@@ -83,6 +84,49 @@ export async function PATCH(
             message.includes("Invalid option ID")
         ) {
             return jsendFail({ error: message }, 400);
+        }
+
+        return jsendError(message);
+    }
+}
+
+/**
+ * DELETE /api/v1/questions/[id]
+ * Delete a question
+ */
+export async function DELETE(
+    request: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    try {
+        const { user, error } = await getAuthenticatedUser();
+        if (error || !user) {
+            return jsendFail({ error: "Unauthorized" }, 401);
+        }
+
+        const { id } = await params;
+        const questionId = parseInt(id, 10);
+
+        if (isNaN(questionId)) {
+            return jsendFail({ error: "Invalid question ID" }, 400);
+        }
+
+        const useCase = new DeleteQuestionUseCase(
+            new DrizzleQuestionRepository(),
+            new DrizzleReviewableItemRepository()
+        );
+
+        await useCase.execute({
+            questionId,
+            userId: user.id,
+        });
+
+        return jsendSuccess({ message: "Question deleted" });
+    } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+
+        if (message === "Question not found") {
+            return jsendFail({ error: message }, 404);
         }
 
         return jsendError(message);

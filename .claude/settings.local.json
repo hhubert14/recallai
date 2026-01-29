@@ -99,7 +99,10 @@
       "Bash(gh api:*)",
       "Bash(npx playwright test --list)",
       "Bash(git status:*)",
-      "Bash(npm run test:*)"
+      "Bash(npm run test:*)",
+      "Bash(sort:*)",
+      "Bash(for:*)",
+      "Bash(do echo \"=== ISSUE $issue ===\")"
     ],
     "deny": [],
     "ask": []

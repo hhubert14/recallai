@@ -868,4 +868,148 @@ describe("TermCard", () => {
             );
         });
     });
+
+    describe("delete functionality", () => {
+        const flashcardTerm: TermWithMastery = {
+            id: 1,
+            itemType: "flashcard",
+            flashcard: {
+                id: 1,
+                front: "What is React?",
+                back: "A JavaScript library for building user interfaces",
+            },
+            masteryStatus: "not_started",
+        };
+
+        const questionTerm: TermWithMastery = {
+            id: 2,
+            itemType: "question",
+            question: {
+                id: 2,
+                questionText: "Which hook is used for side effects?",
+                sourceTimestamp: null,
+                options: [
+                    { id: 1, optionText: "useState", isCorrect: false, explanation: null },
+                    { id: 2, optionText: "useEffect", isCorrect: true, explanation: null },
+                    { id: 3, optionText: "useRef", isCorrect: false, explanation: null },
+                    { id: 4, optionText: "useMemo", isCorrect: false, explanation: null },
+                ],
+            },
+            masteryStatus: "learning",
+        };
+
+        it("renders delete button for flashcard when onDeleteFlashcard is provided", () => {
+            const onDeleteFlashcard = vi.fn();
+            render(<TermCard term={flashcardTerm} onDeleteFlashcard={onDeleteFlashcard} />);
+
+            expect(screen.getByRole("button", { name: /delete flashcard/i })).toBeInTheDocument();
+        });
+
+        it("does not render delete button when onDeleteFlashcard is not provided", () => {
+            render(<TermCard term={flashcardTerm} />);
+
+            expect(screen.queryByRole("button", { name: /delete flashcard/i })).not.toBeInTheDocument();
+        });
+
+        it("shows confirmation dialog when delete button is clicked for flashcard", async () => {
+            const user = userEvent.setup();
+            const onDeleteFlashcard = vi.fn();
+            render(<TermCard term={flashcardTerm} onDeleteFlashcard={onDeleteFlashcard} />);
+
+            await user.click(screen.getByRole("button", { name: /delete flashcard/i }));
+
+            expect(screen.getByRole("alertdialog")).toBeInTheDocument();
+            expect(screen.getByText(/are you sure you want to delete this flashcard/i)).toBeInTheDocument();
+        });
+
+        it("calls onDeleteFlashcard when confirm button is clicked in flashcard dialog", async () => {
+            const user = userEvent.setup();
+            const onDeleteFlashcard = vi.fn();
+            render(<TermCard term={flashcardTerm} onDeleteFlashcard={onDeleteFlashcard} />);
+
+            await user.click(screen.getByRole("button", { name: /delete flashcard/i }));
+            await user.click(screen.getByRole("button", { name: /^delete$/i }));
+
+            expect(onDeleteFlashcard).toHaveBeenCalledWith(1);
+        });
+
+        it("does not call onDeleteFlashcard when cancel button is clicked", async () => {
+            const user = userEvent.setup();
+            const onDeleteFlashcard = vi.fn();
+            render(<TermCard term={flashcardTerm} onDeleteFlashcard={onDeleteFlashcard} />);
+
+            await user.click(screen.getByRole("button", { name: /delete flashcard/i }));
+            await user.click(screen.getByRole("button", { name: /cancel/i }));
+
+            expect(onDeleteFlashcard).not.toHaveBeenCalled();
+            expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
+        });
+
+        it("renders delete button for question when onDeleteQuestion is provided", () => {
+            const onDeleteQuestion = vi.fn();
+            render(<TermCard term={questionTerm} onDeleteQuestion={onDeleteQuestion} />);
+
+            expect(screen.getByRole("button", { name: /delete question/i })).toBeInTheDocument();
+        });
+
+        it("does not render delete button when onDeleteQuestion is not provided", () => {
+            render(<TermCard term={questionTerm} />);
+
+            expect(screen.queryByRole("button", { name: /delete question/i })).not.toBeInTheDocument();
+        });
+
+        it("shows confirmation dialog when delete button is clicked for question", async () => {
+            const user = userEvent.setup();
+            const onDeleteQuestion = vi.fn();
+            render(<TermCard term={questionTerm} onDeleteQuestion={onDeleteQuestion} />);
+
+            await user.click(screen.getByRole("button", { name: /delete question/i }));
+
+            expect(screen.getByRole("alertdialog")).toBeInTheDocument();
+            expect(screen.getByText(/are you sure you want to delete this question/i)).toBeInTheDocument();
+        });
+
+        it("calls onDeleteQuestion when confirm button is clicked in question dialog", async () => {
+            const user = userEvent.setup();
+            const onDeleteQuestion = vi.fn();
+            render(<TermCard term={questionTerm} onDeleteQuestion={onDeleteQuestion} />);
+
+            await user.click(screen.getByRole("button", { name: /delete question/i }));
+            await user.click(screen.getByRole("button", { name: /^delete$/i }));
+
+            expect(onDeleteQuestion).toHaveBeenCalledWith(2);
+        });
+
+        it("does not render delete buttons in edit mode", () => {
+            const onDeleteFlashcard = vi.fn();
+            const editedContent: EditedTermContent = {
+                front: "Test",
+                back: "Test",
+            };
+
+            render(
+                <TermCard
+                    term={flashcardTerm}
+                    onDeleteFlashcard={onDeleteFlashcard}
+                    isEditing={true}
+                    editedContent={editedContent}
+                    onEditedContentChange={vi.fn()}
+                    onSaveEdit={vi.fn()}
+                    onCancelEdit={vi.fn()}
+                />
+            );
+
+            expect(screen.queryByRole("button", { name: /delete flashcard/i })).not.toBeInTheDocument();
+        });
+
+        it("shows deletion warning about permanent action", async () => {
+            const user = userEvent.setup();
+            const onDeleteFlashcard = vi.fn();
+            render(<TermCard term={flashcardTerm} onDeleteFlashcard={onDeleteFlashcard} />);
+
+            await user.click(screen.getByRole("button", { name: /delete flashcard/i }));
+
+            expect(screen.getByText(/this action cannot be undone/i)).toBeInTheDocument();
+        });
+    });
 });

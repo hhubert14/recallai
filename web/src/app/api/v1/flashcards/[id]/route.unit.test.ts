@@ -1,12 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { PATCH } from "./route";
+import { PATCH, DELETE } from "./route";
 import { getAuthenticatedUser } from "@/lib/auth-helpers";
 import { EditFlashcardUseCase } from "@/clean-architecture/use-cases/flashcard/edit-flashcard.use-case";
+import { DeleteFlashcardUseCase } from "@/clean-architecture/use-cases/flashcard/delete-flashcard.use-case";
 import { FlashcardEntity } from "@/clean-architecture/domain/entities/flashcard.entity";
 import type { NextRequest } from "next/server";
 
 vi.mock("@/lib/auth-helpers");
 vi.mock("@/clean-architecture/use-cases/flashcard/edit-flashcard.use-case");
+vi.mock("@/clean-architecture/use-cases/flashcard/delete-flashcard.use-case");
 vi.mock("@/clean-architecture/infrastructure/repositories/flashcard.repository.drizzle");
 vi.mock("@/drizzle", () => ({
     db: {},
@@ -232,6 +234,108 @@ describe("PATCH /api/v1/flashcards/[id]", () => {
         const request = createMockRequest({ front: "New front", back: "New back" });
 
         const response = await PATCH(request, { params: Promise.resolve({ id: flashcardId }) });
+        const data = await response.json();
+
+        expect(response.status).toBe(500);
+        expect(data.status).toBe("error");
+        expect(data.message).toBe("Database connection failed");
+    });
+});
+
+function createDeleteRequest(): NextRequest {
+    return new Request("http://localhost/api/v1/flashcards/100", {
+        method: "DELETE",
+    }) as unknown as NextRequest;
+}
+
+describe("DELETE /api/v1/flashcards/[id]", () => {
+    const flashcardId = "100";
+
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
+
+    it("returns 401 if not authenticated", async () => {
+        vi.mocked(getAuthenticatedUser).mockResolvedValue({
+            user: null,
+            error: "Not authenticated",
+        });
+
+        const request = createDeleteRequest();
+
+        const response = await DELETE(request, { params: Promise.resolve({ id: flashcardId }) });
+        const data = await response.json();
+
+        expect(response.status).toBe(401);
+        expect(data.status).toBe("fail");
+        expect(data.data.error).toBe("Unauthorized");
+    });
+
+    it("returns 400 if id is not a valid number", async () => {
+        vi.mocked(getAuthenticatedUser).mockResolvedValue(mockAuthenticatedUser("user-123"));
+
+        const request = createDeleteRequest();
+
+        const response = await DELETE(request, { params: Promise.resolve({ id: "invalid" }) });
+        const data = await response.json();
+
+        expect(response.status).toBe(400);
+        expect(data.status).toBe("fail");
+        expect(data.data.error).toBe("Invalid flashcard ID");
+    });
+
+    it("deletes flashcard and returns 200", async () => {
+        vi.mocked(getAuthenticatedUser).mockResolvedValue(mockAuthenticatedUser("user-123"));
+
+        const mockExecute = vi.fn().mockResolvedValue(undefined);
+        vi.mocked(DeleteFlashcardUseCase).mockImplementation(() => ({
+            execute: mockExecute,
+        }) as unknown as DeleteFlashcardUseCase);
+
+        const request = createDeleteRequest();
+
+        const response = await DELETE(request, { params: Promise.resolve({ id: flashcardId }) });
+        const data = await response.json();
+
+        expect(response.status).toBe(200);
+        expect(data.status).toBe("success");
+        expect(data.data.message).toBe("Flashcard deleted");
+
+        expect(mockExecute).toHaveBeenCalledWith({
+            flashcardId: 100,
+            userId: "user-123",
+        });
+    });
+
+    it("returns 404 when flashcard not found", async () => {
+        vi.mocked(getAuthenticatedUser).mockResolvedValue(mockAuthenticatedUser("user-123"));
+
+        const mockExecute = vi.fn().mockRejectedValue(new Error("Flashcard not found"));
+        vi.mocked(DeleteFlashcardUseCase).mockImplementation(() => ({
+            execute: mockExecute,
+        }) as unknown as DeleteFlashcardUseCase);
+
+        const request = createDeleteRequest();
+
+        const response = await DELETE(request, { params: Promise.resolve({ id: "999" }) });
+        const data = await response.json();
+
+        expect(response.status).toBe(404);
+        expect(data.status).toBe("fail");
+        expect(data.data.error).toBe("Flashcard not found");
+    });
+
+    it("returns 500 for unexpected errors", async () => {
+        vi.mocked(getAuthenticatedUser).mockResolvedValue(mockAuthenticatedUser("user-123"));
+
+        const mockExecute = vi.fn().mockRejectedValue(new Error("Database connection failed"));
+        vi.mocked(DeleteFlashcardUseCase).mockImplementation(() => ({
+            execute: mockExecute,
+        }) as unknown as DeleteFlashcardUseCase);
+
+        const request = createDeleteRequest();
+
+        const response = await DELETE(request, { params: Promise.resolve({ id: flashcardId }) });
         const data = await response.json();
 
         expect(response.status).toBe(500);

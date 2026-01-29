@@ -42,6 +42,7 @@ describe("AddQuestionToStudySetUseCase", () => {
             findQuestionsByIds: vi.fn(),
             countQuestionsByVideoIds: vi.fn(),
             updateQuestion: vi.fn(),
+            deleteQuestion: vi.fn(),
         };
 
         mockReviewableItemRepository = {

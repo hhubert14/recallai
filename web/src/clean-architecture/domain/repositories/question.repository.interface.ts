@@ -43,4 +43,10 @@ export interface IQuestionRepository {
             explanation: string | null;
         }>
     ): Promise<MultipleChoiceQuestionEntity>;
+
+    /**
+     * Delete a question by its ID.
+     * Database cascades handle cleanup of related question_options, reviewable_items, and review_progress.
+     */
+    deleteQuestion(questionId: number): Promise<void>;
 }

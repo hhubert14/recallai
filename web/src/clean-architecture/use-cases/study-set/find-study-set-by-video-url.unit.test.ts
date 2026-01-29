@@ -103,6 +103,7 @@ describe("FindStudySetByVideoUrlUseCase", () => {
       findQuestionsByIds: vi.fn(),
       countQuestionsByVideoIds: vi.fn(),
       updateQuestion: vi.fn(),
+      deleteQuestion: vi.fn(),
     };
 
     mockFlashcardRepository = {
@@ -112,6 +113,7 @@ describe("FindStudySetByVideoUrlUseCase", () => {
       countFlashcardsByVideoIds: vi.fn(),
       findFlashcardById: vi.fn(),
       updateFlashcard: vi.fn(),
+      deleteFlashcard: vi.fn(),
     };
 
     useCase = new FindStudySetByVideoUrlUseCase(

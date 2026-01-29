@@ -11,6 +11,8 @@ interface TermsListProps {
     progress: StudySetProgress;
     onEditFlashcard?: (flashcard: TermFlashcard) => void;
     onEditQuestion?: (question: TermQuestion) => void;
+    onDeleteFlashcard?: (flashcardId: number) => void;
+    onDeleteQuestion?: (questionId: number) => void;
     // Inline editing props
     editingTermId?: { id: number; type: "flashcard" | "question" } | null;
     editedContent?: EditedTermContent;
@@ -27,6 +29,8 @@ export function TermsList({
     progress,
     onEditFlashcard,
     onEditQuestion,
+    onDeleteFlashcard,
+    onDeleteQuestion,
     editingTermId,
     editedContent,
     isSaving,
@@ -74,6 +78,8 @@ export function TermsList({
                             term={term}
                             onEditFlashcard={onEditFlashcard}
                             onEditQuestion={onEditQuestion}
+                            onDeleteFlashcard={onDeleteFlashcard}
+                            onDeleteQuestion={onDeleteQuestion}
                             isEditing={isEditing}
                             editedContent={isEditing ? editedContent : undefined}
                             isSaving={isSaving}
