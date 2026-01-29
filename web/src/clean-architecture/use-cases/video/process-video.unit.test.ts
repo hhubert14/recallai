@@ -18,7 +18,7 @@ function createMockVideo(overrides: Partial<VideoEntity> = {}): VideoEntity {
         overrides.id ?? 1,
         overrides.userId ?? "user-1",
         overrides.title ?? "Test Video Title",
-        overrides.url ?? "https://www.youtube.com/watch?v=test123",
+        overrides.url ?? "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
         overrides.channelName ?? "Test Channel",
         overrides.createdAt ?? new Date().toISOString(),
     );
@@ -59,7 +59,7 @@ describe("ProcessVideoUseCase", () => {
     let mockVideoSummarizerService: IVideoSummarizerService;
     let mockTranscriptWindowGeneratorService: ITranscriptWindowGeneratorService;
 
-    const testVideoUrl = "https://www.youtube.com/watch?v=test123";
+    const testVideoUrl = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
     const testUserId = "user-1";
 
     beforeEach(() => {
@@ -174,6 +174,32 @@ describe("ProcessVideoUseCase", () => {
             await expect(useCase.execute(testUserId, testVideoUrl)).rejects.toThrow(
                 "Video exists but summary not found"
             );
+        });
+
+        it("normalizes different URL formats to the same canonical URL", async () => {
+            const existingVideo = createMockVideo({
+                id: 42,
+                url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+            });
+            const existingSummary = createMockSummary({ videoId: 42 });
+            const existingStudySet = createMockStudySet({ id: 10, videoId: 42 });
+
+            vi.mocked(mockVideoRepo.findVideoByUserIdAndUrl).mockResolvedValue(existingVideo);
+            vi.mocked(mockSummaryRepo.findSummaryByVideoId).mockResolvedValue(existingSummary);
+            vi.mocked(mockStudySetRepo.findStudySetByVideoId).mockResolvedValue(existingStudySet);
+
+            // Call with youtu.be URL with si parameter and timestamp
+            const result = await useCase.execute(
+                testUserId,
+                "https://youtu.be/dQw4w9WgXcQ?si=abc&t=100"
+            );
+
+            // Should find existing video using normalized URL
+            expect(mockVideoRepo.findVideoByUserIdAndUrl).toHaveBeenCalledWith(
+                testUserId,
+                "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+            );
+            expect(result.alreadyExists).toBe(true);
         });
     });
 

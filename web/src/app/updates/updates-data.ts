@@ -35,6 +35,14 @@ export function formatUpdateDate(
 // Add new entries at the TOP of this array (newest first)
 export const updates: UpdateEntry[] = [
   {
+    id: "2026-01-29-add-video-from-dashboard",
+    date: "2026-01-29",
+    title: "Add Videos from Dashboard",
+    description:
+      "Add any YouTube video directly from your library by pasting a URL. No browser extension required.",
+    category: "New Feature",
+  },
+  {
     id: "2026-01-23-guided-tours",
     date: "2026-01-23",
     title: "Guided Feature Tours",

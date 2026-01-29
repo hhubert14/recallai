@@ -1,5 +1,5 @@
 import { logger } from "@/lib/logger";
-import { extractYouTubeVideoId } from "@/lib/youtube";
+import { extractYouTubeVideoId, normalizeYouTubeUrl } from "@/lib/youtube";
 import { IVideoRepository } from "@/clean-architecture/domain/repositories/video.repository.interface";
 import { ISummaryRepository } from "@/clean-architecture/domain/repositories/summary.repository.interface";
 import { ITranscriptRepository } from "@/clean-architecture/domain/repositories/transcript.repository.interface";
@@ -34,15 +34,16 @@ export class ProcessVideoUseCase {
     async execute(userId: string, videoUrl: string): Promise<ProcessVideoResult> {
         logger.extension.info("Processing video request", { videoUrl, userId });
 
-        // 1. Extract YouTube video ID from URL
-        const youtubeVideoId = extractYouTubeVideoId(videoUrl);
-        if (!youtubeVideoId) {
+        // 1. Normalize YouTube URL to canonical format for consistent duplicate detection
+        const normalizedUrl = normalizeYouTubeUrl(videoUrl);
+        if (!normalizedUrl) {
             throw new Error("Invalid YouTube URL - could not extract video ID");
         }
+        const youtubeVideoId = extractYouTubeVideoId(normalizedUrl)!;
 
-        // 2. Check if video already exists for this user
+        // 2. Check if video already exists for this user (using normalized URL)
         logger.extension.debug("Checking if video already exists");
-        const existingVideo = await this.videoRepository.findVideoByUserIdAndUrl(userId, videoUrl);
+        const existingVideo = await this.videoRepository.findVideoByUserIdAndUrl(userId, normalizedUrl);
         if (existingVideo) {
             logger.extension.info("Video already exists, returning existing data", {
                 videoId: existingVideo.id,
@@ -95,12 +96,12 @@ export class ProcessVideoUseCase {
             throw new Error("Failed to fetch video transcript - captions may be disabled");
         }
 
-        // 4. Create video record
+        // 4. Create video record (using normalized URL for consistent storage)
         logger.extension.debug("Creating video record");
         const video = await this.videoRepository.createVideo(
             userId,
             title,
-            videoUrl,
+            normalizedUrl,
             channelName,
         );
         logger.extension.info("Video created successfully", { videoId: video.id });

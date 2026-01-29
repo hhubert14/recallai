@@ -7,6 +7,7 @@ import { CreateFolderModal } from "@/components/CreateFolderModal";
 import { CreateStudySetModal, StudySetData } from "@/components/CreateStudySetModal";
 import { EditFolderModal } from "@/components/EditFolderModal";
 import { AddToFolderModal, FolderOption } from "@/components/AddToFolderModal";
+import { AddVideoModal } from "@/components/AddVideoModal";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { ClientStudySetList, StudySetWithCounts } from "./ClientStudySetList";
@@ -52,6 +53,7 @@ export function LibraryClientWrapper({
   const [folders, setFolders] = useState(initialFolders);
   const [isCreateFolderModalOpen, setIsCreateFolderModalOpen] = useState(false);
   const [isCreateStudySetModalOpen, setIsCreateStudySetModalOpen] = useState(false);
+  const [isAddVideoModalOpen, setIsAddVideoModalOpen] = useState(false);
   const [editingFolder, setEditingFolder] = useState<FolderData | null>(null);
 
   // Search and sort state
@@ -115,6 +117,14 @@ export function LibraryClientWrapper({
     (studySet: StudySetData) => {
       setIsCreateStudySetModalOpen(false);
       router.push(`/dashboard/study-set/${studySet.publicId}`);
+    },
+    [router]
+  );
+
+  const handleAddVideoSuccess = useCallback(
+    (studySetPublicId: string) => {
+      setIsAddVideoModalOpen(false);
+      router.push(`/dashboard/study-set/${studySetPublicId}`);
     },
     [router]
   );
@@ -294,13 +304,23 @@ export function LibraryClientWrapper({
         {!isViewingFolder && (
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">Study Sets</h2>
-            <Button
-              size="sm"
-              onClick={() => setIsCreateStudySetModalOpen(true)}
-            >
-              <Plus className="h-4 w-4 mr-1" />
-              New Study Set
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setIsAddVideoModalOpen(true)}
+              >
+                <Plus className="h-4 w-4 mr-1" />
+                Add Video
+              </Button>
+              <Button
+                size="sm"
+                onClick={() => setIsCreateStudySetModalOpen(true)}
+              >
+                <Plus className="h-4 w-4 mr-1" />
+                New Study Set
+              </Button>
+            </div>
           </div>
         )}
 
@@ -364,6 +384,13 @@ export function LibraryClientWrapper({
         onSave={handleSaveFolders}
         isLoading={isAddToFolderLoading || isFetchingFolders}
         error={addToFolderError}
+      />
+
+      {/* Add Video Modal */}
+      <AddVideoModal
+        isOpen={isAddVideoModalOpen}
+        onClose={() => setIsAddVideoModalOpen(false)}
+        onSuccess={handleAddVideoSuccess}
       />
     </StudySetActionsContext.Provider>
   );

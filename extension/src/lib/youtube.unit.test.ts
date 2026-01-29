@@ -56,6 +56,36 @@ describe('extractVideoId', () => {
     it('extracts video ID from embed without www', () => {
       expect(extractVideoId('https://youtube.com/embed/dQw4w9WgXcQ')).toBe('dQw4w9WgXcQ');
     });
+
+    it('extracts video ID from youtube-nocookie.com/embed/ID (privacy mode)', () => {
+      expect(extractVideoId('https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ')).toBe('dQw4w9WgXcQ');
+    });
+  });
+
+  describe('legacy embed URLs', () => {
+    it('extracts video ID from youtube.com/v/ID (Flash era format)', () => {
+      expect(extractVideoId('https://www.youtube.com/v/dQw4w9WgXcQ')).toBe('dQw4w9WgXcQ');
+    });
+
+    it('extracts video ID from youtube.com/e/ID (shorthand)', () => {
+      expect(extractVideoId('https://www.youtube.com/e/dQw4w9WgXcQ')).toBe('dQw4w9WgXcQ');
+    });
+  });
+
+  describe('live stream URLs', () => {
+    it('extracts video ID from youtube.com/live/ID', () => {
+      expect(extractVideoId('https://www.youtube.com/live/dQw4w9WgXcQ')).toBe('dQw4w9WgXcQ');
+    });
+  });
+
+  describe('mobile and music URLs', () => {
+    it('extracts video ID from m.youtube.com/watch?v=ID', () => {
+      expect(extractVideoId('https://m.youtube.com/watch?v=dQw4w9WgXcQ')).toBe('dQw4w9WgXcQ');
+    });
+
+    it('extracts video ID from music.youtube.com/watch?v=ID', () => {
+      expect(extractVideoId('https://music.youtube.com/watch?v=dQw4w9WgXcQ')).toBe('dQw4w9WgXcQ');
+    });
   });
 
   describe('invalid and non-YouTube URLs', () => {
