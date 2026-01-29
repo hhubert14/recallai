@@ -17,11 +17,13 @@ import { SessionComplete } from "./SessionComplete";
 interface ReviewInterfaceProps {
   studyModeStats: StudyModeStats;
   progressStats: ProgressStats;
+  studySetPublicId?: string;
 }
 
 export function ReviewInterface({
   studyModeStats,
   progressStats,
+  studySetPublicId,
 }: ReviewInterfaceProps) {
   const router = useRouter();
 
@@ -68,6 +70,7 @@ export function ReviewInterface({
   } = useReviewSession({
     studyModeStats,
     onRefresh: () => router.refresh(),
+    studySetPublicId,
   });
 
   // Mode selection screen
@@ -76,7 +79,11 @@ export function ReviewInterface({
     if (studyModeStats.totalCount === 0) {
       return (
         <EmptyReviewState
-          onNavigateToDashboard={() => router.push("/dashboard")}
+          onNavigateToDashboard={() =>
+            studySetPublicId
+              ? router.push(`/dashboard/study-set/${studySetPublicId}`)
+              : router.push("/dashboard")
+          }
         />
       );
     }

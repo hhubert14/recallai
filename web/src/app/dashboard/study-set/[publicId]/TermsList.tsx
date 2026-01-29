@@ -1,5 +1,8 @@
 "use client";
 
+import Link from "next/link";
+import { Clock } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { TermCard } from "./TermCard";
 import { StudyDropdown } from "./StudyDropdown";
 import { ProgressOverview } from "./ProgressOverview";
@@ -9,6 +12,8 @@ interface TermsListProps {
     terms: TermWithMastery[];
     onStudy: (mode: StudyMode) => void;
     progress: StudySetProgress;
+    studySetPublicId: string;
+    dueCount?: number;
     onEditFlashcard?: (flashcard: TermFlashcard) => void;
     onEditQuestion?: (question: TermQuestion) => void;
     onDeleteFlashcard?: (flashcardId: number) => void;
@@ -27,6 +32,8 @@ export function TermsList({
     terms,
     onStudy,
     progress,
+    studySetPublicId,
+    dueCount = 0,
     onEditFlashcard,
     onEditQuestion,
     onDeleteFlashcard,
@@ -64,7 +71,15 @@ export function TermsList({
                 <h2 className="text-lg font-semibold text-foreground">
                     Terms in this set <span className="text-muted-foreground">({terms.length})</span>
                 </h2>
-                <StudyDropdown onSelect={onStudy} disabledModes={disabledModes} />
+                <div className="flex items-center gap-2">
+                    <Button asChild variant="outline" size="sm">
+                        <Link href={`/dashboard/study-set/${studySetPublicId}/review`}>
+                            <Clock className="h-4 w-4 mr-1.5" />
+                            Review{dueCount > 0 && ` (${dueCount})`}
+                        </Link>
+                    </Button>
+                    <StudyDropdown onSelect={onStudy} disabledModes={disabledModes} />
+                </div>
             </div>
             <div className="space-y-3">
                 {terms.map((term) => {

@@ -247,4 +247,113 @@ describe("GetReviewStatsUseCase", () => {
       expect(result.totalCount).toBe(2);
     });
   });
+
+  describe("studySetId filtering", () => {
+    it("filters stats by studySetId when provided", async () => {
+      // Items across different study sets
+      const allItems = [
+        createMockReviewableItem({ id: 1, itemType: "question", questionId: 1, studySetId: 1 }),
+        createMockReviewableItem({ id: 2, itemType: "question", questionId: 2, studySetId: 2 }),
+        createMockReviewableItem({ id: 3, itemType: "flashcard", flashcardId: 1, studySetId: 1 }),
+      ];
+      // Items filtered to study set 1 only
+      const studySet1Items = [allItems[0], allItems[2]];
+
+      // Progress for items (item 1 is due)
+      const dueProgress = [createMockReviewProgress({ reviewableItemId: 1 })];
+      const allProgress = [createMockReviewProgress({ reviewableItemId: 1 })];
+
+      // When studySetId is provided, should use study-set-specific method
+      vi.mocked(mockReviewableItemRepo.findReviewableItemsByUserIdAndStudySetId).mockResolvedValue(studySet1Items);
+      vi.mocked(mockReviewProgressRepo.findReviewProgressDueForReview).mockResolvedValue(dueProgress);
+      vi.mocked(mockReviewProgressRepo.findReviewProgressByUserId).mockResolvedValue(allProgress);
+      vi.mocked(mockReviewProgressRepo.getReviewStats).mockResolvedValue({
+        dueCount: 1,
+        totalCount: 1,
+        boxDistribution: [1, 0, 0, 0, 0],
+      });
+
+      const result = await useCase.execute("user-1", 1);
+
+      expect(mockReviewableItemRepo.findReviewableItemsByUserIdAndStudySetId).toHaveBeenCalledWith("user-1", 1);
+      expect(mockReviewableItemRepo.findReviewableItemsByUserId).not.toHaveBeenCalled();
+      // Should count only items from study set 1
+      expect(result.totalCount).toBe(2);
+      expect(result.byType.questions).toBe(1);
+      expect(result.byType.flashcards).toBe(1);
+    });
+
+    it("filters due count by studySetId", async () => {
+      // Items in study set 1
+      const studySet1Items = [
+        createMockReviewableItem({ id: 1, itemType: "question", questionId: 1, studySetId: 1 }),
+        createMockReviewableItem({ id: 3, itemType: "flashcard", flashcardId: 1, studySetId: 1 }),
+      ];
+
+      // Due progress includes item from study set 2 (should be filtered)
+      const dueProgress = [
+        createMockReviewProgress({ reviewableItemId: 1 }),  // study set 1
+        createMockReviewProgress({ reviewableItemId: 2 }),  // study set 2
+      ];
+      const allProgress = [createMockReviewProgress({ reviewableItemId: 1 })];
+
+      vi.mocked(mockReviewableItemRepo.findReviewableItemsByUserIdAndStudySetId).mockResolvedValue(studySet1Items);
+      vi.mocked(mockReviewProgressRepo.findReviewProgressDueForReview).mockResolvedValue(dueProgress);
+      vi.mocked(mockReviewProgressRepo.findReviewProgressByUserId).mockResolvedValue(allProgress);
+      vi.mocked(mockReviewProgressRepo.getReviewStats).mockResolvedValue({
+        dueCount: 2,
+        totalCount: 2,
+        boxDistribution: [2, 0, 0, 0, 0],
+      });
+
+      const result = await useCase.execute("user-1", 1);
+
+      // Due count should only include item 1 (from study set 1)
+      expect(result.dueCount).toBe(1);
+    });
+
+    it("filters new count by studySetId", async () => {
+      // Items in study set 1 (all new, no progress)
+      const studySet1Items = [
+        createMockReviewableItem({ id: 1, itemType: "question", questionId: 1, studySetId: 1 }),
+        createMockReviewableItem({ id: 3, itemType: "flashcard", flashcardId: 1, studySetId: 1 }),
+      ];
+
+      vi.mocked(mockReviewableItemRepo.findReviewableItemsByUserIdAndStudySetId).mockResolvedValue(studySet1Items);
+      vi.mocked(mockReviewProgressRepo.findReviewProgressDueForReview).mockResolvedValue([]);
+      vi.mocked(mockReviewProgressRepo.findReviewProgressByUserId).mockResolvedValue([]);
+      vi.mocked(mockReviewProgressRepo.getReviewStats).mockResolvedValue({
+        dueCount: 0,
+        totalCount: 0,
+        boxDistribution: [0, 0, 0, 0, 0],
+      });
+
+      const result = await useCase.execute("user-1", 1);
+
+      // All 2 items in study set 1 are new
+      expect(result.newCount).toBe(2);
+    });
+
+    it("returns all items when studySetId is not provided (backward compatible)", async () => {
+      const allItems = [
+        createMockReviewableItem({ id: 1, itemType: "question", questionId: 1, studySetId: 1 }),
+        createMockReviewableItem({ id: 2, itemType: "question", questionId: 2, studySetId: 2 }),
+      ];
+
+      vi.mocked(mockReviewableItemRepo.findReviewableItemsByUserId).mockResolvedValue(allItems);
+      vi.mocked(mockReviewProgressRepo.findReviewProgressDueForReview).mockResolvedValue([]);
+      vi.mocked(mockReviewProgressRepo.findReviewProgressByUserId).mockResolvedValue([]);
+      vi.mocked(mockReviewProgressRepo.getReviewStats).mockResolvedValue({
+        dueCount: 0,
+        totalCount: 0,
+        boxDistribution: [0, 0, 0, 0, 0],
+      });
+
+      const result = await useCase.execute("user-1");
+
+      expect(mockReviewableItemRepo.findReviewableItemsByUserId).toHaveBeenCalledWith("user-1");
+      expect(mockReviewableItemRepo.findReviewableItemsByUserIdAndStudySetId).not.toHaveBeenCalled();
+      expect(result.totalCount).toBe(2);
+    });
+  });
 });

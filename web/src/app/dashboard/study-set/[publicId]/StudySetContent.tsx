@@ -21,6 +21,7 @@ interface StudySetContentProps {
     videoId: number | null;
     studySetId: number;
     studySetPublicId: string;
+    dueCount?: number;
 }
 
 export function StudySetContent({
@@ -33,6 +34,7 @@ export function StudySetContent({
     videoId,
     studySetId,
     studySetPublicId,
+    dueCount = 0,
 }: StudySetContentProps) {
     const [terms, setTerms] = useState<TermWithMastery[]>(initialTerms);
     const [activeMode, setActiveMode] = useState<StudyMode | null>(null);
@@ -343,6 +345,8 @@ export function StudySetContent({
                 terms={terms}
                 onStudy={handleStudy}
                 progress={currentProgress}
+                studySetPublicId={studySetPublicId}
+                dueCount={dueCount}
                 onEditFlashcard={handleEditFlashcard}
                 onEditQuestion={handleEditQuestion}
                 onDeleteFlashcard={handleDeleteFlashcard}

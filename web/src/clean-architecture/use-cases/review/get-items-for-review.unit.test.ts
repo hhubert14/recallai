@@ -731,4 +731,152 @@ describe("GetItemsForReviewUseCase", () => {
       randomSpy.mockRestore();
     });
   });
+
+  describe("studySetId filtering", () => {
+    it("due mode filters items by studySetId when provided", async () => {
+      // Items from different study sets
+      const reviewableItems = [
+        createMockReviewableItem({ id: 1, itemType: "question", questionId: 1, studySetId: 1 }),
+        createMockReviewableItem({ id: 2, itemType: "question", questionId: 2, studySetId: 2 }),
+        createMockReviewableItem({ id: 3, itemType: "flashcard", flashcardId: 1, studySetId: 1 }),
+      ];
+      // Progress for items in both study sets
+      const dueProgress = [
+        createMockReviewProgress({ id: 1, reviewableItemId: 1 }),
+        createMockReviewProgress({ id: 2, reviewableItemId: 2 }),
+        createMockReviewProgress({ id: 3, reviewableItemId: 3 }),
+      ];
+
+      vi.mocked(mockReviewProgressRepo.findReviewProgressDueForReview).mockResolvedValue(dueProgress);
+      // When studySetId is provided, should filter to only study set 1 items (ids 1, 3)
+      vi.mocked(mockReviewableItemRepo.findReviewableItemsByIds).mockResolvedValue([
+        reviewableItems[0],
+        reviewableItems[2],
+      ]);
+      vi.mocked(mockQuestionRepo.findQuestionsByIds).mockResolvedValue([createMockQuestion(1)]);
+      vi.mocked(mockFlashcardRepo.findFlashcardsByIds).mockResolvedValue([createMockFlashcard(1)]);
+      vi.mocked(mockVideoRepo.findVideosByIds).mockResolvedValue([createMockVideo(1)]);
+      vi.mocked(mockStudySetRepo.findStudySetsByIds).mockResolvedValue([createMockStudySet(1)]);
+
+      const result = await useCase.execute("user-1", { mode: "due", studySetId: 1 });
+
+      // Should only return items from study set 1
+      expect(result).toHaveLength(2);
+      result.forEach((r) => expect(r.studySet.id).toBe(1));
+    });
+
+    it("new mode filters items by studySetId when provided", async () => {
+      // All items across different study sets
+      const allReviewableItems = [
+        createMockReviewableItem({ id: 1, itemType: "question", questionId: 1, studySetId: 1 }),
+        createMockReviewableItem({ id: 2, itemType: "question", questionId: 2, studySetId: 2 }),
+        createMockReviewableItem({ id: 3, itemType: "flashcard", flashcardId: 1, studySetId: 1 }),
+      ];
+
+      // When studySetId is provided, should only fetch items from that study set
+      vi.mocked(mockReviewableItemRepo.findReviewableItemsByUserIdAndStudySetId).mockResolvedValue([
+        allReviewableItems[0],
+        allReviewableItems[2],
+      ]);
+      vi.mocked(mockReviewProgressRepo.findReviewableItemIdsWithoutProgress).mockResolvedValue([1, 3]);
+      vi.mocked(mockReviewableItemRepo.findReviewableItemsByIds).mockResolvedValue([
+        allReviewableItems[0],
+        allReviewableItems[2],
+      ]);
+      vi.mocked(mockQuestionRepo.findQuestionsByIds).mockResolvedValue([createMockQuestion(1)]);
+      vi.mocked(mockFlashcardRepo.findFlashcardsByIds).mockResolvedValue([createMockFlashcard(1)]);
+      vi.mocked(mockVideoRepo.findVideosByIds).mockResolvedValue([createMockVideo(1)]);
+      vi.mocked(mockStudySetRepo.findStudySetsByIds).mockResolvedValue([createMockStudySet(1)]);
+
+      const result = await useCase.execute("user-1", { mode: "new", studySetId: 1 });
+
+      // Should only return items from study set 1
+      expect(result).toHaveLength(2);
+      result.forEach((r) => expect(r.studySet.id).toBe(1));
+      // Should have called the study-set-specific method
+      expect(mockReviewableItemRepo.findReviewableItemsByUserIdAndStudySetId).toHaveBeenCalledWith("user-1", 1);
+      expect(mockReviewableItemRepo.findReviewableItemsByUserId).not.toHaveBeenCalled();
+    });
+
+    it("random mode filters items by studySetId when provided", async () => {
+      // All items across different study sets
+      const allReviewableItems = [
+        createMockReviewableItem({ id: 1, itemType: "question", questionId: 1, studySetId: 1 }),
+        createMockReviewableItem({ id: 2, itemType: "question", questionId: 2, studySetId: 2 }),
+        createMockReviewableItem({ id: 3, itemType: "flashcard", flashcardId: 1, studySetId: 1 }),
+      ];
+
+      // When studySetId is provided, should only fetch items from that study set
+      vi.mocked(mockReviewableItemRepo.findReviewableItemsByUserIdAndStudySetId).mockResolvedValue([
+        allReviewableItems[0],
+        allReviewableItems[2],
+      ]);
+      vi.mocked(mockReviewProgressRepo.findReviewProgressByReviewableItemIds).mockResolvedValue([]);
+      vi.mocked(mockQuestionRepo.findQuestionsByIds).mockResolvedValue([createMockQuestion(1)]);
+      vi.mocked(mockFlashcardRepo.findFlashcardsByIds).mockResolvedValue([createMockFlashcard(1)]);
+      vi.mocked(mockVideoRepo.findVideosByIds).mockResolvedValue([createMockVideo(1)]);
+      vi.mocked(mockStudySetRepo.findStudySetsByIds).mockResolvedValue([createMockStudySet(1)]);
+
+      const result = await useCase.execute("user-1", { mode: "random", studySetId: 1 });
+
+      // Should only return items from study set 1
+      expect(result).toHaveLength(2);
+      result.forEach((r) => expect(r.studySet.id).toBe(1));
+      // Should have called the study-set-specific method
+      expect(mockReviewableItemRepo.findReviewableItemsByUserIdAndStudySetId).toHaveBeenCalledWith("user-1", 1);
+    });
+
+    it("returns all items when studySetId is not provided (backward compatible)", async () => {
+      const allReviewableItems = [
+        createMockReviewableItem({ id: 1, itemType: "question", questionId: 1, studySetId: 1 }),
+        createMockReviewableItem({ id: 2, itemType: "question", questionId: 2, studySetId: 2 }),
+      ];
+
+      vi.mocked(mockReviewableItemRepo.findReviewableItemsByUserId).mockResolvedValue(allReviewableItems);
+      vi.mocked(mockReviewProgressRepo.findReviewProgressByReviewableItemIds).mockResolvedValue([]);
+      vi.mocked(mockQuestionRepo.findQuestionsByIds).mockResolvedValue([createMockQuestion(1), createMockQuestion(2)]);
+      vi.mocked(mockFlashcardRepo.findFlashcardsByIds).mockResolvedValue([]);
+      vi.mocked(mockVideoRepo.findVideosByIds).mockResolvedValue([createMockVideo(1)]);
+      vi.mocked(mockStudySetRepo.findStudySetsByIds).mockResolvedValue([createMockStudySet(1), createMockStudySet(2)]);
+
+      const result = await useCase.execute("user-1", { mode: "random" });
+
+      // Should return items from all study sets
+      expect(result).toHaveLength(2);
+      const studySetIds = result.map((r) => r.studySet.id);
+      expect(studySetIds).toContain(1);
+      expect(studySetIds).toContain(2);
+      // Should have called the user-level method
+      expect(mockReviewableItemRepo.findReviewableItemsByUserId).toHaveBeenCalledWith("user-1");
+    });
+
+    it("due mode with studySetId filters progress records to only those items", async () => {
+      // Progress exists for items from multiple study sets
+      const dueProgress = [
+        createMockReviewProgress({ id: 1, reviewableItemId: 1 }),
+        createMockReviewProgress({ id: 2, reviewableItemId: 2 }),
+        createMockReviewProgress({ id: 3, reviewableItemId: 3 }),
+      ];
+      // But we want items only from study set 1
+      const studySet1Items = [
+        createMockReviewableItem({ id: 1, itemType: "question", questionId: 1, studySetId: 1 }),
+        createMockReviewableItem({ id: 3, itemType: "flashcard", flashcardId: 1, studySetId: 1 }),
+      ];
+
+      vi.mocked(mockReviewProgressRepo.findReviewProgressDueForReview).mockResolvedValue(dueProgress);
+      vi.mocked(mockReviewableItemRepo.findReviewableItemsByIds).mockResolvedValue(studySet1Items);
+      vi.mocked(mockQuestionRepo.findQuestionsByIds).mockResolvedValue([createMockQuestion(1)]);
+      vi.mocked(mockFlashcardRepo.findFlashcardsByIds).mockResolvedValue([createMockFlashcard(1)]);
+      vi.mocked(mockVideoRepo.findVideosByIds).mockResolvedValue([createMockVideo(1)]);
+      vi.mocked(mockStudySetRepo.findStudySetsByIds).mockResolvedValue([createMockStudySet(1)]);
+
+      const result = await useCase.execute("user-1", { mode: "due", studySetId: 1 });
+
+      // Should only have 2 items (from study set 1)
+      expect(result).toHaveLength(2);
+      // Progress records should be filtered too
+      expect(result[0].progress).not.toBeNull();
+      expect(result[1].progress).not.toBeNull();
+    });
+  });
 });

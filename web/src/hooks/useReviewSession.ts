@@ -14,6 +14,7 @@ export interface SessionResults {
 export interface UseReviewSessionOptions {
   studyModeStats: StudyModeStats;
   onRefresh: () => void;
+  studySetPublicId?: string;
 }
 
 export interface UseReviewSessionReturn {
@@ -69,6 +70,7 @@ function getInitialMode(stats: StudyModeStats): StudyMode {
 export function useReviewSession({
   studyModeStats,
   onRefresh,
+  studySetPublicId,
 }: UseReviewSessionOptions): UseReviewSessionReturn {
   // Mode selection state
   const [selectedMode, setSelectedMode] = useState<StudyMode>(
@@ -108,7 +110,14 @@ export function useReviewSession({
     setIsLoadingItems(true);
     setFetchError(null);
     try {
-      const response = await fetch(`/api/v1/reviews?mode=${mode}&limit=${SESSION_LIMIT}`);
+      const params = new URLSearchParams({
+        mode,
+        limit: String(SESSION_LIMIT),
+      });
+      if (studySetPublicId) {
+        params.set("studySetPublicId", studySetPublicId);
+      }
+      const response = await fetch(`/api/v1/reviews?${params.toString()}`);
       const data = await response.json();
       if (data.status === "success") {
         setItems(data.data.items);
