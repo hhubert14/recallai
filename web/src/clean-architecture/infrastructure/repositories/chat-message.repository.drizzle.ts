@@ -1,6 +1,7 @@
 import { IChatMessageRepository } from "@/clean-architecture/domain/repositories/chat-message.repository.interface";
 import { ChatMessageEntity, ChatMessageRole } from "@/clean-architecture/domain/entities/chat-message.entity";
 import { db } from "@/drizzle";
+import { dbRetry } from "@/lib/db";
 import { chatMessages } from "@/drizzle/schema";
 import { eq, and, asc } from "drizzle-orm";
 
@@ -11,10 +12,12 @@ export class DrizzleChatMessageRepository implements IChatMessageRepository {
         role: ChatMessageRole,
         content: string
     ): Promise<ChatMessageEntity> {
-        const [data] = await db
-            .insert(chatMessages)
-            .values({ videoId, userId, role, content })
-            .returning();
+        const [data] = await dbRetry(() =>
+            db
+                .insert(chatMessages)
+                .values({ videoId, userId, role, content })
+                .returning()
+        );
 
         return this.toEntity(data);
     }
@@ -23,16 +26,18 @@ export class DrizzleChatMessageRepository implements IChatMessageRepository {
         videoId: number,
         userId: string
     ): Promise<ChatMessageEntity[]> {
-        const data = await db
-            .select()
-            .from(chatMessages)
-            .where(
-                and(
-                    eq(chatMessages.videoId, videoId),
-                    eq(chatMessages.userId, userId)
+        const data = await dbRetry(() =>
+            db
+                .select()
+                .from(chatMessages)
+                .where(
+                    and(
+                        eq(chatMessages.videoId, videoId),
+                        eq(chatMessages.userId, userId)
+                    )
                 )
-            )
-            .orderBy(asc(chatMessages.createdAt));
+                .orderBy(asc(chatMessages.createdAt))
+        );
 
         return data.map((message) => this.toEntity(message));
     }
@@ -41,14 +46,16 @@ export class DrizzleChatMessageRepository implements IChatMessageRepository {
         videoId: number,
         userId: string
     ): Promise<void> {
-        await db
-            .delete(chatMessages)
-            .where(
-                and(
-                    eq(chatMessages.videoId, videoId),
-                    eq(chatMessages.userId, userId)
+        await dbRetry(() =>
+            db
+                .delete(chatMessages)
+                .where(
+                    and(
+                        eq(chatMessages.videoId, videoId),
+                        eq(chatMessages.userId, userId)
+                    )
                 )
-            );
+        );
     }
 
     private toEntity(data: typeof chatMessages.$inferSelect): ChatMessageEntity {

@@ -126,6 +126,50 @@ The project uses Drizzle ORM for all database operations:
 3. Import from `src/drizzle/index.ts` for database access
 4. Follow patterns in `docs/drizzle-migration-guide.md`
 
+### Database Retry Logic
+
+All repository methods use `dbRetry()` to automatically retry transient database errors (connection timeouts, network issues, server restarts) with exponential backoff.
+
+**How it works:**
+- Retries transient errors (connection timeout, connection refused, server restart) up to 3 times
+- Uses exponential backoff with jitter (100ms → 200ms → 400ms)
+- Fails immediately for permanent errors (constraint violations, syntax errors)
+- Logs retry attempts via `logger.db.info()`
+
+**Usage in repositories:**
+```typescript
+import { db } from "@/drizzle";
+import { dbRetry } from "@/lib/db";
+
+// All DB operations should be wrapped with dbRetry
+const data = await dbRetry(() =>
+  db.select().from(users).where(eq(users.id, userId))
+);
+```
+
+**Error types:**
+- `TransientDatabaseError` - Retryable (connection issues)
+- `PermanentDatabaseError` - Not retryable (constraints, syntax)
+
+**API error handling:**
+Use `handleApiError()` in API routes to convert database errors to user-friendly responses:
+```typescript
+import { handleApiError } from "@/lib/api-error-handler";
+
+export async function GET(request: NextRequest) {
+  try {
+    // ... your code
+  } catch (error) {
+    return handleApiError(error);  // Returns 503, 400, or 500 with safe messages
+  }
+}
+```
+
+**Files:**
+- `src/lib/db/errors.ts` - Error types and classification
+- `src/lib/db/retry.ts` - Retry logic with exponential backoff
+- `src/lib/api-error-handler.ts` - Converts errors to API responses
+
 ### Core Tables
 
 - `users` - User accounts (linked to Supabase auth)

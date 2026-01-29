@@ -1,4 +1,5 @@
 import { db as defaultDb } from "@/drizzle";
+import { dbRetry } from "@/lib/db";
 import { reviewableItems } from "@/drizzle/schema";
 import { IReviewableItemRepository } from "@/clean-architecture/domain/repositories/reviewable-item.repository.interface";
 import {
@@ -40,19 +41,21 @@ export class DrizzleReviewableItemRepository
       return [];
     }
 
-    const results = await this.db
-      .insert(reviewableItems)
-      .values(
-        items.map((item) => ({
-          userId: item.userId,
-          itemType: "question" as const,
-          questionId: item.questionId,
-          flashcardId: null,
-          videoId: item.videoId,
-          studySetId: item.studySetId,
-        }))
-      )
-      .returning();
+    const results = await dbRetry(() =>
+      this.db
+        .insert(reviewableItems)
+        .values(
+          items.map((item) => ({
+            userId: item.userId,
+            itemType: "question" as const,
+            questionId: item.questionId,
+            flashcardId: null,
+            videoId: item.videoId,
+            studySetId: item.studySetId,
+          }))
+        )
+        .returning()
+    );
 
     return results.map(toReviewableItemEntity);
   }
@@ -69,19 +72,21 @@ export class DrizzleReviewableItemRepository
       return [];
     }
 
-    const results = await this.db
-      .insert(reviewableItems)
-      .values(
-        items.map((item) => ({
-          userId: item.userId,
-          itemType: "flashcard" as const,
-          questionId: null,
-          flashcardId: item.flashcardId,
-          videoId: item.videoId,
-          studySetId: item.studySetId,
-        }))
-      )
-      .returning();
+    const results = await dbRetry(() =>
+      this.db
+        .insert(reviewableItems)
+        .values(
+          items.map((item) => ({
+            userId: item.userId,
+            itemType: "flashcard" as const,
+            questionId: null,
+            flashcardId: item.flashcardId,
+            videoId: item.videoId,
+            studySetId: item.studySetId,
+          }))
+        )
+        .returning()
+    );
 
     return results.map(toReviewableItemEntity);
   }
@@ -89,10 +94,12 @@ export class DrizzleReviewableItemRepository
   async findReviewableItemsByUserId(
     userId: string
   ): Promise<ReviewableItemEntity[]> {
-    const results = await this.db
-      .select()
-      .from(reviewableItems)
-      .where(eq(reviewableItems.userId, userId));
+    const results = await dbRetry(() =>
+      this.db
+        .select()
+        .from(reviewableItems)
+        .where(eq(reviewableItems.userId, userId))
+    );
 
     return results.map(toReviewableItemEntity);
   }
@@ -101,15 +108,17 @@ export class DrizzleReviewableItemRepository
     userId: string,
     videoId: number
   ): Promise<ReviewableItemEntity[]> {
-    const results = await this.db
-      .select()
-      .from(reviewableItems)
-      .where(
-        and(
-          eq(reviewableItems.userId, userId),
-          eq(reviewableItems.videoId, videoId)
+    const results = await dbRetry(() =>
+      this.db
+        .select()
+        .from(reviewableItems)
+        .where(
+          and(
+            eq(reviewableItems.userId, userId),
+            eq(reviewableItems.videoId, videoId)
+          )
         )
-      );
+    );
 
     return results.map(toReviewableItemEntity);
   }
@@ -117,10 +126,12 @@ export class DrizzleReviewableItemRepository
   async findReviewableItemsByStudySetId(
     studySetId: number
   ): Promise<ReviewableItemEntity[]> {
-    const results = await this.db
-      .select()
-      .from(reviewableItems)
-      .where(eq(reviewableItems.studySetId, studySetId));
+    const results = await dbRetry(() =>
+      this.db
+        .select()
+        .from(reviewableItems)
+        .where(eq(reviewableItems.studySetId, studySetId))
+    );
 
     return results.map(toReviewableItemEntity);
   }
@@ -129,15 +140,17 @@ export class DrizzleReviewableItemRepository
     userId: string,
     studySetId: number
   ): Promise<ReviewableItemEntity[]> {
-    const results = await this.db
-      .select()
-      .from(reviewableItems)
-      .where(
-        and(
-          eq(reviewableItems.userId, userId),
-          eq(reviewableItems.studySetId, studySetId)
+    const results = await dbRetry(() =>
+      this.db
+        .select()
+        .from(reviewableItems)
+        .where(
+          and(
+            eq(reviewableItems.userId, userId),
+            eq(reviewableItems.studySetId, studySetId)
+          )
         )
-      );
+    );
 
     return results.map(toReviewableItemEntity);
   }
@@ -145,11 +158,13 @@ export class DrizzleReviewableItemRepository
   async findReviewableItemByQuestionId(
     questionId: number
   ): Promise<ReviewableItemEntity | null> {
-    const [result] = await this.db
-      .select()
-      .from(reviewableItems)
-      .where(eq(reviewableItems.questionId, questionId))
-      .limit(1);
+    const [result] = await dbRetry(() =>
+      this.db
+        .select()
+        .from(reviewableItems)
+        .where(eq(reviewableItems.questionId, questionId))
+        .limit(1)
+    );
 
     return result ? toReviewableItemEntity(result) : null;
   }
@@ -157,11 +172,13 @@ export class DrizzleReviewableItemRepository
   async findReviewableItemByFlashcardId(
     flashcardId: number
   ): Promise<ReviewableItemEntity | null> {
-    const [result] = await this.db
-      .select()
-      .from(reviewableItems)
-      .where(eq(reviewableItems.flashcardId, flashcardId))
-      .limit(1);
+    const [result] = await dbRetry(() =>
+      this.db
+        .select()
+        .from(reviewableItems)
+        .where(eq(reviewableItems.flashcardId, flashcardId))
+        .limit(1)
+    );
 
     return result ? toReviewableItemEntity(result) : null;
   }
@@ -169,11 +186,13 @@ export class DrizzleReviewableItemRepository
   async findReviewableItemById(
     id: number
   ): Promise<ReviewableItemEntity | null> {
-    const [result] = await this.db
-      .select()
-      .from(reviewableItems)
-      .where(eq(reviewableItems.id, id))
-      .limit(1);
+    const [result] = await dbRetry(() =>
+      this.db
+        .select()
+        .from(reviewableItems)
+        .where(eq(reviewableItems.id, id))
+        .limit(1)
+    );
 
     return result ? toReviewableItemEntity(result) : null;
   }
@@ -185,19 +204,23 @@ export class DrizzleReviewableItemRepository
       return [];
     }
 
-    const results = await this.db
-      .select()
-      .from(reviewableItems)
-      .where(inArray(reviewableItems.id, ids));
+    const results = await dbRetry(() =>
+      this.db
+        .select()
+        .from(reviewableItems)
+        .where(inArray(reviewableItems.id, ids))
+    );
 
     return results.map(toReviewableItemEntity);
   }
 
   async countItemsByStudySetId(studySetId: number): Promise<number> {
-    const result = await this.db
-      .select({ count: count() })
-      .from(reviewableItems)
-      .where(eq(reviewableItems.studySetId, studySetId));
+    const result = await dbRetry(() =>
+      this.db
+        .select({ count: count() })
+        .from(reviewableItems)
+        .where(eq(reviewableItems.studySetId, studySetId))
+    );
     return result[0]?.count ?? 0;
   }
 
@@ -215,15 +238,17 @@ export class DrizzleReviewableItemRepository
     }
 
     // Query with GROUP BY on studySetId and itemType
-    const rows = await this.db
-      .select({
-        studySetId: reviewableItems.studySetId,
-        itemType: reviewableItems.itemType,
-        count: count(),
-      })
-      .from(reviewableItems)
-      .where(inArray(reviewableItems.studySetId, studySetIds))
-      .groupBy(reviewableItems.studySetId, reviewableItems.itemType);
+    const rows = await dbRetry(() =>
+      this.db
+        .select({
+          studySetId: reviewableItems.studySetId,
+          itemType: reviewableItems.itemType,
+          count: count(),
+        })
+        .from(reviewableItems)
+        .where(inArray(reviewableItems.studySetId, studySetIds))
+        .groupBy(reviewableItems.studySetId, reviewableItems.itemType)
+    );
 
     // Populate from query results
     for (const row of rows) {

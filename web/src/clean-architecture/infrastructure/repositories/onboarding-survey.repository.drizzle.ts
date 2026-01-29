@@ -4,6 +4,7 @@ import {
     SurveyAnswers,
 } from "@/clean-architecture/domain/entities/onboarding-survey.entity";
 import { db } from "@/drizzle";
+import { dbRetry } from "@/lib/db";
 import { onboardingSurveys } from "@/drizzle/schema";
 import { eq } from "drizzle-orm";
 
@@ -13,39 +14,33 @@ export class DrizzleOnboardingSurveyRepository
     async findSurveyByUserId(
         userId: string
     ): Promise<OnboardingSurveyEntity | null> {
-        try {
-            const [data] = await db
+        const [data] = await dbRetry(() =>
+            db
                 .select()
                 .from(onboardingSurveys)
                 .where(eq(onboardingSurveys.userId, userId))
-                .limit(1);
+                .limit(1)
+        );
 
-            if (!data) return null;
-            return this.toEntity(data);
-        } catch (error) {
-            console.error("Error finding survey by user ID:", error);
-            throw error;
-        }
+        if (!data) return null;
+        return this.toEntity(data);
     }
 
     async createSurvey(
         userId: string,
         answers: SurveyAnswers
     ): Promise<OnboardingSurveyEntity> {
-        try {
-            const [data] = await db
+        const [data] = await dbRetry(() =>
+            db
                 .insert(onboardingSurveys)
                 .values({
                     userId,
                     answers,
                 })
-                .returning();
+                .returning()
+        );
 
-            return this.toEntity(data);
-        } catch (error) {
-            console.error("Error creating survey:", error);
-            throw error;
-        }
+        return this.toEntity(data);
     }
 
     private toEntity(

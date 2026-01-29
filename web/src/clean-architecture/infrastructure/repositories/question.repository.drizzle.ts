@@ -1,12 +1,14 @@
 import { IQuestionRepository } from "@/clean-architecture/domain/repositories/question.repository.interface";
 import { MultipleChoiceQuestionEntity, MultipleChoiceOption } from "@/clean-architecture/domain/entities/question.entity";
 import { db as defaultDb } from "@/drizzle";
+import { dbRetry } from "@/lib/db";
 import { questions, questionOptions } from "@/drizzle/schema";
 import { eq, asc, inArray, count } from "drizzle-orm";
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 export class DrizzleQuestionRepository implements IQuestionRepository {
     constructor(private readonly db: PostgresJsDatabase = defaultDb) {}
+
     async createMultipleChoiceQuestion(
         videoId: number | null,
         questionText: string,
@@ -18,9 +20,9 @@ export class DrizzleQuestionRepository implements IQuestionRepository {
         sourceQuote: string | null,
         sourceTimestamp: number | null
     ): Promise<MultipleChoiceQuestionEntity> {
-        try {
-            // Create the question first
-            const [questionData] = await this.db
+        // Create the question first
+        const [questionData] = await dbRetry(() =>
+            this.db
                 .insert(questions)
                 .values({
                     videoId,
@@ -29,12 +31,14 @@ export class DrizzleQuestionRepository implements IQuestionRepository {
                     sourceQuote,
                     sourceTimestamp,
                 })
-                .returning();
+                .returning()
+        );
 
-            // Create all options
-            const createdOptions = [];
-            for (const option of options) {
-                const [optionData] = await this.db
+        // Create all options
+        const createdOptions = [];
+        for (const option of options) {
+            const [optionData] = await dbRetry(() =>
+                this.db
                     .insert(questionOptions)
                     .values({
                         questionId: questionData.id,
@@ -42,75 +46,66 @@ export class DrizzleQuestionRepository implements IQuestionRepository {
                         isCorrect: option.isCorrect,
                         explanation: option.explanation,
                     })
-                    .returning();
+                    .returning()
+            );
 
-                createdOptions.push(optionData);
-            }
-
-            return this.toEntity(questionData, createdOptions);
-        } catch (error) {
-            console.error("Error creating multiple choice question:", error);
-            throw error;
+            createdOptions.push(optionData);
         }
+
+        return this.toEntity(questionData, createdOptions);
     }
 
     async findQuestionById(questionId: number): Promise<MultipleChoiceQuestionEntity | null> {
-        try {
-            const rows = await this.db
+        const rows = await dbRetry(() =>
+            this.db
                 .select()
                 .from(questions)
                 .innerJoin(questionOptions, eq(questionOptions.questionId, questions.id))
-                .where(eq(questions.id, questionId));
+                .where(eq(questions.id, questionId))
+        );
 
-            if (rows.length === 0) {
-                return null;
-            }
-
-            const question = rows[0].questions;
-            const options = rows.map(row => row.question_options);
-
-            return this.toEntity(question, options);
-        } catch (error) {
-            console.error("Error finding question by ID:", error);
-            throw error;
+        if (rows.length === 0) {
+            return null;
         }
+
+        const question = rows[0].questions;
+        const options = rows.map(row => row.question_options);
+
+        return this.toEntity(question, options);
     }
 
     async findQuestionsByVideoId(videoId: number): Promise<MultipleChoiceQuestionEntity[]> {
-        try {
-            const rows = await this.db
+        const rows = await dbRetry(() =>
+            this.db
                 .select()
                 .from(questions)
                 .leftJoin(questionOptions, eq(questionOptions.questionId, questions.id))
                 .where(eq(questions.videoId, videoId))
-                .orderBy(asc(questions.createdAt));
+                .orderBy(asc(questions.createdAt))
+        );
 
-            const questionsMap: {
-                [key: number]: {
-                    question: typeof questions.$inferSelect;
-                    options: typeof questionOptions.$inferSelect[];
-                }
-            } = {};
-
-            for (const row of rows) {
-                if (!questionsMap[row.questions.id]) {
-                    questionsMap[row.questions.id] = {
-                        question: row.questions,
-                        options: [],
-                    };
-                }
-                if (row.question_options) {
-                    questionsMap[row.questions.id].options.push(row.question_options);
-                }
+        const questionsMap: {
+            [key: number]: {
+                question: typeof questions.$inferSelect;
+                options: typeof questionOptions.$inferSelect[];
             }
+        } = {};
 
-            return Object.values(questionsMap).map(({ question, options }) =>
-                this.toEntity(question, options)
-            );
-        } catch (error) {
-            console.error("Error finding questions by video ID:", error);
-            throw error;
+        for (const row of rows) {
+            if (!questionsMap[row.questions.id]) {
+                questionsMap[row.questions.id] = {
+                    question: row.questions,
+                    options: [],
+                };
+            }
+            if (row.question_options) {
+                questionsMap[row.questions.id].options.push(row.question_options);
+            }
         }
+
+        return Object.values(questionsMap).map(({ question, options }) =>
+            this.toEntity(question, options)
+        );
     }
 
     async findQuestionsByIds(questionIds: number[]): Promise<MultipleChoiceQuestionEntity[]> {
@@ -118,40 +113,37 @@ export class DrizzleQuestionRepository implements IQuestionRepository {
             return [];
         }
 
-        try {
-            const rows = await this.db
+        const rows = await dbRetry(() =>
+            this.db
                 .select()
                 .from(questions)
                 .leftJoin(questionOptions, eq(questionOptions.questionId, questions.id))
                 .where(inArray(questions.id, questionIds))
-                .orderBy(asc(questions.createdAt));
+                .orderBy(asc(questions.createdAt))
+        );
 
-            const questionsMap: {
-                [key: number]: {
-                    question: typeof questions.$inferSelect;
-                    options: typeof questionOptions.$inferSelect[];
-                }
-            } = {};
-
-            for (const row of rows) {
-                if (!questionsMap[row.questions.id]) {
-                    questionsMap[row.questions.id] = {
-                        question: row.questions,
-                        options: [],
-                    };
-                }
-                if (row.question_options) {
-                    questionsMap[row.questions.id].options.push(row.question_options);
-                }
+        const questionsMap: {
+            [key: number]: {
+                question: typeof questions.$inferSelect;
+                options: typeof questionOptions.$inferSelect[];
             }
+        } = {};
 
-            return Object.values(questionsMap).map(({ question, options }) =>
-                this.toEntity(question, options)
-            );
-        } catch (error) {
-            console.error("Error finding questions by IDs:", error);
-            throw error;
+        for (const row of rows) {
+            if (!questionsMap[row.questions.id]) {
+                questionsMap[row.questions.id] = {
+                    question: row.questions,
+                    options: [],
+                };
+            }
+            if (row.question_options) {
+                questionsMap[row.questions.id].options.push(row.question_options);
+            }
         }
+
+        return Object.values(questionsMap).map(({ question, options }) =>
+            this.toEntity(question, options)
+        );
     }
 
     async countQuestionsByVideoIds(videoIds: number[]): Promise<Record<number, number>> {
@@ -159,21 +151,18 @@ export class DrizzleQuestionRepository implements IQuestionRepository {
             return {};
         }
 
-        try {
-            const rows = await this.db
+        const rows = await dbRetry(() =>
+            this.db
                 .select({
                     videoId: questions.videoId,
                     count: count(),
                 })
                 .from(questions)
                 .where(inArray(questions.videoId, videoIds))
-                .groupBy(questions.videoId);
+                .groupBy(questions.videoId)
+        );
 
-            return Object.fromEntries(rows.map(r => [r.videoId, r.count]));
-        } catch (error) {
-            console.error("Error counting questions by video IDs:", error);
-            throw error;
-        }
+        return Object.fromEntries(rows.map(r => [r.videoId, r.count]));
     }
 
     async updateQuestion(
@@ -186,9 +175,9 @@ export class DrizzleQuestionRepository implements IQuestionRepository {
             explanation: string | null;
         }>
     ): Promise<MultipleChoiceQuestionEntity> {
-        try {
-            // Use transaction to ensure all updates succeed or fail together
-            await this.db.transaction(async (tx) => {
+        // Use transaction to ensure all updates succeed or fail together
+        await dbRetry(() =>
+            this.db.transaction(async (tx) => {
                 // Update the question text
                 await tx
                     .update(questions)
@@ -206,29 +195,23 @@ export class DrizzleQuestionRepository implements IQuestionRepository {
                         })
                         .where(eq(questionOptions.id, option.id));
                 }
-            });
+            })
+        );
 
-            // Fetch and return the updated question
-            const updated = await this.findQuestionById(questionId);
-            if (!updated) {
-                throw new Error("Failed to fetch updated question");
-            }
-            return updated;
-        } catch (error) {
-            console.error("Error updating question:", error);
-            throw error;
+        // Fetch and return the updated question
+        const updated = await this.findQuestionById(questionId);
+        if (!updated) {
+            throw new Error("Failed to fetch updated question");
         }
+        return updated;
     }
 
     async deleteQuestion(questionId: number): Promise<void> {
-        try {
-            await this.db
+        await dbRetry(() =>
+            this.db
                 .delete(questions)
-                .where(eq(questions.id, questionId));
-        } catch (error) {
-            console.error("Error deleting question:", error);
-            throw error;
-        }
+                .where(eq(questions.id, questionId))
+        );
     }
 
     private toEntity(

@@ -120,9 +120,8 @@ class Logger {
         // debug: (message: string, context?: LogContext) => {
         //     // Suppress all DB debug logs - they're too noisy
         // },
-        // info: (message: string, context?: LogContext) => {
-        //     // Suppress most DB info logs
-        // },
+        info: (message: string, context?: LogContext) =>
+            this.info(`[DB] ${message}`, context),
         warn: (message: string, context?: LogContext) =>
             this.warn(`[DB] ${message}`, context),
         error: (

@@ -1,6 +1,7 @@
 import { IFlashcardRepository } from "@/clean-architecture/domain/repositories/flashcard.repository.interface";
 import { FlashcardEntity } from "@/clean-architecture/domain/entities/flashcard.entity";
 import { db as defaultDb } from "@/drizzle";
+import { dbRetry } from "@/lib/db";
 import { flashcards } from "@/drizzle/schema";
 import { eq, inArray, count } from "drizzle-orm";
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
@@ -11,35 +12,29 @@ export class DrizzleFlashcardRepository implements IFlashcardRepository {
     async createFlashcards(
         flashcardsData: { videoId: number | null; userId: string; front: string; back: string }[]
     ): Promise<FlashcardEntity[]> {
-        try {
-            if (flashcardsData.length === 0) {
-                return [];
-            }
+        if (flashcardsData.length === 0) {
+            return [];
+        }
 
-            const data = await this.db
+        const data = await dbRetry(() =>
+            this.db
                 .insert(flashcards)
                 .values(flashcardsData)
-                .returning();
+                .returning()
+        );
 
-            return data.map((flashcard) => this.toEntity(flashcard));
-        } catch (error) {
-            console.error("Error creating flashcards:", error);
-            throw error;
-        }
+        return data.map((flashcard) => this.toEntity(flashcard));
     }
 
     async findFlashcardsByVideoId(videoId: number): Promise<FlashcardEntity[]> {
-        try {
-            const data = await this.db
+        const data = await dbRetry(() =>
+            this.db
                 .select()
                 .from(flashcards)
-                .where(eq(flashcards.videoId, videoId));
+                .where(eq(flashcards.videoId, videoId))
+        );
 
-            return data.map((flashcard) => this.toEntity(flashcard));
-        } catch (error) {
-            console.error("Error finding flashcards by video ID:", error);
-            throw error;
-        }
+        return data.map((flashcard) => this.toEntity(flashcard));
     }
 
     async findFlashcardsByIds(flashcardIds: number[]): Promise<FlashcardEntity[]> {
@@ -47,17 +42,14 @@ export class DrizzleFlashcardRepository implements IFlashcardRepository {
             return [];
         }
 
-        try {
-            const data = await this.db
+        const data = await dbRetry(() =>
+            this.db
                 .select()
                 .from(flashcards)
-                .where(inArray(flashcards.id, flashcardIds));
+                .where(inArray(flashcards.id, flashcardIds))
+        );
 
-            return data.map((flashcard) => this.toEntity(flashcard));
-        } catch (error) {
-            console.error("Error finding flashcards by IDs:", error);
-            throw error;
-        }
+        return data.map((flashcard) => this.toEntity(flashcard));
     }
 
     async countFlashcardsByVideoIds(videoIds: number[]): Promise<Record<number, number>> {
@@ -65,70 +57,58 @@ export class DrizzleFlashcardRepository implements IFlashcardRepository {
             return {};
         }
 
-        try {
-            const rows = await this.db
+        const rows = await dbRetry(() =>
+            this.db
                 .select({
                     videoId: flashcards.videoId,
                     count: count(),
                 })
                 .from(flashcards)
                 .where(inArray(flashcards.videoId, videoIds))
-                .groupBy(flashcards.videoId);
+                .groupBy(flashcards.videoId)
+        );
 
-            return Object.fromEntries(rows.map(r => [r.videoId, r.count]));
-        } catch (error) {
-            console.error("Error counting flashcards by video IDs:", error);
-            throw error;
-        }
+        return Object.fromEntries(rows.map(r => [r.videoId, r.count]));
     }
 
     async findFlashcardById(flashcardId: number): Promise<FlashcardEntity | null> {
-        try {
-            const [data] = await this.db
+        const [data] = await dbRetry(() =>
+            this.db
                 .select()
                 .from(flashcards)
                 .where(eq(flashcards.id, flashcardId))
-                .limit(1);
+                .limit(1)
+        );
 
-            if (!data) {
-                return null;
-            }
-
-            return this.toEntity(data);
-        } catch (error) {
-            console.error("Error finding flashcard by ID:", error);
-            throw error;
+        if (!data) {
+            return null;
         }
+
+        return this.toEntity(data);
     }
 
     async updateFlashcard(flashcardId: number, front: string, back: string): Promise<FlashcardEntity> {
-        try {
-            const [data] = await this.db
+        const [data] = await dbRetry(() =>
+            this.db
                 .update(flashcards)
                 .set({ front, back, updatedAt: new Date().toISOString() })
                 .where(eq(flashcards.id, flashcardId))
-                .returning();
+                .returning()
+        );
 
-            if (!data) {
-                throw new Error("Flashcard not found");
-            }
-
-            return this.toEntity(data);
-        } catch (error) {
-            console.error("Error updating flashcard:", error);
-            throw error;
+        if (!data) {
+            throw new Error("Flashcard not found");
         }
+
+        return this.toEntity(data);
     }
 
     async deleteFlashcard(flashcardId: number): Promise<void> {
-        try {
-            await this.db
+        await dbRetry(() =>
+            this.db
                 .delete(flashcards)
-                .where(eq(flashcards.id, flashcardId));
-        } catch (error) {
-            console.error("Error deleting flashcard:", error);
-            throw error;
-        }
+                .where(eq(flashcards.id, flashcardId))
+        );
     }
 
     private toEntity(data: typeof flashcards.$inferSelect): FlashcardEntity {

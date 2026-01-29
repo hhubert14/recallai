@@ -1,9 +1,9 @@
 import { ITranscriptRepository } from "@/clean-architecture/domain/repositories/transcript.repository.interface";
 import { TranscriptEntity, TranscriptSegment } from "@/clean-architecture/domain/entities/transcript.entity";
 import { db } from "@/drizzle";
+import { dbRetry } from "@/lib/db";
 import { videoTranscripts } from "@/drizzle/schema";
 import { eq } from "drizzle-orm";
-import { logger } from "@/lib/logger";
 
 export class DrizzleTranscriptRepository implements ITranscriptRepository {
     async createTranscript(
@@ -11,30 +11,24 @@ export class DrizzleTranscriptRepository implements ITranscriptRepository {
         segments: TranscriptSegment[],
         fullText: string,
     ): Promise<TranscriptEntity> {
-        try {
-            const [data] = await db
+        const [data] = await dbRetry(() =>
+            db
                 .insert(videoTranscripts)
                 .values({ videoId, segments, fullText })
-                .returning();
-            return this.toEntity(data);
-        } catch (error) {
-            logger.db.error("Error creating transcript", error);
-            throw error;
-        }
+                .returning()
+        );
+        return this.toEntity(data);
     }
 
     async findTranscriptByVideoId(videoId: number): Promise<TranscriptEntity | null> {
-        try {
-            const [data] = await db
+        const [data] = await dbRetry(() =>
+            db
                 .select()
                 .from(videoTranscripts)
-                .where(eq(videoTranscripts.videoId, videoId));
-            if (!data) return null;
-            return this.toEntity(data);
-        } catch (error) {
-            logger.db.error("Error finding transcript by video id", error);
-            throw error;
-        }
+                .where(eq(videoTranscripts.videoId, videoId))
+        );
+        if (!data) return null;
+        return this.toEntity(data);
     }
 
     private toEntity(data: typeof videoTranscripts.$inferSelect): TranscriptEntity {
