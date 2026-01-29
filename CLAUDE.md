@@ -151,24 +151,9 @@ const data = await dbRetry(() =>
 - `TransientDatabaseError` - Retryable (connection issues)
 - `PermanentDatabaseError` - Not retryable (constraints, syntax)
 
-**API error handling:**
-Use `handleApiError()` in API routes to convert database errors to user-friendly responses:
-```typescript
-import { handleApiError } from "@/lib/api-error-handler";
-
-export async function GET(request: NextRequest) {
-  try {
-    // ... your code
-  } catch (error) {
-    return handleApiError(error);  // Returns 503, 400, or 500 with safe messages
-  }
-}
-```
-
 **Files:**
 - `src/lib/db/errors.ts` - Error types and classification
 - `src/lib/db/retry.ts` - Retry logic with exponential backoff
-- `src/lib/api-error-handler.ts` - Converts errors to API responses
 
 ### Core Tables
 
