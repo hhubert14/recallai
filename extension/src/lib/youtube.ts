@@ -1,12 +1,24 @@
+// YouTube video IDs are exactly 11 characters (base64: A-Za-z0-9_-)
+// Using {11} enforces this length for security (prevents injection of overly long strings)
+const VIDEO_ID_PATTERN = "[a-zA-Z0-9_-]{11}";
+
 const YOUTUBE_PATTERNS = [
-  // Standard watch URL: youtube.com/watch?v=VIDEO_ID
-  /^https?:\/\/(?:www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/,
+  // Standard watch URL: youtube.com/watch?v=VIDEO_ID (includes www, m, music subdomains)
+  new RegExp(`^https?:\\/\\/(?:www\\.|m\\.|music\\.)?youtube\\.com\\/watch\\?v=(${VIDEO_ID_PATTERN})(?:&|$)`),
   // Shortened URL: youtu.be/VIDEO_ID
-  /^https?:\/\/youtu\.be\/([a-zA-Z0-9_-]+)/,
+  new RegExp(`^https?:\\/\\/youtu\\.be\\/(${VIDEO_ID_PATTERN})(?:\\?|$)`),
   // Shorts URL: youtube.com/shorts/VIDEO_ID
-  /^https?:\/\/(?:www\.)?youtube\.com\/shorts\/([a-zA-Z0-9_-]+)/,
+  new RegExp(`^https?:\\/\\/(?:www\\.)?youtube\\.com\\/shorts\\/(${VIDEO_ID_PATTERN})(?:\\?|$)`),
+  // Live stream URL: youtube.com/live/VIDEO_ID
+  new RegExp(`^https?:\\/\\/(?:www\\.)?youtube\\.com\\/live\\/(${VIDEO_ID_PATTERN})(?:\\?|$)`),
   // Embed URL: youtube.com/embed/VIDEO_ID
-  /^https?:\/\/(?:www\.)?youtube\.com\/embed\/([a-zA-Z0-9_-]+)/,
+  new RegExp(`^https?:\\/\\/(?:www\\.)?youtube\\.com\\/embed\\/(${VIDEO_ID_PATTERN})(?:\\?|$)`),
+  // Privacy-enhanced embed: youtube-nocookie.com/embed/VIDEO_ID
+  new RegExp(`^https?:\\/\\/(?:www\\.)?youtube-nocookie\\.com\\/embed\\/(${VIDEO_ID_PATTERN})(?:\\?|$)`),
+  // Legacy embed URL (Flash era): youtube.com/v/VIDEO_ID
+  new RegExp(`^https?:\\/\\/(?:www\\.)?youtube\\.com\\/v\\/(${VIDEO_ID_PATTERN})(?:\\?|$)`),
+  // Legacy embed shorthand: youtube.com/e/VIDEO_ID
+  new RegExp(`^https?:\\/\\/(?:www\\.)?youtube\\.com\\/e\\/(${VIDEO_ID_PATTERN})(?:\\?|$)`),
 ];
 
 /**

@@ -58,7 +58,7 @@ describe('useCurrentTab', () => {
 
     it('handles YouTube shorts URLs', async () => {
       mockBrowser.tabs.query.mockResolvedValue([
-        { id: 1, url: 'https://www.youtube.com/shorts/abc123', active: true },
+        { id: 1, url: 'https://www.youtube.com/shorts/dQw4w9WgXcQ', active: true },
       ]);
 
       const { result } = renderHook(() => useCurrentTab());
@@ -182,12 +182,12 @@ describe('useCurrentTab', () => {
       act(() => {
         simulateTabUpdate(
           1,
-          { url: 'https://www.youtube.com/watch?v=abc123' },
-          { id: 1, url: 'https://www.youtube.com/watch?v=abc123', active: true }
+          { url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' },
+          { id: 1, url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', active: true }
         );
       });
 
-      expect(result.current.url).toBe('https://www.youtube.com/watch?v=abc123');
+      expect(result.current.url).toBe('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
       expect(result.current.isYouTubeVideo).toBe(true);
     });
 
@@ -221,8 +221,8 @@ describe('useCurrentTab', () => {
       act(() => {
         simulateTabUpdate(
           2,
-          { url: 'https://youtube.com/watch?v=xyz' },
-          { id: 2, url: 'https://youtube.com/watch?v=xyz', active: false }
+          { url: 'https://youtube.com/watch?v=xyzABCDE123' },
+          { id: 2, url: 'https://youtube.com/watch?v=xyzABCDE123', active: false }
         );
       });
 
@@ -234,7 +234,7 @@ describe('useCurrentTab', () => {
       mockBrowser.tabs.query.mockResolvedValue([{ id: 1, url: 'https://google.com', active: true }]);
       mockBrowser.tabs.get.mockResolvedValue({
         id: 2,
-        url: 'https://www.youtube.com/watch?v=abc123',
+        url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
       });
 
       const { result } = renderHook(() => useCurrentTab({ listenForChanges: true }));
@@ -251,7 +251,7 @@ describe('useCurrentTab', () => {
       });
 
       await waitFor(() => {
-        expect(result.current.url).toBe('https://www.youtube.com/watch?v=abc123');
+        expect(result.current.url).toBe('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
       });
 
       expect(result.current.isYouTubeVideo).toBe(true);

@@ -34,7 +34,7 @@ describe('useSidePanel', () => {
     it('returns loading status when auth is loading', async () => {
       mockCheckAuthStatus.mockImplementation(() => new Promise(() => {})); // Never resolves
       mockBrowser.tabs.query.mockResolvedValue([
-        { id: 1, url: 'https://www.youtube.com/watch?v=abc123', active: true },
+        { id: 1, url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', active: true },
       ]);
 
       const { result } = renderHook(() => useSidePanel());
@@ -54,7 +54,7 @@ describe('useSidePanel', () => {
     it('returns loading status when content is being fetched', async () => {
       mockCheckAuthStatus.mockResolvedValue(true);
       mockBrowser.tabs.query.mockResolvedValue([
-        { id: 1, url: 'https://www.youtube.com/watch?v=abc123', active: true },
+        { id: 1, url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', active: true },
       ]);
       mockGetStudySetByVideoUrl.mockImplementation(() => new Promise(() => {})); // Never resolves
 
@@ -72,7 +72,7 @@ describe('useSidePanel', () => {
     it('returns unauthenticated status when user is not logged in', async () => {
       mockCheckAuthStatus.mockResolvedValue(false);
       mockBrowser.tabs.query.mockResolvedValue([
-        { id: 1, url: 'https://www.youtube.com/watch?v=abc123', active: true },
+        { id: 1, url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', active: true },
       ]);
 
       const { result } = renderHook(() => useSidePanel());
@@ -85,7 +85,7 @@ describe('useSidePanel', () => {
     it('does not fetch content when unauthenticated', async () => {
       mockCheckAuthStatus.mockResolvedValue(false);
       mockBrowser.tabs.query.mockResolvedValue([
-        { id: 1, url: 'https://www.youtube.com/watch?v=abc123', active: true },
+        { id: 1, url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', active: true },
       ]);
 
       renderHook(() => useSidePanel());
@@ -145,7 +145,7 @@ describe('useSidePanel', () => {
     it('returns not_processed status when video has not been processed', async () => {
       mockCheckAuthStatus.mockResolvedValue(true);
       mockBrowser.tabs.query.mockResolvedValue([
-        { id: 1, url: 'https://www.youtube.com/watch?v=abc123', active: true },
+        { id: 1, url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', active: true },
       ]);
       mockGetStudySetByVideoUrl.mockResolvedValue(createEmptyStudySetContent());
 
@@ -163,7 +163,7 @@ describe('useSidePanel', () => {
     it('returns processing status during video processing', async () => {
       mockCheckAuthStatus.mockResolvedValue(true);
       mockBrowser.tabs.query.mockResolvedValue([
-        { id: 1, url: 'https://www.youtube.com/watch?v=abc123', active: true },
+        { id: 1, url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', active: true },
       ]);
       mockGetStudySetByVideoUrl.mockResolvedValue(createEmptyStudySetContent());
       mockProcessVideo.mockImplementation(() => new Promise(() => {})); // Never resolves
@@ -186,7 +186,7 @@ describe('useSidePanel', () => {
     it('returns ready status when content is available', async () => {
       mockCheckAuthStatus.mockResolvedValue(true);
       mockBrowser.tabs.query.mockResolvedValue([
-        { id: 1, url: 'https://www.youtube.com/watch?v=abc123', active: true },
+        { id: 1, url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', active: true },
       ]);
       mockGetStudySetByVideoUrl.mockResolvedValue(createMockStudySetContent());
 
@@ -207,7 +207,7 @@ describe('useSidePanel', () => {
       });
       mockCheckAuthStatus.mockResolvedValue(true);
       mockBrowser.tabs.query.mockResolvedValue([
-        { id: 1, url: 'https://www.youtube.com/watch?v=abc123', active: true },
+        { id: 1, url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', active: true },
       ]);
       mockGetStudySetByVideoUrl.mockResolvedValue(mockContent);
 
@@ -225,7 +225,7 @@ describe('useSidePanel', () => {
     it('returns error status when content fetch fails', async () => {
       mockCheckAuthStatus.mockResolvedValue(true);
       mockBrowser.tabs.query.mockResolvedValue([
-        { id: 1, url: 'https://www.youtube.com/watch?v=abc123', active: true },
+        { id: 1, url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', active: true },
       ]);
       mockGetStudySetByVideoUrl.mockResolvedValue(null);
 
@@ -241,7 +241,7 @@ describe('useSidePanel', () => {
     it('returns error status when video processing fails', async () => {
       mockCheckAuthStatus.mockResolvedValue(true);
       mockBrowser.tabs.query.mockResolvedValue([
-        { id: 1, url: 'https://www.youtube.com/watch?v=abc123', active: true },
+        { id: 1, url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', active: true },
       ]);
       mockGetStudySetByVideoUrl.mockResolvedValue(createEmptyStudySetContent());
       mockProcessVideo.mockResolvedValue({ success: false, alreadyExists: false, studySetPublicId: null });
@@ -263,7 +263,7 @@ describe('useSidePanel', () => {
     it('returns error status with error message when processVideo throws', async () => {
       mockCheckAuthStatus.mockResolvedValue(true);
       mockBrowser.tabs.query.mockResolvedValue([
-        { id: 1, url: 'https://www.youtube.com/watch?v=abc123', active: true },
+        { id: 1, url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', active: true },
       ]);
       mockGetStudySetByVideoUrl.mockResolvedValue(createEmptyStudySetContent());
       mockProcessVideo.mockRejectedValue(new Error('Network error'));
@@ -287,7 +287,7 @@ describe('useSidePanel', () => {
     it('processes video and fetches content on success', async () => {
       mockCheckAuthStatus.mockResolvedValue(true);
       mockBrowser.tabs.query.mockResolvedValue([
-        { id: 1, url: 'https://www.youtube.com/watch?v=abc123', active: true },
+        { id: 1, url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', active: true },
       ]);
       mockGetStudySetByVideoUrl
         .mockResolvedValueOnce(createEmptyStudySetContent())
@@ -305,7 +305,7 @@ describe('useSidePanel', () => {
       });
 
       expect(result.current.status).toBe('ready');
-      expect(mockProcessVideo).toHaveBeenCalledWith('https://www.youtube.com/watch?v=abc123');
+      expect(mockProcessVideo).toHaveBeenCalledWith('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
     });
 
     it('does nothing when videoUrl is null', async () => {
@@ -330,7 +330,7 @@ describe('useSidePanel', () => {
     it('shows error when content fetch fails after processing', async () => {
       mockCheckAuthStatus.mockResolvedValue(true);
       mockBrowser.tabs.query.mockResolvedValue([
-        { id: 1, url: 'https://www.youtube.com/watch?v=abc123', active: true },
+        { id: 1, url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', active: true },
       ]);
       mockGetStudySetByVideoUrl
         .mockResolvedValueOnce(createEmptyStudySetContent())
@@ -359,7 +359,7 @@ describe('useSidePanel', () => {
 
       mockCheckAuthStatus.mockResolvedValue(true);
       mockBrowser.tabs.query.mockResolvedValue([
-        { id: 1, url: 'https://www.youtube.com/watch?v=abc123', active: true },
+        { id: 1, url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', active: true },
       ]);
       mockGetStudySetByVideoUrl
         .mockResolvedValueOnce(initialContent)
@@ -404,7 +404,7 @@ describe('useSidePanel', () => {
     it('shows error when refetch fails', async () => {
       mockCheckAuthStatus.mockResolvedValue(true);
       mockBrowser.tabs.query.mockResolvedValue([
-        { id: 1, url: 'https://www.youtube.com/watch?v=abc123', active: true },
+        { id: 1, url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', active: true },
       ]);
       mockGetStudySetByVideoUrl
         .mockResolvedValueOnce(createMockStudySetContent())
@@ -429,7 +429,7 @@ describe('useSidePanel', () => {
     it('normalizes YouTube URL with timestamp', async () => {
       mockCheckAuthStatus.mockResolvedValue(true);
       mockBrowser.tabs.query.mockResolvedValue([
-        { id: 1, url: 'https://www.youtube.com/watch?v=abc123&t=120', active: true },
+        { id: 1, url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=120', active: true },
       ]);
       mockGetStudySetByVideoUrl.mockResolvedValue(createMockStudySetContent());
 
@@ -439,14 +439,14 @@ describe('useSidePanel', () => {
         expect(result.current.status).toBe('ready');
       });
 
-      expect(result.current.videoUrl).toBe('https://www.youtube.com/watch?v=abc123');
-      expect(mockGetStudySetByVideoUrl).toHaveBeenCalledWith('https://www.youtube.com/watch?v=abc123');
+      expect(result.current.videoUrl).toBe('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
+      expect(mockGetStudySetByVideoUrl).toHaveBeenCalledWith('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
     });
 
     it('normalizes youtu.be URL', async () => {
       mockCheckAuthStatus.mockResolvedValue(true);
       mockBrowser.tabs.query.mockResolvedValue([
-        { id: 1, url: 'https://youtu.be/abc123', active: true },
+        { id: 1, url: 'https://youtu.be/dQw4w9WgXcQ', active: true },
       ]);
       mockGetStudySetByVideoUrl.mockResolvedValue(createMockStudySetContent());
 
@@ -456,7 +456,7 @@ describe('useSidePanel', () => {
         expect(result.current.status).toBe('ready');
       });
 
-      expect(result.current.videoUrl).toBe('https://www.youtube.com/watch?v=abc123');
+      expect(result.current.videoUrl).toBe('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
     });
   });
 });
