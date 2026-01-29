@@ -6,6 +6,7 @@ import {
   StudySetSourceType,
 } from "@/clean-architecture/domain/entities/study-set.entity";
 import { db as defaultDb } from "@/drizzle";
+import { dbRetry } from "@/lib/db";
 import { studySets } from "@/drizzle/schema";
 import { eq, desc, inArray } from "drizzle-orm";
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
@@ -20,8 +21,8 @@ export class DrizzleStudySetRepository implements IStudySetRepository {
     sourceType: StudySetSourceType;
     videoId: number | null;
   }): Promise<StudySetEntity> {
-    try {
-      const [data] = await this.db
+    const [data] = await dbRetry(() =>
+      this.db
         .insert(studySets)
         .values({
           userId: params.userId,
@@ -30,76 +31,61 @@ export class DrizzleStudySetRepository implements IStudySetRepository {
           sourceType: params.sourceType,
           videoId: params.videoId,
         })
-        .returning();
+        .returning()
+    );
 
-      return this.toEntity(data);
-    } catch (error) {
-      console.error("Error creating study set:", error);
-      throw error;
-    }
+    return this.toEntity(data);
   }
 
   async findStudySetById(id: number): Promise<StudySetEntity | null> {
-    try {
-      const [data] = await this.db
+    const [data] = await dbRetry(() =>
+      this.db
         .select()
         .from(studySets)
         .where(eq(studySets.id, id))
-        .limit(1);
+        .limit(1)
+    );
 
-      if (!data) return null;
-      return this.toEntity(data);
-    } catch (error) {
-      console.error("Error finding study set by ID:", error);
-      throw error;
-    }
+    if (!data) return null;
+    return this.toEntity(data);
   }
 
   async findStudySetByPublicId(publicId: string): Promise<StudySetEntity | null> {
-    try {
-      const [data] = await this.db
+    const [data] = await dbRetry(() =>
+      this.db
         .select()
         .from(studySets)
         .where(eq(studySets.publicId, publicId))
-        .limit(1);
+        .limit(1)
+    );
 
-      if (!data) return null;
-      return this.toEntity(data);
-    } catch (error) {
-      console.error("Error finding study set by public ID:", error);
-      throw error;
-    }
+    if (!data) return null;
+    return this.toEntity(data);
   }
 
   async findStudySetsByUserId(userId: string): Promise<StudySetEntity[]> {
-    try {
-      const data = await this.db
+    const data = await dbRetry(() =>
+      this.db
         .select()
         .from(studySets)
         .where(eq(studySets.userId, userId))
-        .orderBy(desc(studySets.createdAt), desc(studySets.id));
+        .orderBy(desc(studySets.createdAt), desc(studySets.id))
+    );
 
-      return data.map((studySet) => this.toEntity(studySet));
-    } catch (error) {
-      console.error("Error finding study sets by user ID:", error);
-      throw error;
-    }
+    return data.map((studySet) => this.toEntity(studySet));
   }
 
   async findStudySetByVideoId(videoId: number): Promise<StudySetEntity | null> {
-    try {
-      const [data] = await this.db
+    const [data] = await dbRetry(() =>
+      this.db
         .select()
         .from(studySets)
         .where(eq(studySets.videoId, videoId))
-        .limit(1);
+        .limit(1)
+    );
 
-      if (!data) return null;
-      return this.toEntity(data);
-    } catch (error) {
-      console.error("Error finding study set by video ID:", error);
-      throw error;
-    }
+    if (!data) return null;
+    return this.toEntity(data);
   }
 
   async findStudySetsByIds(ids: number[]): Promise<StudySetEntity[]> {
@@ -107,17 +93,14 @@ export class DrizzleStudySetRepository implements IStudySetRepository {
       return [];
     }
 
-    try {
-      const data = await this.db
+    const data = await dbRetry(() =>
+      this.db
         .select()
         .from(studySets)
-        .where(inArray(studySets.id, ids));
+        .where(inArray(studySets.id, ids))
+    );
 
-      return data.map((studySet) => this.toEntity(studySet));
-    } catch (error) {
-      console.error("Error finding study sets by IDs:", error);
-      throw error;
-    }
+    return data.map((studySet) => this.toEntity(studySet));
   }
 
   async updateStudySet(
@@ -127,37 +110,34 @@ export class DrizzleStudySetRepository implements IStudySetRepository {
       description?: string | null;
     }
   ): Promise<StudySetEntity | null> {
-    try {
-      // Build update object only with provided fields
-      const updateData: Partial<typeof studySets.$inferInsert> = {};
+    // Build update object only with provided fields
+    const updateData: Partial<typeof studySets.$inferInsert> = {};
 
-      if (params.name !== undefined) {
-        updateData.name = params.name;
-      }
-      if (params.description !== undefined) {
-        updateData.description = params.description;
-      }
+    if (params.name !== undefined) {
+      updateData.name = params.name;
+    }
+    if (params.description !== undefined) {
+      updateData.description = params.description;
+    }
 
-      // If no fields to update, just return the existing study set
-      if (Object.keys(updateData).length === 0) {
-        return this.findStudySetById(id);
-      }
+    // If no fields to update, just return the existing study set
+    if (Object.keys(updateData).length === 0) {
+      return this.findStudySetById(id);
+    }
 
-      // Always update the updatedAt timestamp
-      updateData.updatedAt = new Date().toISOString();
+    // Always update the updatedAt timestamp
+    updateData.updatedAt = new Date().toISOString();
 
-      const [data] = await this.db
+    const [data] = await dbRetry(() =>
+      this.db
         .update(studySets)
         .set(updateData)
         .where(eq(studySets.id, id))
-        .returning();
+        .returning()
+    );
 
-      if (!data) return null;
-      return this.toEntity(data);
-    } catch (error) {
-      console.error("Error updating study set:", error);
-      throw error;
-    }
+    if (!data) return null;
+    return this.toEntity(data);
   }
 
   private toEntity(data: typeof studySets.$inferSelect): StudySetEntity {

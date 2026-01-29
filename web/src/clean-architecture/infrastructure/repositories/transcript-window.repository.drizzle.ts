@@ -4,6 +4,7 @@ import {
 } from "@/clean-architecture/domain/repositories/transcript-window.repository.interface";
 import { TranscriptWindowEntity } from "@/clean-architecture/domain/entities/transcript-window.entity";
 import { db } from "@/drizzle";
+import { dbRetry } from "@/lib/db";
 import { transcriptWindows } from "@/drizzle/schema";
 import { eq, desc, sql } from "drizzle-orm";
 import { cosineDistance } from "drizzle-orm";
@@ -25,19 +26,23 @@ export class DrizzleTranscriptWindowRepository
 			return [];
 		}
 
-		const data = await db
-			.insert(transcriptWindows)
-			.values(windows)
-			.returning();
+		const data = await dbRetry(() =>
+			db
+				.insert(transcriptWindows)
+				.values(windows)
+				.returning()
+		);
 
 		return data.map((window) => this.toEntity(window));
 	}
 
 	async findWindowsByVideoId(videoId: number): Promise<TranscriptWindowEntity[]> {
-		const data = await db
-			.select()
-			.from(transcriptWindows)
-			.where(eq(transcriptWindows.videoId, videoId));
+		const data = await dbRetry(() =>
+			db
+				.select()
+				.from(transcriptWindows)
+				.where(eq(transcriptWindows.videoId, videoId))
+		);
 
 		return data.map((window) => this.toEntity(window));
 	}
@@ -57,22 +62,24 @@ export class DrizzleTranscriptWindowRepository
 	): Promise<WindowMatchResult[]> {
 		const similarity = sql<number>`1 - (${cosineDistance(transcriptWindows.embedding, queryEmbedding)})`;
 
-		const results = await db
-			.select({
-				id: transcriptWindows.id,
-				videoId: transcriptWindows.videoId,
-				windowIndex: transcriptWindows.windowIndex,
-				startTime: transcriptWindows.startTime,
-				endTime: transcriptWindows.endTime,
-				text: transcriptWindows.text,
-				embedding: transcriptWindows.embedding,
-				createdAt: transcriptWindows.createdAt,
-				similarity,
-			})
-			.from(transcriptWindows)
-			.where(eq(transcriptWindows.videoId, videoId))
-			.orderBy(desc(similarity))
-			.limit(k);
+		const results = await dbRetry(() =>
+			db
+				.select({
+					id: transcriptWindows.id,
+					videoId: transcriptWindows.videoId,
+					windowIndex: transcriptWindows.windowIndex,
+					startTime: transcriptWindows.startTime,
+					endTime: transcriptWindows.endTime,
+					text: transcriptWindows.text,
+					embedding: transcriptWindows.embedding,
+					createdAt: transcriptWindows.createdAt,
+					similarity,
+				})
+				.from(transcriptWindows)
+				.where(eq(transcriptWindows.videoId, videoId))
+				.orderBy(desc(similarity))
+				.limit(k)
+		);
 
 		return results.map((result) => ({
 			window: this.toEntity(result),
@@ -81,9 +88,11 @@ export class DrizzleTranscriptWindowRepository
 	}
 
 	async deleteWindowsByVideoId(videoId: number): Promise<void> {
-		await db
-			.delete(transcriptWindows)
-			.where(eq(transcriptWindows.videoId, videoId));
+		await dbRetry(() =>
+			db
+				.delete(transcriptWindows)
+				.where(eq(transcriptWindows.videoId, videoId))
+		);
 	}
 
 	private toEntity(
