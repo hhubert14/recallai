@@ -81,7 +81,7 @@ export function AddVideoModal({
         return;
       }
 
-      onSuccess(data.data.studySet.publicId);
+      onSuccess(data.data.studySetPublicId);
       onClose();
     } catch {
       setError("An error occurred. Please try again.");

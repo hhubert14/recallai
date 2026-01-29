@@ -137,7 +137,7 @@ describe("AddVideoModal", () => {
             status: "success",
             data: {
               alreadyExists: true,
-              studySet: { publicId: "abc123" },
+              studySetPublicId: "abc123",
             },
           }),
       });
@@ -197,7 +197,7 @@ describe("AddVideoModal", () => {
             status: "success",
             data: {
               alreadyExists: false,
-              studySet: { publicId: "xyz789" },
+              studySetPublicId: "xyz789",
             },
           }),
       });

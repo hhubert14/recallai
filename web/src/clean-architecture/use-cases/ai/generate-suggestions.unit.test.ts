@@ -30,7 +30,7 @@ function createMockVideo(overrides: Partial<VideoEntity> = {}): VideoEntity {
         overrides.id ?? 1,
         overrides.userId ?? "user-1",
         overrides.title ?? "Test Video",
-        overrides.url ?? "https://www.youtube.com/watch?v=test123",
+        overrides.url ?? "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
         overrides.channelName ?? "Test Channel",
         overrides.createdAt ?? new Date().toISOString()
     );
@@ -246,7 +246,7 @@ describe("GenerateSuggestionsUseCase", () => {
 
             expect(mockTranscriptResolverService.getTranscript).toHaveBeenCalledWith(
                 1,
-                "test123"
+                "dQw4w9WgXcQ"
             );
         });
 
