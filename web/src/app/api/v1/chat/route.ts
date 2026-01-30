@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+import { after } from "next/server";
 import { UIMessage, ModelMessage, convertToModelMessages } from "ai";
 import { getAuthenticatedUser } from "@/lib/auth-helpers";
 import { jsendFail, jsendError } from "@/lib/jsend";
@@ -92,10 +93,12 @@ export async function POST(request: NextRequest) {
         // Save user message to database
         await saveChatMessageUseCase.saveUserMessage(videoId, user.id, lastUserMessageText.trim());
 
-        // Update streak (non-blocking)
-        new UpdateStreakUseCase(new DrizzleStreakRepository())
-            .execute(user.id)
-            .catch((error) => logger.streak.error("Failed to update streak", error, { userId: user.id }));
+        // Update streak (non-blocking, but guaranteed to complete in serverless)
+        after(() => {
+            new UpdateStreakUseCase(new DrizzleStreakRepository())
+                .execute(user.id)
+                .catch((error) => logger.streak.error("Failed to update streak", error, { userId: user.id }));
+        });
 
         // Build system prompt from context
         const systemPrompt = buildSystemPrompt(context);

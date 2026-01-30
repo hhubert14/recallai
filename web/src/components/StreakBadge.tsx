@@ -106,14 +106,16 @@ export function StreakBadge({ userId }: StreakBadgeProps) {
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <div
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-full border ${bgColor} transition-colors cursor-default`}
+          <button
+            type="button"
+            aria-label={`Current streak: ${streak.currentStreak} days`}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-full border ${bgColor} transition-colors cursor-default focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2`}
           >
             <Flame className={`h-4 w-4 ${flameColor}`} />
             <span className={`text-sm font-semibold ${flameColor}`}>
               {streak.currentStreak}
             </span>
-          </div>
+          </button>
         </TooltipTrigger>
         <TooltipContent side="bottom" className="text-sm">
           <div className="space-y-1">

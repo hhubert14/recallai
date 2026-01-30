@@ -36,7 +36,7 @@ describe("UpdateStreakUseCase", () => {
 
   describe("first activity ever", () => {
     it("creates a new streak with currentStreak=1 and longestStreak=1", async () => {
-      vi.setSystemTime(new Date("2025-01-28T14:30:00Z"));
+      vi.setSystemTime(new Date(2025, 0, 28, 14, 30, 0)); // Jan 28, 2025, 2:30 PM local
 
       vi.mocked(mockStreakRepo.findStreakByUserId).mockResolvedValue(null);
       vi.mocked(mockStreakRepo.upsertStreak).mockResolvedValue(
@@ -62,7 +62,7 @@ describe("UpdateStreakUseCase", () => {
 
   describe("already active today", () => {
     it("returns existing streak without updating (idempotent)", async () => {
-      vi.setSystemTime(new Date("2025-01-28T14:30:00Z"));
+      vi.setSystemTime(new Date(2025, 0, 28, 14, 30, 0)); // Jan 28, 2025, 2:30 PM local
 
       const existingStreak = createMockStreak({
         currentStreak: 5,
@@ -81,7 +81,7 @@ describe("UpdateStreakUseCase", () => {
 
   describe("continue streak (yesterday)", () => {
     it("increments currentStreak by 1", async () => {
-      vi.setSystemTime(new Date("2025-01-28T14:30:00Z"));
+      vi.setSystemTime(new Date(2025, 0, 28, 14, 30, 0)); // Jan 28, 2025, 2:30 PM local
 
       const existingStreak = createMockStreak({
         currentStreak: 5,
@@ -109,7 +109,7 @@ describe("UpdateStreakUseCase", () => {
     });
 
     it("updates longestStreak when current exceeds it", async () => {
-      vi.setSystemTime(new Date("2025-01-28T14:30:00Z"));
+      vi.setSystemTime(new Date(2025, 0, 28, 14, 30, 0)); // Jan 28, 2025, 2:30 PM local
 
       const existingStreak = createMockStreak({
         currentStreak: 5,
@@ -136,7 +136,7 @@ describe("UpdateStreakUseCase", () => {
     });
 
     it("preserves longestStreak when current is below it", async () => {
-      vi.setSystemTime(new Date("2025-01-28T14:30:00Z"));
+      vi.setSystemTime(new Date(2025, 0, 28, 14, 30, 0)); // Jan 28, 2025, 2:30 PM local
 
       const existingStreak = createMockStreak({
         currentStreak: 3,
@@ -165,7 +165,7 @@ describe("UpdateStreakUseCase", () => {
 
   describe("break streak (more than one day)", () => {
     it("resets currentStreak to 1 when gap is 2 days", async () => {
-      vi.setSystemTime(new Date("2025-01-28T14:30:00Z"));
+      vi.setSystemTime(new Date(2025, 0, 28, 14, 30, 0)); // Jan 28, 2025, 2:30 PM local
 
       const existingStreak = createMockStreak({
         currentStreak: 10,
@@ -194,7 +194,7 @@ describe("UpdateStreakUseCase", () => {
     });
 
     it("resets currentStreak to 1 when gap is many days", async () => {
-      vi.setSystemTime(new Date("2025-01-28T14:30:00Z"));
+      vi.setSystemTime(new Date(2025, 0, 28, 14, 30, 0)); // Jan 28, 2025, 2:30 PM local
 
       const existingStreak = createMockStreak({
         currentStreak: 100,
@@ -224,7 +224,7 @@ describe("UpdateStreakUseCase", () => {
 
   describe("edge cases", () => {
     it("handles null lastActivityDate (should reset to 1)", async () => {
-      vi.setSystemTime(new Date("2025-01-28T14:30:00Z"));
+      vi.setSystemTime(new Date(2025, 0, 28, 14, 30, 0)); // Jan 28, 2025, 2:30 PM local
 
       const existingStreak = createMockStreak({
         currentStreak: 0,
