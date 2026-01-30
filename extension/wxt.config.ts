@@ -20,13 +20,13 @@ export default defineConfig({
     permissions: ['storage', 'tabs', 'sidePanel'],
     host_permissions: [
       'https://www.retenio.ai/*',
-      'https://www.recallai.io/*',
+      'https://www.recallai.io/*', // Remove when RecallAI support is dropped
       'http://localhost:3000/*',
     ],
     externally_connectable: {
       matches: [
         'https://www.retenio.ai/*',
-        'https://www.recallai.io/*',
+        'https://www.recallai.io/*', // Remove when RecallAI support is dropped
         'http://localhost:3000/*',
       ],
     },
