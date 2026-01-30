@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import type { UIMessage } from "ai";
-import ReactMarkdown from "react-markdown";
+import { AIContent } from "@/components/ui/ai-content";
 
 interface ChatMessageProps {
     message: UIMessage;
@@ -31,9 +31,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
                     isUser ? (
                         <p className="whitespace-pre-wrap break-words">{content}</p>
                     ) : (
-                        <div className="prose prose-sm dark:prose-invert max-w-none break-words prose-p:my-1 prose-ul:my-1 prose-ol:my-1 prose-li:my-0">
-                            <ReactMarkdown>{content}</ReactMarkdown>
-                        </div>
+                        <AIContent content={content} />
                     )
                 ) : (
                     <p className="text-muted-foreground italic">

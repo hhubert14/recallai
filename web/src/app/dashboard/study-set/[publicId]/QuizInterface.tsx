@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { AIContent } from "@/components/ui/ai-content";
 import { QuizProgress, QuizQuestion, QuizResult, QuizSummary } from "@/components/quiz";
 import { useQuizCompletion } from "@/components/providers/QuizCompletionProvider";
 
@@ -172,9 +173,10 @@ export function QuizInterface({
             {/* Question */}
             <div className="space-y-4">
                 <div className="bg-card p-6 rounded-xl border border-border">
-                    <h3 className="text-lg font-medium text-foreground leading-relaxed">
-                        {currentQuestion.questionText}
-                    </h3>
+                    <AIContent
+                        content={currentQuestion.questionText}
+                        className="text-lg font-medium text-foreground leading-relaxed"
+                    />
                 </div>
 
                 {/* Options */}

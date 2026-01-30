@@ -516,6 +516,46 @@ Never add dead code. Don't implement features, parameters, or options that aren'
 
 Remove dead code when found. Dead code creates confusion, requires maintenance for no benefit, and often becomes permanently dead.
 
+### 11. Displaying AI-Generated Content
+
+**Always use the `AIContent` component** for any text that comes from AI (LLM responses, generated content) or could contain markdown formatting.
+
+**Location:** `src/components/ui/ai-content.tsx`
+
+```typescript
+import { AIContent } from "@/components/ui/ai-content";
+
+// Basic usage
+<AIContent content={aiGeneratedText} />
+
+// With custom styling (inherits text color and size)
+<AIContent
+  content={explanation}
+  className="text-sm text-muted-foreground"
+/>
+```
+
+**What it provides:**
+- Markdown rendering (bold, code blocks, lists, etc.)
+- Dark mode support via `prose-invert`
+- Compact spacing for inline display
+- Inherits parent's text color and size via `[&>*]:text-inherit`
+
+**When to use:**
+- Flashcard front/back content
+- Question text and explanations
+- Chat messages (assistant responses)
+- AI-generated summaries and feedback
+- Any content that might contain markdown
+
+**When NOT to use:**
+- Quiz option text (short, inline with icons - use plain `<span>`)
+- Static UI text (labels, buttons, headings)
+- User input fields
+- Content requiring special rendering (e.g., `MarkdownWithTimestamps` for clickable timestamps)
+
+**Exception:** Use `MarkdownWithTimestamps` for summaries that need clickable video timestamps.
+
 ## Testing Strategy
 
 ### Test File Naming Convention

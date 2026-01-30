@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { AIContent } from "@/components/ui/ai-content";
 
 export interface QuizOption {
   id: number;
@@ -37,9 +38,10 @@ export function QuizQuestion({
       {/* Question card */}
       {!hideQuestionCard && questionText && (
         <div className="bg-card p-6 rounded-xl border border-border">
-          <h3 className="text-lg font-medium text-foreground leading-relaxed">
-            {questionText}
-          </h3>
+          <AIContent
+            content={questionText}
+            className="text-lg font-medium text-foreground leading-relaxed"
+          />
         </div>
       )}
 

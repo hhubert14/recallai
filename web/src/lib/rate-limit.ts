@@ -12,6 +12,9 @@ const redis = new Redis({
  */
 const rateLimitConfigs = {
     "/api/v1/chat": { max: 20, windowSeconds: 60 },
+    "/api/v1/practice/group-concepts": { max: 10, windowSeconds: 60 },
+    "/api/v1/practice/chat": { max: 20, windowSeconds: 60 },
+    "/api/v1/practice/generate-feedback": { max: 10, windowSeconds: 60 },
 } as const;
 
 export type RateLimitedRoute = keyof typeof rateLimitConfigs;

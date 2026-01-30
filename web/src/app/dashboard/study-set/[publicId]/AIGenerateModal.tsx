@@ -15,6 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CharacterCount } from "@/components/ui/character-count";
+import { AIContent } from "@/components/ui/ai-content";
 import type {
     Suggestion,
     SuggestionItemType,
@@ -679,10 +680,10 @@ function FlashcardSuggestionCard({
                 Flashcard
             </div>
             <div>
-                <p className="text-sm font-medium">{suggestion.front}</p>
+                <AIContent content={suggestion.front} className="text-sm font-medium" />
             </div>
             <div>
-                <p className="text-sm text-muted-foreground">{suggestion.back}</p>
+                <AIContent content={suggestion.back} className="text-sm text-muted-foreground" />
             </div>
             <div className="flex gap-2">
                 <Button
@@ -830,7 +831,7 @@ function QuestionSuggestionCard({
                 Question
             </div>
             <div>
-                <p className="text-sm font-medium">{suggestion.questionText}</p>
+                <AIContent content={suggestion.questionText} className="text-sm font-medium" />
             </div>
             <ul className="space-y-1">
                 {suggestion.options.map((option, index) => (

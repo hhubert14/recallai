@@ -78,7 +78,7 @@ export function TermsList({
                             Review{dueCount > 0 && ` (${dueCount})`}
                         </Link>
                     </Button>
-                    <StudyDropdown onSelect={onStudy} disabledModes={disabledModes} />
+                    <StudyDropdown onSelect={onStudy} disabledModes={disabledModes} totalItems={terms.length} />
                 </div>
             </div>
             <div className="space-y-3">

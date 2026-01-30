@@ -141,6 +141,19 @@ class Logger {
             context?: LogContext
         ) => this.error(`[STREAK] ${message}`, error, context),
     };
+
+    // Practice mode logger with prefix
+    practice = {
+        info: (message: string, context?: LogContext) =>
+            this.info(`🎯 Practice: ${message}`, context),
+        warn: (message: string, context?: LogContext) =>
+            this.warn(`[PRACTICE] ${message}`, context),
+        error: (
+            message: string,
+            error?: Error | unknown,
+            context?: LogContext
+        ) => this.error(`[PRACTICE] ${message}`, error, context),
+    };
 }
 
 export const logger = new Logger();

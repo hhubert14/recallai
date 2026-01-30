@@ -24,7 +24,7 @@ export type Term = {
     flashcard?: TermFlashcard;
 };
 
-export type StudyMode = "flashcards" | "quiz" | "both";
+export type StudyMode = "flashcards" | "quiz" | "both" | "practice";
 
 // Import and re-export domain types for convenience
 import type {

@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { AIContent } from "@/components/ui/ai-content";
 import { QuizResult } from "@/components/quiz";
 import { RotateCcw } from "lucide-react";
 
@@ -46,9 +47,10 @@ export function FlashcardReview({
           <p className="text-xs uppercase tracking-wider text-muted-foreground mb-4">
             {isFlipped ? "Back" : "Front"}
           </p>
-          <p className="text-xl font-medium text-foreground">
-            {isFlipped ? flashcard.back : flashcard.front}
-          </p>
+          <AIContent
+            content={isFlipped ? flashcard.back : flashcard.front}
+            className="text-xl font-medium text-foreground"
+          />
           {!isFlipped && !showResult && (
             <p className="text-sm text-muted-foreground mt-4 flex items-center gap-2">
               <RotateCcw className="w-4 h-4" />

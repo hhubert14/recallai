@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { AIContent } from "@/components/ui/ai-content";
 import { QuizProgress, QuizQuestion, QuizResult, QuizSummary } from "@/components/quiz";
 import type { Term } from "./types";
 
@@ -199,9 +200,10 @@ function SingleFlashcardItem({ flashcard, onComplete }: SingleFlashcardItemProps
                 }`}
             >
                 <div className="text-center">
-                    <p className="text-lg text-foreground leading-relaxed">
-                        {isFlipped ? flashcard.back : flashcard.front}
-                    </p>
+                    <AIContent
+                        content={isFlipped ? flashcard.back : flashcard.front}
+                        className="text-lg text-foreground leading-relaxed"
+                    />
                     <p className="text-sm text-muted-foreground/70 mt-4">
                         {isFlipped ? "(Click to see question)" : "(Click to reveal answer)"}
                     </p>
