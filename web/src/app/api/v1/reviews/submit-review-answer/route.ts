@@ -5,6 +5,7 @@ import { DrizzleReviewProgressRepository } from "@/clean-architecture/infrastruc
 import { UpdateStreakUseCase } from "@/clean-architecture/use-cases/streak/update-streak.use-case";
 import { DrizzleStreakRepository } from "@/clean-architecture/infrastructure/repositories/streak.repository.drizzle";
 import { jsendSuccess, jsendFail, jsendError } from "@/lib/jsend";
+import { logger } from "@/lib/logger";
 
 /**
  * POST /api/v1/reviews/submit-review-answer
@@ -54,7 +55,7 @@ export async function POST(request: NextRequest) {
     // Update streak (non-blocking)
     new UpdateStreakUseCase(new DrizzleStreakRepository())
       .execute(user.id)
-      .catch(console.error);
+      .catch((error) => logger.streak.error("Failed to update streak", error, { userId: user.id }));
 
     return jsendSuccess({
       progress: {

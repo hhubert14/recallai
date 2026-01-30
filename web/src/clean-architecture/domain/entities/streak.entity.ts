@@ -11,20 +11,20 @@ export class StreakEntity {
     public readonly updatedAt: string
   ) {}
 
-  hasActivityToday(): boolean {
+  hasActivityToday(timezone?: string): boolean {
     if (!this.lastActivityDate) {
       return false;
     }
-    const today = getLocalDateString();
+    const today = getLocalDateString(new Date(), timezone);
     return this.lastActivityDate === today;
   }
 
-  isActive(): boolean {
+  isActive(timezone?: string): boolean {
     if (!this.lastActivityDate) {
       return false;
     }
-    const today = getLocalDateString();
-    const yesterday = getLocalDateString(new Date(Date.now() - 86400000));
+    const today = getLocalDateString(new Date(), timezone);
+    const yesterday = getLocalDateString(new Date(Date.now() - 86400000), timezone);
     return this.lastActivityDate === today || this.lastActivityDate === yesterday;
   }
 }

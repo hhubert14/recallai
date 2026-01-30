@@ -35,6 +35,14 @@ export function formatUpdateDate(
 // Add new entries at the TOP of this array (newest first)
 export const updates: UpdateEntry[] = [
   {
+    id: "2026-01-30-streaks",
+    date: "2026-01-30",
+    title: "Learning Streaks",
+    description:
+      "Track your daily learning progress with streaks. Build consistency by reviewing flashcards, answering quiz questions, or chatting with AI about your videos.",
+    category: "New Feature",
+  },
+  {
     id: "2026-01-29-add-video-from-dashboard",
     date: "2026-01-29",
     title: "Add Videos from Dashboard",

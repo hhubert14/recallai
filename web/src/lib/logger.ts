@@ -130,6 +130,17 @@ class Logger {
             context?: LogContext
         ) => this.error(`[DB] ${message}`, error, context),
     };
+
+    // Streak logger with prefix
+    streak = {
+        info: (message: string, context?: LogContext) =>
+            this.info(`[STREAK] ${message}`, context),
+        error: (
+            message: string,
+            error?: Error | unknown,
+            context?: LogContext
+        ) => this.error(`[STREAK] ${message}`, error, context),
+    };
 }
 
 export const logger = new Logger();

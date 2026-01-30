@@ -9,7 +9,7 @@ export type StreakDto = {
 export class GetStreakUseCase {
   constructor(private readonly streakRepository: IStreakRepository) {}
 
-  async execute(userId: string): Promise<StreakDto> {
+  async execute(userId: string, timezone?: string): Promise<StreakDto> {
     const streak = await this.streakRepository.findStreakByUserId(userId);
 
     if (!streak) {
@@ -20,8 +20,8 @@ export class GetStreakUseCase {
       };
     }
 
-    // Use entity method to check if streak is still active
-    const isActive = streak.isActive();
+    // Use entity method to check if streak is still active (pass timezone)
+    const isActive = streak.isActive(timezone);
 
     return {
       currentStreak: isActive ? streak.currentStreak : 0,

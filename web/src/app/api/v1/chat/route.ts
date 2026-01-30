@@ -3,6 +3,7 @@ import { UIMessage, ModelMessage, convertToModelMessages } from "ai";
 import { getAuthenticatedUser } from "@/lib/auth-helpers";
 import { jsendFail, jsendError } from "@/lib/jsend";
 import { getRateLimiter } from "@/lib/rate-limit";
+import { logger } from "@/lib/logger";
 import { BuildChatContextUseCase } from "@/clean-architecture/use-cases/chat/build-chat-context.use-case";
 import { SaveChatMessageUseCase } from "@/clean-architecture/use-cases/chat/save-chat-message.use-case";
 import { UpdateStreakUseCase } from "@/clean-architecture/use-cases/streak/update-streak.use-case";
@@ -94,7 +95,7 @@ export async function POST(request: NextRequest) {
         // Update streak (non-blocking)
         new UpdateStreakUseCase(new DrizzleStreakRepository())
             .execute(user.id)
-            .catch(console.error);
+            .catch((error) => logger.streak.error("Failed to update streak", error, { userId: user.id }));
 
         // Build system prompt from context
         const systemPrompt = buildSystemPrompt(context);

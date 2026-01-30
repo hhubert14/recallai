@@ -5,9 +5,9 @@ import { getLocalDateString } from "@/lib/date-utils";
 export class UpdateStreakUseCase {
   constructor(private readonly streakRepository: IStreakRepository) {}
 
-  async execute(userId: string): Promise<StreakEntity> {
-    const today = getLocalDateString();
-    const yesterday = getLocalDateString(new Date(Date.now() - 86400000));
+  async execute(userId: string, timezone?: string): Promise<StreakEntity> {
+    const today = getLocalDateString(new Date(), timezone);
+    const yesterday = getLocalDateString(new Date(Date.now() - 86400000), timezone);
 
     const existing = await this.streakRepository.findStreakByUserId(userId);
 

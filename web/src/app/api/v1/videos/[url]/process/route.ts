@@ -53,7 +53,7 @@ export async function POST(
         if (!result.alreadyExists) {
             new UpdateStreakUseCase(new DrizzleStreakRepository())
                 .execute(user.id)
-                .catch(console.error);
+                .catch((error) => logger.streak.error("Failed to update streak", error, { userId: user.id }));
         }
 
         return jsendSuccess({

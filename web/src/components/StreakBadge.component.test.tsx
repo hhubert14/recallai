@@ -1,9 +1,17 @@
 import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { StreakBadge } from "./StreakBadge";
 
 // Mock fetch
 global.fetch = vi.fn();
+
+// Mock ResizeObserver for Radix UI components
+global.ResizeObserver = vi.fn().mockImplementation(() => ({
+  observe: vi.fn(),
+  unobserve: vi.fn(),
+  disconnect: vi.fn(),
+}));
 
 describe("StreakBadge", () => {
   beforeEach(() => {
@@ -101,6 +109,58 @@ describe("StreakBadge", () => {
 
     await waitFor(() => {
       expect(screen.getByText("0")).toBeInTheDocument();
+    });
+  });
+
+  it("displays error state with retry button on fetch failure", async () => {
+    vi.mocked(fetch).mockRejectedValue(new Error("Network error"));
+
+    render(<StreakBadge userId="user-123" />);
+
+    await waitFor(() => {
+      // Should show error indicator (red background)
+      const badge = screen.getByRole("button", { name: /retry/i });
+      expect(badge).toBeInTheDocument();
+      expect(badge.className).toContain("bg-red-500/10");
+    });
+  });
+
+  it("retries fetch when error button is clicked", async () => {
+    const user = userEvent.setup();
+    let callCount = 0;
+
+    // First call fails, second succeeds
+    vi.mocked(fetch).mockImplementation(async () => {
+      callCount++;
+      if (callCount === 1) {
+        throw new Error("Network error");
+      }
+      return {
+        ok: true,
+        json: async () => ({
+          status: "success",
+          data: {
+            currentStreak: 5,
+            longestStreak: 5,
+            lastActivityDate: "2025-01-30",
+          },
+        }),
+      } as Response;
+    });
+
+    render(<StreakBadge userId="user-123" />);
+
+    // Wait for error state
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: /retry/i })).toBeInTheDocument();
+    });
+
+    // Click retry
+    await user.click(screen.getByRole("button", { name: /retry/i }));
+
+    // Should show streak after retry
+    await waitFor(() => {
+      expect(screen.getByText("5")).toBeInTheDocument();
     });
   });
 });

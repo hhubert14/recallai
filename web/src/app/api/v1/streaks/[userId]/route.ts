@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { getAuthenticatedUser } from "@/lib/auth-helpers";
 import { jsendSuccess, jsendFail, jsendError } from "@/lib/jsend";
+import { logger } from "@/lib/logger";
 import { GetStreakUseCase } from "@/clean-architecture/use-cases/streak/get-streak.use-case";
 import { DrizzleStreakRepository } from "@/clean-architecture/infrastructure/repositories/streak.repository.drizzle";
 
@@ -22,13 +23,17 @@ export async function GET(
       return jsendFail({ error: "Forbidden" }, 403);
     }
 
+    // Get timezone from query parameter (client-passed)
+    const { searchParams } = new URL(request.url);
+    const timezone = searchParams.get("timezone") || undefined;
+
     const streakRepo = new DrizzleStreakRepository();
     const getStreakUseCase = new GetStreakUseCase(streakRepo);
-    const streak = await getStreakUseCase.execute(userId);
+    const streak = await getStreakUseCase.execute(userId, timezone);
 
     return jsendSuccess(streak);
   } catch (error) {
-    console.error("Error fetching streak:", error);
+    logger.streak.error("Error fetching streak", error);
     return jsendError("Failed to fetch streak");
   }
 }
