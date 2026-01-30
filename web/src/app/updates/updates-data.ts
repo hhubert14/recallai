@@ -119,7 +119,7 @@ export const updates: UpdateEntry[] = [
     date: "2025-12-02",
     title: "Onboarding Survey",
     description:
-      "New users now see a welcome survey to help us understand how you plan to use RecallAI. Your feedback shapes the future of the product.",
+      "New users now see a welcome survey to help us understand how you plan to use Retenio. Your feedback shapes the future of the product.",
     category: "New Feature",
   },
 ];

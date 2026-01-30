@@ -4,7 +4,7 @@ import { Brain, CheckCircle } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 export const metadata: Metadata = {
-    title: "Password Updated | RecallAI",
+    title: "Password Updated | Retenio",
     description: "Your password has been successfully updated",
 };
 
@@ -22,7 +22,7 @@ export default function UpdatePasswordSuccessPage() {
                         <Link href="/" className="flex items-center gap-2">
                             <Brain className="h-8 w-8 text-primary" />
                             <span className="text-2xl font-bold text-foreground">
-                                RecallAI
+                                Retenio
                             </span>
                         </Link>
                         <CheckCircle className="h-16 w-16 text-green-500" />

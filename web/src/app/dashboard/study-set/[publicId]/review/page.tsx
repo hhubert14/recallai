@@ -12,7 +12,7 @@ import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Review Study Set | RecallAI",
+  title: "Review Study Set | Retenio",
   description: "Review questions and flashcards from this study set",
 };
 

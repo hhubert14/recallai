@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-RecallAI is an AI-powered video learning platform that transforms video watching into active learning through intelligent summaries and spaced repetition quizzes. The platform consists of two main components:
+Retenio is an AI-powered video learning platform that transforms video watching into active learning through intelligent summaries and spaced repetition quizzes. The platform consists of two main components:
 
 1. **Chrome Extension** - Captures YouTube videos and communicates with the backend API
 2. **Web Application** - Backend API and user dashboard
@@ -193,13 +193,13 @@ Built with WXT (https://wxt.dev) - modern framework with TypeScript, React, and 
 ```typescript
 export const BASE_URL = import.meta.env.DEV
   ? 'http://localhost:3000'
-  : 'https://www.recallai.io'
+  : 'https://www.retenio.ai'
 ```
 
 **Key Notes:**
 - Manifest V3 configured via `wxt.config.ts` (not manifest.json)
 - Use `@/` prefix for imports (e.g., `@/services/api`)
-- Externally connectable: `https://www.recallai.io/*` and `http://localhost:3000/*`
+- Externally connectable: `https://www.retenio.ai/*` and `http://localhost:3000/*`
 - Permissions: `storage`, `tabs`, and host permissions for API domains
 
 ## Critical Business Logic
@@ -697,7 +697,7 @@ Use sparingly - they're slow and expensive. Reserve for critical user journeys, 
 2. **Don't edit manifest.json directly** - Configure manifest in `wxt.config.ts`
 3. **Don't hardcode API URLs** - Use `BASE_URL` from `src/lib/constants.ts`
 4. **Use path aliases** - Import with `@/` prefix (e.g., `@/services/api`)
-5. **Test both environments** - Dev uses localhost:3000, production uses recallai.io
+5. **Test both environments** - Dev uses localhost:3000, production uses retenio.ai
 
 ## Maintaining the Updates Page
 

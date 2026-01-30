@@ -5,8 +5,8 @@ import { Brain } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 export const metadata: Metadata = {
-    title: "Update Password | RecallAI",
-    description: "Update your password for your RecallAI account",
+    title: "Update Password | Retenio",
+    description: "Update your password for your Retenio account",
 };
 
 export default function UpdatePasswordPage() {
@@ -23,7 +23,7 @@ export default function UpdatePasswordPage() {
                         <Link href="/" className="flex items-center gap-2">
                             <Brain className="h-8 w-8 text-primary" />
                             <span className="text-2xl font-bold text-foreground">
-                                RecallAI
+                                Retenio
                             </span>
                         </Link>
                         <h1 className="text-3xl font-bold tracking-tight text-primary">

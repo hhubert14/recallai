@@ -93,7 +93,7 @@ export function WelcomeModal({
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleComplete()}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Welcome to RecallAI!</DialogTitle>
+          <DialogTitle>Welcome to Retenio!</DialogTitle>
           <DialogDescription>
             Transform video watching into active learning in 3 simple steps.
           </DialogDescription>

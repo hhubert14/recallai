@@ -79,12 +79,12 @@ export function UnauthenticatedState() {
       <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
         <img
           src="/icons/icon48.png"
-          alt="RecallAI Logo"
+          alt="Retenio Logo"
           className="w-8 h-8 opacity-50"
         />
       </div>
       <h2 className="text-lg font-semibold mb-2 text-center">
-        Sign in to RecallAI
+        Sign in to Retenio
       </h2>
       <p className="text-sm text-muted-foreground text-center mb-6 max-w-xs">
         Transform YouTube videos into summaries, flashcards, and quizzes for

@@ -105,7 +105,7 @@ export function OnboardingSurveyModal({
                 <DialogHeader>
                     <DialogTitle>Help us personalize your experience</DialogTitle>
                     <DialogDescription>
-                        Answer a few quick questions to help us improve RecallAI
+                        Answer a few quick questions to help us improve Retenio
                         for you. Your responses are confidential and used only
                         to enhance your learning experience.
                     </DialogDescription>

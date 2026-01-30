@@ -16,7 +16,7 @@ import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-    title: "My Library | RecallAI",
+    title: "My Library | Retenio",
     description: "Browse all your study sets",
 };
 
