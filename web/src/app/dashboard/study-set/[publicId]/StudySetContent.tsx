@@ -9,6 +9,7 @@ import { TermsList } from "./TermsList";
 import { StudySession } from "./StudySession";
 import { AddItemModal } from "./AddItemModal";
 import { AIGenerateModal } from "./AIGenerateModal";
+import { PracticeModal } from "./PracticeModal";
 import type { TermWithMastery, StudyMode, TermFlashcard, TermQuestion, QuestionOption, EditedTermContent } from "./types";
 
 interface StudySetContentProps {
@@ -40,6 +41,7 @@ export function StudySetContent({
     const [activeMode, setActiveMode] = useState<StudyMode | null>(null);
     const [isAddItemModalOpen, setIsAddItemModalOpen] = useState(false);
     const [isAIGenerateModalOpen, setIsAIGenerateModalOpen] = useState(false);
+    const [isPracticeModalOpen, setIsPracticeModalOpen] = useState(false);
 
     // Inline editing state
     const [editingTermId, setEditingTermId] = useState<{ id: number; type: "flashcard" | "question" } | null>(null);
@@ -59,7 +61,11 @@ export function StudySetContent({
     }), [terms]);
 
     const handleStudy = (mode: StudyMode) => {
-        setActiveMode(mode);
+        if (mode === "practice") {
+            setIsPracticeModalOpen(true);
+        } else {
+            setActiveMode(mode);
+        }
     };
 
     const handleStudyComplete = () => {
@@ -403,6 +409,14 @@ export function StudySetContent({
                 onQuestionAdded={handleQuestionAdded}
                 studySetPublicId={studySetPublicId}
                 isVideoSourced={isVideoSourced}
+            />
+
+            {/* Practice Modal */}
+            <PracticeModal
+                isOpen={isPracticeModalOpen}
+                onClose={() => setIsPracticeModalOpen(false)}
+                studySetPublicId={studySetPublicId}
+                totalItems={terms.length}
             />
         </div>
     );
