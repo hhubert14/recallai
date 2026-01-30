@@ -13,6 +13,8 @@ import { LangChainVideoSummarizerService } from "@/clean-architecture/infrastruc
 import { TranscriptWindowGeneratorService } from "@/clean-architecture/infrastructure/services/transcript-window-generator.service";
 import { SupabaseEmbeddingService } from "@/clean-architecture/infrastructure/services/embedding.service.supabase";
 import { DrizzleTranscriptWindowRepository } from "@/clean-architecture/infrastructure/repositories/transcript-window.repository.drizzle";
+import { UpdateStreakUseCase } from "@/clean-architecture/use-cases/streak/update-streak.use-case";
+import { DrizzleStreakRepository } from "@/clean-architecture/infrastructure/repositories/streak.repository.drizzle";
 
 export async function POST(
     request: NextRequest,
@@ -46,6 +48,13 @@ export async function POST(
         );
 
         const result = await useCase.execute(user.id, videoUrl);
+
+        // Update streak only for new videos (non-blocking)
+        if (!result.alreadyExists) {
+            new UpdateStreakUseCase(new DrizzleStreakRepository())
+                .execute(user.id)
+                .catch(console.error);
+        }
 
         return jsendSuccess({
             video_id: result.video.id,

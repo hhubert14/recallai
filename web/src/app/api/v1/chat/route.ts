@@ -5,10 +5,12 @@ import { jsendFail, jsendError } from "@/lib/jsend";
 import { getRateLimiter } from "@/lib/rate-limit";
 import { BuildChatContextUseCase } from "@/clean-architecture/use-cases/chat/build-chat-context.use-case";
 import { SaveChatMessageUseCase } from "@/clean-architecture/use-cases/chat/save-chat-message.use-case";
+import { UpdateStreakUseCase } from "@/clean-architecture/use-cases/streak/update-streak.use-case";
 import { DrizzleVideoRepository } from "@/clean-architecture/infrastructure/repositories/video.repository.drizzle";
 import { DrizzleSummaryRepository } from "@/clean-architecture/infrastructure/repositories/summary.repository.drizzle";
 import { DrizzleTranscriptWindowRepository } from "@/clean-architecture/infrastructure/repositories/transcript-window.repository.drizzle";
 import { DrizzleChatMessageRepository } from "@/clean-architecture/infrastructure/repositories/chat-message.repository.drizzle";
+import { DrizzleStreakRepository } from "@/clean-architecture/infrastructure/repositories/streak.repository.drizzle";
 import { SupabaseEmbeddingService } from "@/clean-architecture/infrastructure/services/embedding.service.supabase";
 import { AiSdkVideoChatService } from "@/clean-architecture/infrastructure/services/video-chat.service.ai-sdk";
 import { ChatMessageInput } from "@/clean-architecture/domain/services/video-chat.interface";
@@ -88,6 +90,11 @@ export async function POST(request: NextRequest) {
 
         // Save user message to database
         await saveChatMessageUseCase.saveUserMessage(videoId, user.id, lastUserMessageText.trim());
+
+        // Update streak (non-blocking)
+        new UpdateStreakUseCase(new DrizzleStreakRepository())
+            .execute(user.id)
+            .catch(console.error);
 
         // Build system prompt from context
         const systemPrompt = buildSystemPrompt(context);
