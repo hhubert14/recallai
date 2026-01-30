@@ -162,6 +162,13 @@
       "when": 1769369836179,
       "tag": "0022_heavy_spacker_dave",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1769734843307,
+      "tag": "0023_graceful_scarecrow",
+      "breakpoints": true
     }
   ]
 }

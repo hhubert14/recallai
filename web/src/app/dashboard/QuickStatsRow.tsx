@@ -45,7 +45,7 @@ export function QuickStatsRow({
   ];
 
   return (
-    <div ref={ref} data-tour-id={TOUR_TARGETS.quickStats} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div ref={ref} data-tour-id={TOUR_TARGETS.quickStats} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {stats.map((stat) => (
         <div
           key={stat.label}

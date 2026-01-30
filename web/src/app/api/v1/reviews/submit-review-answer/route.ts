@@ -1,8 +1,12 @@
 import { NextRequest } from "next/server";
+import { after } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { ProcessReviewAnswerUseCase } from "@/clean-architecture/use-cases/review/process-review-answer.use-case";
 import { DrizzleReviewProgressRepository } from "@/clean-architecture/infrastructure/repositories/review-progress.repository.drizzle";
+import { UpdateStreakUseCase } from "@/clean-architecture/use-cases/streak/update-streak.use-case";
+import { DrizzleStreakRepository } from "@/clean-architecture/infrastructure/repositories/streak.repository.drizzle";
 import { jsendSuccess, jsendFail, jsendError } from "@/lib/jsend";
+import { logger } from "@/lib/logger";
 
 /**
  * POST /api/v1/reviews/submit-review-answer
@@ -48,6 +52,13 @@ export async function POST(request: NextRequest) {
     );
 
     const progress = await useCase.execute(user.id, reviewableItemId, isCorrect);
+
+    // Update streak (non-blocking, but guaranteed to complete in serverless)
+    after(() => {
+      new UpdateStreakUseCase(new DrizzleStreakRepository())
+        .execute(user.id)
+        .catch((error) => logger.streak.error("Failed to update streak", error, { userId: user.id }));
+    });
 
     return jsendSuccess({
       progress: {

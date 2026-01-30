@@ -1,14 +1,18 @@
 import { NextRequest } from "next/server";
+import { after } from "next/server";
 import { UIMessage, ModelMessage, convertToModelMessages } from "ai";
 import { getAuthenticatedUser } from "@/lib/auth-helpers";
 import { jsendFail, jsendError } from "@/lib/jsend";
 import { getRateLimiter } from "@/lib/rate-limit";
+import { logger } from "@/lib/logger";
 import { BuildChatContextUseCase } from "@/clean-architecture/use-cases/chat/build-chat-context.use-case";
 import { SaveChatMessageUseCase } from "@/clean-architecture/use-cases/chat/save-chat-message.use-case";
+import { UpdateStreakUseCase } from "@/clean-architecture/use-cases/streak/update-streak.use-case";
 import { DrizzleVideoRepository } from "@/clean-architecture/infrastructure/repositories/video.repository.drizzle";
 import { DrizzleSummaryRepository } from "@/clean-architecture/infrastructure/repositories/summary.repository.drizzle";
 import { DrizzleTranscriptWindowRepository } from "@/clean-architecture/infrastructure/repositories/transcript-window.repository.drizzle";
 import { DrizzleChatMessageRepository } from "@/clean-architecture/infrastructure/repositories/chat-message.repository.drizzle";
+import { DrizzleStreakRepository } from "@/clean-architecture/infrastructure/repositories/streak.repository.drizzle";
 import { SupabaseEmbeddingService } from "@/clean-architecture/infrastructure/services/embedding.service.supabase";
 import { AiSdkVideoChatService } from "@/clean-architecture/infrastructure/services/video-chat.service.ai-sdk";
 import { ChatMessageInput } from "@/clean-architecture/domain/services/video-chat.interface";
@@ -88,6 +92,13 @@ export async function POST(request: NextRequest) {
 
         // Save user message to database
         await saveChatMessageUseCase.saveUserMessage(videoId, user.id, lastUserMessageText.trim());
+
+        // Update streak (non-blocking, but guaranteed to complete in serverless)
+        after(() => {
+            new UpdateStreakUseCase(new DrizzleStreakRepository())
+                .execute(user.id)
+                .catch((error) => logger.streak.error("Failed to update streak", error, { userId: user.id }));
+        });
 
         // Build system prompt from context
         const systemPrompt = buildSystemPrompt(context);

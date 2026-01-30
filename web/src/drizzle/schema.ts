@@ -337,3 +337,21 @@ export const folderStudySets = pgTable("folder_study_sets", {
 	index("idx_folder_study_sets_folder_id").using("btree", table.folderId.asc().nullsLast()),
 	index("idx_folder_study_sets_study_set_id").using("btree", table.studySetId.asc().nullsLast()),
 ]);
+
+export const userStreaks = pgTable("user_streaks", {
+	id: bigint({ mode: "number" }).primaryKey().generatedByDefaultAsIdentity({ name: "user_streaks_id_seq", startWith: 1, increment: 1, minValue: 1, cache: 1 }),
+	userId: uuid("user_id").notNull(),
+	currentStreak: integer("current_streak").default(0).notNull(),
+	longestStreak: integer("longest_streak").default(0).notNull(),
+	lastActivityDate: date("last_activity_date"),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+}, (table) => [
+	foreignKey({
+		columns: [table.userId],
+		foreignColumns: [users.id],
+		name: "user_streaks_user_id_fkey"
+	}).onUpdate("cascade").onDelete("cascade"),
+	unique("user_streaks_user_id_key").on(table.userId),
+	index("idx_user_streaks_user_id").using("btree", table.userId.asc().nullsLast()),
+]);

@@ -6,6 +6,8 @@ import { Brain } from "lucide-react";
 import { UserButton } from "@/components/ui/user-button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { HelpButton } from "@/components/ui/help-button";
+import { StreakBadge } from "@/components/StreakBadge";
+import { useAuth } from "@/lib/auth-provider";
 import { TOUR_IDS, type TourId } from "@/components/tour/tour-constants";
 
 const navLinks = [
@@ -16,6 +18,7 @@ const navLinks = [
 
 export function DashboardHeader() {
   const pathname = usePathname();
+  const { user } = useAuth();
 
   const isActive = (href: string, exact?: boolean) => {
     if (exact) {
@@ -63,6 +66,7 @@ export function DashboardHeader() {
           ))}
         </nav>
         <div className="flex items-center gap-4">
+          {user && <StreakBadge userId={user.id} />}
           {tourId && <HelpButton tourId={tourId} />}
           <ThemeToggle />
           <UserButton />

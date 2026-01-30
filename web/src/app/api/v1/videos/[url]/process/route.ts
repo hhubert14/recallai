@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+import { after } from "next/server";
 import { logger } from "@/lib/logger";
 import { getAuthenticatedUser } from "@/lib/auth-helpers";
 import { jsendFail, jsendSuccess, jsendError } from "@/lib/jsend";
@@ -13,6 +14,8 @@ import { LangChainVideoSummarizerService } from "@/clean-architecture/infrastruc
 import { TranscriptWindowGeneratorService } from "@/clean-architecture/infrastructure/services/transcript-window-generator.service";
 import { SupabaseEmbeddingService } from "@/clean-architecture/infrastructure/services/embedding.service.supabase";
 import { DrizzleTranscriptWindowRepository } from "@/clean-architecture/infrastructure/repositories/transcript-window.repository.drizzle";
+import { UpdateStreakUseCase } from "@/clean-architecture/use-cases/streak/update-streak.use-case";
+import { DrizzleStreakRepository } from "@/clean-architecture/infrastructure/repositories/streak.repository.drizzle";
 
 export async function POST(
     request: NextRequest,
@@ -46,6 +49,15 @@ export async function POST(
         );
 
         const result = await useCase.execute(user.id, videoUrl);
+
+        // Update streak only for new videos (non-blocking, but guaranteed to complete in serverless)
+        if (!result.alreadyExists) {
+            after(() => {
+                new UpdateStreakUseCase(new DrizzleStreakRepository())
+                    .execute(user.id)
+                    .catch((error) => logger.streak.error("Failed to update streak", error, { userId: user.id }));
+            });
+        }
 
         return jsendSuccess({
             video_id: result.video.id,
