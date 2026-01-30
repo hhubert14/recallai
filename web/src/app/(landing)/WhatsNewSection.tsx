@@ -45,7 +45,7 @@ export function WhatsNewSection() {
             }`}
             style={{ animationDelay: "150ms", animationFillMode: "forwards" }}
           >
-            We&apos;re constantly improving RecallAI to help you learn better
+            We&apos;re constantly improving Retenio to help you learn better
           </p>
         </div>
 

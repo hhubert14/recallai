@@ -21,7 +21,7 @@ import { GetStudySetProgressUseCase } from "@/clean-architecture/use-cases/study
 import { GetReviewStatsUseCase } from "@/clean-architecture/use-cases/review/get-review-stats.use-case";
 
 export const metadata: Metadata = {
-    title: "Study Set | RecallAI",
+    title: "Study Set | Retenio",
     description: "View study set summary and Q&A",
 };
 

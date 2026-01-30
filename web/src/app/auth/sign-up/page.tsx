@@ -6,8 +6,8 @@ import { Brain } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 export const metadata: Metadata = {
-    title: "Sign Up | RecallAI",
-    description: "Sign up for your RecallAI account",
+    title: "Sign Up | Retenio",
+    description: "Sign up for your Retenio account",
 };
 
 export default function SignUpPage() {
@@ -24,7 +24,7 @@ export default function SignUpPage() {
                         <Link href="/" className="flex items-center gap-2">
                             <Brain className="h-8 w-8 text-primary" />
                             <span className="text-2xl font-bold text-foreground">
-                                RecallAI
+                                Retenio
                             </span>
                         </Link>
                         <h1 className="text-3xl font-bold tracking-tight text-primary">
@@ -32,7 +32,7 @@ export default function SignUpPage() {
                         </h1>
                         <p className="text-center text-muted-foreground">
                             Enter your email and password to create your
-                            RecallAI account
+                            Retenio account
                         </p>
                     </div>
 

@@ -3,8 +3,8 @@ import Link from "next/link";
 import { Brain } from "lucide-react";
 
 export const metadata: Metadata = {
-    title: "Confirm Email | RecallAI",
-    description: "Confirm your email address for RecallAI",
+    title: "Confirm Email | Retenio",
+    description: "Confirm your email address for Retenio",
 };
 
 export default function ConfirmEmailPage() {
@@ -15,7 +15,7 @@ export default function ConfirmEmailPage() {
                     <div className="flex flex-col items-center space-y-4">
                         <Link href="/" className="flex items-center gap-2">
                             <Brain className="h-8 w-8 text-primary" />
-                            <span className="text-2xl font-bold text-foreground">RecallAI</span>
+                            <span className="text-2xl font-bold text-foreground">Retenio</span>
                         </Link>
                         <h1 className="text-3xl font-bold tracking-tight text-primary">
                             Check Your Email

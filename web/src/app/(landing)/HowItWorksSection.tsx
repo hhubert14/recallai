@@ -61,7 +61,7 @@ export function HowItWorksSection() {
             }`}
             style={{ animationDelay: "200ms", animationFillMode: "forwards" }}
           >
-            RecallAI seamlessly integrates with your learning routine.
+            Retenio seamlessly integrates with your learning routine.
           </p>
         </div>
 

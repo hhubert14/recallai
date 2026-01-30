@@ -33,7 +33,7 @@ export function Footer() {
           <div className="col-span-2 md:col-span-1 space-y-4">
             <Link href="/" className="flex items-center gap-2">
               <Brain className="h-5 w-5" />
-              <span className="font-bold">RecallAI</span>
+              <span className="font-bold">Retenio</span>
             </Link>
             <p className="text-sm text-muted-foreground max-w-[200px]">
               Transform video learning with AI-powered summaries and spaced repetition.
@@ -120,7 +120,7 @@ export function Footer() {
         {/* Copyright */}
         <div className="mt-12 pt-8 border-t border-border">
           <p className="text-sm text-muted-foreground text-center">
-            &copy; {new Date().getFullYear()} RecallAI. All rights reserved.
+            &copy; {new Date().getFullYear()} Retenio. All rights reserved.
           </p>
         </div>
       </div>

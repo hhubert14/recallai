@@ -1,5 +1,5 @@
 export default defineBackground(() => {
-  console.log('RecallAI background script loaded');
+  console.log('Retenio background script loaded');
 
   // Open side panel/sidebar when extension icon is clicked
   // Chrome uses action + sidePanel API, Firefox uses browserAction + sidebarAction API

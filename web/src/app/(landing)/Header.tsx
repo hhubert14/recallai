@@ -16,7 +16,7 @@ export function Header() {
         {/* Logo */}
         <Link href={user ? "/dashboard" : "/"} className="flex items-center gap-2 group">
           <Brain className="h-6 w-6 text-foreground transition-transform group-hover:scale-110" />
-          <span className="text-xl font-bold tracking-tight">RecallAI</span>
+          <span className="text-xl font-bold tracking-tight">Retenio</span>
         </Link>
 
         {/* Navigation */}

@@ -29,7 +29,7 @@ describe("WelcomeModalWrapper", () => {
     render(<WelcomeModalWrapper />);
 
     expect(
-      screen.queryByText("Welcome to RecallAI!")
+      screen.queryByText("Welcome to Retenio!")
     ).not.toBeInTheDocument();
   });
 
@@ -37,7 +37,7 @@ describe("WelcomeModalWrapper", () => {
     render(<WelcomeModalWrapper />);
 
     await waitFor(() => {
-      expect(screen.getByText("Welcome to RecallAI!")).toBeInTheDocument();
+      expect(screen.getByText("Welcome to Retenio!")).toBeInTheDocument();
     });
   });
 
@@ -47,7 +47,7 @@ describe("WelcomeModalWrapper", () => {
 
     // Wait for modal to appear
     await waitFor(() => {
-      expect(screen.getByText("Welcome to RecallAI!")).toBeInTheDocument();
+      expect(screen.getByText("Welcome to Retenio!")).toBeInTheDocument();
     });
 
     // Navigate to final step and click "Got it"
@@ -61,7 +61,7 @@ describe("WelcomeModalWrapper", () => {
     // Modal should be closed
     await waitFor(() => {
       expect(
-        screen.queryByText("Welcome to RecallAI!")
+        screen.queryByText("Welcome to Retenio!")
       ).not.toBeInTheDocument();
     });
   });
@@ -72,7 +72,7 @@ describe("WelcomeModalWrapper", () => {
 
     // Wait for modal to appear
     await waitFor(() => {
-      expect(screen.getByText("Welcome to RecallAI!")).toBeInTheDocument();
+      expect(screen.getByText("Welcome to Retenio!")).toBeInTheDocument();
     });
 
     // Close via X button

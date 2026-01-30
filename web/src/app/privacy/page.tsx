@@ -2,9 +2,9 @@ import { Metadata } from "next";
 import { Shield, Mail, Clock } from "lucide-react";
 
 export const metadata: Metadata = {
-    title: "Privacy Policy - RecallAI",
+    title: "Privacy Policy - Retenio",
     description:
-        "Privacy Policy for RecallAI Chrome Extension and Web Application",
+        "Privacy Policy for Retenio Chrome Extension and Web Application",
 };
 
 function SectionCard({
@@ -66,7 +66,7 @@ export default function PrivacyPolicyPage() {
                 <div className="space-y-6">
                     <SectionCard number={1} title="Introduction" delay={50}>
                         <p>
-                            RecallAI (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;) respects
+                            Retenio (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;) respects
                             your privacy and is committed to protecting your
                             personal data. This privacy policy explains how we
                             collect, use, and safeguard your information when
