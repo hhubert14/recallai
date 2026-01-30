@@ -18,13 +18,6 @@ interface UsePracticeChatReturn {
     error: string | null;
 }
 
-// Default concept used when no concept is selected (hook must always be called)
-const DEFAULT_CONCEPT: ConceptInput = {
-    conceptName: "",
-    description: "",
-    itemIds: [],
-};
-
 export function usePracticeChat({
     studySetPublicId,
     concept,

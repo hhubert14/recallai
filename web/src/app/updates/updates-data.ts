@@ -35,6 +35,14 @@ export function formatUpdateDate(
 // Add new entries at the TOP of this array (newest first)
 export const updates: UpdateEntry[] = [
   {
+    id: "2026-01-30-practice-mode",
+    date: "2026-01-30",
+    title: "Practice Mode",
+    description:
+      "Practice explaining concepts using the Feynman Technique. An AI tutor asks questions and provides feedback to deepen your understanding.",
+    category: "New Feature",
+  },
+  {
     id: "2026-01-30-video-processing-optimization",
     date: "2026-01-30",
     title: "Faster Video Processing",
