@@ -2,12 +2,10 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { ProcessVideoUseCase } from "./process-video.use-case";
 import { IVideoRepository } from "@/clean-architecture/domain/repositories/video.repository.interface";
 import { ISummaryRepository } from "@/clean-architecture/domain/repositories/summary.repository.interface";
-import { ITranscriptRepository } from "@/clean-architecture/domain/repositories/transcript.repository.interface";
 import { IStudySetRepository } from "@/clean-architecture/domain/repositories/study-set.repository.interface";
 import { IVideoInfoService } from "@/clean-architecture/domain/services/video-info.interface";
 import { IVideoTranscriptService } from "@/clean-architecture/domain/services/video-transcript.interface";
 import { IVideoSummarizerService } from "@/clean-architecture/domain/services/video-summarizer.interface";
-import { ITranscriptWindowGeneratorService } from "@/clean-architecture/domain/services/transcript-window-generator.interface";
 import { VideoEntity } from "@/clean-architecture/domain/entities/video.entity";
 import { SummaryEntity } from "@/clean-architecture/domain/entities/summary.entity";
 import { StudySetEntity } from "@/clean-architecture/domain/entities/study-set.entity";
@@ -52,12 +50,10 @@ describe("ProcessVideoUseCase", () => {
     let useCase: ProcessVideoUseCase;
     let mockVideoRepo: IVideoRepository;
     let mockSummaryRepo: ISummaryRepository;
-    let mockTranscriptRepo: ITranscriptRepository;
     let mockStudySetRepo: IStudySetRepository;
     let mockVideoInfoService: IVideoInfoService;
     let mockVideoTranscriptService: IVideoTranscriptService;
     let mockVideoSummarizerService: IVideoSummarizerService;
-    let mockTranscriptWindowGeneratorService: ITranscriptWindowGeneratorService;
 
     const testVideoUrl = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
     const testUserId = "user-1";
@@ -75,11 +71,6 @@ describe("ProcessVideoUseCase", () => {
         mockSummaryRepo = {
             createSummary: vi.fn(),
             findSummaryByVideoId: vi.fn(),
-        };
-
-        mockTranscriptRepo = {
-            createTranscript: vi.fn(),
-            findTranscriptByVideoId: vi.fn(),
         };
 
         mockStudySetRepo = {
@@ -105,19 +96,13 @@ describe("ProcessVideoUseCase", () => {
             generate: vi.fn(),
         };
 
-        mockTranscriptWindowGeneratorService = {
-            generate: vi.fn(),
-        };
-
         useCase = new ProcessVideoUseCase(
             mockVideoRepo,
             mockSummaryRepo,
-            mockTranscriptRepo,
             mockStudySetRepo,
             mockVideoInfoService,
             mockVideoTranscriptService,
-            mockVideoSummarizerService,
-            mockTranscriptWindowGeneratorService
+            mockVideoSummarizerService
         );
     });
 
@@ -219,14 +204,6 @@ describe("ProcessVideoUseCase", () => {
             vi.mocked(mockVideoSummarizerService.generate).mockResolvedValue({
                 summary: "This is a summary of the TypeScript tutorial.",
             });
-            vi.mocked(mockTranscriptWindowGeneratorService.generate).mockResolvedValue([]);
-            vi.mocked(mockTranscriptRepo.createTranscript).mockResolvedValue({
-                id: 1,
-                videoId: 1,
-                segments: [{ text: "segment 1", startTime: 0, endTime: 10 }],
-                fullText: "This is the full transcript text...",
-                createdAt: new Date().toISOString(),
-            });
         });
 
         it("creates video, summary, and study set for new educational video", async () => {
@@ -279,15 +256,15 @@ describe("ProcessVideoUseCase", () => {
                 "This is a summary of the TypeScript tutorial."
             );
 
-            // Verify transcript was stored
-            expect(mockTranscriptRepo.createTranscript).toHaveBeenCalledWith(
-                1,
-                [{ text: "segment 1", startTime: 0, endTime: 10 }],
-                "This is the full transcript text..."
-            );
+            // Verify transcript data is returned for background processing
+            expect(result.transcriptData).toBeDefined();
+            expect(result.transcriptData?.segments).toEqual([
+                { text: "segment 1", startTime: 0, endTime: 10 }
+            ]);
+            expect(result.transcriptData?.fullText).toBe("This is the full transcript text...");
         });
 
-        it("stores transcript after creating video", async () => {
+        it("returns transcript data for background processing", async () => {
             const newVideo = createMockVideo({ id: 1 });
             const newSummary = createMockSummary({ videoId: 1 });
             const newStudySet = createMockStudySet({ id: 1, videoId: 1 });
@@ -296,69 +273,17 @@ describe("ProcessVideoUseCase", () => {
             vi.mocked(mockSummaryRepo.createSummary).mockResolvedValue(newSummary);
             vi.mocked(mockStudySetRepo.createStudySet).mockResolvedValue(newStudySet);
 
-            await useCase.execute(testUserId, testVideoUrl);
-
-            expect(mockTranscriptRepo.createTranscript).toHaveBeenCalledWith(
-                1,
-                [{ text: "segment 1", startTime: 0, endTime: 10 }],
-                "This is the full transcript text..."
-            );
-        });
-
-        it("continues successfully even if transcript storage fails", async () => {
-            const newVideo = createMockVideo({ id: 1 });
-            const newSummary = createMockSummary({ videoId: 1 });
-            const newStudySet = createMockStudySet({ id: 1, videoId: 1 });
-
-            vi.mocked(mockVideoRepo.createVideo).mockResolvedValue(newVideo);
-            vi.mocked(mockSummaryRepo.createSummary).mockResolvedValue(newSummary);
-            vi.mocked(mockStudySetRepo.createStudySet).mockResolvedValue(newStudySet);
-            vi.mocked(mockTranscriptRepo.createTranscript).mockRejectedValue(
-                new Error("Transcript storage failed")
-            );
-
-            // Should not throw
             const result = await useCase.execute(testUserId, testVideoUrl);
 
-            expect(result.video).toEqual(newVideo);
-            expect(result.summary).toEqual(newSummary);
+            // Verify transcript data is returned (not stored by use case)
+            expect(result.transcriptData).toBeDefined();
+            expect(result.transcriptData?.segments).toEqual([
+                { text: "segment 1", startTime: 0, endTime: 10 }
+            ]);
+            expect(result.transcriptData?.fullText).toBe("This is the full transcript text...");
         });
 
-        it("generates transcript windows after creating video", async () => {
-            const newVideo = createMockVideo({ id: 1 });
-            const newSummary = createMockSummary({ videoId: 1 });
-            const newStudySet = createMockStudySet({ id: 1, videoId: 1 });
 
-            vi.mocked(mockVideoRepo.createVideo).mockResolvedValue(newVideo);
-            vi.mocked(mockSummaryRepo.createSummary).mockResolvedValue(newSummary);
-            vi.mocked(mockStudySetRepo.createStudySet).mockResolvedValue(newStudySet);
-
-            await useCase.execute(testUserId, testVideoUrl);
-
-            expect(mockTranscriptWindowGeneratorService.generate).toHaveBeenCalledWith(
-                1,
-                [{ text: "segment 1", startTime: 0, endTime: 10 }]
-            );
-        });
-
-        it("continues successfully even if transcript window generation fails", async () => {
-            const newVideo = createMockVideo({ id: 1 });
-            const newSummary = createMockSummary({ videoId: 1 });
-            const newStudySet = createMockStudySet({ id: 1, videoId: 1 });
-
-            vi.mocked(mockVideoRepo.createVideo).mockResolvedValue(newVideo);
-            vi.mocked(mockSummaryRepo.createSummary).mockResolvedValue(newSummary);
-            vi.mocked(mockStudySetRepo.createStudySet).mockResolvedValue(newStudySet);
-            vi.mocked(mockTranscriptWindowGeneratorService.generate).mockRejectedValue(
-                new Error("Window generation failed")
-            );
-
-            // Should not throw
-            const result = await useCase.execute(testUserId, testVideoUrl);
-
-            expect(result.video).toEqual(newVideo);
-            expect(result.summary).toEqual(newSummary);
-        });
     });
 
     describe("error handling", () => {

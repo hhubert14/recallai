@@ -76,9 +76,7 @@ describe("DrizzleQuestionRepository (integration)", () => {
                     { optionText: "Option B", isCorrect: false, explanation: null },
                     { optionText: "Option C", isCorrect: false, explanation: null },
                     { optionText: "Option D", isCorrect: false, explanation: null },
-                ],
-                null,
-                null
+                ]
             );
 
             // Prepare updated options (using the actual option IDs)
@@ -117,9 +115,7 @@ describe("DrizzleQuestionRepository (integration)", () => {
                     { optionText: "B", isCorrect: false, explanation: null },
                     { optionText: "C", isCorrect: false, explanation: null },
                     { optionText: "D", isCorrect: false, explanation: null },
-                ],
-                null,
-                null
+                ]
             );
 
             // Update
@@ -153,9 +149,7 @@ describe("DrizzleQuestionRepository (integration)", () => {
                     { optionText: "B", isCorrect: false, explanation: null },
                     { optionText: "C", isCorrect: false, explanation: null },
                     { optionText: "D", isCorrect: false, explanation: null },
-                ],
-                "Source quote",
-                120
+                ]
             );
 
             const updatedOptions = created.options.map(opt => ({
@@ -172,8 +166,6 @@ describe("DrizzleQuestionRepository (integration)", () => {
             );
 
             expect(result.videoId).toBe(testVideoId);
-            expect(result.sourceQuote).toBe("Source quote");
-            expect(result.sourceTimestamp).toBe(120);
         });
 
         it("updates all options atomically", async () => {
@@ -185,9 +177,7 @@ describe("DrizzleQuestionRepository (integration)", () => {
                     { optionText: "Old B", isCorrect: false, explanation: null },
                     { optionText: "Old C", isCorrect: true, explanation: "Was correct" },
                     { optionText: "Old D", isCorrect: false, explanation: null },
-                ],
-                null,
-                null
+                ]
             );
 
             const updatedOptions = [
@@ -220,9 +210,7 @@ describe("DrizzleQuestionRepository (integration)", () => {
                     { optionText: "B", isCorrect: false, explanation: null },
                     { optionText: "C", isCorrect: false, explanation: null },
                     { optionText: "D", isCorrect: false, explanation: null },
-                ],
-                "Quote",
-                60
+                ]
             );
 
             const found = await repository.findQuestionById(created.id);
@@ -231,8 +219,6 @@ describe("DrizzleQuestionRepository (integration)", () => {
             expect(found!.id).toBe(created.id);
             expect(found!.questionText).toBe("Test question");
             expect(found!.videoId).toBe(testVideoId);
-            expect(found!.sourceQuote).toBe("Quote");
-            expect(found!.sourceTimestamp).toBe(60);
             expect(found!.options).toHaveLength(4);
         });
 

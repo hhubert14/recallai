@@ -89,9 +89,7 @@ describe("AddQuestionToStudySetUseCase", () => {
                 new MultipleChoiceOption(2, "Option B", false, null),
                 new MultipleChoiceOption(3, "Option C", false, null),
                 new MultipleChoiceOption(4, "Option D", false, null),
-            ],
-            null,
-            null
+            ]
         );
 
         const reviewableItem = new ReviewableItemEntity(
@@ -121,9 +119,7 @@ describe("AddQuestionToStudySetUseCase", () => {
         expect(mockQuestionRepository.createMultipleChoiceQuestion).toHaveBeenCalledWith(
             null,
             "What is TDD?",
-            validOptions,
-            null,
-            null
+            validOptions
         );
         expect(mockReviewableItemRepository.createReviewableItemsForQuestionsBatch).toHaveBeenCalledWith([
             {
@@ -157,9 +153,7 @@ describe("AddQuestionToStudySetUseCase", () => {
                 new MultipleChoiceOption(6, "Option B", false, null),
                 new MultipleChoiceOption(7, "Option C", false, null),
                 new MultipleChoiceOption(8, "Option D", false, null),
-            ],
-            null,
-            null
+            ]
         );
 
         const reviewableItem = new ReviewableItemEntity(
@@ -189,9 +183,7 @@ describe("AddQuestionToStudySetUseCase", () => {
         expect(mockQuestionRepository.createMultipleChoiceQuestion).toHaveBeenCalledWith(
             42,
             "What is React?",
-            validOptions,
-            null,
-            null
+            validOptions
         );
         expect(mockReviewableItemRepository.createReviewableItemsForQuestionsBatch).toHaveBeenCalledWith([
             {
@@ -519,9 +511,7 @@ describe("AddQuestionToStudySetUseCase", () => {
                 new MultipleChoiceOption(2, "Option B", false, null),
                 new MultipleChoiceOption(3, "Option C", false, null),
                 new MultipleChoiceOption(4, "Option D", false, null),
-            ],
-            null,
-            null
+            ]
         );
 
         const reviewableItem = new ReviewableItemEntity(

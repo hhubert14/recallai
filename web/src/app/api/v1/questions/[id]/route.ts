@@ -62,8 +62,6 @@ export async function PATCH(
                     isCorrect: opt.isCorrect,
                     explanation: opt.explanation,
                 })),
-                sourceQuote: question.sourceQuote,
-                sourceTimestamp: question.sourceTimestamp,
             },
         });
     } catch (error) {

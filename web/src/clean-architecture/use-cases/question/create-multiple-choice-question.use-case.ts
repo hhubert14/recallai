@@ -12,16 +12,12 @@ export class CreateMultipleChoiceQuestionUseCase {
             isCorrect: boolean;
             orderIndex: number;
             explanation: string | null;
-        }[],
-        sourceQuote: string | null = null,
-        sourceTimestamp: number | null = null
+        }[]
     ): Promise<MultipleChoiceQuestionEntity> {
         return await this.questionRepository.createMultipleChoiceQuestion(
             videoId,
             questionText,
-            options,
-            sourceQuote,
-            sourceTimestamp
+            options
         );
     }
 }

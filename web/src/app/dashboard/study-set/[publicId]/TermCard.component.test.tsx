@@ -39,7 +39,6 @@ describe("TermCard", () => {
             question: {
                 id: 2,
                 questionText: "Which hook is used for side effects?",
-                sourceTimestamp: null,
                 options: [
                     {
                         id: 1,
@@ -179,7 +178,6 @@ describe("TermCard", () => {
             question: {
                 id: 2,
                 questionText: "Which hook is used for side effects?",
-                sourceTimestamp: null,
                 options: [
                     { id: 1, optionText: "useState", isCorrect: false, explanation: null },
                     { id: 2, optionText: "useEffect", isCorrect: true, explanation: null },
@@ -238,7 +236,6 @@ describe("TermCard", () => {
                 question: {
                     id: 2,
                     questionText: "Which hook is used for side effects?",
-                    sourceTimestamp: 120,
                     options: [
                         { id: 1, optionText: "useState", isCorrect: false, explanation: null },
                         { id: 2, optionText: "useEffect", isCorrect: true, explanation: "Handles side effects" },
@@ -256,7 +253,6 @@ describe("TermCard", () => {
             expect(onEditQuestion).toHaveBeenCalledWith({
                 id: 2,
                 questionText: "Which hook is used for side effects?",
-                sourceTimestamp: 120,
                 options: [
                     { id: 1, optionText: "useState", isCorrect: false, explanation: null },
                     { id: 2, optionText: "useEffect", isCorrect: true, explanation: "Handles side effects" },
@@ -563,7 +559,6 @@ describe("TermCard", () => {
                     { id: 3, optionText: "Chair", isCorrect: false, explanation: null },
                     { id: 4, optionText: "Window", isCorrect: false, explanation: null },
                 ],
-                sourceTimestamp: null,
             },
             masteryStatus: "learning",
         };
@@ -887,7 +882,6 @@ describe("TermCard", () => {
             question: {
                 id: 2,
                 questionText: "Which hook is used for side effects?",
-                sourceTimestamp: null,
                 options: [
                     { id: 1, optionText: "useState", isCorrect: false, explanation: null },
                     { id: 2, optionText: "useEffect", isCorrect: true, explanation: null },

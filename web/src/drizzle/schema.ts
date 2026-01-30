@@ -79,8 +79,6 @@ export const questions = pgTable("questions", {
 	videoId: bigint("video_id", { mode: "number" }),
 	questionText: text("question_text").notNull(),
 	questionType: text("question_type").notNull(),
-	sourceQuote: text("source_quote"),
-	sourceTimestamp: integer("source_timestamp"),
 	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 }, (table) => [

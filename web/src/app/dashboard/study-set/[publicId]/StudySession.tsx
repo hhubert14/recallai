@@ -89,7 +89,6 @@ export function StudySession({
                 videoId: videoId,
                 questionText: t.question!.questionText,
                 questionType: "multiple_choice",
-                sourceTimestamp: t.question!.sourceTimestamp,
                 options: t.question!.options,
             }));
 

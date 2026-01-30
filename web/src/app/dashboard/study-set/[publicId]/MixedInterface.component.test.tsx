@@ -28,7 +28,6 @@ const questionTerm: Term = {
     question: {
         id: 2,
         questionText: "Which hook is used for state?",
-        sourceTimestamp: null,
         options: [
             { id: 1, optionText: "useState", isCorrect: true, explanation: "useState manages state" },
             { id: 2, optionText: "useEffect", isCorrect: false, explanation: null },

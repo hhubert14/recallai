@@ -2,7 +2,6 @@ import { logger } from "@/lib/logger";
 import { extractYouTubeVideoId, normalizeYouTubeUrl } from "@/lib/youtube";
 import { IVideoRepository } from "@/clean-architecture/domain/repositories/video.repository.interface";
 import { ISummaryRepository } from "@/clean-architecture/domain/repositories/summary.repository.interface";
-import { ITranscriptRepository } from "@/clean-architecture/domain/repositories/transcript.repository.interface";
 import { IStudySetRepository } from "@/clean-architecture/domain/repositories/study-set.repository.interface";
 import { IVideoInfoService } from "@/clean-architecture/domain/services/video-info.interface";
 import { IVideoTranscriptService } from "@/clean-architecture/domain/services/video-transcript.interface";
@@ -10,25 +9,28 @@ import { IVideoSummarizerService } from "@/clean-architecture/domain/services/vi
 import { VideoEntity } from "@/clean-architecture/domain/entities/video.entity";
 import { SummaryEntity } from "@/clean-architecture/domain/entities/summary.entity";
 import { StudySetEntity } from "@/clean-architecture/domain/entities/study-set.entity";
-import { ITranscriptWindowGeneratorService } from "@/clean-architecture/domain/services/transcript-window-generator.interface";
+import { TranscriptSegment } from "@/clean-architecture/domain/entities/transcript.entity";
 
 export type ProcessVideoResult = {
     video: VideoEntity;
     summary: SummaryEntity;
     studySet: StudySetEntity;
     alreadyExists: boolean;
+    // Return transcript data for background processing (only for new videos)
+    transcriptData?: {
+        segments: TranscriptSegment[];
+        fullText: string;
+    };
 };
 
 export class ProcessVideoUseCase {
     constructor(
         private readonly videoRepository: IVideoRepository,
         private readonly summaryRepository: ISummaryRepository,
-        private readonly transcriptRepository: ITranscriptRepository,
         private readonly studySetRepository: IStudySetRepository,
         private readonly videoInfoService: IVideoInfoService,
         private readonly videoTranscriptService: IVideoTranscriptService,
-        private readonly videoSummarizerService: IVideoSummarizerService,
-        private readonly transcriptWindowGeneratorService: ITranscriptWindowGeneratorService
+        private readonly videoSummarizerService: IVideoSummarizerService
     ) {}
 
     async execute(userId: string, videoUrl: string): Promise<ProcessVideoResult> {
@@ -120,20 +122,6 @@ export class ProcessVideoUseCase {
             studySetId: studySet.id,
         });
 
-        // 6. Store transcript for future use (non-blocking)
-        try {
-            await this.transcriptRepository.createTranscript(
-                video.id,
-                transcriptResult.segments,
-                transcriptResult.fullText,
-            );
-        } catch (error) {
-            logger.extension.warn("Failed to store transcript", {
-                videoId: video.id,
-                error: error instanceof Error ? error.message : String(error),
-            });
-        }
-
         // 6. Generate and save summary
         logger.extension.debug("Generating summary");
         const summaryResult = await this.videoSummarizerService.generate(title, description, {
@@ -150,24 +138,16 @@ export class ProcessVideoUseCase {
             summaryLength: summary.content.length,
         });
 
-        // 7. Generate transcript windows for timestamp matching (non-blocking)
-        try {
-            await this.transcriptWindowGeneratorService.generate(
-                video.id,
-                transcriptResult.segments
-            );
-        } catch (error) {
-            logger.extension.warn("Failed to generate transcript windows", {
-                videoId: video.id,
-                error: error instanceof Error ? error.message : String(error),
-            });
-        }
-
+        // Return result with transcript data for background processing
         return {
             video,
             summary,
             studySet,
             alreadyExists: false,
+            transcriptData: {
+                segments: transcriptResult.segments,
+                fullText: transcriptResult.fullText,
+            },
         };
     }
 }

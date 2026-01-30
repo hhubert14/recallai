@@ -111,9 +111,7 @@ describe("POST /api/v1/study-sets/[publicId]/questions", () => {
                 new MultipleChoiceOption(2, "Option B", false, null),
                 new MultipleChoiceOption(3, "Option C", false, null),
                 new MultipleChoiceOption(4, "Option D", false, null),
-            ],
-            null,
-            null
+            ]
         );
 
         const mockExecute = vi.fn().mockResolvedValue(mockQuestion);
@@ -138,8 +136,6 @@ describe("POST /api/v1/study-sets/[publicId]/questions", () => {
                 { id: 3, optionText: "Option C", isCorrect: false, explanation: null },
                 { id: 4, optionText: "Option D", isCorrect: false, explanation: null },
             ],
-            sourceQuote: null,
-            sourceTimestamp: null,
         });
 
         expect(mockExecute).toHaveBeenCalledWith({
