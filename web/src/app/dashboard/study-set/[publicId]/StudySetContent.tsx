@@ -94,8 +94,6 @@ export function StudySetContent({
         videoId: number | null;
         questionText: string;
         options: { id: number; optionText: string; isCorrect: boolean; explanation: string | null }[];
-        sourceQuote: string | null;
-        sourceTimestamp: number | null;
     }) => {
         const newTerm: TermWithMastery = {
             id: question.id,
@@ -104,7 +102,6 @@ export function StudySetContent({
                 id: question.id,
                 questionText: question.questionText,
                 options: question.options,
-                sourceTimestamp: question.sourceTimestamp,
             },
             masteryStatus: "not_started",
         };

@@ -21,7 +21,6 @@ const mockTerms: TermWithMastery[] = [
         question: {
             id: 2,
             questionText: "Which is a primitive type?",
-            sourceTimestamp: null,
             options: [
                 { id: 1, optionText: "string", isCorrect: true, explanation: null },
                 { id: 2, optionText: "array", isCorrect: false, explanation: null },
@@ -97,7 +96,6 @@ describe("TermsList", () => {
                 question: {
                     id: 1,
                     questionText: "Question 1",
-                    sourceTimestamp: null,
                     options: [{ id: 1, optionText: "Answer", isCorrect: true, explanation: null }],
                 },
                 masteryStatus: "not_started",

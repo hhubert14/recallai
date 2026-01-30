@@ -58,8 +58,6 @@ export async function POST(
                         isCorrect: opt.isCorrect,
                         explanation: opt.explanation,
                     })),
-                    sourceQuote: question.sourceQuote,
-                    sourceTimestamp: question.sourceTimestamp,
                 },
             },
             201

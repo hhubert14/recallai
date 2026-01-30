@@ -42,7 +42,6 @@ const questionTerms: Term[] = [
         question: {
             id: 1,
             questionText: "Which is a hook?",
-            sourceTimestamp: null,
             options: [
                 { id: 1, optionText: "useState", isCorrect: true, explanation: "useState is a hook" },
                 { id: 2, optionText: "React.memo", isCorrect: false, explanation: null },

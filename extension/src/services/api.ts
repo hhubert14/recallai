@@ -67,8 +67,6 @@ export type Question = {
   id: number;
   questionText: string;
   options: QuestionOption[];
-  sourceQuote: string | null;
-  sourceTimestamp: number | null;
 };
 
 export type Flashcard = {

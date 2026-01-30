@@ -27,9 +27,7 @@ describe("EditQuestionUseCase", () => {
         questionId,
         null,
         "Original question text",
-        existingOptions,
-        null,
-        null
+        existingOptions
     );
 
     const reviewableItem = new ReviewableItemEntity(
@@ -94,9 +92,7 @@ describe("EditQuestionUseCase", () => {
             questionId,
             null,
             "Updated question text",
-            updatedOptions,
-            null,
-            null
+            updatedOptions
         );
 
         vi.mocked(mockQuestionRepository.findQuestionById).mockResolvedValue(existingQuestion);
@@ -217,9 +213,7 @@ describe("EditQuestionUseCase", () => {
             questionId,
             null,
             "a".repeat(1000),
-            existingOptions,
-            null,
-            null
+            existingOptions
         );
 
         vi.mocked(mockQuestionRepository.findQuestionById).mockResolvedValue(existingQuestion);
@@ -415,9 +409,7 @@ describe("EditQuestionUseCase", () => {
             questionId,
             null,
             "Question text",
-            existingOptions,
-            null,
-            null
+            existingOptions
         );
 
         vi.mocked(mockQuestionRepository.findQuestionById).mockResolvedValue(existingQuestion);
@@ -446,9 +438,7 @@ describe("EditQuestionUseCase", () => {
             questionId,
             null,
             "Trimmed question",
-            existingOptions,
-            null,
-            null
+            existingOptions
         );
 
         vi.mocked(mockQuestionRepository.findQuestionById).mockResolvedValue(existingQuestion);
@@ -484,9 +474,7 @@ describe("EditQuestionUseCase", () => {
             questionId,
             42,
             "Original question",
-            existingOptions,
-            "Source quote",
-            120
+            existingOptions
         );
 
         const reviewableItemWithVideo = new ReviewableItemEntity(
@@ -504,9 +492,7 @@ describe("EditQuestionUseCase", () => {
             questionId,
             42,
             "Updated question",
-            existingOptions,
-            "Source quote",
-            120
+            existingOptions
         );
 
         vi.mocked(mockQuestionRepository.findQuestionById).mockResolvedValue(questionWithVideo);

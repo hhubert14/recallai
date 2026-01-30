@@ -25,8 +25,6 @@ export class MultipleChoiceQuestionEntity implements BaseQuestion {
         public readonly videoId: number | null,
         public readonly questionText: string,
         public readonly options: MultipleChoiceOption[],
-        public readonly sourceQuote: string | null,
-        public readonly sourceTimestamp: number | null,
     ) {}
 }
 

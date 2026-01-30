@@ -1,18 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { QuizProgress, QuizQuestion, QuizResult, QuizSummary } from "@/components/quiz";
 import { useQuizCompletion } from "@/components/providers/QuizCompletionProvider";
-import { useVideoPlayer } from "./VideoPlayerContext";
 
 type QuestionWithOptions = {
     id: number;
     videoId: number | null;
     questionText: string;
     questionType: string;
-    sourceTimestamp: number | null;
     options: {
         id: number;
         optionText: string;
@@ -25,12 +22,6 @@ interface QuizInterfaceProps {
     questions: QuestionWithOptions[];
     videoId: number | null;
     studySetId: number;
-}
-
-function formatTimestamp(seconds: number): string {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
 }
 
 function shuffleArray<T>(array: T[]): T[] {
@@ -66,7 +57,6 @@ export function QuizInterface({
     const [correctCount, setCorrectCount] = useState(0);
 
     const { markVideoAsCompleted } = useQuizCompletion();
-    const { seekTo } = useVideoPlayer();
 
     useEffect(() => {
         if (questions.length > 0) {
@@ -179,24 +169,12 @@ export function QuizInterface({
                 total={shuffledQuestions.length}
             />
 
-            {/* Question with timestamp button */}
+            {/* Question */}
             <div className="space-y-4">
                 <div className="bg-card p-6 rounded-xl border border-border">
-                    <div className="flex items-start gap-2">
-                        <h3 className="text-lg font-medium text-foreground leading-relaxed flex-1">
-                            {currentQuestion.questionText}
-                        </h3>
-                        {currentQuestion.sourceTimestamp !== null && (
-                            <button
-                                onClick={() => seekTo(currentQuestion.sourceTimestamp!)}
-                                className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-primary hover:bg-primary/10 rounded cursor-pointer transition-colors shrink-0"
-                                title={`Jump to ${formatTimestamp(currentQuestion.sourceTimestamp)}`}
-                            >
-                                <Clock className="h-3.5 w-3.5" />
-                                {formatTimestamp(currentQuestion.sourceTimestamp)}
-                            </button>
-                        )}
-                    </div>
+                    <h3 className="text-lg font-medium text-foreground leading-relaxed">
+                        {currentQuestion.questionText}
+                    </h3>
                 </div>
 
                 {/* Options */}

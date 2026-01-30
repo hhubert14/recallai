@@ -80,9 +80,7 @@ function createMockQuestion(
     [
       new MultipleChoiceOption(id * 10 + 1, "Option A", true, "Explanation A"),
       new MultipleChoiceOption(id * 10 + 2, "Option B", false, "Explanation B"),
-    ],
-    null,
-    null
+    ]
   );
 }
 

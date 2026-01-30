@@ -31,7 +31,7 @@ describe("GetStreakUseCase", () => {
   describe("when user has a streak record", () => {
     beforeEach(() => {
       vi.useFakeTimers();
-      vi.setSystemTime(new Date("2025-01-28T14:30:00Z"));
+      vi.setSystemTime(new Date(2025, 0, 28, 14, 30, 0)); // Jan 28, 2025, 2:30 PM local
     });
 
     afterEach(() => {
@@ -67,6 +67,15 @@ describe("GetStreakUseCase", () => {
   });
 
   describe("when streak exists but is broken", () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date(2025, 1, 1, 14, 30, 0)); // Feb 1, 2025, 2:30 PM local
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
     it("returns streak data including current=0 scenario", async () => {
       const brokenStreak = createMockStreak({
         currentStreak: 0,
@@ -86,7 +95,7 @@ describe("GetStreakUseCase", () => {
   describe("when streak is broken (older than yesterday)", () => {
     beforeEach(() => {
       vi.useFakeTimers();
-      vi.setSystemTime(new Date("2025-02-01T14:30:00Z"));
+      vi.setSystemTime(new Date(2025, 1, 1, 14, 30, 0)); // Feb 1, 2025, 2:30 PM local
     });
 
     afterEach(() => {
@@ -126,7 +135,7 @@ describe("GetStreakUseCase", () => {
   describe("when streak is active", () => {
     beforeEach(() => {
       vi.useFakeTimers();
-      vi.setSystemTime(new Date("2025-02-01T14:30:00Z"));
+      vi.setSystemTime(new Date(2025, 1, 1, 14, 30, 0)); // Feb 1, 2025, 2:30 PM local
     });
 
     afterEach(() => {

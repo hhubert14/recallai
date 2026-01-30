@@ -99,11 +99,11 @@ describe("GetStudySetItemsUseCase", () => {
         const question1 = new MultipleChoiceQuestionEntity(200, null, "Question 1?", [
             { id: 1, optionText: "A", isCorrect: true, explanation: null },
             { id: 2, optionText: "B", isCorrect: false, explanation: null },
-        ], null, null);
+        ]);
         const question2 = new MultipleChoiceQuestionEntity(201, null, "Question 2?", [
             { id: 3, optionText: "C", isCorrect: false, explanation: null },
             { id: 4, optionText: "D", isCorrect: true, explanation: null },
-        ], null, null);
+        ]);
 
         vi.mocked(mockReviewableItemRepo.findReviewableItemsByStudySetId).mockResolvedValue(reviewableItems);
         vi.mocked(mockQuestionRepo.findQuestionsByIds).mockResolvedValue([question1, question2]);
@@ -129,7 +129,7 @@ describe("GetStudySetItemsUseCase", () => {
         const flashcard2 = new FlashcardEntity(101, null, userId, "Front 2", "Back 2", "2025-01-27");
         const question1 = new MultipleChoiceQuestionEntity(200, null, "Question 1?", [
             { id: 1, optionText: "A", isCorrect: true, explanation: null },
-        ], null, null);
+        ]);
 
         vi.mocked(mockReviewableItemRepo.findReviewableItemsByStudySetId).mockResolvedValue(reviewableItems);
         // Note: repository might return in different order, but we should preserve reviewable_items order

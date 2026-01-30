@@ -9,7 +9,6 @@ export type TermQuestion = {
     id: number;
     questionText: string;
     options: QuestionOption[];
-    sourceTimestamp: number | null;
 };
 
 export type TermFlashcard = {

@@ -8,9 +8,7 @@ export interface IQuestionRepository {
             optionText: string;
             isCorrect: boolean;
             explanation: string | null;
-        }[],
-        sourceQuote: string | null,
-        sourceTimestamp: number | null
+        }[]
     ): Promise<MultipleChoiceQuestionEntity>;
 
     findQuestionById(questionId: number): Promise<MultipleChoiceQuestionEntity | null>;

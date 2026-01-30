@@ -12,9 +12,7 @@ function createMockQuestion(id: number, videoId: number = 1): MultipleChoiceQues
 		[
 			new MultipleChoiceOption(id * 10 + 1, "Option A", true, null),
 			new MultipleChoiceOption(id * 10 + 2, "Option B", false, null),
-		],
-		null,
-		null,
+		]
 	);
 }
 

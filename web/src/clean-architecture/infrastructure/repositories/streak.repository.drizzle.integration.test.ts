@@ -9,14 +9,12 @@ import {
 describe("DrizzleStreakRepository (integration)", () => {
   const TEST_DATABASE_URL = process.env.DATABASE_URL;
 
+  // Throw immediately instead of inside it() for faster failure
   if (!TEST_DATABASE_URL?.includes("testdb")) {
-    it("fails when test database is not configured", () => {
-      throw new Error(
-        "Integration tests require DATABASE_URL pointing to testdb. " +
-          "Ensure .env.test.local is configured and run: npm run test:integration"
-      );
-    });
-    return;
+    throw new Error(
+      "Integration tests require DATABASE_URL pointing to testdb. " +
+        "Ensure .env.test.local is configured and run: npm run test:integration"
+    );
   }
 
   let ctx: IntegrationTestContext;

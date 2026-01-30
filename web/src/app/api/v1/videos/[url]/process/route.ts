@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+import { after } from "next/server";
 import { logger } from "@/lib/logger";
 import { getAuthenticatedUser } from "@/lib/auth-helpers";
 import { jsendFail, jsendSuccess, jsendError } from "@/lib/jsend";
@@ -39,21 +40,51 @@ export async function POST(
         const useCase = new ProcessVideoUseCase(
             new DrizzleVideoRepository(),
             new DrizzleSummaryRepository(),
-            new DrizzleTranscriptRepository(),
             new DrizzleStudySetRepository(),
             new YouTubeVideoInfoService(),
             new YoutubeTranscriptVideoTranscriptService(),
-            new LangChainVideoSummarizerService(),
-            new TranscriptWindowGeneratorService(new SupabaseEmbeddingService(), new DrizzleTranscriptWindowRepository())
+            new LangChainVideoSummarizerService()
         );
 
         const result = await useCase.execute(user.id, videoUrl);
 
-        // Update streak only for new videos (non-blocking)
-        if (!result.alreadyExists) {
-            new UpdateStreakUseCase(new DrizzleStreakRepository())
-                .execute(user.id)
-                .catch((error) => logger.streak.error("Failed to update streak", error, { userId: user.id }));
+        // Background tasks for new videos (run after response sent)
+        if (!result.alreadyExists && result.transcriptData) {
+            const videoId = result.video.id;
+            const { segments, fullText } = result.transcriptData;
+
+            after(async () => {
+                // 1. Store transcript
+                try {
+                    await new DrizzleTranscriptRepository().createTranscript(
+                        videoId,
+                        segments,
+                        fullText
+                    );
+                    logger.extension.info("Transcript stored successfully", { videoId });
+                } catch (error) {
+                    logger.extension.error("Failed to store transcript", error, { videoId });
+                }
+
+                // 2. Generate embeddings for chat
+                try {
+                    const embeddingService = new SupabaseEmbeddingService();
+                    const windowRepo = new DrizzleTranscriptWindowRepository();
+                    const windowGenerator = new TranscriptWindowGeneratorService(embeddingService, windowRepo);
+
+                    await windowGenerator.generate(videoId, segments);
+                    logger.extension.info("Transcript windows generated successfully", { videoId });
+                } catch (error) {
+                    logger.extension.error("Failed to generate transcript windows", error, { videoId });
+                }
+
+                // 3. Update streak
+                try {
+                    await new UpdateStreakUseCase(new DrizzleStreakRepository()).execute(user.id);
+                } catch (error) {
+                    logger.streak.error("Failed to update streak", error, { userId: user.id });
+                }
+            });
         }
 
         return jsendSuccess({
