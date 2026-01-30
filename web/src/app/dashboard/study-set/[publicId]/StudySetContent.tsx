@@ -413,7 +413,6 @@ export function StudySetContent({
                 isOpen={isPracticeModalOpen}
                 onClose={() => setIsPracticeModalOpen(false)}
                 studySetPublicId={studySetPublicId}
-                totalItems={terms.length}
             />
         </div>
     );

@@ -28,14 +28,12 @@ interface PracticeModalProps {
     isOpen: boolean;
     onClose: () => void;
     studySetPublicId: string;
-    totalItems: number;
 }
 
 export function PracticeModal({
     isOpen,
     onClose,
     studySetPublicId,
-    totalItems,
 }: PracticeModalProps) {
     const [phase, setPhase] = useState<Phase>("grouping");
     const [concepts, setConcepts] = useState<ConceptGroup[]>([]);
@@ -73,7 +71,7 @@ export function PracticeModal({
             setError(null);
             setInputMessage("");
         }
-    }, [isOpen]);
+    }, [isOpen, studySetPublicId]);
 
     async function fetchConcepts() {
         try {
@@ -107,9 +105,7 @@ export function PracticeModal({
         setInputMessage("");
 
         // Auto-send hidden init prompt to trigger AI to start the conversation
-        setTimeout(() => {
-            chat.sendMessage(INIT_PROMPT);
-        }, 100);
+        chat.sendMessage(INIT_PROMPT);
     }
 
     async function handleEndSession() {
