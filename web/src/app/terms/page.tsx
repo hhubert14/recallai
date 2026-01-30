@@ -2,9 +2,9 @@ import { Metadata } from "next";
 import { FileText, Mail, Clock } from "lucide-react";
 
 export const metadata: Metadata = {
-    title: "Terms of Service - RecallAI",
+    title: "Terms of Service - Retenio",
     description:
-        "Terms of Service for RecallAI Chrome Extension and Web Application",
+        "Terms of Service for Retenio Chrome Extension and Web Application",
 };
 
 function SectionCard({
@@ -48,7 +48,7 @@ export default function TermsOfServicePage() {
                             Terms of Service
                         </h1>
                         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                            Please read these terms carefully before using RecallAI
+                            Please read these terms carefully before using Retenio
                         </p>
                         <div className="mt-6 inline-flex items-center px-4 py-2 bg-primary/10 rounded-full">
                             <Clock className="w-4 h-4 text-primary mr-2" />
@@ -65,7 +65,7 @@ export default function TermsOfServicePage() {
                 <div className="space-y-6">
                     <SectionCard number={1} title="Acceptance of Terms" delay={50}>
                         <p>
-                            By accessing or using RecallAI (&quot;the Service&quot;), you
+                            By accessing or using Retenio (&quot;the Service&quot;), you
                             agree to be bound by these Terms of Service (&quot;Terms&quot;).
                             If you do not agree to these Terms, please do not use the
                             Service.
@@ -74,7 +74,7 @@ export default function TermsOfServicePage() {
 
                     <SectionCard number={2} title="Description of Service" delay={100}>
                         <p>
-                            RecallAI is a Chrome extension and web application that
+                            Retenio is a Chrome extension and web application that
                             helps users learn from YouTube videos by generating
                             summaries and interactive quizzes using artificial
                             intelligence.
@@ -105,7 +105,7 @@ export default function TermsOfServicePage() {
                     <SectionCard number={5} title="Intellectual Property" delay={250}>
                         <p>
                             The Service and its original content, features, and
-                            functionality are owned by RecallAI and are protected by
+                            functionality are owned by Retenio and are protected by
                             international copyright, trademark, patent, trade secret,
                             and other intellectual property laws.
                         </p>

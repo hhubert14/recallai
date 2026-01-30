@@ -14,17 +14,19 @@ export default defineConfig({
     plugins: [tailwindcss()],
   }),
   manifest: {
-    name: 'RecallAI',
+    name: 'Retenio',
     version: '1.2.2',
     description: 'Transform educational YouTube videos into summaries and Q&As for better learning.',
     permissions: ['storage', 'tabs', 'sidePanel'],
     host_permissions: [
-      'https://www.recallai.io/*',
+      'https://www.retenio.ai/*',
+      'https://www.recallai.io/*', // Remove when RecallAI support is dropped
       'http://localhost:3000/*',
     ],
     externally_connectable: {
       matches: [
-        'https://www.recallai.io/*',
+        'https://www.retenio.ai/*',
+        'https://www.recallai.io/*', // Remove when RecallAI support is dropped
         'http://localhost:3000/*',
       ],
     },

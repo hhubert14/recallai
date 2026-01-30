@@ -14,7 +14,7 @@ export type SurveyQuestionConfig = {
 export const SURVEY_QUESTIONS: SurveyQuestionConfig[] = [
     {
         id: "primaryGoal",
-        question: "What's your primary goal with RecallAI?",
+        question: "What's your primary goal with Retenio?",
         options: [
             { value: "exam_prep", label: "Prepare for exams or certifications" },
             { value: "retention", label: "Retain information from videos better" },
@@ -44,7 +44,7 @@ export const SURVEY_QUESTIONS: SurveyQuestionConfig[] = [
     },
     {
         id: "referralSource",
-        question: "How did you discover RecallAI?",
+        question: "How did you discover Retenio?",
         options: [
             { value: "friend", label: "Friend or colleague recommendation" },
             { value: "social_media", label: "Social media (Reddit, Twitter, etc.)" },
@@ -56,7 +56,7 @@ export const SURVEY_QUESTIONS: SurveyQuestionConfig[] = [
     },
     {
         id: "topics",
-        question: "What subjects or topics do you most want to learn with RecallAI?",
+        question: "What subjects or topics do you most want to learn with Retenio?",
         options: [
             { value: "stem", label: "STEM (Science, Technology, Engineering, Math)" },
             { value: "languages", label: "Language learning" },

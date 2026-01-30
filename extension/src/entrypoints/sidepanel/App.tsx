@@ -64,7 +64,7 @@ function Header({
         <div className="flex items-center gap-2 min-w-0 flex-1">
           <img
             src="/icons/icon48.png"
-            alt="RecallAI Logo"
+            alt="Retenio Logo"
             className="w-6 h-6 shrink-0"
           />
           {title ? (
@@ -75,7 +75,7 @@ function Header({
               {title}
             </h1>
           ) : (
-            <h1 className="text-base font-semibold">RecallAI</h1>
+            <h1 className="text-base font-semibold">Retenio</h1>
           )}
         </div>
         <ThemeToggle theme={theme} onThemeChange={onThemeChange} />

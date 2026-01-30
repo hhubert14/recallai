@@ -48,7 +48,7 @@ export function DashboardHeader() {
       <div className="container flex h-16 items-center justify-between px-6 md:px-8">
         <Link href="/dashboard" className="flex items-center gap-2 group">
           <Brain className="h-6 w-6 text-foreground transition-transform duration-300 group-hover:scale-110" />
-          <span className="text-xl font-bold">RecallAI</span>
+          <span className="text-xl font-bold">Retenio</span>
         </Link>
         <nav className="hidden md:flex gap-6">
           {navLinks.map((link) => (

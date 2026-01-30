@@ -1,14 +1,14 @@
 <div align="center">
 
-# RecallAI
+# Retenio
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-recallai.io-36BCF7?style=for-the-badge&logo=vercel&logoColor=white)](https://recallai.io)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-retenio.ai-36BCF7?style=for-the-badge&logo=vercel&logoColor=white)](https://retenio.ai)
 [![TypeScript](https://img.shields.io/badge/TypeScript-100%25-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
 **An AI-powered learning platform that transforms passive YouTube watching into active learning through intelligent summaries, auto-generated quizzes, and scientifically-proven spaced repetition.**
 
-[Live Demo](https://recallai.io) | [Tech Stack](#tech-stack) | [Features](#features) | [Architecture](#architecture)
+[Live Demo](https://retenio.ai) | [Tech Stack](#tech-stack) | [Features](#features) | [Architecture](#architecture)
 
 </div>
 

@@ -4,7 +4,7 @@ This file provides guidance to Gemini CLI when working with code in this reposit
 
 ## Project Overview
 
-RecallAI is an AI-powered video learning platform that transforms video watching into active learning through intelligent summaries and spaced repetition quizzes. The platform consists of two main components:
+Retenio is an AI-powered video learning platform that transforms video watching into active learning through intelligent summaries and spaced repetition quizzes. The platform consists of two main components:
 
 1. **Chrome Extension** - Captures YouTube videos and communicates with the backend API
 2. **Web Application** - Backend API and user dashboard
@@ -213,7 +213,7 @@ The Chrome extension is built with WXT (https://wxt.dev), a modern framework for
 
 The extension uses **session-based authentication** (cookies) instead of tokens:
 
-1. User signs into RecallAI web app (session cookie set)
+1. User signs into Retenio web app (session cookie set)
 2. Extension checks auth status via `checkAuthStatus()` (cookie sent automatically)
 3. When user watches YouTube video, extension:
    - Sends video URL to backend with session cookie
@@ -231,7 +231,7 @@ The extension uses **session-based authentication** (cookies) instead of tokens:
 ```typescript
 export const BASE_URL = import.meta.env.DEV
   ? 'http://localhost:3000'
-  : 'https://www.recallai.io'
+  : 'https://www.retenio.ai'
 ```
 
 **WXT Config (`wxt.config.ts`):**
@@ -245,7 +245,7 @@ export const BASE_URL = import.meta.env.DEV
 - **Manifest V3** - Configured via `wxt.config.ts` (not a separate manifest.json)
 - **React + Tailwind** - Popup UI uses React components with Tailwind styling
 - **Path aliases** - Use `@/` prefix for imports (e.g., `@/services/api`)
-- **Externally connectable** - `https://www.recallai.io/*` and `http://localhost:3000/*`
+- **Externally connectable** - `https://www.retenio.ai/*` and `http://localhost:3000/*`
 - **Permissions** - `storage`, `tabs`, and host permissions for API domains
 
 ## Critical Business Logic
@@ -324,7 +324,7 @@ npm run compile      # TypeScript type checking (no emit)
 
 **Testing Extension:**
 11. Start extension in dev mode (`npm run dev`)
-12. Sign into RecallAI web app at `http://localhost:3000` (or production)
+12. Sign into Retenio web app at `http://localhost:3000` (or production)
 13. Click extension icon to verify authenticated state
 14. Navigate to any YouTube video
 15. Check background service worker console for processing logs
@@ -1201,7 +1201,7 @@ See `docs/drizzle-migration-guide.md` for complete migration patterns.
 4. **Remember Manifest V3 restrictions** - Service workers have limitations vs background pages
 5. **Use path aliases** - Import with `@/` prefix (e.g., `@/services/api`)
 6. **Check `externally_connectable` matches** - Only whitelisted domains can message extension
-7. **Test both environments** - Dev uses localhost:3000, production uses recallai.io
+7. **Test both environments** - Dev uses localhost:3000, production uses retenio.ai
 
 ## Maintaining the Updates Page
 

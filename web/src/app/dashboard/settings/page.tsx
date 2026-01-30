@@ -8,7 +8,7 @@ import { DrizzleVideoRepository } from "@/clean-architecture/infrastructure/repo
 import { DashboardHeader } from "@/components/DashboardHeader";
 
 export const metadata: Metadata = {
-    title: "Settings | RecallAI",
+    title: "Settings | Retenio",
     description: "Manage your account settings and preferences",
 };
 
@@ -93,7 +93,7 @@ export default async function SettingsPage() {
                         </div>
                         <div className="space-y-4">
                             <p className="text-muted-foreground">
-                                Install the RecallAI Chrome extension to automatically process educational YouTube videos. Once installed, simply sign in to RecallAI in your browser, and the extension will automatically connect.
+                                Install the Retenio Chrome extension to automatically process educational YouTube videos. Once installed, simply sign in to Retenio in your browser, and the extension will automatically connect.
                             </p>
                             <a
                                 href="https://chrome.google.com/webstore"
@@ -105,7 +105,7 @@ export default async function SettingsPage() {
                                 Install Chrome Extension
                             </a>
                             <p className="text-sm text-muted-foreground">
-                                After installing, sign in to RecallAI and the extension will automatically work with your account. No manual token configuration needed!
+                                After installing, sign in to Retenio and the extension will automatically work with your account. No manual token configuration needed!
                             </p>
                         </div>
                     </div>

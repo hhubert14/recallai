@@ -8,7 +8,7 @@ import { ReviewInterface } from "@/app/dashboard/review/ReviewInterface";
 import { DashboardHeader } from "@/components/DashboardHeader";
 
 export const metadata: Metadata = {
-  title: "Review | RecallAI",
+  title: "Review | Retenio",
   description: "Review your questions and flashcards with spaced repetition",
 };
 

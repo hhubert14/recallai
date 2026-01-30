@@ -6,9 +6,9 @@ import { updates } from "./updates-data";
 import { UpdateCard } from "./UpdateCard";
 
 export const metadata: Metadata = {
-  title: "What's New - RecallAI",
+  title: "What's New - Retenio",
   description:
-    "See the latest features, improvements, and updates to RecallAI.",
+    "See the latest features, improvements, and updates to Retenio.",
 };
 
 export default function UpdatesPage() {
@@ -29,7 +29,7 @@ export default function UpdatesPage() {
               </h1>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                 Stay up to date with the latest features, improvements, and
-                fixes to RecallAI.
+                fixes to Retenio.
               </p>
             </div>
           </div>

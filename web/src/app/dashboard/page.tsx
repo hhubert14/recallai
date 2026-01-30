@@ -19,8 +19,8 @@ import { RecentStudySetsCard } from "./RecentStudySetsCard";
 import { DashboardTour } from "./DashboardTour";
 
 export const metadata: Metadata = {
-  title: "Dashboard | RecallAI",
-  description: "Your RecallAI dashboard",
+  title: "Dashboard | Retenio",
+  description: "Your Retenio dashboard",
 };
 
 export default async function DashboardPage() {
