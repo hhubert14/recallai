@@ -15,7 +15,7 @@ export default defineConfig({
   }),
   manifest: {
     name: 'Retenio',
-    version: '1.2.2',
+    version: '1.2.3',
     description: 'Transform educational YouTube videos into summaries and Q&As for better learning.',
     permissions: ['storage', 'tabs', 'sidePanel'],
     host_permissions: [
