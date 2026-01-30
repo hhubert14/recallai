@@ -4,6 +4,17 @@ import { DashboardHeader } from "./DashboardHeader";
 import { useAuth } from "@/lib/auth-provider";
 import { usePathname } from "next/navigation";
 
+// Mock Supabase client creation before auth-provider is imported
+vi.mock("@/lib/supabase/client", () => ({
+  createClient: vi.fn(() => ({
+    auth: {
+      getUser: vi.fn(),
+      signIn: vi.fn(),
+      signOut: vi.fn(),
+    },
+  })),
+}));
+
 vi.mock("@/lib/auth-provider");
 vi.mock("next/navigation", () => ({
   usePathname: vi.fn(),
