@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CharacterCount } from "@/components/ui/character-count";
+import { AIContent } from "@/components/ui/ai-content";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -149,10 +150,10 @@ export function TermCard({
                 <article className="flex border border-border rounded-lg bg-card overflow-hidden">
                     <MasteryIndicator status={term.masteryStatus} />
                     <div className="flex-1 min-w-0 p-4 border-r border-border">
-                        <p className="text-sm text-foreground break-words">{term.flashcard.front}</p>
+                        <AIContent content={term.flashcard.front} className="text-sm text-foreground break-words" />
                     </div>
                     <div className="flex-1 min-w-0 p-4 flex items-start justify-between gap-2">
-                        <p className="text-sm text-foreground break-words min-w-0">{term.flashcard.back}</p>
+                        <AIContent content={term.flashcard.back} className="text-sm text-foreground break-words min-w-0" />
                         <div className="flex gap-1 shrink-0">
                             {onEditFlashcard && (
                                 <Button
@@ -294,7 +295,7 @@ export function TermCard({
                 <article className="flex border border-border rounded-lg bg-card overflow-hidden">
                     <MasteryIndicator status={term.masteryStatus} />
                     <div className="flex-1 min-w-0 p-4 border-r border-border">
-                        <p className="text-sm text-foreground break-words">{term.question.questionText}</p>
+                        <AIContent content={term.question.questionText} className="text-sm text-foreground break-words" />
                     </div>
                     <div className="flex-1 min-w-0 p-4 flex items-start justify-between gap-2">
                         <ul className="space-y-1 min-w-0">

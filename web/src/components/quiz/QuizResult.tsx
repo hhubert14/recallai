@@ -2,6 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { CheckCircle2, XCircle, Video } from "lucide-react";
+import { AIContent } from "@/components/ui/ai-content";
 
 interface QuizResultProps {
   isCorrect: boolean;
@@ -53,9 +54,10 @@ export function QuizResult({
 
       {/* Explanation */}
       {explanation && (
-        <p className="text-sm text-muted-foreground leading-relaxed mb-3">
-          {explanation}
-        </p>
+        <AIContent
+          content={explanation}
+          className="text-sm text-muted-foreground leading-relaxed mb-3"
+        />
       )}
 
       {/* Video source link */}

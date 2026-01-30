@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { AIContent } from "@/components/ui/ai-content";
 import { QuizProgress, QuizResult, QuizSummary } from "@/components/quiz";
 
 type Flashcard = {
@@ -128,9 +129,10 @@ export function FlashcardInterface({ flashcards }: FlashcardInterfaceProps) {
                 }`}
             >
                 <div className="text-center">
-                    <p className="text-lg text-foreground leading-relaxed">
-                        {isFlipped ? currentFlashcard.back : currentFlashcard.front}
-                    </p>
+                    <AIContent
+                        content={isFlipped ? currentFlashcard.back : currentFlashcard.front}
+                        className="text-lg text-foreground leading-relaxed"
+                    />
                     <p className="text-sm text-muted-foreground/70 mt-4">
                         {isFlipped ? "(Click to see question)" : "(Click to reveal answer)"}
                     </p>
