@@ -16,9 +16,7 @@ export class DrizzleQuestionRepository implements IQuestionRepository {
             optionText: string;
             isCorrect: boolean;
             explanation: string | null;
-        }[],
-        sourceQuote: string | null,
-        sourceTimestamp: number | null
+        }[]
     ): Promise<MultipleChoiceQuestionEntity> {
         // Create the question first
         const [questionData] = await dbRetry(() =>
@@ -28,8 +26,6 @@ export class DrizzleQuestionRepository implements IQuestionRepository {
                     videoId,
                     questionText,
                     questionType: "multiple_choice",
-                    sourceQuote,
-                    sourceTimestamp,
                 })
                 .returning()
         );
@@ -231,9 +227,7 @@ export class DrizzleQuestionRepository implements IQuestionRepository {
             questionData.id,
             questionData.videoId,
             questionData.questionText,
-            options,
-            questionData.sourceQuote,
-            questionData.sourceTimestamp
+            options
         );
     }
 }

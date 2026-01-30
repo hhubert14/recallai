@@ -65,8 +65,6 @@ interface QuestionResponse {
     videoId: number | null;
     questionText: string;
     options: { id: number; optionText: string; isCorrect: boolean; explanation: string | null }[];
-    sourceQuote: string | null;
-    sourceTimestamp: number | null;
 }
 
 interface AIGenerateModalProps {

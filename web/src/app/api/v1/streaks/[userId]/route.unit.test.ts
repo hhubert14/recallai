@@ -50,7 +50,7 @@ describe("GET /api/v1/streaks/[userId]", () => {
   it("returns 401 if no user returned", async () => {
     vi.mocked(getAuthenticatedUser).mockResolvedValue({
       user: null,
-      error: null,
+      error: "Unauthorized",
     });
 
     const request = createMockRequest("http://localhost/api/v1/streaks/user-123");

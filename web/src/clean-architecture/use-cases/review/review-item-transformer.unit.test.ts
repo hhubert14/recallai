@@ -31,9 +31,7 @@ describe("toReviewItemApiResponse", () => {
         new MultipleChoiceOption(2, "A framework", false, null),
         new MultipleChoiceOption(3, "A library", false, null),
         new MultipleChoiceOption(4, "A tool", false, null),
-      ],
-      "TypeScript is a typed superset",
-      120
+      ]
     );
 
     const mockReviewableItem = new ReviewableItemEntity(

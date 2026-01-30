@@ -353,8 +353,6 @@ describe("AddItemModal", () => {
                                     { id: 3, optionText: "Option C", isCorrect: false, explanation: null },
                                     { id: 4, optionText: "Option D", isCorrect: false, explanation: null },
                                 ],
-                                sourceQuote: null,
-                                sourceTimestamp: null,
                             },
                         },
                     }),

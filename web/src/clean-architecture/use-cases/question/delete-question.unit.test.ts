@@ -53,9 +53,7 @@ describe("DeleteQuestionUseCase", () => {
                 new MultipleChoiceOption(2, "Option B", false, null),
                 new MultipleChoiceOption(3, "Option C", false, null),
                 new MultipleChoiceOption(4, "Option D", false, null),
-            ],
-            null,
-            null
+            ]
         );
     };
 

@@ -896,8 +896,6 @@ describe("AIGenerateModal", () => {
                                     { id: 3, optionText: "Option C", isCorrect: false, explanation: "Wrong" },
                                     { id: 4, optionText: "Option D", isCorrect: false, explanation: "Wrong" },
                                 ],
-                                sourceQuote: null,
-                                sourceTimestamp: null,
                             },
                         },
                     }),

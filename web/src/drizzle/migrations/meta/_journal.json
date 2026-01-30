@@ -169,6 +169,13 @@
       "when": 1769734843307,
       "tag": "0023_graceful_scarecrow",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1769789681325,
+      "tag": "0024_wonderful_zeigeist",
+      "breakpoints": true
     }
   ]
 }

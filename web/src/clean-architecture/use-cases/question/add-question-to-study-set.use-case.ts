@@ -77,9 +77,7 @@ export class AddQuestionToStudySetUseCase {
         const question = await this.questionRepository.createMultipleChoiceQuestion(
             studySet.videoId,
             questionText,
-            options,
-            null, // sourceQuote - not applicable for manually added questions
-            null  // sourceTimestamp - not applicable for manually added questions
+            options
         );
 
         // Create reviewable item for spaced repetition tracking

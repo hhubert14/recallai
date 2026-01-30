@@ -35,6 +35,14 @@ export function formatUpdateDate(
 // Add new entries at the TOP of this array (newest first)
 export const updates: UpdateEntry[] = [
   {
+    id: "2026-01-30-video-processing-optimization",
+    date: "2026-01-30",
+    title: "Faster Video Processing",
+    description:
+      "Video processing is now 2-10 seconds faster. Summaries and questions appear immediately while background tasks complete asynchronously.",
+    category: "Improvement",
+  },
+  {
     id: "2026-01-30-streaks",
     date: "2026-01-30",
     title: "Learning Streaks",

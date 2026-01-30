@@ -33,8 +33,6 @@ export function createMockQuestion(overrides: Partial<Question> = {}): Question 
       createMockQuestionOption({ optionText: 'Option C' }),
       createMockQuestionOption({ optionText: 'Option D' }),
     ],
-    sourceQuote: null,
-    sourceTimestamp: null,
     ...overrides,
   };
 }

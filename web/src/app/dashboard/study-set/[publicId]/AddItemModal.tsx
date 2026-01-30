@@ -39,8 +39,6 @@ interface QuestionData {
     videoId: number | null;
     questionText: string;
     options: QuestionOption[];
-    sourceQuote: string | null;
-    sourceTimestamp: number | null;
 }
 
 interface AddItemModalProps {

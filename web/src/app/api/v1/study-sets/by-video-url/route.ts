@@ -82,8 +82,6 @@ export async function GET(request: NextRequest) {
           isCorrect: o.isCorrect,
           explanation: o.explanation,
         })),
-        sourceQuote: q.sourceQuote,
-        sourceTimestamp: q.sourceTimestamp,
       })),
       flashcards: result.flashcards.map((f) => ({
         id: f.id,

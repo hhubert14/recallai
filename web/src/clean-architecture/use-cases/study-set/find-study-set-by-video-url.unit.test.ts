@@ -58,13 +58,13 @@ describe("FindStudySetByVideoUrlUseCase", () => {
       new MultipleChoiceOption(2, "Option B", false, null),
       new MultipleChoiceOption(3, "Option C", false, null),
       new MultipleChoiceOption(4, "Option D", false, null),
-    ], "Source quote", 120),
+    ]),
     new MultipleChoiceQuestionEntity(2, 1, "What was discussed?", [
       new MultipleChoiceOption(5, "Choice A", false, null),
       new MultipleChoiceOption(6, "Choice B", true, "Correct!"),
       new MultipleChoiceOption(7, "Choice C", false, null),
       new MultipleChoiceOption(8, "Choice D", false, null),
-    ], null, null),
+    ]),
   ];
 
   const flashcards = [

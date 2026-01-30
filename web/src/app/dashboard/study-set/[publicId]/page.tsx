@@ -131,7 +131,6 @@ export default async function StudySetDetailPage({
                         isCorrect: opt.isCorrect,
                         explanation: opt.explanation,
                     })),
-                    sourceTimestamp: q.sourceTimestamp,
                 },
                 masteryStatus: masteryMap.get(`question-${q.id}`) ?? "not_started" as const,
             };

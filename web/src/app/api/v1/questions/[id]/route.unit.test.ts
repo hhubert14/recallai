@@ -143,9 +143,7 @@ describe("PATCH /api/v1/questions/[id]", () => {
             100,
             null,
             "Updated question?",
-            updatedOptions,
-            null,
-            null
+            updatedOptions
         );
 
         const mockExecute = vi.fn().mockResolvedValue(mockQuestion);
@@ -178,8 +176,6 @@ describe("PATCH /api/v1/questions/[id]", () => {
                 { id: 3, optionText: "Updated C", isCorrect: false, explanation: null },
                 { id: 4, optionText: "Updated D", isCorrect: false, explanation: null },
             ],
-            sourceQuote: null,
-            sourceTimestamp: null,
         });
 
         expect(mockExecute).toHaveBeenCalledWith({
