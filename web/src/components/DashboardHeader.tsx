@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Brain } from "lucide-react";
+import Image from "next/image";
 import { UserButton } from "@/components/ui/user-button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { HelpButton } from "@/components/ui/help-button";
@@ -47,7 +47,13 @@ export function DashboardHeader() {
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between px-6 md:px-8">
         <Link href="/dashboard" className="flex items-center gap-2 group">
-          <Brain className="h-6 w-6 text-foreground transition-transform duration-300 group-hover:scale-110" />
+          <Image
+            src="/logo.png"
+            alt="Retenio"
+            width={40}
+            height={40}
+            className="transition-transform duration-300 group-hover:scale-110"
+          />
           <span className="text-xl font-bold">Retenio</span>
         </Link>
         <nav className="hidden md:flex gap-6">

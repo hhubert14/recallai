@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { UserButton } from "@/components/ui/user-button";
-import { Brain } from "lucide-react";
+import Image from "next/image";
 import { useAuth } from "@/lib/auth-provider";
 
 export function Header() {
@@ -15,7 +15,13 @@ export function Header() {
       <div className="container flex h-16 items-center justify-between px-4 md:px-6">
         {/* Logo */}
         <Link href={user ? "/dashboard" : "/"} className="flex items-center gap-2 group">
-          <Brain className="h-6 w-6 text-foreground transition-transform group-hover:scale-110" />
+          <Image
+            src="/logo.png"
+            alt="Retenio"
+            width={40}
+            height={40}
+            className="transition-transform group-hover:scale-110"
+          />
           <span className="text-xl font-bold tracking-tight">Retenio</span>
         </Link>
 
