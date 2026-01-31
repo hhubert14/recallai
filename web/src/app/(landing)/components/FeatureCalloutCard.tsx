@@ -2,12 +2,15 @@
 
 import { ReactNode } from "react";
 import { useInView } from "@/hooks/useInView";
+import { cn } from "@/lib/utils";
 
 interface FeatureCalloutCardProps {
   title: string;
   description: string;
   illustration?: ReactNode;
   delay?: number;
+  variant?: "default" | "large";
+  className?: string;
 }
 
 export function FeatureCalloutCard({
@@ -15,28 +18,51 @@ export function FeatureCalloutCard({
   description,
   illustration,
   delay = 0,
+  variant = "default",
+  className,
 }: FeatureCalloutCardProps) {
   const { ref, isInView } = useInView<HTMLDivElement>({ threshold: 0.2 });
+
+  const isLarge = variant === "large";
 
   return (
     <div
       ref={ref}
-      className={`relative col-span-1 md:col-span-2 p-8 rounded-2xl border border-border bg-muted/30 dark:bg-white/[0.02] overflow-hidden opacity-0 ${
-        isInView ? "animate-fade-up" : ""
-      }`}
+      className={cn(
+        "relative p-8 rounded-2xl border border-border bg-muted/30 dark:bg-white/[0.02] overflow-hidden opacity-0",
+        isLarge && "flex flex-col",
+        isInView && "animate-fade-up",
+        className
+      )}
       style={{ animationDelay: `${delay}ms`, animationFillMode: "forwards" }}
     >
       {/* Background illustration */}
       {illustration && (
-        <div className="absolute right-0 top-0 w-1/2 h-full opacity-50 dark:opacity-30 pointer-events-none">
+        <div
+          className={cn(
+            "absolute opacity-50 dark:opacity-30 pointer-events-none",
+            isLarge
+              ? "right-0 bottom-0 w-3/4 h-2/3"
+              : "right-0 top-0 w-1/2 h-full"
+          )}
+        >
           {illustration}
         </div>
       )}
 
       {/* Content */}
-      <div className="relative z-10 max-w-md">
-        <h3 className="text-xl md:text-2xl font-bold mb-3">{title}</h3>
-        <p className="text-muted-foreground">{description}</p>
+      <div className={cn("relative z-10", isLarge ? "max-w-sm" : "max-w-md")}>
+        <h3
+          className={cn(
+            "font-bold mb-3",
+            isLarge ? "text-2xl md:text-3xl" : "text-xl md:text-2xl"
+          )}
+        >
+          {title}
+        </h3>
+        <p className={cn("text-muted-foreground", isLarge && "text-lg")}>
+          {description}
+        </p>
       </div>
     </div>
   );

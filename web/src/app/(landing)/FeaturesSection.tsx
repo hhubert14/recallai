@@ -1,30 +1,37 @@
 "use client";
 
-import { Chrome, Library, FileQuestion } from "lucide-react";
+import { Youtube, Library, MessageSquare, Flame } from "lucide-react";
 import { FeatureCard } from "./components/FeatureCard";
 import { FeatureCalloutCard } from "./components/FeatureCalloutCard";
 import { LeitnerBoxesSVG } from "./illustrations/LeitnerBoxesSVG";
 import { AISummaryIllustration } from "./illustrations/AISummaryIllustration";
+import { AITutorIllustration } from "./illustrations/AITutorIllustration";
 import { useInView } from "@/hooks/useInView";
 
 const minimalFeatures = [
   {
-    title: "Chrome Extension",
+    title: "Learning Streaks",
     description:
-      "Seamlessly integrates with YouTube. Just watch videos as you normally would.",
-    icon: Chrome,
+      "Track your daily learning consistency. Build habits that stick.",
+    icon: Flame,
   },
   {
     title: "Personal Library",
     description:
-      "All your processed videos organized in one place. Never lose a learning insight.",
+      "All your study sets organized in one place. Never lose a learning insight.",
     icon: Library,
   },
   {
-    title: "Active Recall Quizzes",
+    title: "YouTube Integration",
     description:
-      "AI-generated quizzes with direct links to video timestamps. Jump back to any concept instantly.",
-    icon: FileQuestion,
+      "Paste any YouTube URL and get instant summaries, flashcards, and quiz questions. Learn from videos effortlessly.",
+    icon: Youtube,
+  },
+  {
+    title: "Video Chatbot",
+    description:
+      "Ask questions about any video and get instant AI-powered answers with timestamp references.",
+    icon: MessageSquare,
   },
 ];
 
@@ -57,32 +64,47 @@ export function FeaturesSection() {
           </h2>
         </div>
 
-        {/* Feature grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {/* Callout card: AI Summaries */}
-          <FeatureCalloutCard
-            title="AI-Powered Summaries"
-            description="Instantly get concise, well-structured summaries highlighting key concepts from any educational video. No more rewatching."
-            illustration={<AISummaryIllustration className="w-full h-full" />}
-            delay={200}
-          />
-
-          {/* Callout card: Spaced Repetition */}
-          <FeatureCalloutCard
-            title="Spaced Repetition System"
-            description="Our Leitner box system schedules reviews at optimal intervals. Studies show 200% better long-term retention."
-            illustration={<LeitnerBoxesSVG className="w-full h-full" />}
-            delay={300}
-          />
-
-          {/* Minimal feature cards */}
-          {minimalFeatures.map((feature, index) => (
-            <FeatureCard
-              key={feature.title}
-              {...feature}
-              delay={400 + index * 100}
+        {/* Feature grid - Bento layout */}
+        <div className="space-y-6">
+          {/* Bento grid: AI Tutor large on left, two stacked on right */}
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* AI Tutor - Large card spanning 2 rows */}
+            <FeatureCalloutCard
+              title="AI Tutor"
+              description="Practice explaining concepts using the Feynman Technique. Get personalized feedback on your understanding from an AI tutor."
+              illustration={<AITutorIllustration className="w-full h-full" />}
+              variant="large"
+              className="md:row-span-2"
+              delay={200}
             />
-          ))}
+
+            {/* Spaced Repetition - Top right */}
+            <FeatureCalloutCard
+              title="Spaced Repetition System"
+              description="Our Leitner box system schedules reviews at optimal intervals. Studies show 200% better long-term retention."
+              illustration={<LeitnerBoxesSVG className="w-full h-full" />}
+              delay={300}
+            />
+
+            {/* AI-Powered Generation - Bottom right */}
+            <FeatureCalloutCard
+              title="AI-Powered Generation"
+              description="Instantly generate flashcards and quiz questions from any content. Paste notes, URLs, or describe what you want to learn."
+              illustration={<AISummaryIllustration className="w-full h-full" />}
+              delay={400}
+            />
+          </div>
+
+          {/* Feature cards row */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {minimalFeatures.map((feature, index) => (
+              <FeatureCard
+                key={feature.title}
+                {...feature}
+                delay={500 + index * 100}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </section>

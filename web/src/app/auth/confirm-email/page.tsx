@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Brain } from "lucide-react";
+import Image from "next/image";
 
 export const metadata: Metadata = {
     title: "Confirm Email | Retenio",
@@ -13,8 +13,14 @@ export default function ConfirmEmailPage() {
             <div className="flex min-h-screen flex-col items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
                 <div className="w-full max-w-md space-y-8 animate-fade-up">
                     <div className="flex flex-col items-center space-y-4">
-                        <Link href="/" className="flex items-center gap-2">
-                            <Brain className="h-8 w-8 text-primary" />
+                        <Link href="/" className="flex items-center gap-2 group">
+                            <Image
+                                src="/logo.png"
+                                alt="Retenio"
+                                width={32}
+                                height={32}
+                                className="transition-transform group-hover:scale-110"
+                            />
                             <span className="text-2xl font-bold text-foreground">Retenio</span>
                         </Link>
                         <h1 className="text-3xl font-bold tracking-tight text-primary">

@@ -12,9 +12,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { WELCOME_STEPS } from "./welcome-steps";
 import {
-  Puzzle,
-  Play,
-  Brain,
+  Sparkles,
+  Chrome,
   Check,
   Loader2,
   ExternalLink,
@@ -29,9 +28,8 @@ type WelcomeModalProps = {
 };
 
 const ICONS = {
-  Puzzle,
-  Play,
-  Brain,
+  Sparkles,
+  Chrome,
 } as const;
 
 export function WelcomeModal({
@@ -95,7 +93,7 @@ export function WelcomeModal({
         <DialogHeader>
           <DialogTitle>Welcome to Retenio!</DialogTitle>
           <DialogDescription>
-            Transform video watching into active learning in 3 simple steps.
+            Let&apos;s get you set up to learn smarter.
           </DialogDescription>
         </DialogHeader>
 
@@ -122,79 +120,94 @@ export function WelcomeModal({
             <Icon className="size-8 text-blue-600 dark:text-blue-400" />
           </div>
           <h3 className="mb-2 text-lg font-semibold">{currentStepData.title}</h3>
-          <p className="text-muted-foreground mb-4">
-            {currentStepData.description}
-          </p>
 
-          {/* Extension status (only on step 1) */}
-          {currentStepData.id === "install-extension" && (
-            <div className="mt-2">
-              {isCheckingExtension ? (
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Loader2 className="size-4 animate-spin" />
-                  <span>Checking extension status...</span>
-                </div>
-              ) : isExtensionInstalled ? (
-                <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
-                  <Check className="size-5" />
-                  <span>Extension installed!</span>
-                </div>
-              ) : (
-                <div className="flex flex-col items-center gap-3">
-                  <Button asChild className="bg-blue-600 hover:bg-blue-700">
-                    <a
-                      href={currentStepData.actionUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
+          {/* Welcome step - show bullets */}
+          {currentStepData.id === "welcome" &&
+            "bullets" in currentStepData &&
+            currentStepData.bullets && (
+              <ul className="text-muted-foreground space-y-2 text-left">
+                {currentStepData.bullets.map((bullet) => (
+                  <li key={bullet} className="flex items-start gap-2">
+                    <Check className="size-5 shrink-0 text-green-600 dark:text-green-400" />
+                    <span>{bullet}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+          {/* Chrome extension step - show description + install UI */}
+          {currentStepData.id === "chrome-extension" && (
+            <>
+              <p className="text-muted-foreground mb-4">
+                {currentStepData.description}
+              </p>
+
+              <div className="mt-2">
+                {isCheckingExtension ? (
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Loader2 className="size-4 animate-spin" />
+                    <span>Checking extension status...</span>
+                  </div>
+                ) : isExtensionInstalled ? (
+                  <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
+                    <Check className="size-5" />
+                    <span>Extension installed!</span>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center gap-3">
+                    {"actionUrl" in currentStepData && (
+                      <Button asChild className="bg-blue-600 hover:bg-blue-700">
+                        <a
+                          href={currentStepData.actionUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <ExternalLink className="mr-2 size-4" />
+                          {"actionLabel" in currentStepData &&
+                            currentStepData.actionLabel}
+                        </a>
+                      </Button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={handleRecheckExtension}
+                      className="text-sm text-muted-foreground underline hover:text-foreground"
                     >
-                      <ExternalLink className="mr-2 size-4" />
-                      {currentStepData.actionLabel}
-                    </a>
-                  </Button>
-                  <button
-                    type="button"
-                    onClick={handleRecheckExtension}
-                    className="text-sm text-muted-foreground underline hover:text-foreground"
-                  >
-                    Check again
-                  </button>
-                  {showNotDetectedError && (
-                    <p className="text-sm text-red-600 dark:text-red-400">
-                      Extension not detected. Please install and try again.
-                    </p>
-                  )}
-                </div>
-              )}
-            </div>
+                      Check again
+                    </button>
+                    {showNotDetectedError && (
+                      <p className="text-sm text-red-600 dark:text-red-400">
+                        Extension not detected. Please install and try again.
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+            </>
           )}
         </div>
 
-        <DialogFooter className="mt-6 flex flex-col gap-2 sm:flex-row sm:justify-between">
-          <div className="flex gap-2">
-            {!isFirstStep && (
-              <Button variant="outline" onClick={handlePrevious}>
-                Previous
+        <DialogFooter className="mt-6 flex flex-col gap-2 sm:flex-row sm:justify-end">
+          {isFirstStep ? (
+            <Button
+              onClick={handleNext}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              Next
+            </Button>
+          ) : (
+            <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+              <Button variant="ghost" onClick={handleComplete}>
+                Skip for now
               </Button>
-            )}
-          </div>
-
-          <div className="flex gap-2">
-            {isLastStep ? (
               <Button
                 onClick={handleComplete}
                 className="bg-blue-600 hover:bg-blue-700"
               >
-                Got it
+                Get Started
               </Button>
-            ) : (
-              <Button
-                onClick={handleNext}
-                className="bg-blue-600 hover:bg-blue-700"
-              >
-                Next
-              </Button>
-            )}
-          </div>
+            </div>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -12,41 +12,40 @@ describe("WelcomeModal", () => {
     onRecheckExtension: vi.fn(),
   };
 
-  it("renders step 1 content initially", () => {
+  it("renders step 1 (welcome) content initially", () => {
     render(<WelcomeModal {...defaultProps} />);
 
-    expect(screen.getByText("Install the Chrome Extension")).toBeInTheDocument();
     expect(
-      screen.getByText("Capture YouTube videos as you watch them.")
+      screen.getByText("Your AI-Powered Study Partner")
     ).toBeInTheDocument();
-    expect(screen.getByText("Step 1 of 3")).toBeInTheDocument();
+    expect(
+      screen.getByText("Turn any content into study materials instantly")
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Practice with an AI tutor that gives feedback")
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Remember everything with spaced repetition")
+    ).toBeInTheDocument();
+    expect(screen.getByText("Step 1 of 2")).toBeInTheDocument();
   });
 
-  it("Next button advances to step 2", async () => {
+  it("Next button advances to step 2 (chrome extension)", async () => {
     const user = userEvent.setup();
     render(<WelcomeModal {...defaultProps} />);
 
     await user.click(screen.getByRole("button", { name: /next/i }));
 
-    expect(screen.getByText("Watch & Learn")).toBeInTheDocument();
-    expect(screen.getByText("Step 2 of 3")).toBeInTheDocument();
+    expect(screen.getByText("Supercharge Your Learning")).toBeInTheDocument();
+    expect(screen.getByText("Step 2 of 2")).toBeInTheDocument();
   });
 
-  it("Previous button goes back", async () => {
+  it("shows checkmark when extension is installed on step 2", async () => {
     const user = userEvent.setup();
-    render(<WelcomeModal {...defaultProps} />);
-
-    // Go to step 2
-    await user.click(screen.getByRole("button", { name: /next/i }));
-    expect(screen.getByText("Watch & Learn")).toBeInTheDocument();
-
-    // Go back to step 1
-    await user.click(screen.getByRole("button", { name: /previous/i }));
-    expect(screen.getByText("Install the Chrome Extension")).toBeInTheDocument();
-  });
-
-  it("shows checkmark when isExtensionInstalled: true", () => {
     render(<WelcomeModal {...defaultProps} isExtensionInstalled={true} />);
+
+    // Navigate to step 2
+    await user.click(screen.getByRole("button", { name: /next/i }));
 
     expect(screen.getByText("Extension installed!")).toBeInTheDocument();
     // Install button should not be present
@@ -55,8 +54,12 @@ describe("WelcomeModal", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("shows install button when isExtensionInstalled: false", () => {
+  it("shows install button when extension is not installed on step 2", async () => {
+    const user = userEvent.setup();
     render(<WelcomeModal {...defaultProps} isExtensionInstalled={false} />);
+
+    // Navigate to step 2
+    await user.click(screen.getByRole("button", { name: /next/i }));
 
     expect(
       screen.getByRole("link", { name: /install from chrome web store/i })
@@ -64,25 +67,42 @@ describe("WelcomeModal", () => {
     expect(screen.getByText(/check again/i)).toBeInTheDocument();
   });
 
-  it("shows checking state when isCheckingExtension: true", () => {
+  it("shows checking state when isCheckingExtension is true on step 2", async () => {
+    const user = userEvent.setup();
     render(<WelcomeModal {...defaultProps} isCheckingExtension={true} />);
+
+    // Navigate to step 2
+    await user.click(screen.getByRole("button", { name: /next/i }));
 
     expect(screen.getByText(/checking/i)).toBeInTheDocument();
   });
 
-  it('"Got it" button on final step calls onComplete', async () => {
+  it('"Get Started" button on step 2 calls onComplete', async () => {
     const user = userEvent.setup();
     const onComplete = vi.fn();
     render(<WelcomeModal {...defaultProps} onComplete={onComplete} />);
 
-    // Navigate to final step
-    await user.click(screen.getByRole("button", { name: /next/i })); // Step 2
-    await user.click(screen.getByRole("button", { name: /next/i })); // Step 3
+    // Navigate to step 2
+    await user.click(screen.getByRole("button", { name: /next/i }));
 
-    expect(screen.getByText("Review & Remember")).toBeInTheDocument();
+    expect(screen.getByText("Supercharge Your Learning")).toBeInTheDocument();
 
-    // Click "Got it"
-    await user.click(screen.getByRole("button", { name: /got it/i }));
+    // Click "Get Started"
+    await user.click(screen.getByRole("button", { name: /get started/i }));
+
+    expect(onComplete).toHaveBeenCalledTimes(1);
+  });
+
+  it('"Skip for now" button on step 2 calls onComplete', async () => {
+    const user = userEvent.setup();
+    const onComplete = vi.fn();
+    render(<WelcomeModal {...defaultProps} onComplete={onComplete} />);
+
+    // Navigate to step 2
+    await user.click(screen.getByRole("button", { name: /next/i }));
+
+    // Click "Skip for now"
+    await user.click(screen.getByRole("button", { name: /skip for now/i }));
 
     expect(onComplete).toHaveBeenCalledTimes(1);
   });
@@ -91,15 +111,11 @@ describe("WelcomeModal", () => {
     const user = userEvent.setup();
     render(<WelcomeModal {...defaultProps} />);
 
-    // Step 1 of 3 = 33.33%
+    // Step 1 of 2 = 50%
     const progressBar = screen.getByRole("progressbar");
-    expect(progressBar).toHaveAttribute("aria-valuenow", "33");
+    expect(progressBar).toHaveAttribute("aria-valuenow", "50");
 
-    // Step 2 of 3 = 66.67%
-    await user.click(screen.getByRole("button", { name: /next/i }));
-    expect(progressBar).toHaveAttribute("aria-valuenow", "67");
-
-    // Step 3 of 3 = 100%
+    // Step 2 of 2 = 100%
     await user.click(screen.getByRole("button", { name: /next/i }));
     expect(progressBar).toHaveAttribute("aria-valuenow", "100");
   });
@@ -116,12 +132,15 @@ describe("WelcomeModal", () => {
     expect(onComplete).toHaveBeenCalledTimes(1);
   });
 
-  it("calls onRecheckExtension when Check again is clicked", async () => {
+  it("calls onRecheckExtension when Check again is clicked on step 2", async () => {
     const user = userEvent.setup();
     const onRecheckExtension = vi.fn();
     render(
       <WelcomeModal {...defaultProps} onRecheckExtension={onRecheckExtension} />
     );
+
+    // Navigate to step 2
+    await user.click(screen.getByRole("button", { name: /next/i }));
 
     await user.click(screen.getByText(/check again/i));
 
@@ -132,7 +151,7 @@ describe("WelcomeModal", () => {
     render(<WelcomeModal {...defaultProps} open={false} />);
 
     expect(
-      screen.queryByText("Install the Chrome Extension")
+      screen.queryByText("Your AI-Powered Study Partner")
     ).not.toBeInTheDocument();
   });
 });

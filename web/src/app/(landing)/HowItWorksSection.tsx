@@ -1,29 +1,29 @@
 "use client";
 
-import { Youtube, Zap, Brain } from "lucide-react";
+import { PlusCircle, Sparkles, Brain } from "lucide-react";
 import { StepCard } from "./components/StepCard";
 import { useInView } from "@/hooks/useInView";
 
 const steps = [
   {
     step: 1,
-    title: "Watch",
+    title: "Create Your Study Set",
     description:
-      "Install the Chrome extension and watch educational YouTube videos as normal.",
-    icon: Youtube,
+      "Add a YouTube video, paste your notes, or start from scratch. AI generates flashcards and quiz questions instantly.",
+    icon: PlusCircle,
   },
   {
     step: 2,
-    title: "Learn",
+    title: "Learn with AI",
     description:
-      "AI automatically generates summaries and recall questions in the background.",
-    icon: Zap,
+      "Practice with an AI tutor that gives personalized feedback. Ask questions and get instant answers.",
+    icon: Sparkles,
   },
   {
     step: 3,
-    title: "Retain",
+    title: "Remember Everything",
     description:
-      "Review with spaced repetition to ensure knowledge stays with you long-term.",
+      "Spaced repetition schedules your reviews at the perfect time. Build streaks and track your progress.",
     icon: Brain,
   },
 ];
