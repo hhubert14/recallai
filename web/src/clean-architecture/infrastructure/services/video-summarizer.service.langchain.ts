@@ -1,6 +1,5 @@
 import "server-only";
 
-import { ChatOpenAI } from "@langchain/openai";
 import { z } from "zod";
 import { logger } from "@/lib/logger";
 import {
@@ -10,6 +9,7 @@ import {
 } from "@/clean-architecture/domain/services/video-summarizer.interface";
 import { TranscriptSegment } from "@/clean-architecture/domain/entities/transcript.entity";
 import { formatTimestamp } from "@/lib/format-timestamp";
+import { createLangChainGateway, SUMMARIZER_PRIORITY } from "@/lib/llm";
 
 const VideoSummarySchema = z.object({
     summary: z
@@ -44,22 +44,11 @@ export class LangChainVideoSummarizerService implements IVideoSummarizerService 
             return undefined;
         }
 
-        const llm = new ChatOpenAI({
-            model: "gpt-4o-mini",
-            temperature: 0,
-        });
-
-        const structuredLlm = llm.withStructuredOutput(VideoSummarySchema);
-
         const formattedTranscript = formatTranscriptWithTimestamps(
             transcript.segments
         );
 
-        try {
-            const result = await structuredLlm.invoke([
-                {
-                    role: "user",
-                    content: `Analyze the following video and provide a structured summary in markdown format.
+        const prompt = `Analyze the following video and provide a structured summary in markdown format.
 
 Title: ${title}
 
@@ -82,9 +71,15 @@ Please provide a comprehensive summary following these guidelines:
 3. **Important Details** - Specific facts, examples, or demonstrations worth noting (with timestamps)
 4. **Takeaways** - Key lessons or actionable insights from the video
 
-Be thorough but concise. Focus on the most valuable information for someone who wants to learn from this video.`,
-                },
-            ]);
+Be thorough but concise. Focus on the most valuable information for someone who wants to learn from this video.`;
+
+        try {
+            const gateway = createLangChainGateway();
+            const result = await gateway.invokeWithStructuredOutput(
+                SUMMARIZER_PRIORITY,
+                VideoSummarySchema,
+                [{ role: "user", content: prompt }]
+            );
 
             return result;
         } catch (error) {

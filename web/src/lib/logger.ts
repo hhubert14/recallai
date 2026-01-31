@@ -154,6 +154,19 @@ class Logger {
             context?: LogContext
         ) => this.error(`[PRACTICE] ${message}`, error, context),
     };
+
+    // LLM gateway logger with prefix
+    llm = {
+        info: (message: string, context?: LogContext) =>
+            this.info(`🤖 LLM: ${message}`, context),
+        warn: (message: string, context?: LogContext) =>
+            this.warn(`[LLM] ${message}`, context),
+        error: (
+            message: string,
+            error?: Error | unknown,
+            context?: LogContext
+        ) => this.error(`[LLM] ${message}`, error, context),
+    };
 }
 
 export const logger = new Logger();

@@ -1,6 +1,5 @@
 import "server-only";
 
-import { ChatOpenAI } from "@langchain/openai";
 import { z } from "zod";
 import { logger } from "@/lib/logger";
 import {
@@ -8,6 +7,7 @@ import {
   GroupConceptsInput,
   ConceptGroup,
 } from "@/clean-architecture/domain/services/concept-grouper.interface";
+import { createLangChainGateway, SUGGESTIONS_PRIORITY } from "@/lib/llm";
 
 const conceptGroupSchema = z.object({
   conceptName: z
@@ -41,13 +41,6 @@ export class LangChainConceptGrouperService implements IConceptGrouperService {
       return [];
     }
 
-    const llm = new ChatOpenAI({
-      model: "gpt-4o-mini",
-      temperature: 0.5, // Balanced creativity for grouping
-    });
-
-    const structuredLlm = llm.withStructuredOutput(conceptsOutputSchema);
-
     // Format items for AI consumption
     const itemsList = items
       .map((item) => {
@@ -78,12 +71,18 @@ GUIDELINES:
 - Use all provided item IDs in your grouping`;
 
     try {
-      const result = await structuredLlm.invoke([
-        {
-          role: "user",
-          content: systemPrompt,
-        },
-      ]);
+      // Override temperature in priority list
+      const priorityWithTemp = SUGGESTIONS_PRIORITY.map((config) => ({
+        ...config,
+        temperature: 0.5,
+      }));
+
+      const gateway = createLangChainGateway();
+      const result = await gateway.invokeWithStructuredOutput(
+        priorityWithTemp,
+        conceptsOutputSchema,
+        [{ role: "user", content: systemPrompt }]
+      );
 
       logger.practice.info("Concepts grouped successfully", {
         conceptCount: result?.concepts?.length || 0,

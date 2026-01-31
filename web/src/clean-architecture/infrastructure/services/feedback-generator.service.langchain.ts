@@ -1,11 +1,11 @@
 import "server-only";
 
-import { ChatOpenAI } from "@langchain/openai";
 import { logger } from "@/lib/logger";
 import {
   IFeedbackGeneratorService,
   GenerateFeedbackInput,
 } from "@/clean-architecture/domain/services/feedback-generator.interface";
+import { createLangChainGateway, SUGGESTIONS_PRIORITY } from "@/lib/llm";
 
 export class LangChainFeedbackGeneratorService
   implements IFeedbackGeneratorService
@@ -17,11 +17,6 @@ export class LangChainFeedbackGeneratorService
       logger.practice.warn("No conversation history provided for feedback");
       return "Great practice session! Keep explaining concepts to deepen your understanding.";
     }
-
-    const llm = new ChatOpenAI({
-      model: "gpt-4o-mini",
-      temperature: 0.7, // Higher temperature for helpful, encouraging tone
-    });
 
     // Format conversation for AI
     const conversationText = conversationHistory
@@ -41,20 +36,17 @@ Provide 2-3 sentences of constructive, encouraging feedback on their explanation
 Keep it positive, specific, and actionable. Avoid generic praise.`;
 
     try {
-      const response = await llm.invoke([
-        {
-          role: "user",
-          content: systemPrompt,
-        },
-      ]);
+      // Override temperature in priority list
+      const priorityWithTemp = SUGGESTIONS_PRIORITY.map((config) => ({
+        ...config,
+        temperature: 0.7,
+      }));
 
-      const feedback =
-        typeof response.content === "string"
-          ? response.content
-          : response.content
-              .filter((part): part is { type: "text"; text: string } => part.type === "text")
-              .map((part) => part.text)
-              .join("");
+      const gateway = createLangChainGateway();
+      const feedback = await gateway.invoke(
+        priorityWithTemp,
+        [{ role: "user", content: systemPrompt }]
+      );
 
       logger.practice.info("Feedback generated successfully", {
         conceptName,

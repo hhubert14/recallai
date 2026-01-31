@@ -1,6 +1,5 @@
 import "server-only";
 
-import { ChatOpenAI } from "@langchain/openai";
 import { z } from "zod";
 import { v4 as uuidv4 } from "uuid";
 import { logger } from "@/lib/logger";
@@ -11,6 +10,7 @@ import {
     Suggestion,
     SuggestionItemType,
 } from "@/clean-architecture/domain/services/suggestion-generator.interface";
+import { createLangChainGateway, SUGGESTIONS_PRIORITY } from "@/lib/llm";
 
 // Schema for flashcard suggestion
 const flashcardSchema = z.object({
@@ -87,13 +87,7 @@ export class LangChainSuggestionGeneratorService
             return undefined;
         }
 
-        const llm = new ChatOpenAI({
-            model: "gpt-4o-mini",
-            temperature: 0.7, // Slightly higher temperature for variety
-        });
-
         const schema = createSuggestionsSchema(count, itemType);
-        const structuredLlm = llm.withStructuredOutput(schema);
 
         // Build the context section based on available data
         let contextSection = "";
@@ -148,11 +142,7 @@ QUESTION FORMAT:
 - Plausible distractors that test understanding`;
         }
 
-        try {
-            const result = await structuredLlm.invoke([
-                {
-                    role: "user",
-                    content: `Generate learning items based on the following:
+        const fullPrompt = `Generate learning items based on the following:
 ${contextSection}
 USER PROMPT: ${prompt}
 
@@ -162,9 +152,21 @@ QUALITY GUIDELINES:
 - Focus on transferable knowledge that applies broadly
 - Avoid trivial or overly specific details
 - Create content that promotes genuine understanding
-- Ensure all content is factually accurate`,
-                },
-            ]);
+- Ensure all content is factually accurate`;
+
+        try {
+            // Override temperature in priority list
+            const priorityWithTemp = SUGGESTIONS_PRIORITY.map((config) => ({
+                ...config,
+                temperature: 0.7,
+            }));
+
+            const gateway = createLangChainGateway();
+            const result = await gateway.invokeWithStructuredOutput(
+                priorityWithTemp,
+                schema,
+                [{ role: "user", content: fullPrompt }]
+            );
 
             logger.video.info("Suggestions generated successfully", {
                 resultType: typeof result,
