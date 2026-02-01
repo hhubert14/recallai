@@ -6,38 +6,44 @@ import { WELCOME_STEPS, STORAGE_KEY } from "./welcome-steps";
  * This validates structure and invariants that other components rely on.
  */
 describe("welcome-steps", () => {
-  it("defines exactly 3 steps in the correct order", () => {
-    expect(WELCOME_STEPS).toHaveLength(3);
+  it("defines exactly 5 steps in the correct order", () => {
+    expect(WELCOME_STEPS).toHaveLength(5);
     expect(WELCOME_STEPS.map((s) => s.id)).toEqual([
-      "install-extension",
-      "watch-and-learn",
-      "review-and-remember",
+      "welcome",
+      "chrome-extension",
+      "pin-extension",
+      "extension-demo",
+      "create-first-study-set",
     ]);
   });
 
-  it("first step includes actionable fields for install CTA", () => {
-    const installStep = WELCOME_STEPS[0];
-    expect(installStep.id).toBe("install-extension");
-    expect(installStep.actionLabel).toBe("Install from Chrome Web Store");
-    expect(installStep.actionUrl).toMatch(
+  it("chrome extension step includes actionable fields for install CTA", () => {
+    const extensionStep = WELCOME_STEPS[1];
+    expect(extensionStep.id).toBe("chrome-extension");
+    expect(extensionStep.actionLabel).toBe("Install from Chrome Web Store");
+    expect(extensionStep.actionUrl).toMatch(
       /^https:\/\/chromewebstore\.google\.com\//
     );
   });
 
-  it("non-install steps do not include action fields", () => {
-    const nonInstallSteps = WELCOME_STEPS.slice(1);
-    for (const step of nonInstallSteps) {
+  it("non-extension steps do not include action fields", () => {
+    const nonExtensionSteps = [
+      WELCOME_STEPS[0],
+      WELCOME_STEPS[2],
+      WELCOME_STEPS[3],
+      WELCOME_STEPS[4],
+    ];
+    for (const step of nonExtensionSteps) {
       expect("actionLabel" in step).toBe(false);
       expect("actionUrl" in step).toBe(false);
     }
   });
 
-  it("all steps have required structure: id, title, description, icon", () => {
+  it("all steps have required structure: id, title, icon (or null)", () => {
     for (const step of WELCOME_STEPS) {
       expect(typeof step.id).toBe("string");
       expect(typeof step.title).toBe("string");
-      expect(typeof step.description).toBe("string");
-      expect(["Puzzle", "Play", "Brain"]).toContain(step.icon);
+      expect(["Sparkles", "Chrome", null]).toContain(step.icon);
     }
   });
 

@@ -27,7 +27,7 @@ describe("WelcomeModal", () => {
     expect(
       screen.getByText("Remember everything with spaced repetition")
     ).toBeInTheDocument();
-    expect(screen.getByText("Step 1 of 2")).toBeInTheDocument();
+    expect(screen.getByText("Step 1 of 5")).toBeInTheDocument();
   });
 
   it("Next button advances to step 2 (chrome extension)", async () => {
@@ -37,7 +37,56 @@ describe("WelcomeModal", () => {
     await user.click(screen.getByRole("button", { name: /next/i }));
 
     expect(screen.getByText("Supercharge Your Learning")).toBeInTheDocument();
-    expect(screen.getByText("Step 2 of 2")).toBeInTheDocument();
+    expect(screen.getByText("Step 2 of 5")).toBeInTheDocument();
+  });
+
+  it("does not show Back button on step 1", () => {
+    render(<WelcomeModal {...defaultProps} />);
+
+    expect(screen.queryByRole("button", { name: /back/i })).not.toBeInTheDocument();
+  });
+
+  it("shows Back button on step 2 and navigates back to step 1", async () => {
+    const user = userEvent.setup();
+    render(<WelcomeModal {...defaultProps} />);
+
+    // Navigate to step 2
+    await user.click(screen.getByRole("button", { name: /next/i }));
+    expect(screen.getByText("Step 2 of 5")).toBeInTheDocument();
+
+    // Click Back
+    await user.click(screen.getByRole("button", { name: /back/i }));
+    expect(screen.getByText("Step 1 of 5")).toBeInTheDocument();
+  });
+
+  it("shows Back button on step 3 and navigates back to step 2", async () => {
+    const user = userEvent.setup();
+    render(<WelcomeModal {...defaultProps} />);
+
+    // Navigate to step 3
+    await user.click(screen.getByRole("button", { name: /next/i }));
+    await user.click(screen.getByRole("button", { name: /next/i }));
+    expect(screen.getByText("Step 3 of 5")).toBeInTheDocument();
+
+    // Click Back
+    await user.click(screen.getByRole("button", { name: /back/i }));
+    expect(screen.getByText("Step 2 of 5")).toBeInTheDocument();
+  });
+
+  it("shows Back button on step 5 and navigates back to step 4", async () => {
+    const user = userEvent.setup();
+    render(<WelcomeModal {...defaultProps} />);
+
+    // Navigate to step 5
+    await user.click(screen.getByRole("button", { name: /next/i }));
+    await user.click(screen.getByRole("button", { name: /next/i }));
+    await user.click(screen.getByRole("button", { name: /next/i }));
+    await user.click(screen.getByRole("button", { name: /next/i }));
+    expect(screen.getByText("Step 5 of 5")).toBeInTheDocument();
+
+    // Click Back
+    await user.click(screen.getByRole("button", { name: /back/i }));
+    expect(screen.getByText("Step 4 of 5")).toBeInTheDocument();
   });
 
   it("shows checkmark when extension is installed on step 2", async () => {
@@ -77,45 +126,41 @@ describe("WelcomeModal", () => {
     expect(screen.getByText(/checking/i)).toBeInTheDocument();
   });
 
-  it('"Get Started" button on step 2 calls onComplete', async () => {
+  it("shows Next button on step 2", async () => {
     const user = userEvent.setup();
-    const onComplete = vi.fn();
-    render(<WelcomeModal {...defaultProps} onComplete={onComplete} />);
+    render(<WelcomeModal {...defaultProps} />);
 
     // Navigate to step 2
     await user.click(screen.getByRole("button", { name: /next/i }));
 
     expect(screen.getByText("Supercharge Your Learning")).toBeInTheDocument();
 
-    // Click "Get Started"
-    await user.click(screen.getByRole("button", { name: /get started/i }));
-
-    expect(onComplete).toHaveBeenCalledTimes(1);
+    // Should have Next button (not Get Started) because there are more steps
+    expect(screen.getByRole("button", { name: /^next$/i })).toBeInTheDocument();
   });
 
-  it('"Skip for now" button on step 2 calls onComplete', async () => {
-    const user = userEvent.setup();
-    const onComplete = vi.fn();
-    render(<WelcomeModal {...defaultProps} onComplete={onComplete} />);
-
-    // Navigate to step 2
-    await user.click(screen.getByRole("button", { name: /next/i }));
-
-    // Click "Skip for now"
-    await user.click(screen.getByRole("button", { name: /skip for now/i }));
-
-    expect(onComplete).toHaveBeenCalledTimes(1);
-  });
-
-  it("progress bar shows correct percentage", async () => {
+  it("progress bar shows correct percentage for 5 steps", async () => {
     const user = userEvent.setup();
     render(<WelcomeModal {...defaultProps} />);
 
-    // Step 1 of 2 = 50%
     const progressBar = screen.getByRole("progressbar");
-    expect(progressBar).toHaveAttribute("aria-valuenow", "50");
 
-    // Step 2 of 2 = 100%
+    // Step 1 of 5 = 20%
+    expect(progressBar).toHaveAttribute("aria-valuenow", "20");
+
+    // Step 2 of 5 = 40%
+    await user.click(screen.getByRole("button", { name: /next/i }));
+    expect(progressBar).toHaveAttribute("aria-valuenow", "40");
+
+    // Step 3 of 5 = 60%
+    await user.click(screen.getByRole("button", { name: /next/i }));
+    expect(progressBar).toHaveAttribute("aria-valuenow", "60");
+
+    // Step 4 of 5 = 80%
+    await user.click(screen.getByRole("button", { name: /next/i }));
+    expect(progressBar).toHaveAttribute("aria-valuenow", "80");
+
+    // Step 5 of 5 = 100%
     await user.click(screen.getByRole("button", { name: /next/i }));
     expect(progressBar).toHaveAttribute("aria-valuenow", "100");
   });
@@ -153,5 +198,106 @@ describe("WelcomeModal", () => {
     expect(
       screen.queryByText("Your AI-Powered Study Partner")
     ).not.toBeInTheDocument();
+  });
+
+  // Step 3 (Pin Extension) Tests
+  it("renders step 3 (pin extension) with video demo", async () => {
+    const user = userEvent.setup();
+    render(<WelcomeModal {...defaultProps} />);
+
+    // Navigate to step 3
+    await user.click(screen.getByRole("button", { name: /next/i }));
+    await user.click(screen.getByRole("button", { name: /next/i }));
+
+    expect(screen.getByText("Step 3 of 5")).toBeInTheDocument();
+    expect(screen.getByText("Pin the Extension")).toBeInTheDocument();
+    // Should show video demo
+    expect(screen.getByTestId("pin-extension-video")).toBeInTheDocument();
+  });
+
+  // Step 4 (Extension Demo) Tests
+  it("renders step 4 (extension demo) with video demo", async () => {
+    const user = userEvent.setup();
+    render(<WelcomeModal {...defaultProps} />);
+
+    // Navigate to step 4
+    await user.click(screen.getByRole("button", { name: /next/i }));
+    await user.click(screen.getByRole("button", { name: /next/i }));
+    await user.click(screen.getByRole("button", { name: /next/i }));
+
+    expect(screen.getByText("Step 4 of 5")).toBeInTheDocument();
+    expect(screen.getByText("See It In Action")).toBeInTheDocument();
+    // Should show video demo
+    expect(screen.getByTestId("extension-demo-video")).toBeInTheDocument();
+  });
+
+  // Step 5 (Create First Study Set) Tests
+  it("renders step 5 with CTA buttons", async () => {
+    const user = userEvent.setup();
+    render(<WelcomeModal {...defaultProps} />);
+
+    // Navigate to step 5
+    await user.click(screen.getByRole("button", { name: /next/i }));
+    await user.click(screen.getByRole("button", { name: /next/i }));
+    await user.click(screen.getByRole("button", { name: /next/i }));
+    await user.click(screen.getByRole("button", { name: /next/i }));
+
+    expect(screen.getByText("Step 5 of 5")).toBeInTheDocument();
+    expect(screen.getByText("Create Your First Study Set")).toBeInTheDocument();
+
+    // Should have two CTA buttons
+    expect(screen.getByRole("button", { name: /import from youtube/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /create manually/i })).toBeInTheDocument();
+  });
+
+  it('"Import from YouTube" button opens AddVideoModal', async () => {
+    const user = userEvent.setup();
+    render(<WelcomeModal {...defaultProps} />);
+
+    // Navigate to step 5
+    await user.click(screen.getByRole("button", { name: /next/i }));
+    await user.click(screen.getByRole("button", { name: /next/i }));
+    await user.click(screen.getByRole("button", { name: /next/i }));
+    await user.click(screen.getByRole("button", { name: /next/i }));
+
+    // Click "Import from YouTube"
+    await user.click(screen.getByRole("button", { name: /import from youtube/i }));
+
+    // AddVideoModal should be visible
+    expect(screen.getByText("Paste a YouTube URL to add a video to your library.")).toBeInTheDocument();
+  });
+
+  it('"Create Manually" button opens CreateStudySetModal', async () => {
+    const user = userEvent.setup();
+    render(<WelcomeModal {...defaultProps} />);
+
+    // Navigate to step 5
+    await user.click(screen.getByRole("button", { name: /next/i }));
+    await user.click(screen.getByRole("button", { name: /next/i }));
+    await user.click(screen.getByRole("button", { name: /next/i }));
+    await user.click(screen.getByRole("button", { name: /next/i }));
+
+    // Click "Create Manually"
+    await user.click(screen.getByRole("button", { name: /create manually/i }));
+
+    // CreateStudySetModal should be visible
+    expect(screen.getByText("Create a new study set to organize your flashcards and questions.")).toBeInTheDocument();
+  });
+
+  it('"Skip for now" button on step 5 calls onComplete', async () => {
+    const user = userEvent.setup();
+    const onComplete = vi.fn();
+    render(<WelcomeModal {...defaultProps} onComplete={onComplete} />);
+
+    // Navigate to step 5
+    await user.click(screen.getByRole("button", { name: /next/i }));
+    await user.click(screen.getByRole("button", { name: /next/i }));
+    await user.click(screen.getByRole("button", { name: /next/i }));
+    await user.click(screen.getByRole("button", { name: /next/i }));
+
+    // Click "Skip for now"
+    await user.click(screen.getByRole("button", { name: /skip for now/i }));
+
+    expect(onComplete).toHaveBeenCalledTimes(1);
   });
 });

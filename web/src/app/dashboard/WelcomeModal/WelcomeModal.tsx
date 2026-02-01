@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { WELCOME_STEPS } from "./welcome-steps";
+import { AddVideoModal } from "@/components/AddVideoModal";
+import { CreateStudySetModal } from "@/components/CreateStudySetModal";
 import {
   Sparkles,
   Chrome,
@@ -42,6 +44,8 @@ export function WelcomeModal({
   const [currentStep, setCurrentStep] = useState(0);
   const [showNotDetectedError, setShowNotDetectedError] = useState(false);
   const [recheckCount, setRecheckCount] = useState(0);
+  const [showAddVideoModal, setShowAddVideoModal] = useState(false);
+  const [showCreateStudySetModal, setShowCreateStudySetModal] = useState(false);
 
   // Show inline error when manual recheck completes and extension is still not installed
   useEffect(() => {
@@ -63,11 +67,13 @@ export function WelcomeModal({
     onRecheckExtension();
   };
 
+  // Always use all 5 steps (no conditional logic)
   const totalSteps = WELCOME_STEPS.length;
   const currentStepData = WELCOME_STEPS[currentStep];
   const progress = Math.round(((currentStep + 1) / totalSteps) * 100);
   const isLastStep = currentStep === totalSteps - 1;
   const isFirstStep = currentStep === 0;
+  const isExtensionStep = currentStepData.id === "chrome-extension";
 
   const handleNext = () => {
     if (!isLastStep) {
@@ -85,7 +91,7 @@ export function WelcomeModal({
     onComplete();
   };
 
-  const Icon = ICONS[currentStepData.icon];
+  const Icon = currentStepData.icon ? ICONS[currentStepData.icon] : null;
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleComplete()}>
@@ -115,11 +121,13 @@ export function WelcomeModal({
         </p>
 
         {/* Step content */}
-        <div className="flex flex-col items-center py-6 text-center">
-          <div className="mb-4 rounded-full bg-blue-100 p-4 dark:bg-blue-900">
-            <Icon className="size-8 text-blue-600 dark:text-blue-400" />
-          </div>
-          <h3 className="mb-2 text-lg font-semibold">{currentStepData.title}</h3>
+        <div className="flex flex-col items-center text-center">
+          {Icon && (
+            <div className="mb-4 rounded-full bg-blue-100 p-4 dark:bg-blue-900">
+              <Icon className="size-8 text-blue-600 dark:text-blue-400" />
+            </div>
+          )}
+          <h3 className="text-lg font-semibold">{currentStepData.title}</h3>
 
           {/* Welcome step - show bullets */}
           {currentStepData.id === "welcome" &&
@@ -185,31 +193,109 @@ export function WelcomeModal({
               </div>
             </>
           )}
+
+          {/* Pin extension step - show video demo */}
+          {currentStepData.id === "pin-extension" && (
+            <>
+              <p className="text-muted-foreground mb-6">
+                {currentStepData.description}
+              </p>
+              <video
+                data-testid="pin-extension-video"
+                src="/pin-extension.mp4"
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full max-w-md rounded-lg border border-border"
+              />
+            </>
+          )}
+
+          {/* Extension demo step - show video demo */}
+          {currentStepData.id === "extension-demo" && (
+            <>
+              <p className="text-muted-foreground mb-6">
+                {currentStepData.description}
+              </p>
+              <video
+                data-testid="extension-demo-video"
+                src="/extension-demo.mp4"
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full max-w-md rounded-lg border border-border"
+              />
+            </>
+          )}
+
+          {/* Create first study set step - show description */}
+          {currentStepData.id === "create-first-study-set" && (
+            <p className="text-muted-foreground">
+              {currentStepData.description}
+            </p>
+          )}
         </div>
 
-        <DialogFooter className="mt-6 flex flex-col gap-2 sm:flex-row sm:justify-end">
-          {isFirstStep ? (
+        <DialogFooter className="mt-6 flex flex-col gap-2 sm:flex-row sm:justify-between">
+          {/* Back button - shown on all steps except the first */}
+          {!isFirstStep ? (
+            <Button variant="outline" onClick={handlePrevious}>
+              Back
+            </Button>
+          ) : (
+            <div /> // Spacer to maintain layout
+          )}
+
+          {isLastStep ? (
+            <div className="flex w-full flex-col gap-2 sm:w-auto">
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <Button
+                  onClick={() => setShowAddVideoModal(true)}
+                  className="bg-blue-600 hover:bg-blue-700"
+                >
+                  Import from YouTube
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setShowCreateStudySetModal(true)}
+                >
+                  Create Manually
+                </Button>
+              </div>
+              <Button variant="ghost" onClick={handleComplete} className="text-sm">
+                Skip for now
+              </Button>
+            </div>
+          ) : (
             <Button
               onClick={handleNext}
               className="bg-blue-600 hover:bg-blue-700"
             >
               Next
             </Button>
-          ) : (
-            <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-              <Button variant="ghost" onClick={handleComplete}>
-                Skip for now
-              </Button>
-              <Button
-                onClick={handleComplete}
-                className="bg-blue-600 hover:bg-blue-700"
-              >
-                Get Started
-              </Button>
-            </div>
           )}
         </DialogFooter>
       </DialogContent>
+
+      {/* Modals for step 5 CTAs */}
+      <AddVideoModal
+        isOpen={showAddVideoModal}
+        onClose={() => setShowAddVideoModal(false)}
+        onSuccess={() => {
+          setShowAddVideoModal(false);
+          onComplete();
+        }}
+      />
+      <CreateStudySetModal
+        isOpen={showCreateStudySetModal}
+        onClose={() => setShowCreateStudySetModal(false)}
+        onSuccess={() => {
+          setShowCreateStudySetModal(false);
+          onComplete();
+        }}
+      />
     </Dialog>
   );
 }
