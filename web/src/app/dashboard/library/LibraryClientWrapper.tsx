@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo, createContext, useContext } from "react";
+import { useState, useCallback, useMemo, useEffect, createContext, useContext } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FoldersView } from "./FoldersView";
 import { CreateFolderModal } from "@/components/CreateFolderModal";
@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { ClientStudySetList, StudySetWithCounts } from "./ClientStudySetList";
 import { LibrarySearchSort, SortOption } from "./LibrarySearchSort";
+import { useStudySetList } from "@/lib/study-set-list-provider";
 
 interface FolderData {
   id: number;
@@ -43,12 +44,45 @@ interface LibraryClientWrapperProps {
 
 export function LibraryClientWrapper({
   folders: initialFolders,
-  studySets,
+  studySets: initialStudySets,
   isViewingFolder,
 }: LibraryClientWrapperProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const folderId = searchParams.get("folder");
+
+  // Real-time study set updates
+  const { studySets: realtimeStudySets, setInitialStudySets } = useStudySetList();
+
+  // Initialize realtime provider with server-rendered data on mount
+  useEffect(() => {
+    // Transform to include userId (required by provider but not in props)
+    // We use empty string as placeholder since it's only used for filtering
+    const fullStudySets = initialStudySets.map((s) => ({
+      ...s,
+      userId: "",
+      updatedAt: s.createdAt, // Use createdAt as fallback for updatedAt
+    }));
+    setInitialStudySets(fullStudySets);
+  }, [initialStudySets, setInitialStudySets]);
+
+  // Use realtime data when available, fallback to initial props
+  const studySets = useMemo(() => {
+    if (realtimeStudySets.length > 0) {
+      // Transform back to StudySetWithCounts format
+      return realtimeStudySets.map((s) => ({
+        id: s.id,
+        publicId: s.publicId,
+        name: s.name,
+        description: s.description,
+        sourceType: s.sourceType,
+        createdAt: s.createdAt,
+        questionCount: s.questionCount ?? 0,
+        flashcardCount: s.flashcardCount ?? 0,
+      }));
+    }
+    return initialStudySets;
+  }, [realtimeStudySets, initialStudySets]);
 
   const [folders, setFolders] = useState(initialFolders);
   const [isCreateFolderModalOpen, setIsCreateFolderModalOpen] = useState(false);

@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProviderWrapper } from "@/components/providers/AuthProviderWrapper";
 import { QuizCompletionProvider } from "@/components/providers/QuizCompletionProvider";
+import { StudySetListProvider } from "@/lib/study-set-list-provider";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { Analytics } from "@vercel/analytics/next";
 import { StrictMode } from "react";
@@ -36,10 +37,12 @@ export default function RootLayout({
                 <StrictMode>
                     <ThemeProvider>
                         <AuthProviderWrapper>
-                            <QuizCompletionProvider>
-                                {children}
-                                <Analytics />
-                            </QuizCompletionProvider>
+                            <StudySetListProvider>
+                                <QuizCompletionProvider>
+                                    {children}
+                                    <Analytics />
+                                </QuizCompletionProvider>
+                            </StudySetListProvider>
                         </AuthProviderWrapper>
                     </ThemeProvider>
                 </StrictMode>
