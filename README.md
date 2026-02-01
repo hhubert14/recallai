@@ -112,6 +112,18 @@ graph TB
 
 ---
 
+## Featured On
+
+<div align="center">
+
+<a href="https://saasgrow.app?ref=retenio.ai" target="_blank" rel="noopener">
+  <img src="https://saasgrow.app/api/badge?type=featured&style=dark" alt="Retenio on SaaSGrow" width="240" height="54" />
+</a>
+
+</div>
+
+---
+
 <div align="center">
 
 **Built with passion for learning**

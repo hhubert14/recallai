@@ -40,6 +40,27 @@ export function Footer() {
             <p className="text-sm text-muted-foreground max-w-[200px]">
               Transform video learning with AI-powered summaries and spaced repetition.
             </p>
+            <a
+              href="https://saasgrow.app?ref=retenio.ai"
+              target="_blank"
+              rel="noopener"
+              className="inline-block transition-opacity hover:opacity-80"
+            >
+              <img
+                src="https://saasgrow.app/api/badge?type=featured&style=dark"
+                alt="Retenio on SaaSGrow"
+                width={240}
+                height={54}
+                className="dark:block hidden"
+              />
+              <img
+                src="https://saasgrow.app/api/badge?type=featured&style=light"
+                alt="Retenio on SaaSGrow"
+                width={240}
+                height={54}
+                className="dark:hidden block"
+              />
+            </a>
           </div>
 
           {/* Product links */}

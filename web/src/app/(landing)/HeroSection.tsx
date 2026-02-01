@@ -11,7 +11,7 @@ export function HeroSection() {
   const { ref, isInView } = useInView<HTMLDivElement>({ threshold: 0.1 });
 
   return (
-    <section className="relative w-full pt-12 pb-20 md:pt-20 md:pb-32 lg:pt-28 lg:pb-40 overflow-hidden">
+    <section className="relative w-full pt-8 pb-20 md:pt-12 md:pb-32 lg:pt-16 lg:pb-40 overflow-hidden">
       {/* Subtle background gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-muted/30 to-transparent dark:from-white/[0.02] dark:to-transparent" />
 
@@ -91,6 +91,34 @@ export function HeroSection() {
                 <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
                 No credit card
               </span>
+            </div>
+
+            {/* Featured badge */}
+            <div
+              className={`opacity-0 ${isInView ? "animate-fade-up" : ""}`}
+              style={{ animationDelay: "700ms", animationFillMode: "forwards" }}
+            >
+              <a
+                href="https://saasgrow.app?ref=retenio.ai"
+                target="_blank"
+                rel="noopener"
+                className="inline-block transition-opacity hover:opacity-80"
+              >
+                <img
+                  src="https://saasgrow.app/api/badge?type=featured&style=dark"
+                  alt="Retenio on SaaSGrow"
+                  width={240}
+                  height={54}
+                  className="dark:block hidden"
+                />
+                <img
+                  src="https://saasgrow.app/api/badge?type=featured&style=light"
+                  alt="Retenio on SaaSGrow"
+                  width={240}
+                  height={54}
+                  className="dark:hidden block"
+                />
+              </a>
             </div>
           </div>
 
