@@ -50,10 +50,12 @@ describe("WelcomeModalWrapper", () => {
       expect(screen.getByText("Welcome to Retenio!")).toBeInTheDocument();
     });
 
-    // Navigate to final step and click "Got it"
+    // Navigate through all 5 steps and click "Skip for now" on step 5
     await user.click(screen.getByRole("button", { name: /next/i })); // Step 2
     await user.click(screen.getByRole("button", { name: /next/i })); // Step 3
-    await user.click(screen.getByRole("button", { name: /got it/i }));
+    await user.click(screen.getByRole("button", { name: /next/i })); // Step 4
+    await user.click(screen.getByRole("button", { name: /next/i })); // Step 5
+    await user.click(screen.getByRole("button", { name: /skip for now/i }));
 
     // Check localStorage was set
     expect(localStorage.getItem(STORAGE_KEY)).toBe("true");
