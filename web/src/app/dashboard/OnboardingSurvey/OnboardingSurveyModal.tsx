@@ -100,7 +100,13 @@ export function OnboardingSurveyModal({
     };
 
     return (
-        <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleSkip()}>
+        <Dialog
+            open={open}
+            onOpenChange={(isOpen) => {
+                if (!isOpen && isSubmitting) return;
+                if (!isOpen) handleSkip();
+            }}
+        >
             <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[500px]">
                 <DialogHeader>
                     <DialogTitle>Help us personalize your experience</DialogTitle>

@@ -124,7 +124,13 @@ export function EditFolderModal({
 
   if (showDeleteConfirm) {
     return (
-      <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <Dialog
+        open={isOpen}
+        onOpenChange={(open) => {
+          if (!open && (isLoading || isDeleting)) return;
+          if (!open) onClose();
+        }}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Delete Folder</DialogTitle>
@@ -164,7 +170,13 @@ export function EditFolderModal({
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open && (isLoading || isDeleting)) return;
+        if (!open) onClose();
+      }}
+    >
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Edit Folder</DialogTitle>

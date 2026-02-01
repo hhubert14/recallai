@@ -349,7 +349,13 @@ export function AIGenerateModal({
     // Render generation phase
     if (phase === "generate") {
         return (
-            <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+            <Dialog
+                open={isOpen}
+                onOpenChange={(open) => {
+                    if (!open && isLoading) return;
+                    if (!open) onClose();
+                }}
+            >
                 <DialogContent className="max-w-lg">
                     <DialogHeader>
                         <DialogTitle>Generate with AI</DialogTitle>
@@ -473,7 +479,13 @@ export function AIGenerateModal({
 
     // Render review phase
     return (
-        <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+        <Dialog
+            open={isOpen}
+            onOpenChange={(open) => {
+                if (!open && acceptingIds.size > 0) return;
+                if (!open) onClose();
+            }}
+        >
             <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col">
                 <DialogHeader>
                     <DialogTitle>Review Suggestions</DialogTitle>

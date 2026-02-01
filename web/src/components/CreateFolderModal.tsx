@@ -88,7 +88,13 @@ export function CreateFolderModal({
   const canSubmit = name.trim().length > 0 && !isLoading;
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open && isLoading) return;
+        if (!open) onClose();
+      }}
+    >
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Create Folder</DialogTitle>

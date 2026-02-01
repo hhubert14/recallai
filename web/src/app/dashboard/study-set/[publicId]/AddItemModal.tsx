@@ -180,7 +180,13 @@ export function AddItemModal({
     const canSubmit = activeTab === "flashcard" ? canSubmitFlashcard : canSubmitQuestion;
 
     return (
-        <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+        <Dialog
+            open={isOpen}
+            onOpenChange={(open) => {
+                if (!open && isLoading) return;
+                if (!open) onClose();
+            }}
+        >
             <DialogContent className="max-w-lg">
                 <DialogHeader>
                     <DialogTitle>Add Item</DialogTitle>

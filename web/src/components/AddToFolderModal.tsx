@@ -70,7 +70,13 @@ export function AddToFolderModal({
   const hasNoFolders = folders.length === 0;
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open && isLoading) return;
+        if (!open) onClose();
+      }}
+    >
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Add to Folder</DialogTitle>

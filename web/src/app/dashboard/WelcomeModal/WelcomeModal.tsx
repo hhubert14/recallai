@@ -93,7 +93,13 @@ export function WelcomeModal({
   const Icon = currentStepData.icon ? ICONS[currentStepData.icon] : null;
 
   return (
-    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleComplete()}>
+    <Dialog
+      open={open}
+      onOpenChange={(isOpen) => {
+        if (!isOpen && isCheckingExtension) return;
+        if (!isOpen) handleComplete();
+      }}
+    >
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Welcome to Retenio!</DialogTitle>

@@ -176,8 +176,16 @@ export function PracticeModal({
         setInputMessage("");
     }
 
+    const isAnyLoading = phase === "grouping" || chat.isSending || isLoadingFeedback;
+
     return (
-        <Dialog open={isOpen} onOpenChange={onClose}>
+        <Dialog
+            open={isOpen}
+            onOpenChange={(open) => {
+                if (!open && isAnyLoading) return;
+                if (!open) onClose();
+            }}
+        >
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
