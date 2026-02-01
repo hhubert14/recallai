@@ -6,14 +6,12 @@ import React, {
   useState,
   useEffect,
   useCallback,
+  useMemo,
   ReactNode,
 } from "react";
 import { createClient } from "./supabase/client";
 import { useAuth } from "./auth-provider";
 import type { StudySetSourceType } from "@/clean-architecture/domain/entities/study-set.entity";
-
-// Create a Supabase client
-const supabase = createClient();
 
 // Study set item type for the list
 export interface StudySetListItem {
@@ -72,6 +70,9 @@ export function StudySetListProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   const [studySets, setStudySets] = useState<StudySetListItem[]>([]);
   const [isConnected, setIsConnected] = useState(false);
+
+  // Create Supabase client lazily (not at module load time for testability)
+  const supabase = useMemo(() => createClient(), []);
 
   // Set initial study sets (called by pages with server-rendered data)
   const setInitialStudySets = useCallback((initialStudySets: StudySetListItem[]) => {
