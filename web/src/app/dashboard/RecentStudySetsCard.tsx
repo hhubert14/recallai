@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { Play, ArrowRight, Library, BookOpen, Video } from "lucide-react";
+import { useEffect, useMemo } from "react";
+import { ArrowRight, Library, BookOpen, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useInView } from "@/hooks/useInView";
 import { RefreshButton } from "./RefreshButton";
 import { StudySetSourceType } from "@/clean-architecture/domain/entities/study-set.entity";
+import { useStudySetList } from "@/lib/study-set-list-provider";
 
 interface StudySetData {
   id: number;
@@ -19,8 +21,37 @@ interface RecentStudySetsCardProps {
   studySets: StudySetData[];
 }
 
-export function RecentStudySetsCard({ studySets }: RecentStudySetsCardProps) {
+export function RecentStudySetsCard({ studySets: initialStudySets }: RecentStudySetsCardProps) {
   const { ref, isInView } = useInView<HTMLDivElement>({ threshold: 0.1 });
+
+  // Real-time study set updates
+  const { studySets: realtimeStudySets, setInitialStudySets } = useStudySetList();
+
+  // Initialize realtime provider with server-rendered data on mount
+  useEffect(() => {
+    // Transform to include required fields for provider
+    const fullStudySets = initialStudySets.map((s) => ({
+      ...s,
+      userId: "",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    }));
+    setInitialStudySets(fullStudySets);
+  }, [initialStudySets, setInitialStudySets]);
+
+  // Use realtime data when available, limit to first 4 for display
+  const studySets = useMemo(() => {
+    if (realtimeStudySets.length > 0) {
+      return realtimeStudySets.slice(0, 4).map((s) => ({
+        id: s.id,
+        publicId: s.publicId,
+        name: s.name,
+        description: s.description,
+        sourceType: s.sourceType,
+      }));
+    }
+    return initialStudySets;
+  }, [realtimeStudySets, initialStudySets]);
 
   return (
     <div

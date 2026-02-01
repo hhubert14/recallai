@@ -276,11 +276,11 @@ npm run test -- <filename>      # Run specific test file
 ```bash
 npm run db:generate      # Generate migration files from schema changes
 
-# Migrations (per environment)
+# Migrations (recommended - use for all schema changes)
 npm run db:migrate:dev   # Apply migrations to LOCAL dev database
 npm run db:migrate:test  # Apply migrations to LOCAL test database
 
-# Direct push (faster for dev iteration, no migration files)
+# Direct push (use sparingly - for quick iteration only, doesn't create migration files)
 npm run db:push:dev      # Push schema directly to dev DB
 npm run db:push:test     # Push schema directly to test DB
 
@@ -288,6 +288,8 @@ npm run db:push:test     # Push schema directly to test DB
 npm run db:studio:dev    # Open Drizzle Studio for dev DB
 npm run db:studio:test   # Open Drizzle Studio for test DB (port 4984)
 ```
+
+**Best Practice:** Prefer `db:migrate` over `db:push` to ensure migrations are tracked and can be applied consistently across environments.
 
 **Important:** DO NOT run `db:migrate:prod` locally - production migrations require separate review/deployment process.
 

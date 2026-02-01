@@ -3,14 +3,12 @@ import React, {
     useContext,
     useState,
     useEffect,
+    useMemo,
     ReactNode,
 } from "react";
 import { createClient } from "./supabase/client";
 import type { User } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
-
-// Create a Supabase client
-const supabase = createClient();
 
 // Define the shape of the auth context
 type AuthContextType = {
@@ -30,6 +28,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const router = useRouter();
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
+
+    // Create Supabase client lazily (not at module load time for testability)
+    const supabase = useMemo(() => createClient(), []);
 
     useEffect(() => {
         // Check for active session on mount
@@ -61,7 +62,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return () => {
             subscription.unsubscribe();
         };
-    }, []);
+    }, [supabase]);
 
     // Auth methods
     const signIn = async (email: string, password: string) => {

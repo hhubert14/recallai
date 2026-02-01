@@ -31,18 +31,20 @@ export class LangChainVideoSummarizerService implements IVideoSummarizerService 
         description: string,
         transcript: TranscriptWithTimestamps
     ): Promise<GeneratedSummaryDto | undefined> {
-        if (!title || !description || !transcript.fullText) {
+        if (!title || !transcript.fullText) {
             logger.video.error(
                 "Missing required parameters for video summary",
                 undefined,
                 {
                     missingTitle: !title,
-                    missingDescription: !description,
                     missingTranscript: !transcript.fullText,
                 }
             );
             return undefined;
         }
+
+        // Use fallback if description is empty
+        const videoDescription = description || "No description provided";
 
         const llm = new ChatOpenAI({
             model: "gpt-4o-mini",
@@ -63,7 +65,7 @@ export class LangChainVideoSummarizerService implements IVideoSummarizerService 
 
 Title: ${title}
 
-Description: ${description}
+Description: ${videoDescription}
 
 Transcript with timestamps:
 ${formattedTranscript}
