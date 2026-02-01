@@ -73,7 +73,6 @@ export function WelcomeModal({
   const progress = Math.round(((currentStep + 1) / totalSteps) * 100);
   const isLastStep = currentStep === totalSteps - 1;
   const isFirstStep = currentStep === 0;
-  const isExtensionStep = currentStepData.id === "chrome-extension";
 
   const handleNext = () => {
     if (!isLastStep) {
@@ -207,6 +206,7 @@ export function WelcomeModal({
                 loop
                 muted
                 playsInline
+                aria-label="Demo showing how to pin the Retenio extension in Chrome"
                 className="w-full max-w-md rounded-lg border border-border"
               />
             </>
@@ -225,6 +225,7 @@ export function WelcomeModal({
                 loop
                 muted
                 playsInline
+                aria-label="Demo showing the Retenio extension in action"
                 className="w-full max-w-md rounded-lg border border-border"
               />
             </>

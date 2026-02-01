@@ -11,6 +11,5 @@ export default function robots(): MetadataRoute.Robots {
         '/auth/',
       ],
     },
-    sitemap: 'https://www.retenio.ai/sitemap.xml',
   }
 }
