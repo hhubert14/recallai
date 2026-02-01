@@ -3,13 +3,13 @@
 import { useState, useEffect, useCallback } from "react";
 import { Loader2, Check, X, Pencil, RefreshCw } from "lucide-react";
 import {
-    Dialog,
     DialogContent,
     DialogDescription,
     DialogHeader,
     DialogTitle,
     DialogFooter,
 } from "@/components/ui/dialog";
+import { LoadingAwareDialog } from "@/components/ui/loading-aware-dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -349,12 +349,10 @@ export function AIGenerateModal({
     // Render generation phase
     if (phase === "generate") {
         return (
-            <Dialog
+            <LoadingAwareDialog
                 open={isOpen}
-                onOpenChange={(open) => {
-                    if (!open && isLoading) return;
-                    if (!open) onClose();
-                }}
+                isLoading={isLoading}
+                onOpenChange={(open) => !open && onClose()}
             >
                 <DialogContent className="max-w-lg">
                     <DialogHeader>
@@ -473,18 +471,16 @@ export function AIGenerateModal({
                         </DialogFooter>
                     </form>
                 </DialogContent>
-            </Dialog>
+            </LoadingAwareDialog>
         );
     }
 
     // Render review phase
     return (
-        <Dialog
+        <LoadingAwareDialog
             open={isOpen}
-            onOpenChange={(open) => {
-                if (!open && acceptingIds.size > 0) return;
-                if (!open) onClose();
-            }}
+            isLoading={acceptingIds.size > 0}
+            onOpenChange={(open) => !open && onClose()}
         >
             <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col">
                 <DialogHeader>
@@ -546,7 +542,7 @@ export function AIGenerateModal({
                     </div>
                 </DialogFooter>
             </DialogContent>
-        </Dialog>
+        </LoadingAwareDialog>
     );
 }
 

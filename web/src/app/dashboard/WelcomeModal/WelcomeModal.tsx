@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from "react";
 import {
-  Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { LoadingAwareDialog } from "@/components/ui/loading-aware-dialog";
 import { Button } from "@/components/ui/button";
 import { WELCOME_STEPS } from "./welcome-steps";
 import { AddVideoModal } from "@/components/AddVideoModal";
@@ -93,12 +93,10 @@ export function WelcomeModal({
   const Icon = currentStepData.icon ? ICONS[currentStepData.icon] : null;
 
   return (
-    <Dialog
+    <LoadingAwareDialog
       open={open}
-      onOpenChange={(isOpen) => {
-        if (!isOpen && isCheckingExtension) return;
-        if (!isOpen) handleComplete();
-      }}
+      isLoading={isCheckingExtension}
+      onOpenChange={(isOpen) => !isOpen && handleComplete()}
     >
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[500px]">
         <DialogHeader>
@@ -303,6 +301,6 @@ export function WelcomeModal({
           onComplete();
         }}
       />
-    </Dialog>
+    </LoadingAwareDialog>
   );
 }

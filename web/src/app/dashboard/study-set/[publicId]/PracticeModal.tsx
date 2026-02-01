@@ -3,11 +3,11 @@
 import { useState, useEffect } from "react";
 import { Loader2, Sparkles } from "lucide-react";
 import {
-    Dialog,
     DialogContent,
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
+import { LoadingAwareDialog } from "@/components/ui/loading-aware-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -179,12 +179,10 @@ export function PracticeModal({
     const isAnyLoading = phase === "grouping" || chat.isSending || isLoadingFeedback;
 
     return (
-        <Dialog
+        <LoadingAwareDialog
             open={isOpen}
-            onOpenChange={(open) => {
-                if (!open && isAnyLoading) return;
-                if (!open) onClose();
-            }}
+            isLoading={isAnyLoading}
+            onOpenChange={(open) => !open && onClose()}
         >
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
@@ -351,6 +349,6 @@ export function PracticeModal({
                     </div>
                 )}
             </DialogContent>
-        </Dialog>
+        </LoadingAwareDialog>
     );
 }

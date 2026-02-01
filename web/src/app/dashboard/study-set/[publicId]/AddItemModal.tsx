@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from "react";
 import {
-    Dialog,
     DialogContent,
     DialogDescription,
     DialogHeader,
     DialogTitle,
     DialogFooter,
 } from "@/components/ui/dialog";
+import { LoadingAwareDialog } from "@/components/ui/loading-aware-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -180,12 +180,10 @@ export function AddItemModal({
     const canSubmit = activeTab === "flashcard" ? canSubmitFlashcard : canSubmitQuestion;
 
     return (
-        <Dialog
+        <LoadingAwareDialog
             open={isOpen}
-            onOpenChange={(open) => {
-                if (!open && isLoading) return;
-                if (!open) onClose();
-            }}
+            isLoading={isLoading}
+            onOpenChange={(open) => !open && onClose()}
         >
             <DialogContent className="max-w-lg">
                 <DialogHeader>
@@ -395,6 +393,6 @@ export function AddItemModal({
                     </DialogFooter>
                 </form>
             </DialogContent>
-        </Dialog>
+        </LoadingAwareDialog>
     );
 }
