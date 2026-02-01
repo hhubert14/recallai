@@ -159,7 +159,7 @@ export function StudySetListProvider({ children }: { children: ReactNode }) {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user?.id, handleInsert, handleUpdate]);
+  }, [user?.id, supabase, handleInsert, handleUpdate]);
 
   const value: StudySetListContextType = {
     studySets,
