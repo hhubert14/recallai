@@ -2,13 +2,13 @@
 
 import { useState } from "react";
 import {
-    Dialog,
     DialogContent,
     DialogHeader,
     DialogTitle,
     DialogDescription,
     DialogFooter,
 } from "@/components/ui/dialog";
+import { LoadingAwareDialog } from "@/components/ui/loading-aware-dialog";
 import { Button } from "@/components/ui/button";
 import { SurveyQuestion } from "./SurveyQuestion";
 import { SURVEY_QUESTIONS } from "./survey-questions";
@@ -100,7 +100,11 @@ export function OnboardingSurveyModal({
     };
 
     return (
-        <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleSkip()}>
+        <LoadingAwareDialog
+            open={open}
+            isLoading={isSubmitting}
+            onOpenChange={(isOpen) => !isOpen && handleSkip()}
+        >
             <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[500px]">
                 <DialogHeader>
                     <DialogTitle>Help us personalize your experience</DialogTitle>
@@ -182,6 +186,6 @@ export function OnboardingSurveyModal({
                     </div>
                 </DialogFooter>
             </DialogContent>
-        </Dialog>
+        </LoadingAwareDialog>
     );
 }

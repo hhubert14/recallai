@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from "react";
 import {
-  Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { LoadingAwareDialog } from "@/components/ui/loading-aware-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -92,7 +92,11 @@ export function AddVideoModal({
   const canSubmit = url.trim().length > 0 && !isLoading;
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+    <LoadingAwareDialog
+      open={isOpen}
+      isLoading={isLoading}
+      onOpenChange={(open) => !open && onClose()}
+    >
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Add Video</DialogTitle>
@@ -137,6 +141,6 @@ export function AddVideoModal({
           </DialogFooter>
         </form>
       </DialogContent>
-    </Dialog>
+    </LoadingAwareDialog>
   );
 }

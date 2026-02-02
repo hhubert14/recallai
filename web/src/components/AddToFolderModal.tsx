@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from "react";
 import {
-  Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { LoadingAwareDialog } from "@/components/ui/loading-aware-dialog";
 import { Button } from "@/components/ui/button";
 import { Folder } from "lucide-react";
 
@@ -70,7 +70,11 @@ export function AddToFolderModal({
   const hasNoFolders = folders.length === 0;
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+    <LoadingAwareDialog
+      open={isOpen}
+      isLoading={isLoading}
+      onOpenChange={(open) => !open && onClose()}
+    >
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Add to Folder</DialogTitle>
@@ -133,6 +137,6 @@ export function AddToFolderModal({
           </Button>
         </DialogFooter>
       </DialogContent>
-    </Dialog>
+    </LoadingAwareDialog>
   );
 }
