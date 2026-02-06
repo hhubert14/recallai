@@ -107,7 +107,8 @@
       "Bash(wc:*)",
       "Bash(npx supabase start)",
       "Bash(git mv:*)",
-      "Bash(npx next lint:*)"
+      "Bash(npx next lint:*)",
+      "WebFetch(domain:*)"
     ],
     "deny": [],
     "ask": []
