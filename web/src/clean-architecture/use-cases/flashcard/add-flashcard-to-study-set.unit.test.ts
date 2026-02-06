@@ -6,7 +6,7 @@ import { IReviewableItemRepository } from "@/clean-architecture/domain/repositor
 import { StudySetEntity } from "@/clean-architecture/domain/entities/study-set.entity";
 import { FlashcardEntity } from "@/clean-architecture/domain/entities/flashcard.entity";
 import { ReviewableItemEntity } from "@/clean-architecture/domain/entities/reviewable-item.entity";
-import { STUDY_SET_ITEM_LIMIT } from "@/app/dashboard/study-set/[publicId]/_components/types";
+import { STUDY_SET_ITEM_LIMIT } from "@/lib/constants/study-set";
 
 describe("AddFlashcardToStudySetUseCase", () => {
   let useCase: AddFlashcardToStudySetUseCase;

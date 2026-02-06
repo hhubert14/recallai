@@ -3,13 +3,13 @@
 import { useState, useMemo } from "react";
 import { Plus, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { VideoPlayer } from "./VideoPlayer";
-import { CollapsibleSummary } from "./CollapsibleSummary";
-import { TermsList } from "./TermsList";
-import { StudySession } from "./StudySession";
-import { AddItemModal } from "./AddItemModal";
-import { AIGenerateModal } from "./AIGenerateModal";
-import { PracticeModal } from "./PracticeModal";
+import { VideoPlayer } from "./video/VideoPlayer";
+import { CollapsibleSummary } from "./video/CollapsibleSummary";
+import { TermsList } from "./terms/TermsList";
+import { StudySession } from "./study/StudySession";
+import { AddItemModal } from "./modals/AddItemModal";
+import { AIGenerateModal } from "./modals/AIGenerateModal";
+import { PracticeModal } from "./study/PracticeModal";
 import type {
   TermWithMastery,
   StudyMode,

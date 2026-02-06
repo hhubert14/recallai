@@ -3,7 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { extractYouTubeVideoId } from "@/lib/youtube";
 import { VideoPlayerProvider } from "./_components/VideoPlayerContext";
-import { ChatButton } from "./_components/ChatButton";
+import { ChatButton } from "./_components/chat/ChatButton";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { StudySetContent } from "./_components/StudySetContent";
 import type { TermWithMastery } from "./_components/types";

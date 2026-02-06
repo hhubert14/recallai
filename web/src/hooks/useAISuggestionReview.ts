@@ -3,7 +3,7 @@ import type {
   Suggestion,
   QuestionOptionSuggestion,
 } from "@/clean-architecture/domain/services/suggestion-generator.interface";
-import { STUDY_SET_ITEM_LIMIT } from "@/app/dashboard/study-set/[publicId]/_components/types";
+import { STUDY_SET_ITEM_LIMIT } from "@/lib/constants/study-set";
 
 export type EditedSuggestionContent = {
   front?: string;

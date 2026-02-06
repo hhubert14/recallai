@@ -9,7 +9,7 @@ import {
   MultipleChoiceOption,
 } from "@/clean-architecture/domain/entities/question.entity";
 import { ReviewableItemEntity } from "@/clean-architecture/domain/entities/reviewable-item.entity";
-import { STUDY_SET_ITEM_LIMIT } from "@/app/dashboard/study-set/[publicId]/_components/types";
+import { STUDY_SET_ITEM_LIMIT } from "@/lib/constants/study-set";
 
 describe("AddQuestionToStudySetUseCase", () => {
   let useCase: AddQuestionToStudySetUseCase;

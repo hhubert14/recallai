@@ -6,7 +6,7 @@ import type {
   FlashcardSuggestion,
   QuestionSuggestion,
 } from "@/clean-architecture/domain/services/suggestion-generator.interface";
-import { STUDY_SET_ITEM_LIMIT } from "@/app/dashboard/study-set/[publicId]/_components/types";
+import { STUDY_SET_ITEM_LIMIT } from "@/lib/constants/study-set";
 
 // Test data factories
 function createFlashcardSuggestion(
