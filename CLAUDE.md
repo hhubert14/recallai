@@ -84,7 +84,10 @@ learnsync/
 │   │   │   ├── api/v1/            # API routes (versioned)
 │   │   │   ├── auth/              # Auth pages (login, signup, etc.)
 │   │   │   └── dashboard/         # Protected dashboard pages
-│   │   ├── components/            # React components
+│   │   │       └── <route>/
+│   │   │           ├── page.tsx          # Next.js special files stay at route level
+│   │   │           └── _components/     # Page-specific components
+│   │   ├── components/            # Shared components (used across multiple pages)
 │   │   │   ├── providers/         # Context providers
 │   │   │   └── ui/                # Reusable UI components
 │   │   ├── hooks/                 # Custom React hooks (always here, not co-located)
@@ -410,8 +413,21 @@ createWindowsBatch(items[]) → WindowEntity[]
 ### 3. Component Organization
 
 **Decision Rule:**
-- Component used in **1 place only** → Co-locate with the page/feature
-- Component used in **2+ places** → Move to `components/` directory
+- **Shared components** (used across multiple pages) → `src/components/`
+- **Page-specific components** (used in one route) → `src/app/<route>/_components/`
+
+The `_components/` folder keeps Next.js special files (`page.tsx`, `layout.tsx`, `loading.tsx`) easy to find at the route level. The underscore prefix prevents Next.js from treating it as a route segment.
+
+```
+src/app/dashboard/
+  page.tsx                    # Next.js special files at route level
+  loading.tsx
+  _components/                # Page-specific components
+    ReviewHeroCard.tsx
+    QuickStatsRow.tsx
+    WelcomeModal/
+      WelcomeModal.tsx
+```
 
 **Exception: Custom Hooks**
 Custom React hooks (`use*.ts`) always go in `src/hooks/`, even if only used in one place.
@@ -440,6 +456,12 @@ function MyComponent({ props }) {
 ```
 
 Utility functions that don't depend on component state/props go **outside** the component.
+
+**Don't use `useCallback`/`useMemo` by default.** Only add them when there's a proven need:
+- Passing a callback as a prop to a `React.memo`-wrapped child component
+- A function is in the dependency array of a `useEffect` that would otherwise loop
+
+Plain functions in hooks and components are fine — they recreate each render and that's cheap. Premature `useCallback` adds cognitive load with no benefit.
 
 ### 5. Database Queries (Drizzle)
 

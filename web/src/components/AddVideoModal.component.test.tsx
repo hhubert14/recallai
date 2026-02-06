@@ -32,7 +32,9 @@ describe("AddVideoModal", () => {
         <AddVideoModal isOpen={true} onClose={vi.fn()} onSuccess={vi.fn()} />
       );
 
-      expect(screen.getByRole("button", { name: /^add$/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /^add$/i })
+      ).toBeInTheDocument();
       expect(
         screen.getByRole("button", { name: /cancel/i })
       ).toBeInTheDocument();

@@ -18,85 +18,100 @@ import { UpdateStreakUseCase } from "@/clean-architecture/use-cases/streak/updat
 import { DrizzleStreakRepository } from "@/clean-architecture/infrastructure/repositories/streak.repository.drizzle";
 
 export async function POST(
-    request: NextRequest,
-    { params }: { params: Promise<{ url: string }> }
+  request: NextRequest,
+  { params }: { params: Promise<{ url: string }> }
 ) {
-    const { url: encodedVideoUrl } = await params;
-    const videoUrl = decodeURIComponent(encodedVideoUrl);
+  const { url: encodedVideoUrl } = await params;
+  const videoUrl = decodeURIComponent(encodedVideoUrl);
 
-    logger.extension.debug("Processing video request", { videoUrl });
+  logger.extension.debug("Processing video request", { videoUrl });
 
-    try {
-        // Authenticate using session cookie
-        const { user, error: authError } = await getAuthenticatedUser();
-        if (authError || !user) {
-            return jsendFail({ error: "Unauthorized" }, 401);
-        }
-
-        if (!videoUrl) {
-            return jsendFail({ error: "Missing video URL" }, 400);
-        }
-
-        const useCase = new ProcessVideoUseCase(
-            new DrizzleVideoRepository(),
-            new DrizzleSummaryRepository(),
-            new DrizzleStudySetRepository(),
-            new YouTubeVideoInfoService(),
-            new YoutubeTranscriptVideoTranscriptService(),
-            new LangChainVideoSummarizerService()
-        );
-
-        const result = await useCase.execute(user.id, videoUrl);
-
-        // Background tasks for new videos (run after response sent)
-        if (!result.alreadyExists && result.transcriptData) {
-            const videoId = result.video.id;
-            const { segments, fullText } = result.transcriptData;
-
-            after(async () => {
-                // 1. Store transcript
-                try {
-                    await new DrizzleTranscriptRepository().createTranscript(
-                        videoId,
-                        segments,
-                        fullText
-                    );
-                    logger.extension.info("Transcript stored successfully", { videoId });
-                } catch (error) {
-                    logger.extension.error("Failed to store transcript", error, { videoId });
-                }
-
-                // 2. Generate embeddings for chat
-                try {
-                    const embeddingService = new SupabaseEmbeddingService();
-                    const windowRepo = new DrizzleTranscriptWindowRepository();
-                    const windowGenerator = new TranscriptWindowGeneratorService(embeddingService, windowRepo);
-
-                    await windowGenerator.generate(videoId, segments);
-                    logger.extension.info("Transcript windows generated successfully", { videoId });
-                } catch (error) {
-                    logger.extension.error("Failed to generate transcript windows", error, { videoId });
-                }
-
-                // 3. Update streak
-                try {
-                    await new UpdateStreakUseCase(new DrizzleStreakRepository()).execute(user.id);
-                } catch (error) {
-                    logger.streak.error("Failed to update streak", error, { userId: user.id });
-                }
-            });
-        }
-
-        return jsendSuccess({
-            video_id: result.video.id,
-            summary: result.summary.content,
-            alreadyExists: result.alreadyExists,
-            studySetPublicId: result.studySet.publicId,
-        });
-    } catch (error) {
-        const errorMessage =
-            error instanceof Error ? error.message : "Unknown error occurred";
-        logger.extension.error("Error processing video", error, { videoUrl });
-        return jsendError(`Failed to process video: ${errorMessage}`);
+  try {
+    // Authenticate using session cookie
+    const { user, error: authError } = await getAuthenticatedUser();
+    if (authError || !user) {
+      return jsendFail({ error: "Unauthorized" }, 401);
     }
+
+    if (!videoUrl) {
+      return jsendFail({ error: "Missing video URL" }, 400);
+    }
+
+    const useCase = new ProcessVideoUseCase(
+      new DrizzleVideoRepository(),
+      new DrizzleSummaryRepository(),
+      new DrizzleStudySetRepository(),
+      new YouTubeVideoInfoService(),
+      new YoutubeTranscriptVideoTranscriptService(),
+      new LangChainVideoSummarizerService()
+    );
+
+    const result = await useCase.execute(user.id, videoUrl);
+
+    // Background tasks for new videos (run after response sent)
+    if (!result.alreadyExists && result.transcriptData) {
+      const videoId = result.video.id;
+      const { segments, fullText } = result.transcriptData;
+
+      after(async () => {
+        // 1. Store transcript
+        try {
+          await new DrizzleTranscriptRepository().createTranscript(
+            videoId,
+            segments,
+            fullText
+          );
+          logger.extension.info("Transcript stored successfully", { videoId });
+        } catch (error) {
+          logger.extension.error("Failed to store transcript", error, {
+            videoId,
+          });
+        }
+
+        // 2. Generate embeddings for chat
+        try {
+          const embeddingService = new SupabaseEmbeddingService();
+          const windowRepo = new DrizzleTranscriptWindowRepository();
+          const windowGenerator = new TranscriptWindowGeneratorService(
+            embeddingService,
+            windowRepo
+          );
+
+          await windowGenerator.generate(videoId, segments);
+          logger.extension.info("Transcript windows generated successfully", {
+            videoId,
+          });
+        } catch (error) {
+          logger.extension.error(
+            "Failed to generate transcript windows",
+            error,
+            { videoId }
+          );
+        }
+
+        // 3. Update streak
+        try {
+          await new UpdateStreakUseCase(new DrizzleStreakRepository()).execute(
+            user.id
+          );
+        } catch (error) {
+          logger.streak.error("Failed to update streak", error, {
+            userId: user.id,
+          });
+        }
+      });
+    }
+
+    return jsendSuccess({
+      video_id: result.video.id,
+      summary: result.summary.content,
+      alreadyExists: result.alreadyExists,
+      studySetPublicId: result.studySet.publicId,
+    });
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error occurred";
+    logger.extension.error("Error processing video", error, { videoUrl });
+    return jsendError(`Failed to process video: ${errorMessage}`);
+  }
 }

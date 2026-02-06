@@ -7,7 +7,11 @@ describe("CreateStudySetModal", () => {
   describe("when open", () => {
     it("renders the modal title", () => {
       render(
-        <CreateStudySetModal isOpen={true} onClose={vi.fn()} onSuccess={vi.fn()} />
+        <CreateStudySetModal
+          isOpen={true}
+          onClose={vi.fn()}
+          onSuccess={vi.fn()}
+        />
       );
 
       expect(
@@ -17,7 +21,11 @@ describe("CreateStudySetModal", () => {
 
     it("renders the name input", () => {
       render(
-        <CreateStudySetModal isOpen={true} onClose={vi.fn()} onSuccess={vi.fn()} />
+        <CreateStudySetModal
+          isOpen={true}
+          onClose={vi.fn()}
+          onSuccess={vi.fn()}
+        />
       );
 
       expect(screen.getByLabelText(/name/i)).toBeInTheDocument();
@@ -25,7 +33,11 @@ describe("CreateStudySetModal", () => {
 
     it("renders the description input", () => {
       render(
-        <CreateStudySetModal isOpen={true} onClose={vi.fn()} onSuccess={vi.fn()} />
+        <CreateStudySetModal
+          isOpen={true}
+          onClose={vi.fn()}
+          onSuccess={vi.fn()}
+        />
       );
 
       expect(screen.getByLabelText(/description/i)).toBeInTheDocument();
@@ -33,7 +45,11 @@ describe("CreateStudySetModal", () => {
 
     it("renders create and cancel buttons", () => {
       render(
-        <CreateStudySetModal isOpen={true} onClose={vi.fn()} onSuccess={vi.fn()} />
+        <CreateStudySetModal
+          isOpen={true}
+          onClose={vi.fn()}
+          onSuccess={vi.fn()}
+        />
       );
 
       expect(
@@ -65,7 +81,11 @@ describe("CreateStudySetModal", () => {
     it("allows typing in the name input", async () => {
       const user = userEvent.setup();
       render(
-        <CreateStudySetModal isOpen={true} onClose={vi.fn()} onSuccess={vi.fn()} />
+        <CreateStudySetModal
+          isOpen={true}
+          onClose={vi.fn()}
+          onSuccess={vi.fn()}
+        />
       );
 
       const nameInput = screen.getByLabelText(/name/i);
@@ -77,7 +97,11 @@ describe("CreateStudySetModal", () => {
     it("allows typing in the description input", async () => {
       const user = userEvent.setup();
       render(
-        <CreateStudySetModal isOpen={true} onClose={vi.fn()} onSuccess={vi.fn()} />
+        <CreateStudySetModal
+          isOpen={true}
+          onClose={vi.fn()}
+          onSuccess={vi.fn()}
+        />
       );
 
       const descInput = screen.getByLabelText(/description/i);
@@ -90,7 +114,11 @@ describe("CreateStudySetModal", () => {
       const user = userEvent.setup();
       const onClose = vi.fn();
       render(
-        <CreateStudySetModal isOpen={true} onClose={onClose} onSuccess={vi.fn()} />
+        <CreateStudySetModal
+          isOpen={true}
+          onClose={onClose}
+          onSuccess={vi.fn()}
+        />
       );
 
       await user.click(screen.getByRole("button", { name: /cancel/i }));
@@ -100,7 +128,11 @@ describe("CreateStudySetModal", () => {
 
     it("disables create button when name is empty", () => {
       render(
-        <CreateStudySetModal isOpen={true} onClose={vi.fn()} onSuccess={vi.fn()} />
+        <CreateStudySetModal
+          isOpen={true}
+          onClose={vi.fn()}
+          onSuccess={vi.fn()}
+        />
       );
 
       expect(screen.getByRole("button", { name: /create/i })).toBeDisabled();
@@ -109,7 +141,11 @@ describe("CreateStudySetModal", () => {
     it("enables create button when name is provided", async () => {
       const user = userEvent.setup();
       render(
-        <CreateStudySetModal isOpen={true} onClose={vi.fn()} onSuccess={vi.fn()} />
+        <CreateStudySetModal
+          isOpen={true}
+          onClose={vi.fn()}
+          onSuccess={vi.fn()}
+        />
       );
 
       await user.type(screen.getByLabelText(/name/i), "My Study Set");
@@ -144,7 +180,11 @@ describe("CreateStudySetModal", () => {
       });
 
       render(
-        <CreateStudySetModal isOpen={true} onClose={vi.fn()} onSuccess={onSuccess} />
+        <CreateStudySetModal
+          isOpen={true}
+          onClose={vi.fn()}
+          onSuccess={onSuccess}
+        />
       );
 
       await user.type(screen.getByLabelText(/name/i), "My Study Set");
@@ -168,12 +208,14 @@ describe("CreateStudySetModal", () => {
     it("shows loading state during submission", async () => {
       const user = userEvent.setup();
 
-      global.fetch = vi.fn().mockImplementation(
-        () => new Promise(() => {})
-      );
+      global.fetch = vi.fn().mockImplementation(() => new Promise(() => {}));
 
       render(
-        <CreateStudySetModal isOpen={true} onClose={vi.fn()} onSuccess={vi.fn()} />
+        <CreateStudySetModal
+          isOpen={true}
+          onClose={vi.fn()}
+          onSuccess={vi.fn()}
+        />
       );
 
       await user.type(screen.getByLabelText(/name/i), "My Study Set");
@@ -195,33 +237,51 @@ describe("CreateStudySetModal", () => {
       });
 
       render(
-        <CreateStudySetModal isOpen={true} onClose={vi.fn()} onSuccess={vi.fn()} />
+        <CreateStudySetModal
+          isOpen={true}
+          onClose={vi.fn()}
+          onSuccess={vi.fn()}
+        />
       );
 
       await user.type(screen.getByLabelText(/name/i), "My Study Set");
       await user.click(screen.getByRole("button", { name: /create/i }));
 
       await waitFor(() => {
-        expect(screen.getByText(/study set name already exists/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/study set name already exists/i)
+        ).toBeInTheDocument();
       });
     });
 
     it("clears form when reopened", async () => {
       const user = userEvent.setup();
       const { rerender } = render(
-        <CreateStudySetModal isOpen={true} onClose={vi.fn()} onSuccess={vi.fn()} />
+        <CreateStudySetModal
+          isOpen={true}
+          onClose={vi.fn()}
+          onSuccess={vi.fn()}
+        />
       );
 
       await user.type(screen.getByLabelText(/name/i), "My Study Set");
 
       // Close modal
       rerender(
-        <CreateStudySetModal isOpen={false} onClose={vi.fn()} onSuccess={vi.fn()} />
+        <CreateStudySetModal
+          isOpen={false}
+          onClose={vi.fn()}
+          onSuccess={vi.fn()}
+        />
       );
 
       // Reopen modal
       rerender(
-        <CreateStudySetModal isOpen={true} onClose={vi.fn()} onSuccess={vi.fn()} />
+        <CreateStudySetModal
+          isOpen={true}
+          onClose={vi.fn()}
+          onSuccess={vi.fn()}
+        />
       );
 
       expect(screen.getByLabelText(/name/i)).toHaveValue("");

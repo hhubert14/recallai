@@ -23,14 +23,18 @@ describe("extractYouTubeVideoId", () => {
 
     it("extracts video ID with additional query parameters", () => {
       expect(
-        extractYouTubeVideoId("https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=120")
+        extractYouTubeVideoId(
+          "https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=120"
+        )
       ).toBe("dQw4w9WgXcQ");
     });
 
     it("extracts video ID with timestamp parameter before v", () => {
       // This case returns null due to strict pattern matching (extension behavior)
       expect(
-        extractYouTubeVideoId("https://www.youtube.com/watch?t=120&v=dQw4w9WgXcQ")
+        extractYouTubeVideoId(
+          "https://www.youtube.com/watch?t=120&v=dQw4w9WgXcQ"
+        )
       ).toBe(null);
     });
   });
@@ -92,7 +96,9 @@ describe("extractYouTubeVideoId", () => {
 
     it("extracts video ID from youtube-nocookie.com/embed/ID (privacy mode)", () => {
       expect(
-        extractYouTubeVideoId("https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ")
+        extractYouTubeVideoId(
+          "https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ"
+        )
       ).toBe("dQw4w9WgXcQ");
     });
 
@@ -112,7 +118,9 @@ describe("extractYouTubeVideoId", () => {
 
     it("extracts video ID from youtube.com/v/ID with parameters", () => {
       expect(
-        extractYouTubeVideoId("https://www.youtube.com/v/dQw4w9WgXcQ?fs=1&hl=en_US")
+        extractYouTubeVideoId(
+          "https://www.youtube.com/v/dQw4w9WgXcQ?fs=1&hl=en_US"
+        )
       ).toBe("dQw4w9WgXcQ");
     });
 
@@ -132,7 +140,9 @@ describe("extractYouTubeVideoId", () => {
 
     it("extracts video ID from live URL with parameters", () => {
       expect(
-        extractYouTubeVideoId("https://www.youtube.com/live/dQw4w9WgXcQ?feature=share")
+        extractYouTubeVideoId(
+          "https://www.youtube.com/live/dQw4w9WgXcQ?feature=share"
+        )
       ).toBe("dQw4w9WgXcQ");
     });
   });
@@ -163,14 +173,16 @@ describe("extractYouTubeVideoId", () => {
     });
 
     it("returns null for YouTube channel page", () => {
-      expect(extractYouTubeVideoId("https://www.youtube.com/@SomeChannel")).toBe(
-        null
-      );
+      expect(
+        extractYouTubeVideoId("https://www.youtube.com/@SomeChannel")
+      ).toBe(null);
     });
 
     it("returns null for YouTube search page", () => {
       expect(
-        extractYouTubeVideoId("https://www.youtube.com/results?search_query=test")
+        extractYouTubeVideoId(
+          "https://www.youtube.com/results?search_query=test"
+        )
       ).toBe(null);
     });
 
@@ -224,9 +236,9 @@ describe("extractYouTubeVideoId", () => {
     });
 
     it("rejects empty video ID", () => {
-      expect(
-        extractYouTubeVideoId("https://www.youtube.com/watch?v=")
-      ).toBe(null);
+      expect(extractYouTubeVideoId("https://www.youtube.com/watch?v=")).toBe(
+        null
+      );
     });
   });
 });
@@ -261,7 +273,9 @@ describe("normalizeYouTubeUrl", () => {
 
     it("normalizes shortened URL with si parameter", () => {
       expect(
-        normalizeYouTubeUrl("https://youtu.be/UDBkiBnMrHs?si=H7cZvSI50MmT4-lE&t=724")
+        normalizeYouTubeUrl(
+          "https://youtu.be/UDBkiBnMrHs?si=H7cZvSI50MmT4-lE&t=724"
+        )
       ).toBe("https://www.youtube.com/watch?v=UDBkiBnMrHs");
     });
 
@@ -289,7 +303,9 @@ describe("normalizeYouTubeUrl", () => {
 
     it("normalizes youtube-nocookie.com embed to canonical format", () => {
       expect(
-        normalizeYouTubeUrl("https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ")
+        normalizeYouTubeUrl(
+          "https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ"
+        )
       ).toBe("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
     });
   });
@@ -302,16 +318,18 @@ describe("normalizeYouTubeUrl", () => {
     });
 
     it("normalizes youtube.com/e/ URL to canonical format", () => {
-      expect(
-        normalizeYouTubeUrl("https://www.youtube.com/e/dQw4w9WgXcQ")
-      ).toBe("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+      expect(normalizeYouTubeUrl("https://www.youtube.com/e/dQw4w9WgXcQ")).toBe(
+        "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+      );
     });
   });
 
   describe("live stream URLs", () => {
     it("normalizes live stream URL to canonical format", () => {
       expect(
-        normalizeYouTubeUrl("https://www.youtube.com/live/dQw4w9WgXcQ?feature=share")
+        normalizeYouTubeUrl(
+          "https://www.youtube.com/live/dQw4w9WgXcQ?feature=share"
+        )
       ).toBe("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
     });
   });

@@ -27,7 +27,10 @@ vi.mock("@/components/tour/tour-steps", async (importOriginal) => {
   return {
     ...actual,
     getTourSteps: vi.fn(() => [
-      { element: "#test", popover: { title: "Test", description: "Test step" } },
+      {
+        element: "#test",
+        popover: { title: "Test", description: "Test step" },
+      },
     ]),
   };
 });
@@ -90,7 +93,9 @@ describe("HelpButton", () => {
       const button = screen.getByRole("button", { name: /help/i });
       await user.click(button);
 
-      const menuItem = screen.getByRole("menuitem", { name: /replay page tour/i });
+      const menuItem = screen.getByRole("menuitem", {
+        name: /replay page tour/i,
+      });
       expect(menuItem).toBeInTheDocument();
     });
   });
@@ -102,7 +107,9 @@ describe("HelpButton", () => {
       const button = screen.getByRole("button", { name: /help/i });
       await user.click(button);
 
-      const menuItem = screen.getByRole("menuitem", { name: /replay page tour/i });
+      const menuItem = screen.getByRole("menuitem", {
+        name: /replay page tour/i,
+      });
       await user.click(menuItem);
 
       expect(tourConstants.createTourDriver).toHaveBeenCalled();
@@ -116,10 +123,14 @@ describe("HelpButton", () => {
       const button = screen.getByRole("button", { name: /help/i });
       await user.click(button);
 
-      const menuItem = screen.getByRole("menuitem", { name: /replay page tour/i });
+      const menuItem = screen.getByRole("menuitem", {
+        name: /replay page tour/i,
+      });
       await user.click(menuItem);
 
-      expect(localStorageMock[TOUR_STORAGE_KEYS[TOUR_IDS.dashboard]]).toBeUndefined();
+      expect(
+        localStorageMock[TOUR_STORAGE_KEYS[TOUR_IDS.dashboard]]
+      ).toBeUndefined();
     });
 
     it("destroys existing driver before creating new one", async () => {
@@ -129,11 +140,15 @@ describe("HelpButton", () => {
 
       // Click replay twice to test cleanup
       await user.click(button);
-      await user.click(screen.getByRole("menuitem", { name: /replay page tour/i }));
+      await user.click(
+        screen.getByRole("menuitem", { name: /replay page tour/i })
+      );
 
       // Open menu again and replay
       await user.click(button);
-      await user.click(screen.getByRole("menuitem", { name: /replay page tour/i }));
+      await user.click(
+        screen.getByRole("menuitem", { name: /replay page tour/i })
+      );
 
       expect(mockDestroy).toHaveBeenCalled();
     });
@@ -145,7 +160,9 @@ describe("HelpButton", () => {
       const button = screen.getByRole("button", { name: /help/i });
       await user.click(button);
 
-      const menuItem = screen.getByRole("menuitem", { name: /replay page tour/i });
+      const menuItem = screen.getByRole("menuitem", {
+        name: /replay page tour/i,
+      });
       await user.click(menuItem);
 
       expect(tourConstants.createTourDriver).not.toHaveBeenCalled();
@@ -164,10 +181,14 @@ describe("HelpButton", () => {
       const button = screen.getByRole("button", { name: /help/i });
       await user.click(button);
 
-      const menuItem = screen.getByRole("menuitem", { name: /replay page tour/i });
+      const menuItem = screen.getByRole("menuitem", {
+        name: /replay page tour/i,
+      });
       await user.click(menuItem);
 
-      expect(tourSteps.getTourSteps).toHaveBeenCalledWith(TOUR_IDS.reviewSession);
+      expect(tourSteps.getTourSteps).toHaveBeenCalledWith(
+        TOUR_IDS.reviewSession
+      );
 
       // Cleanup
       document.body.removeChild(sessionElement);
@@ -179,10 +200,14 @@ describe("HelpButton", () => {
       const button = screen.getByRole("button", { name: /help/i });
       await user.click(button);
 
-      const menuItem = screen.getByRole("menuitem", { name: /replay page tour/i });
+      const menuItem = screen.getByRole("menuitem", {
+        name: /replay page tour/i,
+      });
       await user.click(menuItem);
 
-      expect(tourSteps.getTourSteps).toHaveBeenCalledWith(TOUR_IDS.reviewModeSelector);
+      expect(tourSteps.getTourSteps).toHaveBeenCalledWith(
+        TOUR_IDS.reviewModeSelector
+      );
     });
 
     it("returns original tourId for non-review pages", async () => {
@@ -191,7 +216,9 @@ describe("HelpButton", () => {
       const button = screen.getByRole("button", { name: /help/i });
       await user.click(button);
 
-      const menuItem = screen.getByRole("menuitem", { name: /replay page tour/i });
+      const menuItem = screen.getByRole("menuitem", {
+        name: /replay page tour/i,
+      });
       await user.click(menuItem);
 
       expect(tourSteps.getTourSteps).toHaveBeenCalledWith(TOUR_IDS.dashboard);
@@ -209,7 +236,9 @@ describe("HelpButton", () => {
       const button = screen.getByRole("button", { name: /help/i });
       await user.click(button);
 
-      const menuItem = screen.getByRole("menuitem", { name: /replay page tour/i });
+      const menuItem = screen.getByRole("menuitem", {
+        name: /replay page tour/i,
+      });
       // Should not throw
       await expect(user.click(menuItem)).resolves.not.toThrow();
       expect(mockDrive).toHaveBeenCalled();
@@ -223,7 +252,9 @@ describe("HelpButton", () => {
       // Start a tour first
       const button = screen.getByRole("button", { name: /help/i });
       await user.click(button);
-      const menuItem = screen.getByRole("menuitem", { name: /replay page tour/i });
+      const menuItem = screen.getByRole("menuitem", {
+        name: /replay page tour/i,
+      });
       await user.click(menuItem);
 
       // Clear the mock to only track unmount calls
@@ -249,17 +280,22 @@ describe("HelpButton", () => {
       const button = screen.getByRole("button", { name: /help/i });
       await user.click(button);
 
-      const menuItem = screen.getByRole("menuitem", { name: /replay page tour/i });
+      const menuItem = screen.getByRole("menuitem", {
+        name: /replay page tour/i,
+      });
       await user.click(menuItem);
 
       // Get the onDestroyed callback that was passed
-      const createDriverCall = vi.mocked(tourConstants.createTourDriver).mock.calls[0];
+      const createDriverCall = vi.mocked(tourConstants.createTourDriver).mock
+        .calls[0];
       const options = createDriverCall[0] as { onDestroyed?: () => void };
 
       // Invoke the callback
       options.onDestroyed?.();
 
-      expect(localStorageMock[TOUR_STORAGE_KEYS[TOUR_IDS.dashboard]]).toBe("true");
+      expect(localStorageMock[TOUR_STORAGE_KEYS[TOUR_IDS.dashboard]]).toBe(
+        "true"
+      );
     });
   });
 });

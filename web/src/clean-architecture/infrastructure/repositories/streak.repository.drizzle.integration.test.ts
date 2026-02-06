@@ -61,7 +61,12 @@ describe("DrizzleStreakRepository (integration)", () => {
 
   describe("upsertStreak", () => {
     it("creates a new streak record when none exists", async () => {
-      const result = await streakRepo.upsertStreak(testUserId, 1, 1, "2025-01-28");
+      const result = await streakRepo.upsertStreak(
+        testUserId,
+        1,
+        1,
+        "2025-01-28"
+      );
 
       expect(result.userId).toBe(testUserId);
       expect(result.currentStreak).toBe(1);
@@ -74,7 +79,12 @@ describe("DrizzleStreakRepository (integration)", () => {
       await streakRepo.upsertStreak(testUserId, 1, 1, "2025-01-27");
 
       // Update streak
-      const result = await streakRepo.upsertStreak(testUserId, 2, 2, "2025-01-28");
+      const result = await streakRepo.upsertStreak(
+        testUserId,
+        2,
+        2,
+        "2025-01-28"
+      );
 
       expect(result.userId).toBe(testUserId);
       expect(result.currentStreak).toBe(2);
@@ -104,7 +114,12 @@ describe("DrizzleStreakRepository (integration)", () => {
       await streakRepo.upsertStreak(testUserId, 5, 5, "2025-01-25");
 
       // Reset current but keep longest
-      const result = await streakRepo.upsertStreak(testUserId, 1, 5, "2025-01-28");
+      const result = await streakRepo.upsertStreak(
+        testUserId,
+        1,
+        5,
+        "2025-01-28"
+      );
 
       expect(result.currentStreak).toBe(1);
       expect(result.longestStreak).toBe(5);

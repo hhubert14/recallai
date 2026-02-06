@@ -1,6 +1,4 @@
-import {
-  IStudySetRepository,
-} from "@/clean-architecture/domain/repositories/study-set.repository.interface";
+import { IStudySetRepository } from "@/clean-architecture/domain/repositories/study-set.repository.interface";
 import {
   StudySetEntity,
   StudySetSourceType,
@@ -39,18 +37,16 @@ export class DrizzleStudySetRepository implements IStudySetRepository {
 
   async findStudySetById(id: number): Promise<StudySetEntity | null> {
     const [data] = await dbRetry(() =>
-      this.db
-        .select()
-        .from(studySets)
-        .where(eq(studySets.id, id))
-        .limit(1)
+      this.db.select().from(studySets).where(eq(studySets.id, id)).limit(1)
     );
 
     if (!data) return null;
     return this.toEntity(data);
   }
 
-  async findStudySetByPublicId(publicId: string): Promise<StudySetEntity | null> {
+  async findStudySetByPublicId(
+    publicId: string
+  ): Promise<StudySetEntity | null> {
     const [data] = await dbRetry(() =>
       this.db
         .select()
@@ -94,10 +90,7 @@ export class DrizzleStudySetRepository implements IStudySetRepository {
     }
 
     const data = await dbRetry(() =>
-      this.db
-        .select()
-        .from(studySets)
-        .where(inArray(studySets.id, ids))
+      this.db.select().from(studySets).where(inArray(studySets.id, ids))
     );
 
     return data.map((studySet) => this.toEntity(studySet));

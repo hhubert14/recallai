@@ -16,7 +16,9 @@ export async function GET() {
       return jsendFail({ error: "Unauthorized" }, 401);
     }
 
-    const useCase = new GetFoldersByUserIdUseCase(new DrizzleFolderRepository());
+    const useCase = new GetFoldersByUserIdUseCase(
+      new DrizzleFolderRepository()
+    );
     const folders = await useCase.execute(user.id);
 
     return jsendSuccess({

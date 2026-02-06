@@ -12,7 +12,10 @@ export class GetReviewStatsUseCase {
     const [allReviewableItems, dueProgress, allProgress, repoStats] =
       await Promise.all([
         studySetId !== undefined
-          ? this.reviewableItemRepository.findReviewableItemsByUserIdAndStudySetId(userId, studySetId)
+          ? this.reviewableItemRepository.findReviewableItemsByUserIdAndStudySetId(
+              userId,
+              studySetId
+            )
           : this.reviewableItemRepository.findReviewableItemsByUserId(userId),
         this.reviewProgressRepository.findReviewProgressDueForReview(userId),
         this.reviewProgressRepository.findReviewProgressByUserId(userId),

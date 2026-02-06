@@ -4,7 +4,9 @@ import { ReviewItem, ReviewItemApiResponse } from "./types";
  * Transforms a domain ReviewItem to the API response format.
  * Flattens the structure and maps entity fields to the expected API schema.
  */
-export function toReviewItemApiResponse(item: ReviewItem): ReviewItemApiResponse {
+export function toReviewItemApiResponse(
+  item: ReviewItem
+): ReviewItemApiResponse {
   const base: ReviewItemApiResponse = {
     reviewableItemId: item.reviewableItem.id,
     itemType: item.reviewableItem.itemType,

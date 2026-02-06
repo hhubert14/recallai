@@ -9,32 +9,34 @@ import { DrizzleReviewableItemRepository } from "@/clean-architecture/infrastruc
  * Used for pre-checking capacity before bulk operations.
  */
 export async function GET(
-    request: Request,
-    { params }: { params: Promise<{ publicId: string }> }
+  request: Request,
+  { params }: { params: Promise<{ publicId: string }> }
 ) {
-    const { user, error } = await getAuthenticatedUser();
-    if (error || !user) {
-        return jsendFail({ error: "Unauthorized" }, 401);
-    }
+  const { user, error } = await getAuthenticatedUser();
+  if (error || !user) {
+    return jsendFail({ error: "Unauthorized" }, 401);
+  }
 
-    const { publicId } = await params;
+  const { publicId } = await params;
 
-    const studySetRepository = new DrizzleStudySetRepository();
-    const reviewableItemRepository = new DrizzleReviewableItemRepository();
+  const studySetRepository = new DrizzleStudySetRepository();
+  const reviewableItemRepository = new DrizzleReviewableItemRepository();
 
-    // Find the study set
-    const studySet = await studySetRepository.findStudySetByPublicId(publicId);
-    if (!studySet) {
-        return jsendFail({ error: "Study set not found" }, 404);
-    }
+  // Find the study set
+  const studySet = await studySetRepository.findStudySetByPublicId(publicId);
+  if (!studySet) {
+    return jsendFail({ error: "Study set not found" }, 404);
+  }
 
-    // Verify ownership
-    if (studySet.userId !== user.id) {
-        return jsendFail({ error: "Not authorized to access this study set" }, 403);
-    }
+  // Verify ownership
+  if (studySet.userId !== user.id) {
+    return jsendFail({ error: "Not authorized to access this study set" }, 403);
+  }
 
-    // Get the count
-    const count = await reviewableItemRepository.countItemsByStudySetId(studySet.id);
+  // Get the count
+  const count = await reviewableItemRepository.countItemsByStudySetId(
+    studySet.id
+  );
 
-    return jsendSuccess({ count });
+  return jsendSuccess({ count });
 }

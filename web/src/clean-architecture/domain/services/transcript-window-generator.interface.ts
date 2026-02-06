@@ -2,8 +2,8 @@ import { TranscriptWindowEntity } from "@/clean-architecture/domain/entities/tra
 import { TranscriptSegment } from "@/clean-architecture/domain/entities/transcript.entity";
 
 export interface ITranscriptWindowGeneratorService {
-    generate(
-        videoId: number,
-        segments: TranscriptSegment[]
-    ): Promise<TranscriptWindowEntity[]>;
+  generate(
+    videoId: number,
+    segments: TranscriptSegment[]
+  ): Promise<TranscriptWindowEntity[]>;
 }

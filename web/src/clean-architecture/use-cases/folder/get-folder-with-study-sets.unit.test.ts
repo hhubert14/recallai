@@ -72,9 +72,9 @@ describe("GetFolderWithStudySetsUseCase", () => {
     ];
 
     vi.mocked(mockFolderRepository.findFolderById).mockResolvedValue(folder);
-    vi.mocked(mockFolderRepository.findStudySetIdsByFolderId).mockResolvedValue([
-      101, 102,
-    ]);
+    vi.mocked(mockFolderRepository.findStudySetIdsByFolderId).mockResolvedValue(
+      [101, 102]
+    );
     vi.mocked(mockStudySetRepository.findStudySetsByIds).mockResolvedValue(
       studySets
     );

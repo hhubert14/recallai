@@ -1,8 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  StudySetEntity,
-  StudySetSourceType,
-} from "./study-set.entity";
+import { StudySetEntity, StudySetSourceType } from "./study-set.entity";
 
 describe("StudySetEntity", () => {
   describe("constructor", () => {

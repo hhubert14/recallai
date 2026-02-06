@@ -76,9 +76,9 @@ describe("GroupItemsIntoConceptsUseCase", () => {
         studySet
       );
 
-      await expect(useCase.execute("public-id", "different-user")).rejects.toThrow(
-        "Unauthorized"
-      );
+      await expect(
+        useCase.execute("public-id", "different-user")
+      ).rejects.toThrow("Unauthorized");
     });
 
     it("throws error if study set has fewer than 5 items", async () => {
@@ -232,7 +232,12 @@ describe("GroupItemsIntoConceptsUseCase", () => {
           null,
           "What is a variable?",
           [
-            { id: 1, optionText: "A container", isCorrect: true, explanation: null },
+            {
+              id: 1,
+              optionText: "A container",
+              isCorrect: true,
+              explanation: null,
+            },
           ],
           null,
           null,
@@ -243,7 +248,12 @@ describe("GroupItemsIntoConceptsUseCase", () => {
           null,
           "What is a function?",
           [
-            { id: 2, optionText: "Reusable code", isCorrect: true, explanation: null },
+            {
+              id: 2,
+              optionText: "Reusable code",
+              isCorrect: true,
+              explanation: null,
+            },
           ],
           null,
           null,
@@ -253,9 +263,7 @@ describe("GroupItemsIntoConceptsUseCase", () => {
           3,
           null,
           "What is an array?",
-          [
-            { id: 3, optionText: "A list", isCorrect: true, explanation: null },
-          ],
+          [{ id: 3, optionText: "A list", isCorrect: true, explanation: null }],
           null,
           null,
           "2024-01-01"
@@ -267,8 +275,22 @@ describe("GroupItemsIntoConceptsUseCase", () => {
       );
 
       const flashcards = [
-        new FlashcardEntity(1, null, "user-1", "Variable", "Stores data", "2024-01-01"),
-        new FlashcardEntity(2, null, "user-1", "Function", "Executes code", "2024-01-01"),
+        new FlashcardEntity(
+          1,
+          null,
+          "user-1",
+          "Variable",
+          "Stores data",
+          "2024-01-01"
+        ),
+        new FlashcardEntity(
+          2,
+          null,
+          "user-1",
+          "Function",
+          "Executes code",
+          "2024-01-01"
+        ),
       ];
 
       vi.mocked(mockFlashcardRepo.findFlashcardsByIds).mockResolvedValue(
@@ -324,33 +346,44 @@ describe("GroupItemsIntoConceptsUseCase", () => {
         studySet
       );
 
-      const reviewableItems = Array.from({ length: 5 }, (_, i) =>
-        new ReviewableItemEntity(
-          i + 1,
-          "user-1",
-          "question",
-          i + 1,
-          null,
-          null,
-          1,
-          "2024-01-01"
-        )
+      const reviewableItems = Array.from(
+        { length: 5 },
+        (_, i) =>
+          new ReviewableItemEntity(
+            i + 1,
+            "user-1",
+            "question",
+            i + 1,
+            null,
+            null,
+            1,
+            "2024-01-01"
+          )
       );
 
       vi.mocked(
         mockReviewableItemRepo.findReviewableItemsByUserIdAndStudySetId
       ).mockResolvedValue(reviewableItems);
 
-      const questions = Array.from({ length: 5 }, (_, i) =>
-        new MultipleChoiceQuestionEntity(
-          i + 1,
-          null,
-          `Question ${i + 1}`,
-          [{ id: i + 1, optionText: "Answer", isCorrect: true, explanation: null }],
-          null,
-          null,
-          "2024-01-01"
-        )
+      const questions = Array.from(
+        { length: 5 },
+        (_, i) =>
+          new MultipleChoiceQuestionEntity(
+            i + 1,
+            null,
+            `Question ${i + 1}`,
+            [
+              {
+                id: i + 1,
+                optionText: "Answer",
+                isCorrect: true,
+                explanation: null,
+              },
+            ],
+            null,
+            null,
+            "2024-01-01"
+          )
       );
 
       vi.mocked(mockQuestionRepo.findQuestionsByIds).mockResolvedValue(
@@ -399,17 +432,19 @@ describe("GroupItemsIntoConceptsUseCase", () => {
         studySet
       );
 
-      const reviewableItems = Array.from({ length: 5 }, (_, i) =>
-        new ReviewableItemEntity(
-          i + 1,
-          "user-1",
-          "flashcard",
-          null,
-          i + 1,
-          null,
-          1,
-          "2024-01-01"
-        )
+      const reviewableItems = Array.from(
+        { length: 5 },
+        (_, i) =>
+          new ReviewableItemEntity(
+            i + 1,
+            "user-1",
+            "flashcard",
+            null,
+            i + 1,
+            null,
+            1,
+            "2024-01-01"
+          )
       );
 
       vi.mocked(
@@ -418,15 +453,17 @@ describe("GroupItemsIntoConceptsUseCase", () => {
 
       vi.mocked(mockQuestionRepo.findQuestionsByIds).mockResolvedValue([]);
 
-      const flashcards = Array.from({ length: 5 }, (_, i) =>
-        new FlashcardEntity(
-          i + 1,
-          null,
-          "user-1",
-          `Front ${i + 1}`,
-          `Back ${i + 1}`,
-          "2024-01-01"
-        )
+      const flashcards = Array.from(
+        { length: 5 },
+        (_, i) =>
+          new FlashcardEntity(
+            i + 1,
+            null,
+            "user-1",
+            `Front ${i + 1}`,
+            `Back ${i + 1}`,
+            "2024-01-01"
+          )
       );
 
       vi.mocked(mockFlashcardRepo.findFlashcardsByIds).mockResolvedValue(

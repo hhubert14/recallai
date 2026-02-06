@@ -6,11 +6,7 @@
  */
 
 import { logger } from "@/lib/logger";
-import {
-  classifyError,
-  TransientDatabaseError,
-  DatabaseError,
-} from "./errors";
+import { classifyError, TransientDatabaseError, DatabaseError } from "./errors";
 
 export interface RetryOptions {
   /** Maximum number of retry attempts (default: 3) */
@@ -39,7 +35,10 @@ const DEFAULT_OPTIONS: Required<RetryOptions> = {
  */
 export function calculateDelay(
   attempt: number,
-  options: Pick<RetryOptions, "baseDelayMs" | "maxDelayMs" | "jitterFactor"> = {}
+  options: Pick<
+    RetryOptions,
+    "baseDelayMs" | "maxDelayMs" | "jitterFactor"
+  > = {}
 ): number {
   const {
     baseDelayMs = DEFAULT_OPTIONS.baseDelayMs,
@@ -115,7 +114,11 @@ export async function withRetry<T>(
       }
 
       // Calculate delay and wait before retrying
-      const delay = calculateDelay(attempt, { baseDelayMs, maxDelayMs, jitterFactor });
+      const delay = calculateDelay(attempt, {
+        baseDelayMs,
+        maxDelayMs,
+        jitterFactor,
+      });
 
       logger.db.info(`Retrying ${operationName}`, {
         attempt: attempt + 1,

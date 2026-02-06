@@ -46,31 +46,45 @@ describe("FindStudySetsByUserIdUseCase", () => {
       ),
     ];
 
-    vi.mocked(mockStudySetRepository.findStudySetsByUserId).mockResolvedValue(studySets);
+    vi.mocked(mockStudySetRepository.findStudySetsByUserId).mockResolvedValue(
+      studySets
+    );
 
     const result = await useCase.execute("user-123");
 
     expect(result).toEqual(studySets);
     expect(result).toHaveLength(2);
-    expect(mockStudySetRepository.findStudySetsByUserId).toHaveBeenCalledWith("user-123");
+    expect(mockStudySetRepository.findStudySetsByUserId).toHaveBeenCalledWith(
+      "user-123"
+    );
   });
 
   it("returns empty array when user has no study sets", async () => {
-    vi.mocked(mockStudySetRepository.findStudySetsByUserId).mockResolvedValue([]);
+    vi.mocked(mockStudySetRepository.findStudySetsByUserId).mockResolvedValue(
+      []
+    );
 
     const result = await useCase.execute("user-with-no-sets");
 
     expect(result).toEqual([]);
     expect(result).toHaveLength(0);
-    expect(mockStudySetRepository.findStudySetsByUserId).toHaveBeenCalledWith("user-with-no-sets");
+    expect(mockStudySetRepository.findStudySetsByUserId).toHaveBeenCalledWith(
+      "user-with-no-sets"
+    );
   });
 
   it("delegates to repository with correct user ID", async () => {
-    vi.mocked(mockStudySetRepository.findStudySetsByUserId).mockResolvedValue([]);
+    vi.mocked(mockStudySetRepository.findStudySetsByUserId).mockResolvedValue(
+      []
+    );
 
     await useCase.execute("specific-user-id");
 
-    expect(mockStudySetRepository.findStudySetsByUserId).toHaveBeenCalledTimes(1);
-    expect(mockStudySetRepository.findStudySetsByUserId).toHaveBeenCalledWith("specific-user-id");
+    expect(mockStudySetRepository.findStudySetsByUserId).toHaveBeenCalledTimes(
+      1
+    );
+    expect(mockStudySetRepository.findStudySetsByUserId).toHaveBeenCalledWith(
+      "specific-user-id"
+    );
   });
 });

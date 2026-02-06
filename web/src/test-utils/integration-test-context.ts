@@ -31,7 +31,9 @@ export interface IntegrationTestContext {
 export async function createTestContext(): Promise<IntegrationTestContext> {
   const databaseUrl = process.env.DATABASE_URL;
   if (!databaseUrl?.includes("testdb")) {
-    throw new Error("Integration tests require DATABASE_URL pointing to testdb");
+    throw new Error(
+      "Integration tests require DATABASE_URL pointing to testdb"
+    );
   }
 
   // Create a dedicated connection for this test

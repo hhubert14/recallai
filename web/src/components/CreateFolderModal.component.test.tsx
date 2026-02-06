@@ -7,7 +7,11 @@ describe("CreateFolderModal", () => {
   describe("when open", () => {
     it("renders the modal title", () => {
       render(
-        <CreateFolderModal isOpen={true} onClose={vi.fn()} onSuccess={vi.fn()} />
+        <CreateFolderModal
+          isOpen={true}
+          onClose={vi.fn()}
+          onSuccess={vi.fn()}
+        />
       );
 
       expect(
@@ -17,7 +21,11 @@ describe("CreateFolderModal", () => {
 
     it("renders the name input", () => {
       render(
-        <CreateFolderModal isOpen={true} onClose={vi.fn()} onSuccess={vi.fn()} />
+        <CreateFolderModal
+          isOpen={true}
+          onClose={vi.fn()}
+          onSuccess={vi.fn()}
+        />
       );
 
       expect(screen.getByLabelText(/name/i)).toBeInTheDocument();
@@ -25,7 +33,11 @@ describe("CreateFolderModal", () => {
 
     it("renders the description input", () => {
       render(
-        <CreateFolderModal isOpen={true} onClose={vi.fn()} onSuccess={vi.fn()} />
+        <CreateFolderModal
+          isOpen={true}
+          onClose={vi.fn()}
+          onSuccess={vi.fn()}
+        />
       );
 
       expect(screen.getByLabelText(/description/i)).toBeInTheDocument();
@@ -33,7 +45,11 @@ describe("CreateFolderModal", () => {
 
     it("renders create and cancel buttons", () => {
       render(
-        <CreateFolderModal isOpen={true} onClose={vi.fn()} onSuccess={vi.fn()} />
+        <CreateFolderModal
+          isOpen={true}
+          onClose={vi.fn()}
+          onSuccess={vi.fn()}
+        />
       );
 
       expect(
@@ -65,7 +81,11 @@ describe("CreateFolderModal", () => {
     it("allows typing in the name input", async () => {
       const user = userEvent.setup();
       render(
-        <CreateFolderModal isOpen={true} onClose={vi.fn()} onSuccess={vi.fn()} />
+        <CreateFolderModal
+          isOpen={true}
+          onClose={vi.fn()}
+          onSuccess={vi.fn()}
+        />
       );
 
       const nameInput = screen.getByLabelText(/name/i);
@@ -77,7 +97,11 @@ describe("CreateFolderModal", () => {
     it("allows typing in the description input", async () => {
       const user = userEvent.setup();
       render(
-        <CreateFolderModal isOpen={true} onClose={vi.fn()} onSuccess={vi.fn()} />
+        <CreateFolderModal
+          isOpen={true}
+          onClose={vi.fn()}
+          onSuccess={vi.fn()}
+        />
       );
 
       const descInput = screen.getByLabelText(/description/i);
@@ -90,7 +114,11 @@ describe("CreateFolderModal", () => {
       const user = userEvent.setup();
       const onClose = vi.fn();
       render(
-        <CreateFolderModal isOpen={true} onClose={onClose} onSuccess={vi.fn()} />
+        <CreateFolderModal
+          isOpen={true}
+          onClose={onClose}
+          onSuccess={vi.fn()}
+        />
       );
 
       await user.click(screen.getByRole("button", { name: /cancel/i }));
@@ -100,7 +128,11 @@ describe("CreateFolderModal", () => {
 
     it("disables create button when name is empty", () => {
       render(
-        <CreateFolderModal isOpen={true} onClose={vi.fn()} onSuccess={vi.fn()} />
+        <CreateFolderModal
+          isOpen={true}
+          onClose={vi.fn()}
+          onSuccess={vi.fn()}
+        />
       );
 
       expect(screen.getByRole("button", { name: /create/i })).toBeDisabled();
@@ -109,7 +141,11 @@ describe("CreateFolderModal", () => {
     it("enables create button when name is provided", async () => {
       const user = userEvent.setup();
       render(
-        <CreateFolderModal isOpen={true} onClose={vi.fn()} onSuccess={vi.fn()} />
+        <CreateFolderModal
+          isOpen={true}
+          onClose={vi.fn()}
+          onSuccess={vi.fn()}
+        />
       );
 
       await user.type(screen.getByLabelText(/name/i), "My Folder");
@@ -142,7 +178,11 @@ describe("CreateFolderModal", () => {
       });
 
       render(
-        <CreateFolderModal isOpen={true} onClose={vi.fn()} onSuccess={onSuccess} />
+        <CreateFolderModal
+          isOpen={true}
+          onClose={vi.fn()}
+          onSuccess={onSuccess}
+        />
       );
 
       await user.type(screen.getByLabelText(/name/i), "My Folder");
@@ -164,12 +204,14 @@ describe("CreateFolderModal", () => {
       const user = userEvent.setup();
 
       // Mock fetch to never resolve (simulate slow network)
-      global.fetch = vi.fn().mockImplementation(
-        () => new Promise(() => {})
-      );
+      global.fetch = vi.fn().mockImplementation(() => new Promise(() => {}));
 
       render(
-        <CreateFolderModal isOpen={true} onClose={vi.fn()} onSuccess={vi.fn()} />
+        <CreateFolderModal
+          isOpen={true}
+          onClose={vi.fn()}
+          onSuccess={vi.fn()}
+        />
       );
 
       await user.type(screen.getByLabelText(/name/i), "My Folder");
@@ -191,33 +233,51 @@ describe("CreateFolderModal", () => {
       });
 
       render(
-        <CreateFolderModal isOpen={true} onClose={vi.fn()} onSuccess={vi.fn()} />
+        <CreateFolderModal
+          isOpen={true}
+          onClose={vi.fn()}
+          onSuccess={vi.fn()}
+        />
       );
 
       await user.type(screen.getByLabelText(/name/i), "My Folder");
       await user.click(screen.getByRole("button", { name: /create/i }));
 
       await waitFor(() => {
-        expect(screen.getByText(/folder name already exists/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/folder name already exists/i)
+        ).toBeInTheDocument();
       });
     });
 
     it("clears form when reopened", async () => {
       const user = userEvent.setup();
       const { rerender } = render(
-        <CreateFolderModal isOpen={true} onClose={vi.fn()} onSuccess={vi.fn()} />
+        <CreateFolderModal
+          isOpen={true}
+          onClose={vi.fn()}
+          onSuccess={vi.fn()}
+        />
       );
 
       await user.type(screen.getByLabelText(/name/i), "My Folder");
 
       // Close modal
       rerender(
-        <CreateFolderModal isOpen={false} onClose={vi.fn()} onSuccess={vi.fn()} />
+        <CreateFolderModal
+          isOpen={false}
+          onClose={vi.fn()}
+          onSuccess={vi.fn()}
+        />
       );
 
       // Reopen modal
       rerender(
-        <CreateFolderModal isOpen={true} onClose={vi.fn()} onSuccess={vi.fn()} />
+        <CreateFolderModal
+          isOpen={true}
+          onClose={vi.fn()}
+          onSuccess={vi.fn()}
+        />
       );
 
       expect(screen.getByLabelText(/name/i)).toHaveValue("");

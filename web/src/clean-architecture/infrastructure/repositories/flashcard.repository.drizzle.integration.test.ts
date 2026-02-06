@@ -68,8 +68,18 @@ describe("DrizzleFlashcardRepository (integration)", () => {
   describe("createFlashcards", () => {
     it("creates flashcards and returns entities", async () => {
       const flashcardsData = [
-        { videoId: testVideoId, userId: testUserId, front: "Front 1", back: "Back 1" },
-        { videoId: testVideoId, userId: testUserId, front: "Front 2", back: "Back 2" },
+        {
+          videoId: testVideoId,
+          userId: testUserId,
+          front: "Front 1",
+          back: "Back 1",
+        },
+        {
+          videoId: testVideoId,
+          userId: testUserId,
+          front: "Front 2",
+          back: "Back 2",
+        },
       ];
 
       const result = await repository.createFlashcards(flashcardsData);
@@ -92,9 +102,24 @@ describe("DrizzleFlashcardRepository (integration)", () => {
     it("finds multiple flashcards by their IDs", async () => {
       // Create test flashcards
       const created = await repository.createFlashcards([
-        { videoId: testVideoId, userId: testUserId, front: "Front 1", back: "Back 1" },
-        { videoId: testVideoId, userId: testUserId, front: "Front 2", back: "Back 2" },
-        { videoId: testVideoId, userId: testUserId, front: "Front 3", back: "Back 3" },
+        {
+          videoId: testVideoId,
+          userId: testUserId,
+          front: "Front 1",
+          back: "Back 1",
+        },
+        {
+          videoId: testVideoId,
+          userId: testUserId,
+          front: "Front 2",
+          back: "Back 2",
+        },
+        {
+          videoId: testVideoId,
+          userId: testUserId,
+          front: "Front 3",
+          back: "Back 3",
+        },
       ]);
 
       // Find only the first two
@@ -120,10 +145,18 @@ describe("DrizzleFlashcardRepository (integration)", () => {
 
     it("returns only existing flashcards when some IDs do not exist", async () => {
       const created = await repository.createFlashcards([
-        { videoId: testVideoId, userId: testUserId, front: "Front 1", back: "Back 1" },
+        {
+          videoId: testVideoId,
+          userId: testUserId,
+          front: "Front 1",
+          back: "Back 1",
+        },
       ]);
 
-      const result = await repository.findFlashcardsByIds([created[0].id, 99999]);
+      const result = await repository.findFlashcardsByIds([
+        created[0].id,
+        99999,
+      ]);
 
       expect(result).toHaveLength(1);
       expect(result[0].id).toBe(created[0].id);
@@ -131,7 +164,12 @@ describe("DrizzleFlashcardRepository (integration)", () => {
 
     it("returns flashcards with correct entity structure", async () => {
       const created = await repository.createFlashcards([
-        { videoId: testVideoId, userId: testUserId, front: "Test Front", back: "Test Back" },
+        {
+          videoId: testVideoId,
+          userId: testUserId,
+          front: "Test Front",
+          back: "Test Back",
+        },
       ]);
 
       const result = await repository.findFlashcardsByIds([created[0].id]);
@@ -150,8 +188,18 @@ describe("DrizzleFlashcardRepository (integration)", () => {
   describe("findFlashcardsByVideoId", () => {
     it("finds all flashcards for a video", async () => {
       await repository.createFlashcards([
-        { videoId: testVideoId, userId: testUserId, front: "Front 1", back: "Back 1" },
-        { videoId: testVideoId, userId: testUserId, front: "Front 2", back: "Back 2" },
+        {
+          videoId: testVideoId,
+          userId: testUserId,
+          front: "Front 1",
+          back: "Back 1",
+        },
+        {
+          videoId: testVideoId,
+          userId: testUserId,
+          front: "Front 2",
+          back: "Back 2",
+        },
       ]);
 
       const result = await repository.findFlashcardsByVideoId(testVideoId);
@@ -186,7 +234,10 @@ describe("DrizzleFlashcardRepository (integration)", () => {
         { videoId: video2.id, userId: testUserId, front: "F3", back: "B3" },
       ]);
 
-      const result = await repository.countFlashcardsByVideoIds([testVideoId, video2.id]);
+      const result = await repository.countFlashcardsByVideoIds([
+        testVideoId,
+        video2.id,
+      ]);
 
       expect(result[testVideoId]).toBe(2);
       expect(result[video2.id]).toBe(1);
@@ -202,7 +253,10 @@ describe("DrizzleFlashcardRepository (integration)", () => {
         { videoId: testVideoId, userId: testUserId, front: "F1", back: "B1" },
       ]);
 
-      const result = await repository.countFlashcardsByVideoIds([testVideoId, 99999]);
+      const result = await repository.countFlashcardsByVideoIds([
+        testVideoId,
+        99999,
+      ]);
 
       expect(result[testVideoId]).toBe(1);
       expect(result[99999]).toBeUndefined();

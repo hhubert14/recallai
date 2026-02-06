@@ -2,11 +2,9 @@ import { IFlashcardRepository } from "@/clean-architecture/domain/repositories/f
 import { FlashcardEntity } from "@/clean-architecture/domain/entities/flashcard.entity";
 
 export class FindFlashcardsByVideoIdUseCase {
-    constructor(
-        private readonly flashcardRepository: IFlashcardRepository
-    ) {}
+  constructor(private readonly flashcardRepository: IFlashcardRepository) {}
 
-    async execute(videoId: number): Promise<FlashcardEntity[]> {
-        return this.flashcardRepository.findFlashcardsByVideoId(videoId);
-    }
+  async execute(videoId: number): Promise<FlashcardEntity[]> {
+    return this.flashcardRepository.findFlashcardsByVideoId(videoId);
+  }
 }

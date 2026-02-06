@@ -24,7 +24,12 @@ export class StreakEntity {
       return false;
     }
     const today = getLocalDateString(new Date(), timezone);
-    const yesterday = getLocalDateString(new Date(Date.now() - 86400000), timezone);
-    return this.lastActivityDate === today || this.lastActivityDate === yesterday;
+    const yesterday = getLocalDateString(
+      new Date(Date.now() - 86400000),
+      timezone
+    );
+    return (
+      this.lastActivityDate === today || this.lastActivityDate === yesterday
+    );
   }
 }

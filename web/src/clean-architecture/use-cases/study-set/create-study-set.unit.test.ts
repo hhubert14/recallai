@@ -33,7 +33,9 @@ describe("CreateStudySetUseCase", () => {
       "2025-01-20T10:00:00Z"
     );
 
-    vi.mocked(mockStudySetRepository.createStudySet).mockResolvedValue(expectedEntity);
+    vi.mocked(mockStudySetRepository.createStudySet).mockResolvedValue(
+      expectedEntity
+    );
 
     const result = await useCase.execute({
       userId: "user-123",
@@ -66,7 +68,9 @@ describe("CreateStudySetUseCase", () => {
       "2025-01-20T10:00:00Z"
     );
 
-    vi.mocked(mockStudySetRepository.createStudySet).mockResolvedValue(expectedEntity);
+    vi.mocked(mockStudySetRepository.createStudySet).mockResolvedValue(
+      expectedEntity
+    );
 
     const result = await useCase.execute({
       userId: "user-456",

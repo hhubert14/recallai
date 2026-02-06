@@ -31,7 +31,9 @@ interface HelpButtonProps {
 function getEffectiveTourId(tourId: TourId): TourId {
   // On review page, check if a session is active by looking for session-specific elements
   if (tourId === TOUR_IDS.reviewModeSelector) {
-    const sessionElement = document.querySelector(tourSelector(TOUR_TARGETS.quizProgress));
+    const sessionElement = document.querySelector(
+      tourSelector(TOUR_TARGETS.quizProgress)
+    );
     if (sessionElement) {
       return TOUR_IDS.reviewSession;
     }
@@ -95,12 +97,7 @@ export function HelpButton({ tourId }: HelpButtonProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-9 w-9"
-          title="Help"
-        >
+        <Button variant="ghost" size="icon" className="h-9 w-9" title="Help">
           <HelpCircle className="h-5 w-5" />
           <span className="sr-only">Help</span>
         </Button>

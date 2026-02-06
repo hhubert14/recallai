@@ -1,5 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { ReviewableItemEntity, ReviewableItemType } from "./reviewable-item.entity";
+import {
+  ReviewableItemEntity,
+  ReviewableItemType,
+} from "./reviewable-item.entity";
 
 describe("ReviewableItemEntity", () => {
   describe("constructor", () => {
@@ -55,7 +58,7 @@ describe("ReviewableItemEntity", () => {
         null,
         101,
         null, // videoId can be null for manual study sets
-        70,   // studySetId is always required
+        70, // studySetId is always required
         "2025-01-22T09:00:00Z"
       );
 

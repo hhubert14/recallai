@@ -33,16 +33,22 @@ describe("FindStudySetByPublicIdUseCase", () => {
       "2025-01-20T10:00:00Z"
     );
 
-    vi.mocked(mockStudySetRepository.findStudySetByPublicId).mockResolvedValue(studySet);
+    vi.mocked(mockStudySetRepository.findStudySetByPublicId).mockResolvedValue(
+      studySet
+    );
 
     const result = await useCase.execute("public-id-123", "user-123");
 
     expect(result).toEqual(studySet);
-    expect(mockStudySetRepository.findStudySetByPublicId).toHaveBeenCalledWith("public-id-123");
+    expect(mockStudySetRepository.findStudySetByPublicId).toHaveBeenCalledWith(
+      "public-id-123"
+    );
   });
 
   it("returns null when study set not found", async () => {
-    vi.mocked(mockStudySetRepository.findStudySetByPublicId).mockResolvedValue(null);
+    vi.mocked(mockStudySetRepository.findStudySetByPublicId).mockResolvedValue(
+      null
+    );
 
     const result = await useCase.execute("non-existent", "user-123");
 
@@ -62,7 +68,9 @@ describe("FindStudySetByPublicIdUseCase", () => {
       "2025-01-20T10:00:00Z"
     );
 
-    vi.mocked(mockStudySetRepository.findStudySetByPublicId).mockResolvedValue(studySet);
+    vi.mocked(mockStudySetRepository.findStudySetByPublicId).mockResolvedValue(
+      studySet
+    );
 
     const result = await useCase.execute("public-id-123", "user-123");
 

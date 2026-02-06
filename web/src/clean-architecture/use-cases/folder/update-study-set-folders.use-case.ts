@@ -65,7 +65,10 @@ export class UpdateStudySetFoldersUseCase {
 
     // Execute removes
     for (const folderId of foldersToRemove) {
-      await this.folderRepository.removeStudySetFromFolder(folderId, studySetId);
+      await this.folderRepository.removeStudySetFromFolder(
+        folderId,
+        studySetId
+      );
     }
   }
 }

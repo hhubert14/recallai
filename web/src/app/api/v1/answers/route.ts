@@ -6,37 +6,40 @@ import { DrizzleAnswerRepository } from "@/clean-architecture/infrastructure/rep
 import { jsendSuccess, jsendFail, jsendError } from "@/lib/jsend";
 
 export async function POST(request: NextRequest) {
-    try {
-        const supabase = await createClient();
-        const {
-            data: { user },
-        } = await supabase.auth.getUser();
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-        if (!user) {
-            return jsendFail({ error: "Unauthorized" }, 401);
-        }
-
-        const body = await request.json();
-        const { questionId, selectedOptionId, isCorrect } = body;
-
-        if (!questionId || !selectedOptionId || typeof isCorrect !== "boolean") {
-            return jsendFail({
-                error: "Missing required fields: questionId, selectedOptionId, isCorrect"
-            });
-        }
-
-        const useCase = new CreateMultipleChoiceAnswerUseCase(new DrizzleAnswerRepository());
-
-        const answer = await useCase.execute(
-            user.id,
-            questionId,
-            selectedOptionId,
-            isCorrect
-        );
-
-        return jsendSuccess({ answer });
-    } catch (error) {
-        // logger.api.error("Error creating answer", error);
-        return jsendError(String(error));
+    if (!user) {
+      return jsendFail({ error: "Unauthorized" }, 401);
     }
+
+    const body = await request.json();
+    const { questionId, selectedOptionId, isCorrect } = body;
+
+    if (!questionId || !selectedOptionId || typeof isCorrect !== "boolean") {
+      return jsendFail({
+        error:
+          "Missing required fields: questionId, selectedOptionId, isCorrect",
+      });
+    }
+
+    const useCase = new CreateMultipleChoiceAnswerUseCase(
+      new DrizzleAnswerRepository()
+    );
+
+    const answer = await useCase.execute(
+      user.id,
+      questionId,
+      selectedOptionId,
+      isCorrect
+    );
+
+    return jsendSuccess({ answer });
+  } catch (error) {
+    // logger.api.error("Error creating answer", error);
+    return jsendError(String(error));
+  }
 }

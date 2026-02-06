@@ -232,7 +232,8 @@ export class DrizzleReviewableItemRepository
     }
 
     // Initialize all requested IDs with zero counts
-    const result: Record<number, { questions: number; flashcards: number }> = {};
+    const result: Record<number, { questions: number; flashcards: number }> =
+      {};
     for (const id of studySetIds) {
       result[id] = { questions: 0, flashcards: 0 };
     }

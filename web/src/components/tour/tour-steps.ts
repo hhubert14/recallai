@@ -1,5 +1,10 @@
 import type { DriveStep } from "driver.js";
-import { TOUR_IDS, TOUR_TARGETS, tourSelector, type TourId } from "./tour-constants";
+import {
+  TOUR_IDS,
+  TOUR_TARGETS,
+  tourSelector,
+  type TourId,
+} from "./tour-constants";
 
 /**
  * Dashboard tour steps
@@ -104,8 +109,7 @@ export const reviewModeSelectorSteps: DriveStep[] = [
     element: tourSelector(TOUR_TARGETS.startSessionBtn),
     popover: {
       title: "Start Your Session",
-      description:
-        "Ready to learn? Click here to begin your review session.",
+      description: "Ready to learn? Click here to begin your review session.",
       side: "top",
       align: "center",
     },
