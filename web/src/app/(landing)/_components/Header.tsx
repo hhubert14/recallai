@@ -28,13 +28,14 @@ const authedNavLinks = [
   { href: "/dashboard/review", label: "Review" },
 ];
 
+const linkClassName =
+  "relative text-sm font-medium text-muted-foreground hover:text-foreground transition-colors after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:bg-foreground after:scale-x-0 after:origin-left after:transition-transform after:duration-300 hover:after:scale-x-100";
+
 export function Header() {
-  const { user, loading } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { user, loading } = useAuth();
 
   const navLinks = user ? authedNavLinks : guestNavLinks;
-  const linkClassName =
-    "relative text-sm font-medium text-muted-foreground hover:text-foreground transition-colors after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:bg-foreground after:scale-x-0 after:origin-left after:transition-transform after:duration-300 hover:after:scale-x-100";
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-black/5 dark:border-white/10 bg-white/80 dark:bg-black/80 backdrop-blur-xl">

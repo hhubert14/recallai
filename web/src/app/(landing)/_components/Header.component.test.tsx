@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Header } from "./Header";
 import { useAuth } from "@/lib/auth-provider";
@@ -50,14 +50,15 @@ describe("Header", () => {
 
       await user.click(screen.getByRole("button", { name: /open menu/i }));
 
+      const dialog = within(screen.getByRole("dialog"));
       expect(
-        screen.getByRole("link", { name: "How It Works" })
+        dialog.getByRole("link", { name: "How It Works" })
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("link", { name: "Features" })
+        dialog.getByRole("link", { name: "Features" })
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("link", { name: "Updates" })
+        dialog.getByRole("link", { name: "Updates" })
       ).toBeInTheDocument();
     });
 
@@ -67,11 +68,12 @@ describe("Header", () => {
 
       await user.click(screen.getByRole("button", { name: /open menu/i }));
 
+      const dialog = within(screen.getByRole("dialog"));
       expect(
-        screen.getByRole("link", { name: "Log In" })
+        dialog.getByRole("link", { name: "Log In" })
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("link", { name: "Get Started" })
+        dialog.getByRole("link", { name: "Get Started" })
       ).toBeInTheDocument();
     });
 
@@ -103,14 +105,15 @@ describe("Header", () => {
 
       await user.click(screen.getByRole("button", { name: /open menu/i }));
 
+      const dialog = within(screen.getByRole("dialog"));
       expect(
-        screen.getByRole("link", { name: "Dashboard" })
+        dialog.getByRole("link", { name: "Dashboard" })
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("link", { name: "My Library" })
+        dialog.getByRole("link", { name: "My Library" })
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("link", { name: "Review" })
+        dialog.getByRole("link", { name: "Review" })
       ).toBeInTheDocument();
     });
   });
