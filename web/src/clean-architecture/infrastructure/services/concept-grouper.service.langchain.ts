@@ -42,7 +42,7 @@ export class LangChainConceptGrouperService implements IConceptGrouperService {
     }
 
     const llm = new ChatOpenAI({
-      model: "gpt-4o-mini",
+      model: "gpt-4.1-mini",
       temperature: 0.5, // Balanced creativity for grouping
     });
 

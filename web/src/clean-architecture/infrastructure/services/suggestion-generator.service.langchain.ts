@@ -81,7 +81,7 @@ export class LangChainSuggestionGeneratorService
     }
 
     const llm = new ChatOpenAI({
-      model: "gpt-4o-mini",
+      model: "gpt-4.1-mini",
       temperature: 0.7, // Slightly higher temperature for variety
     });
 

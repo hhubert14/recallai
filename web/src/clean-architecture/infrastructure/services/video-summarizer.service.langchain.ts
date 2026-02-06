@@ -49,7 +49,7 @@ export class LangChainVideoSummarizerService
     const videoDescription = description || "No description provided";
 
     const llm = new ChatOpenAI({
-      model: "gpt-4o-mini",
+      model: "gpt-4.1-mini",
       temperature: 0,
     });
 

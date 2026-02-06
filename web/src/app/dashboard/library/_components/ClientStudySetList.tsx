@@ -100,7 +100,7 @@ export function ClientStudySetList({
       {studySets.map((studySet, index) => (
         <div
           key={studySet.id}
-          className={`opacity-0 ${isInView ? "animate-fade-up" : ""}`}
+          className={`min-w-0 opacity-0 ${isInView ? "animate-fade-up" : ""}`}
           style={{
             animationDelay: `${index * 80}ms`,
             animationFillMode: "forwards",

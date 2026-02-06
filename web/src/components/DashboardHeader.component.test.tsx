@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { DashboardHeader } from "./DashboardHeader";
 import { useAuth } from "@/lib/auth-provider";
 import { usePathname } from "next/navigation";
@@ -123,5 +124,89 @@ describe("DashboardHeader", () => {
     render(<DashboardHeader />);
 
     expect(screen.queryByTestId("help-button")).not.toBeInTheDocument();
+  });
+
+  describe("mobile navigation menu", () => {
+    beforeEach(() => {
+      vi.mocked(useAuth).mockReturnValue({
+        user: { id: "user-123" },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any);
+    });
+
+    it("renders a hamburger menu button", () => {
+      render(<DashboardHeader />);
+
+      expect(
+        screen.getByRole("button", { name: /open menu/i })
+      ).toBeInTheDocument();
+    });
+
+    it("opens sheet with nav links when hamburger is clicked", async () => {
+      const user = userEvent.setup();
+      render(<DashboardHeader />);
+
+      await user.click(screen.getByRole("button", { name: /open menu/i }));
+
+      expect(
+        screen.getByRole("link", { name: "Dashboard" })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("link", { name: "My Library" })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("link", { name: "Review" })
+      ).toBeInTheDocument();
+    });
+
+    it("shows sheet title for accessibility", async () => {
+      const user = userEvent.setup();
+      render(<DashboardHeader />);
+
+      await user.click(screen.getByRole("button", { name: /open menu/i }));
+
+      expect(screen.getByText("Navigation")).toBeInTheDocument();
+    });
+
+    it("highlights the active nav link in the mobile menu", async () => {
+      vi.mocked(usePathname).mockReturnValue("/dashboard");
+      const user = userEvent.setup();
+      render(<DashboardHeader />);
+
+      await user.click(screen.getByRole("button", { name: /open menu/i }));
+
+      const dashboardLink = screen.getByRole("link", { name: "Dashboard" });
+      expect(dashboardLink).toHaveAttribute("data-active", "true");
+    });
+
+    it("does not highlight inactive nav links", async () => {
+      vi.mocked(usePathname).mockReturnValue("/dashboard");
+      const user = userEvent.setup();
+      render(<DashboardHeader />);
+
+      await user.click(screen.getByRole("button", { name: /open menu/i }));
+
+      const libraryLink = screen.getByRole("link", { name: "My Library" });
+      expect(libraryLink).toHaveAttribute("data-active", "false");
+    });
+
+    it("closes the sheet when a nav link is clicked", async () => {
+      const user = userEvent.setup();
+      render(<DashboardHeader />);
+
+      await user.click(screen.getByRole("button", { name: /open menu/i }));
+
+      // Sheet should be open
+      expect(
+        screen.getByRole("link", { name: "My Library" })
+      ).toBeInTheDocument();
+
+      await user.click(screen.getByRole("link", { name: "My Library" }));
+
+      // Sheet should be closed - nav links should no longer be visible
+      expect(
+        screen.queryByRole("dialog")
+      ).not.toBeInTheDocument();
+    });
   });
 });
