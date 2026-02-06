@@ -102,7 +102,9 @@
       "Bash(npm run test:*)",
       "Bash(sort:*)",
       "Bash(for:*)",
-      "Bash(do echo \"=== ISSUE $issue ===\")"
+      "Bash(do echo \"=== ISSUE $issue ===\")",
+      "Bash(wc:*)",
+      "Bash(npx supabase start)"
     ],
     "deny": [],
     "ask": []
