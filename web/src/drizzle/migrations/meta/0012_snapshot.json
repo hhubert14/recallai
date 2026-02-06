@@ -63,12 +63,8 @@
           "name": "flashcards_video_id_fkey",
           "tableFrom": "flashcards",
           "tableTo": "videos",
-          "columnsFrom": [
-            "video_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["video_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -76,12 +72,8 @@
           "name": "flashcards_user_id_fkey",
           "tableFrom": "flashcards",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -129,12 +121,8 @@
           "name": "onboarding_surveys_user_id_fkey",
           "tableFrom": "onboarding_surveys",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -144,9 +132,7 @@
         "onboarding_surveys_user_id_key": {
           "name": "onboarding_surveys_user_id_key",
           "nullsNotDistinct": false,
-          "columns": [
-            "user_id"
-          ]
+          "columns": ["user_id"]
         }
       },
       "policies": {},
@@ -212,12 +198,8 @@
           "name": "question_options_question_id_fkey",
           "tableFrom": "question_options",
           "tableTo": "questions",
-          "columnsFrom": [
-            "question_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["question_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -300,12 +282,8 @@
           "name": "questions_video_id_fkey",
           "tableFrom": "questions",
           "tableTo": "videos",
-          "columnsFrom": [
-            "video_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["video_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -370,12 +348,8 @@
           "name": "summaries_video_id_fkey",
           "tableFrom": "summaries",
           "tableTo": "videos",
-          "columnsFrom": [
-            "video_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["video_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -473,12 +447,8 @@
           "name": "transcript_windows_video_id_fkey",
           "tableFrom": "transcript_windows",
           "tableTo": "videos",
-          "columnsFrom": [
-            "video_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["video_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -488,10 +458,7 @@
         "transcript_windows_video_id_window_index_key": {
           "name": "transcript_windows_video_id_window_index_key",
           "nullsNotDistinct": false,
-          "columns": [
-            "video_id",
-            "window_index"
-          ]
+          "columns": ["video_id", "window_index"]
         }
       },
       "policies": {},
@@ -557,12 +524,8 @@
           "name": "user_answers_question_id_fkey",
           "tableFrom": "user_answers",
           "tableTo": "questions",
-          "columnsFrom": [
-            "question_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["question_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -570,12 +533,8 @@
           "name": "user_answers_selected_option_id_fkey",
           "tableFrom": "user_answers",
           "tableTo": "question_options",
-          "columnsFrom": [
-            "selected_option_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["selected_option_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -583,12 +542,8 @@
           "name": "user_answers_user_id_fkey",
           "tableFrom": "user_answers",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -686,12 +641,8 @@
           "name": "user_question_progress_question_id_fkey",
           "tableFrom": "user_question_progress",
           "tableTo": "questions",
-          "columnsFrom": [
-            "question_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["question_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -699,12 +650,8 @@
           "name": "user_question_progress_user_id_fkey",
           "tableFrom": "user_question_progress",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -714,18 +661,12 @@
         "user_question_progress_user_id_question_id_key": {
           "name": "user_question_progress_user_id_question_id_key",
           "nullsNotDistinct": false,
-          "columns": [
-            "user_id",
-            "question_id"
-          ]
+          "columns": ["user_id", "question_id"]
         },
         "user_question_progress_unique": {
           "name": "user_question_progress_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "user_id",
-            "question_id"
-          ]
+          "columns": ["user_id", "question_id"]
         }
       },
       "policies": {},
@@ -833,12 +774,8 @@
           "name": "video_transcripts_video_id_fkey",
           "tableFrom": "video_transcripts",
           "tableTo": "videos",
-          "columnsFrom": [
-            "video_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["video_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -848,9 +785,7 @@
         "video_transcripts_video_id_key": {
           "name": "video_transcripts_video_id_key",
           "nullsNotDistinct": false,
-          "columns": [
-            "video_id"
-          ]
+          "columns": ["video_id"]
         }
       },
       "policies": {},
@@ -923,12 +858,8 @@
           "name": "videos_user_id_fkey",
           "tableFrom": "videos",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }

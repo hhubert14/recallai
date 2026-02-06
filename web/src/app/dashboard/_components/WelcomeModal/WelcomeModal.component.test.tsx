@@ -43,7 +43,9 @@ describe("WelcomeModal", () => {
   it("does not show Back button on step 1", () => {
     render(<WelcomeModal {...defaultProps} />);
 
-    expect(screen.queryByRole("button", { name: /back/i })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /back/i })
+    ).not.toBeInTheDocument();
   });
 
   it("shows Back button on step 2 and navigates back to step 1", async () => {
@@ -246,8 +248,12 @@ describe("WelcomeModal", () => {
     expect(screen.getByText("Create Your First Study Set")).toBeInTheDocument();
 
     // Should have two CTA buttons
-    expect(screen.getByRole("button", { name: /import from youtube/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /create manually/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /import from youtube/i })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /create manually/i })
+    ).toBeInTheDocument();
   });
 
   it('"Import from YouTube" button opens AddVideoModal', async () => {
@@ -261,10 +267,14 @@ describe("WelcomeModal", () => {
     await user.click(screen.getByRole("button", { name: /next/i }));
 
     // Click "Import from YouTube"
-    await user.click(screen.getByRole("button", { name: /import from youtube/i }));
+    await user.click(
+      screen.getByRole("button", { name: /import from youtube/i })
+    );
 
     // AddVideoModal should be visible
-    expect(screen.getByText("Paste a YouTube URL to add a video to your library.")).toBeInTheDocument();
+    expect(
+      screen.getByText("Paste a YouTube URL to add a video to your library.")
+    ).toBeInTheDocument();
   });
 
   it('"Create Manually" button opens CreateStudySetModal', async () => {
@@ -281,7 +291,11 @@ describe("WelcomeModal", () => {
     await user.click(screen.getByRole("button", { name: /create manually/i }));
 
     // CreateStudySetModal should be visible
-    expect(screen.getByText("Create a new study set to organize your flashcards and questions.")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Create a new study set to organize your flashcards and questions."
+      )
+    ).toBeInTheDocument();
   });
 
   it('"Skip for now" button on step 5 calls onComplete', async () => {

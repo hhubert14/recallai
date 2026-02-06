@@ -18,10 +18,7 @@ export function AnimatedHeadline({
   const words = children.split(" ");
 
   return (
-    <Component
-      ref={ref}
-      className={className}
-    >
+    <Component ref={ref} className={className}>
       {words.map((word, index) => (
         <span
           key={index}

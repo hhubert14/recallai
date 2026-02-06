@@ -209,9 +209,7 @@ describe("AddToFolderModal", () => {
     it("shows create folder hint when no folders exist", () => {
       render(<AddToFolderModal {...defaultProps} folders={[]} />);
 
-      expect(
-        screen.getByText(/create a folder first/i)
-      ).toBeInTheDocument();
+      expect(screen.getByText(/create a folder first/i)).toBeInTheDocument();
     });
   });
 

@@ -54,12 +54,8 @@
           "name": "extension_tokens_user_id_fkey",
           "tableFrom": "extension_tokens",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -69,9 +65,7 @@
         "extension_tokens_token_key": {
           "name": "extension_tokens_token_key",
           "nullsNotDistinct": false,
-          "columns": [
-            "token"
-          ]
+          "columns": ["token"]
         }
       },
       "policies": {},
@@ -137,12 +131,8 @@
           "name": "flashcards_video_id_fkey",
           "tableFrom": "flashcards",
           "tableTo": "videos",
-          "columnsFrom": [
-            "video_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["video_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -150,12 +140,8 @@
           "name": "flashcards_user_id_fkey",
           "tableFrom": "flashcards",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -203,12 +189,8 @@
           "name": "onboarding_surveys_user_id_fkey",
           "tableFrom": "onboarding_surveys",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -218,9 +200,7 @@
         "onboarding_surveys_user_id_key": {
           "name": "onboarding_surveys_user_id_key",
           "nullsNotDistinct": false,
-          "columns": [
-            "user_id"
-          ]
+          "columns": ["user_id"]
         }
       },
       "policies": {},
@@ -292,12 +272,8 @@
           "name": "question_options_question_id_fkey",
           "tableFrom": "question_options",
           "tableTo": "questions",
-          "columnsFrom": [
-            "question_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["question_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -368,12 +344,8 @@
           "name": "questions_video_id_fkey",
           "tableFrom": "questions",
           "tableTo": "videos",
-          "columnsFrom": [
-            "video_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["video_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -484,12 +456,8 @@
           "name": "subscriptions_user_id_fkey",
           "tableFrom": "subscriptions",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -554,12 +522,8 @@
           "name": "summaries_video_id_fkey",
           "tableFrom": "summaries",
           "tableTo": "videos",
-          "columnsFrom": [
-            "video_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["video_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -635,12 +599,8 @@
           "name": "user_answers_question_id_fkey",
           "tableFrom": "user_answers",
           "tableTo": "questions",
-          "columnsFrom": [
-            "question_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["question_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -648,12 +608,8 @@
           "name": "user_answers_selected_option_id_fkey",
           "tableFrom": "user_answers",
           "tableTo": "question_options",
-          "columnsFrom": [
-            "selected_option_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["selected_option_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -661,12 +617,8 @@
           "name": "user_answers_user_id_fkey",
           "tableFrom": "user_answers",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -764,12 +716,8 @@
           "name": "user_question_progress_question_id_fkey",
           "tableFrom": "user_question_progress",
           "tableTo": "questions",
-          "columnsFrom": [
-            "question_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["question_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -777,12 +725,8 @@
           "name": "user_question_progress_user_id_fkey",
           "tableFrom": "user_question_progress",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -792,18 +736,12 @@
         "user_question_progress_user_id_question_id_key": {
           "name": "user_question_progress_user_id_question_id_key",
           "nullsNotDistinct": false,
-          "columns": [
-            "user_id",
-            "question_id"
-          ]
+          "columns": ["user_id", "question_id"]
         },
         "user_question_progress_unique": {
           "name": "user_question_progress_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "user_id",
-            "question_id"
-          ]
+          "columns": ["user_id", "question_id"]
         }
       },
       "policies": {},
@@ -894,9 +832,7 @@
         "users_stripe_customer_id_unique": {
           "name": "users_stripe_customer_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "stripe_customer_id"
-          ]
+          "columns": ["stripe_customer_id"]
         }
       },
       "policies": {},
@@ -1021,12 +957,8 @@
           "name": "videos_user_id_fkey",
           "tableFrom": "videos",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -1042,38 +974,22 @@
     "public.plan": {
       "name": "plan",
       "schema": "public",
-      "values": [
-        "free",
-        "premium",
-        "student"
-      ]
+      "values": ["free", "premium", "student"]
     },
     "public.platform": {
       "name": "platform",
       "schema": "public",
-      "values": [
-        "YouTube",
-        "Vimeo"
-      ]
+      "values": ["YouTube", "Vimeo"]
     },
     "public.processing_mode": {
       "name": "processing_mode",
       "schema": "public",
-      "values": [
-        "manual",
-        "auto"
-      ]
+      "values": ["manual", "auto"]
     },
     "public.status": {
       "name": "status",
       "schema": "public",
-      "values": [
-        "active",
-        "canceled",
-        "past_due",
-        "trialing",
-        "incomplete"
-      ]
+      "values": ["active", "canceled", "past_due", "trialing", "incomplete"]
     }
   },
   "schemas": {},

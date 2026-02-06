@@ -7,7 +7,7 @@ export class MultipleChoiceAnswerEntity {
     public readonly questionId: number,
     public readonly selectedOptionId: number,
     public readonly isCorrect: boolean,
-    public readonly createdAt: string,
+    public readonly createdAt: string
   ) {}
 }
 

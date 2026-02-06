@@ -17,10 +17,23 @@ export function HeroSection() {
 
       {/* Decorative grid lines */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
-        <svg className="absolute inset-0 w-full h-full opacity-[0.03] dark:opacity-[0.02]" xmlns="http://www.w3.org/2000/svg">
+        <svg
+          className="absolute inset-0 w-full h-full opacity-[0.03] dark:opacity-[0.02]"
+          xmlns="http://www.w3.org/2000/svg"
+        >
           <defs>
-            <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="currentColor" strokeWidth="1" />
+            <pattern
+              id="grid"
+              width="40"
+              height="40"
+              patternUnits="userSpaceOnUse"
+            >
+              <path
+                d="M 40 0 L 0 0 0 40"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1"
+              />
             </pattern>
           </defs>
           <rect width="100%" height="100%" fill="url(#grid)" />
@@ -30,13 +43,8 @@ export function HeroSection() {
       <div className="container relative px-4 md:px-6">
         <div className="grid gap-12 lg:grid-cols-2 lg:gap-16 items-center">
           {/* Content */}
-          <div
-            ref={ref}
-            className="flex flex-col justify-center space-y-8"
-          >
-            <AnimatedHeadline
-              className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl"
-            >
+          <div ref={ref} className="flex flex-col justify-center space-y-8">
+            <AnimatedHeadline className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
               Learn Anything, Remember Everything
             </AnimatedHeadline>
 
@@ -64,7 +72,12 @@ export function HeroSection() {
                   <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="font-medium">
+              <Button
+                asChild
+                variant="outline"
+                size="lg"
+                className="font-medium"
+              >
                 <Link
                   href="https://chromewebstore.google.com/detail/recallai/dciecdpjkhhagindacahojeiaeecblaa"
                   target="_blank"

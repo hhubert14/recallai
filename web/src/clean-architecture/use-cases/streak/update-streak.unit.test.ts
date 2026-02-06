@@ -69,7 +69,9 @@ describe("UpdateStreakUseCase", () => {
         longestStreak: 10,
         lastActivityDate: "2025-01-28",
       });
-      vi.mocked(mockStreakRepo.findStreakByUserId).mockResolvedValue(existingStreak);
+      vi.mocked(mockStreakRepo.findStreakByUserId).mockResolvedValue(
+        existingStreak
+      );
 
       const result = await useCase.execute("user-123");
 
@@ -88,7 +90,9 @@ describe("UpdateStreakUseCase", () => {
         longestStreak: 5,
         lastActivityDate: "2025-01-27",
       });
-      vi.mocked(mockStreakRepo.findStreakByUserId).mockResolvedValue(existingStreak);
+      vi.mocked(mockStreakRepo.findStreakByUserId).mockResolvedValue(
+        existingStreak
+      );
       vi.mocked(mockStreakRepo.upsertStreak).mockResolvedValue(
         createMockStreak({
           currentStreak: 6,
@@ -116,7 +120,9 @@ describe("UpdateStreakUseCase", () => {
         longestStreak: 5,
         lastActivityDate: "2025-01-27",
       });
-      vi.mocked(mockStreakRepo.findStreakByUserId).mockResolvedValue(existingStreak);
+      vi.mocked(mockStreakRepo.findStreakByUserId).mockResolvedValue(
+        existingStreak
+      );
       vi.mocked(mockStreakRepo.upsertStreak).mockResolvedValue(
         createMockStreak({
           currentStreak: 6,
@@ -143,7 +149,9 @@ describe("UpdateStreakUseCase", () => {
         longestStreak: 10,
         lastActivityDate: "2025-01-27",
       });
-      vi.mocked(mockStreakRepo.findStreakByUserId).mockResolvedValue(existingStreak);
+      vi.mocked(mockStreakRepo.findStreakByUserId).mockResolvedValue(
+        existingStreak
+      );
       vi.mocked(mockStreakRepo.upsertStreak).mockResolvedValue(
         createMockStreak({
           currentStreak: 4,
@@ -172,7 +180,9 @@ describe("UpdateStreakUseCase", () => {
         longestStreak: 15,
         lastActivityDate: "2025-01-26",
       });
-      vi.mocked(mockStreakRepo.findStreakByUserId).mockResolvedValue(existingStreak);
+      vi.mocked(mockStreakRepo.findStreakByUserId).mockResolvedValue(
+        existingStreak
+      );
       vi.mocked(mockStreakRepo.upsertStreak).mockResolvedValue(
         createMockStreak({
           currentStreak: 1,
@@ -201,7 +211,9 @@ describe("UpdateStreakUseCase", () => {
         longestStreak: 100,
         lastActivityDate: "2024-12-01",
       });
-      vi.mocked(mockStreakRepo.findStreakByUserId).mockResolvedValue(existingStreak);
+      vi.mocked(mockStreakRepo.findStreakByUserId).mockResolvedValue(
+        existingStreak
+      );
       vi.mocked(mockStreakRepo.upsertStreak).mockResolvedValue(
         createMockStreak({
           currentStreak: 1,
@@ -231,7 +243,9 @@ describe("UpdateStreakUseCase", () => {
         longestStreak: 5,
         lastActivityDate: null,
       });
-      vi.mocked(mockStreakRepo.findStreakByUserId).mockResolvedValue(existingStreak);
+      vi.mocked(mockStreakRepo.findStreakByUserId).mockResolvedValue(
+        existingStreak
+      );
       vi.mocked(mockStreakRepo.upsertStreak).mockResolvedValue(
         createMockStreak({
           currentStreak: 1,

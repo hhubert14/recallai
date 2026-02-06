@@ -41,7 +41,10 @@ describe("InitializeReviewProgressUseCase", () => {
       countItemsByStudySetId: vi.fn(),
       countItemsByStudySetIdsBatch: vi.fn(),
     };
-    useCase = new InitializeReviewProgressUseCase(mockProgressRepo, mockItemRepo);
+    useCase = new InitializeReviewProgressUseCase(
+      mockProgressRepo,
+      mockItemRepo
+    );
   });
 
   describe("ID resolution", () => {
@@ -76,8 +79,12 @@ describe("InitializeReviewProgressUseCase", () => {
       expect(
         mockProgressRepo.findReviewProgressByUserIdAndReviewableItemId
       ).toHaveBeenCalledWith(userId, reviewableItemId);
-      expect(mockItemRepo.findReviewableItemByQuestionId).not.toHaveBeenCalled();
-      expect(mockItemRepo.findReviewableItemByFlashcardId).not.toHaveBeenCalled();
+      expect(
+        mockItemRepo.findReviewableItemByQuestionId
+      ).not.toHaveBeenCalled();
+      expect(
+        mockItemRepo.findReviewableItemByFlashcardId
+      ).not.toHaveBeenCalled();
     });
 
     it("resolves reviewableItemId from questionId", async () => {
@@ -151,8 +158,12 @@ describe("InitializeReviewProgressUseCase", () => {
         isCorrect: true,
       });
 
-      expect(mockItemRepo.findReviewableItemByQuestionId).not.toHaveBeenCalled();
-      expect(mockItemRepo.findReviewableItemByFlashcardId).not.toHaveBeenCalled();
+      expect(
+        mockItemRepo.findReviewableItemByQuestionId
+      ).not.toHaveBeenCalled();
+      expect(
+        mockItemRepo.findReviewableItemByFlashcardId
+      ).not.toHaveBeenCalled();
       expect(
         mockProgressRepo.findReviewProgressByUserIdAndReviewableItemId
       ).toHaveBeenCalledWith(userId, reviewableItemId);

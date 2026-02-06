@@ -29,7 +29,9 @@ export interface IReviewProgressRepository {
    * Find all progress records that are due for review.
    * Due means next_review_date <= today.
    */
-  findReviewProgressDueForReview(userId: string): Promise<ReviewProgressEntity[]>;
+  findReviewProgressDueForReview(
+    userId: string
+  ): Promise<ReviewProgressEntity[]>;
 
   /**
    * Find all reviewable item IDs that have never been reviewed (no progress record).

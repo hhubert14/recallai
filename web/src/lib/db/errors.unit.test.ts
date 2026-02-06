@@ -148,7 +148,10 @@ describe("classifyError", () => {
     });
 
     it("preserves original error as cause", () => {
-      const originalError = { code: "ECONNREFUSED", message: "Connection refused" };
+      const originalError = {
+        code: "ECONNREFUSED",
+        message: "Connection refused",
+      };
       const result = classifyError(originalError);
 
       expect(result.cause).toBe(originalError);

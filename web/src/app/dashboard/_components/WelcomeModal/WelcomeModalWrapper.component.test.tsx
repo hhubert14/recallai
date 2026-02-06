@@ -28,9 +28,7 @@ describe("WelcomeModalWrapper", () => {
 
     render(<WelcomeModalWrapper />);
 
-    expect(
-      screen.queryByText("Welcome to Retenio!")
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText("Welcome to Retenio!")).not.toBeInTheDocument();
   });
 
   it("renders modal if localStorage key is not set", async () => {
@@ -62,9 +60,7 @@ describe("WelcomeModalWrapper", () => {
 
     // Modal should be closed
     await waitFor(() => {
-      expect(
-        screen.queryByText("Welcome to Retenio!")
-      ).not.toBeInTheDocument();
+      expect(screen.queryByText("Welcome to Retenio!")).not.toBeInTheDocument();
     });
   });
 

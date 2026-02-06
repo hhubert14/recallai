@@ -45,14 +45,23 @@ export function QuickStatsRow({
   ];
 
   return (
-    <div ref={ref} data-tour-id={TOUR_TARGETS.quickStats} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div
+      ref={ref}
+      data-tour-id={TOUR_TARGETS.quickStats}
+      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+    >
       {stats.map((stat) => (
         <div
           key={stat.label}
           className={`group rounded-xl border border-border bg-card p-4 flex items-center gap-4 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 dark:hover:shadow-none dark:hover:border-foreground/20 opacity-0 ${isInView ? "animate-fade-up" : ""}`}
-          style={{ animationDelay: `${stat.delay}ms`, animationFillMode: "forwards" }}
+          style={{
+            animationDelay: `${stat.delay}ms`,
+            animationFillMode: "forwards",
+          }}
         >
-          <div className={`p-2.5 rounded-lg ${stat.bgColor} transition-transform duration-300 group-hover:scale-110`}>
+          <div
+            className={`p-2.5 rounded-lg ${stat.bgColor} transition-transform duration-300 group-hover:scale-110`}
+          >
             <stat.icon className={`h-5 w-5 ${stat.color}`} />
           </div>
           <div>

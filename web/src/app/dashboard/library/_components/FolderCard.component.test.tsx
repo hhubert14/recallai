@@ -118,7 +118,9 @@ describe("FolderCard", () => {
 
       render(<FolderCard folder={folder} studySetCount={0} />);
 
-      const button = screen.getByRole("button", { name: /open folder my folder/i });
+      const button = screen.getByRole("button", {
+        name: /open folder my folder/i,
+      });
       expect(button).toBeInTheDocument();
     });
 

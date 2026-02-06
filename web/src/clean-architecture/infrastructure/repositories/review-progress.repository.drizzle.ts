@@ -43,10 +43,7 @@ export class DrizzleReviewProgressRepository
     }
 
     const results = await dbRetry(() =>
-      this.db
-        .insert(reviewProgress)
-        .values(items)
-        .returning()
+      this.db.insert(reviewProgress).values(items).returning()
     );
 
     return results.map(toReviewProgressEntity);

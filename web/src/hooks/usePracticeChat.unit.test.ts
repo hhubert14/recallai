@@ -7,274 +7,274 @@ const mockSendMessage = vi.fn();
 const mockSetMessages = vi.fn();
 
 vi.mock("@ai-sdk/react", () => ({
-    useChat: vi.fn(() => ({
-        messages: [],
-        sendMessage: mockSendMessage,
-        setMessages: mockSetMessages,
-        status: "ready",
-        error: null,
-    })),
+  useChat: vi.fn(() => ({
+    messages: [],
+    sendMessage: mockSendMessage,
+    setMessages: mockSetMessages,
+    status: "ready",
+    error: null,
+  })),
 }));
 
 vi.mock("ai", () => ({
-    DefaultChatTransport: vi.fn(),
+  DefaultChatTransport: vi.fn(),
 }));
 
 import { useChat } from "@ai-sdk/react";
 
 const mockConcept = {
-    conceptName: "React Hooks",
-    description: "Understanding React Hooks",
-    itemIds: ["q-1", "f-2"],
+  conceptName: "React Hooks",
+  description: "Understanding React Hooks",
+  itemIds: ["q-1", "f-2"],
 };
 
 describe("usePracticeChat", () => {
-    beforeEach(() => {
-        vi.clearAllMocks();
-        vi.mocked(useChat).mockReturnValue({
-            messages: [],
-            sendMessage: mockSendMessage,
-            setMessages: mockSetMessages,
-            status: "ready",
-            error: null,
-        } as unknown as ReturnType<typeof useChat>);
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(useChat).mockReturnValue({
+      messages: [],
+      sendMessage: mockSendMessage,
+      setMessages: mockSetMessages,
+      status: "ready",
+      error: null,
+    } as unknown as ReturnType<typeof useChat>);
+  });
+
+  describe("sendMessage", () => {
+    it("early returns when concept is null", () => {
+      const { result } = renderHook(() =>
+        usePracticeChat({
+          studySetPublicId: "abc123",
+          concept: null,
+        })
+      );
+
+      act(() => {
+        result.current.sendMessage("test message");
+      });
+
+      expect(mockSendMessage).not.toHaveBeenCalled();
     });
 
-    describe("sendMessage", () => {
-        it("early returns when concept is null", () => {
-            const { result } = renderHook(() =>
-                usePracticeChat({
-                    studySetPublicId: "abc123",
-                    concept: null,
-                })
-            );
+    it("early returns when message is empty", () => {
+      const { result } = renderHook(() =>
+        usePracticeChat({
+          studySetPublicId: "abc123",
+          concept: mockConcept,
+        })
+      );
 
-            act(() => {
-                result.current.sendMessage("test message");
-            });
+      act(() => {
+        result.current.sendMessage("   ");
+      });
 
-            expect(mockSendMessage).not.toHaveBeenCalled();
-        });
-
-        it("early returns when message is empty", () => {
-            const { result } = renderHook(() =>
-                usePracticeChat({
-                    studySetPublicId: "abc123",
-                    concept: mockConcept,
-                })
-            );
-
-            act(() => {
-                result.current.sendMessage("   ");
-            });
-
-            expect(mockSendMessage).not.toHaveBeenCalled();
-        });
-
-        it("early returns when status is streaming", () => {
-            vi.mocked(useChat).mockReturnValue({
-                messages: [],
-                sendMessage: mockSendMessage,
-                setMessages: mockSetMessages,
-                status: "streaming",
-                error: null,
-            } as unknown as ReturnType<typeof useChat>);
-
-            const { result } = renderHook(() =>
-                usePracticeChat({
-                    studySetPublicId: "abc123",
-                    concept: mockConcept,
-                })
-            );
-
-            act(() => {
-                result.current.sendMessage("test message");
-            });
-
-            expect(mockSendMessage).not.toHaveBeenCalled();
-        });
-
-        it("early returns when status is submitted", () => {
-            vi.mocked(useChat).mockReturnValue({
-                messages: [],
-                sendMessage: mockSendMessage,
-                setMessages: mockSetMessages,
-                status: "submitted",
-                error: null,
-            } as unknown as ReturnType<typeof useChat>);
-
-            const { result } = renderHook(() =>
-                usePracticeChat({
-                    studySetPublicId: "abc123",
-                    concept: mockConcept,
-                })
-            );
-
-            act(() => {
-                result.current.sendMessage("test message");
-            });
-
-            expect(mockSendMessage).not.toHaveBeenCalled();
-        });
-
-        it("calls aiSendMessage with trimmed text and concept when allowed", () => {
-            const { result } = renderHook(() =>
-                usePracticeChat({
-                    studySetPublicId: "abc123",
-                    concept: mockConcept,
-                })
-            );
-
-            act(() => {
-                result.current.sendMessage("  test message  ");
-            });
-
-            expect(mockSendMessage).toHaveBeenCalledWith(
-                { text: "test message" },
-                { body: { concept: mockConcept } }
-            );
-        });
+      expect(mockSendMessage).not.toHaveBeenCalled();
     });
 
-    describe("clearMessages", () => {
-        it("calls setMessages with empty array", () => {
-            const { result } = renderHook(() =>
-                usePracticeChat({
-                    studySetPublicId: "abc123",
-                    concept: mockConcept,
-                })
-            );
+    it("early returns when status is streaming", () => {
+      vi.mocked(useChat).mockReturnValue({
+        messages: [],
+        sendMessage: mockSendMessage,
+        setMessages: mockSetMessages,
+        status: "streaming",
+        error: null,
+      } as unknown as ReturnType<typeof useChat>);
 
-            act(() => {
-                result.current.clearMessages();
-            });
+      const { result } = renderHook(() =>
+        usePracticeChat({
+          studySetPublicId: "abc123",
+          concept: mockConcept,
+        })
+      );
 
-            expect(mockSetMessages).toHaveBeenCalledWith([]);
-        });
+      act(() => {
+        result.current.sendMessage("test message");
+      });
+
+      expect(mockSendMessage).not.toHaveBeenCalled();
     });
 
-    describe("isSending", () => {
-        it("returns true when status is streaming", () => {
-            vi.mocked(useChat).mockReturnValue({
-                messages: [],
-                sendMessage: mockSendMessage,
-                setMessages: mockSetMessages,
-                status: "streaming",
-                error: null,
-            } as unknown as ReturnType<typeof useChat>);
+    it("early returns when status is submitted", () => {
+      vi.mocked(useChat).mockReturnValue({
+        messages: [],
+        sendMessage: mockSendMessage,
+        setMessages: mockSetMessages,
+        status: "submitted",
+        error: null,
+      } as unknown as ReturnType<typeof useChat>);
 
-            const { result } = renderHook(() =>
-                usePracticeChat({
-                    studySetPublicId: "abc123",
-                    concept: mockConcept,
-                })
-            );
+      const { result } = renderHook(() =>
+        usePracticeChat({
+          studySetPublicId: "abc123",
+          concept: mockConcept,
+        })
+      );
 
-            expect(result.current.isSending).toBe(true);
-        });
+      act(() => {
+        result.current.sendMessage("test message");
+      });
 
-        it("returns true when status is submitted", () => {
-            vi.mocked(useChat).mockReturnValue({
-                messages: [],
-                sendMessage: mockSendMessage,
-                setMessages: mockSetMessages,
-                status: "submitted",
-                error: null,
-            } as unknown as ReturnType<typeof useChat>);
-
-            const { result } = renderHook(() =>
-                usePracticeChat({
-                    studySetPublicId: "abc123",
-                    concept: mockConcept,
-                })
-            );
-
-            expect(result.current.isSending).toBe(true);
-        });
-
-        it("returns false when status is ready", () => {
-            vi.mocked(useChat).mockReturnValue({
-                messages: [],
-                sendMessage: mockSendMessage,
-                setMessages: mockSetMessages,
-                status: "ready",
-                error: null,
-            } as unknown as ReturnType<typeof useChat>);
-
-            const { result } = renderHook(() =>
-                usePracticeChat({
-                    studySetPublicId: "abc123",
-                    concept: mockConcept,
-                })
-            );
-
-            expect(result.current.isSending).toBe(false);
-        });
+      expect(mockSendMessage).not.toHaveBeenCalled();
     });
 
-    describe("error", () => {
-        it("returns error message when chat has error", () => {
-            vi.mocked(useChat).mockReturnValue({
-                messages: [],
-                sendMessage: mockSendMessage,
-                setMessages: mockSetMessages,
-                status: "error",
-                error: new Error("Something went wrong"),
-            } as unknown as ReturnType<typeof useChat>);
+    it("calls aiSendMessage with trimmed text and concept when allowed", () => {
+      const { result } = renderHook(() =>
+        usePracticeChat({
+          studySetPublicId: "abc123",
+          concept: mockConcept,
+        })
+      );
 
-            const { result } = renderHook(() =>
-                usePracticeChat({
-                    studySetPublicId: "abc123",
-                    concept: mockConcept,
-                })
-            );
+      act(() => {
+        result.current.sendMessage("  test message  ");
+      });
 
-            expect(result.current.error).toBe("Something went wrong");
-        });
+      expect(mockSendMessage).toHaveBeenCalledWith(
+        { text: "test message" },
+        { body: { concept: mockConcept } }
+      );
+    });
+  });
 
-        it("returns null when chat has no error", () => {
-            vi.mocked(useChat).mockReturnValue({
-                messages: [],
-                sendMessage: mockSendMessage,
-                setMessages: mockSetMessages,
-                status: "ready",
-                error: null,
-            } as unknown as ReturnType<typeof useChat>);
+  describe("clearMessages", () => {
+    it("calls setMessages with empty array", () => {
+      const { result } = renderHook(() =>
+        usePracticeChat({
+          studySetPublicId: "abc123",
+          concept: mockConcept,
+        })
+      );
 
-            const { result } = renderHook(() =>
-                usePracticeChat({
-                    studySetPublicId: "abc123",
-                    concept: mockConcept,
-                })
-            );
+      act(() => {
+        result.current.clearMessages();
+      });
 
-            expect(result.current.error).toBe(null);
-        });
+      expect(mockSetMessages).toHaveBeenCalledWith([]);
+    });
+  });
+
+  describe("isSending", () => {
+    it("returns true when status is streaming", () => {
+      vi.mocked(useChat).mockReturnValue({
+        messages: [],
+        sendMessage: mockSendMessage,
+        setMessages: mockSetMessages,
+        status: "streaming",
+        error: null,
+      } as unknown as ReturnType<typeof useChat>);
+
+      const { result } = renderHook(() =>
+        usePracticeChat({
+          studySetPublicId: "abc123",
+          concept: mockConcept,
+        })
+      );
+
+      expect(result.current.isSending).toBe(true);
     });
 
-    describe("messages", () => {
-        it("returns messages from useChat", () => {
-            const mockMessages = [
-                { id: "1", role: "user" as const, content: "Hello" },
-                { id: "2", role: "assistant" as const, content: "Hi there!" },
-            ];
+    it("returns true when status is submitted", () => {
+      vi.mocked(useChat).mockReturnValue({
+        messages: [],
+        sendMessage: mockSendMessage,
+        setMessages: mockSetMessages,
+        status: "submitted",
+        error: null,
+      } as unknown as ReturnType<typeof useChat>);
 
-            vi.mocked(useChat).mockReturnValue({
-                messages: mockMessages,
-                sendMessage: mockSendMessage,
-                setMessages: mockSetMessages,
-                status: "ready",
-                error: null,
-            } as unknown as ReturnType<typeof useChat>);
+      const { result } = renderHook(() =>
+        usePracticeChat({
+          studySetPublicId: "abc123",
+          concept: mockConcept,
+        })
+      );
 
-            const { result } = renderHook(() =>
-                usePracticeChat({
-                    studySetPublicId: "abc123",
-                    concept: mockConcept,
-                })
-            );
-
-            expect(result.current.messages).toEqual(mockMessages);
-        });
+      expect(result.current.isSending).toBe(true);
     });
+
+    it("returns false when status is ready", () => {
+      vi.mocked(useChat).mockReturnValue({
+        messages: [],
+        sendMessage: mockSendMessage,
+        setMessages: mockSetMessages,
+        status: "ready",
+        error: null,
+      } as unknown as ReturnType<typeof useChat>);
+
+      const { result } = renderHook(() =>
+        usePracticeChat({
+          studySetPublicId: "abc123",
+          concept: mockConcept,
+        })
+      );
+
+      expect(result.current.isSending).toBe(false);
+    });
+  });
+
+  describe("error", () => {
+    it("returns error message when chat has error", () => {
+      vi.mocked(useChat).mockReturnValue({
+        messages: [],
+        sendMessage: mockSendMessage,
+        setMessages: mockSetMessages,
+        status: "error",
+        error: new Error("Something went wrong"),
+      } as unknown as ReturnType<typeof useChat>);
+
+      const { result } = renderHook(() =>
+        usePracticeChat({
+          studySetPublicId: "abc123",
+          concept: mockConcept,
+        })
+      );
+
+      expect(result.current.error).toBe("Something went wrong");
+    });
+
+    it("returns null when chat has no error", () => {
+      vi.mocked(useChat).mockReturnValue({
+        messages: [],
+        sendMessage: mockSendMessage,
+        setMessages: mockSetMessages,
+        status: "ready",
+        error: null,
+      } as unknown as ReturnType<typeof useChat>);
+
+      const { result } = renderHook(() =>
+        usePracticeChat({
+          studySetPublicId: "abc123",
+          concept: mockConcept,
+        })
+      );
+
+      expect(result.current.error).toBe(null);
+    });
+  });
+
+  describe("messages", () => {
+    it("returns messages from useChat", () => {
+      const mockMessages = [
+        { id: "1", role: "user" as const, content: "Hello" },
+        { id: "2", role: "assistant" as const, content: "Hi there!" },
+      ];
+
+      vi.mocked(useChat).mockReturnValue({
+        messages: mockMessages,
+        sendMessage: mockSendMessage,
+        setMessages: mockSetMessages,
+        status: "ready",
+        error: null,
+      } as unknown as ReturnType<typeof useChat>);
+
+      const { result } = renderHook(() =>
+        usePracticeChat({
+          studySetPublicId: "abc123",
+          concept: mockConcept,
+        })
+      );
+
+      expect(result.current.messages).toEqual(mockMessages);
+    });
+  });
 });

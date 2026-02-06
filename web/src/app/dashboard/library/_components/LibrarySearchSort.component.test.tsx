@@ -124,7 +124,9 @@ describe("LibrarySearchSort", () => {
       const sortButton = screen.getByRole("button", { name: /a-z/i });
       await user.click(sortButton);
 
-      const recentOption = screen.getByRole("menuitemradio", { name: /recent/i });
+      const recentOption = screen.getByRole("menuitemradio", {
+        name: /recent/i,
+      });
       await user.click(recentOption);
 
       expect(onSortChange).toHaveBeenCalledWith("recent");
@@ -137,7 +139,9 @@ describe("LibrarySearchSort", () => {
       const sortButton = screen.getByRole("button", { name: /recent/i });
       await user.click(sortButton);
 
-      const recentOption = screen.getByRole("menuitemradio", { name: /recent/i });
+      const recentOption = screen.getByRole("menuitemradio", {
+        name: /recent/i,
+      });
       expect(recentOption).toHaveAttribute("data-state", "checked");
 
       const alphabeticalOption = screen.getByRole("menuitemradio", {

@@ -14,7 +14,10 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b border-black/5 dark:border-white/10 bg-white/80 dark:bg-black/80 backdrop-blur-xl">
       <div className="container flex h-16 items-center justify-between px-4 md:px-6">
         {/* Logo */}
-        <Link href={user ? "/dashboard" : "/"} className="flex items-center gap-2 group">
+        <Link
+          href={user ? "/dashboard" : "/"}
+          className="flex items-center gap-2 group"
+        >
           <Image
             src="/logo.png"
             alt="Retenio"

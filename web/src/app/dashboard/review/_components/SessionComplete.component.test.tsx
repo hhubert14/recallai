@@ -21,7 +21,10 @@ describe("SessionComplete", () => {
     it("renders QuizSummary with correct score", () => {
       render(
         <SessionComplete
-          sessionResults={createMockSessionResults({ correct: 7, incorrect: 3 })}
+          sessionResults={createMockSessionResults({
+            correct: 7,
+            incorrect: 3,
+          })}
           hasMoreItems={false}
           onBackToModeSelection={vi.fn()}
           onContinue={vi.fn()}

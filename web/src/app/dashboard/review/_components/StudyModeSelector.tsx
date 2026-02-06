@@ -28,13 +28,16 @@ interface StudyModeSelectorProps {
   error: string | null;
 }
 
-const MODE_CONFIG: Record<StudyMode, {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-  countKey: keyof StudyModeStats;
-  color: string;
-}> = {
+const MODE_CONFIG: Record<
+  StudyMode,
+  {
+    icon: React.ReactNode;
+    title: string;
+    description: string;
+    countKey: keyof StudyModeStats;
+    color: string;
+  }
+> = {
   due: {
     icon: <Clock className="w-5 h-5" />,
     title: "Due for Review",
@@ -94,7 +97,8 @@ export function StudyModeSelector({
         </h2>
         {stats.dueCount === 0 && stats.newCount === 0 && hasAnyQuestions && (
           <p className="text-muted-foreground">
-            Great job staying on top of your reviews. Try random practice to keep sharp!
+            Great job staying on top of your reviews. Try random practice to
+            keep sharp!
           </p>
         )}
       </div>
@@ -119,7 +123,9 @@ export function StudyModeSelector({
                 isSelected && !isDisabled
                   ? "border-primary bg-primary/5"
                   : "border-border bg-card",
-                !isSelected && !isDisabled && "hover:border-primary/50 hover:bg-primary/5",
+                !isSelected &&
+                  !isDisabled &&
+                  "hover:border-primary/50 hover:bg-primary/5",
                 isDisabled && "opacity-50 cursor-not-allowed"
               )}
             >
@@ -174,7 +180,10 @@ export function StudyModeSelector({
       </div>
 
       {/* Start button */}
-      <div className="flex flex-col items-center gap-3" data-tour-id={TOUR_TARGETS.startSessionBtn}>
+      <div
+        className="flex flex-col items-center gap-3"
+        data-tour-id={TOUR_TARGETS.startSessionBtn}
+      >
         <Button
           onClick={onStartSession}
           disabled={!canStart || isLoading}

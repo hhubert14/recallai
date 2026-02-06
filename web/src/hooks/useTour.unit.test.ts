@@ -211,7 +211,9 @@ describe("useTour", () => {
         result.current.completeTour();
       });
 
-      expect(localStorageMock[TOUR_STORAGE_KEYS[TOUR_IDS.studySetDetail]]).toBe("true");
+      expect(localStorageMock[TOUR_STORAGE_KEYS[TOUR_IDS.studySetDetail]]).toBe(
+        "true"
+      );
     });
 
     it("uses correct storage key for review mode selector tour", () => {
@@ -223,9 +225,9 @@ describe("useTour", () => {
         result.current.completeTour();
       });
 
-      expect(localStorageMock[TOUR_STORAGE_KEYS[TOUR_IDS.reviewModeSelector]]).toBe(
-        "true"
-      );
+      expect(
+        localStorageMock[TOUR_STORAGE_KEYS[TOUR_IDS.reviewModeSelector]]
+      ).toBe("true");
     });
   });
 

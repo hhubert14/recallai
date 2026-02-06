@@ -14,7 +14,11 @@ export function ProcessFlowSVG({ className = "" }: ProcessFlowSVGProps) {
       aria-hidden="true"
     >
       {/* Connection lines between steps */}
-      <g className="stroke-muted-foreground/30" strokeWidth="2" strokeDasharray="8 4">
+      <g
+        className="stroke-muted-foreground/30"
+        strokeWidth="2"
+        strokeDasharray="8 4"
+      >
         {/* Line from step 1 to step 2 */}
         <path
           d="M180 50 L320 50"
@@ -60,23 +64,71 @@ export function ProcessFlowSVG({ className = "" }: ProcessFlowSVGProps) {
       {/* Step circles */}
       <g>
         {/* Step 1 circle */}
-        <circle cx="100" cy="50" r="45" className="fill-muted/50 stroke-border" strokeWidth="1" />
-        <circle cx="100" cy="50" r="35" className="fill-background stroke-foreground/20" strokeWidth="1" />
+        <circle
+          cx="100"
+          cy="50"
+          r="45"
+          className="fill-muted/50 stroke-border"
+          strokeWidth="1"
+        />
+        <circle
+          cx="100"
+          cy="50"
+          r="35"
+          className="fill-background stroke-foreground/20"
+          strokeWidth="1"
+        />
 
         {/* Step 2 circle */}
-        <circle cx="400" cy="50" r="45" className="fill-muted/50 stroke-border" strokeWidth="1" />
-        <circle cx="400" cy="50" r="35" className="fill-background stroke-foreground/20" strokeWidth="1" />
+        <circle
+          cx="400"
+          cy="50"
+          r="45"
+          className="fill-muted/50 stroke-border"
+          strokeWidth="1"
+        />
+        <circle
+          cx="400"
+          cy="50"
+          r="35"
+          className="fill-background stroke-foreground/20"
+          strokeWidth="1"
+        />
 
         {/* Step 3 circle */}
-        <circle cx="700" cy="50" r="45" className="fill-muted/50 stroke-border" strokeWidth="1" />
-        <circle cx="700" cy="50" r="35" className="fill-background stroke-foreground/20" strokeWidth="1" />
+        <circle
+          cx="700"
+          cy="50"
+          r="45"
+          className="fill-muted/50 stroke-border"
+          strokeWidth="1"
+        />
+        <circle
+          cx="700"
+          cy="50"
+          r="35"
+          className="fill-background stroke-foreground/20"
+          strokeWidth="1"
+        />
       </g>
 
       {/* Step numbers */}
-      <g className="fill-foreground" fontSize="20" fontWeight="600" textAnchor="middle" dominantBaseline="central">
-        <text x="100" y="50">1</text>
-        <text x="400" y="50">2</text>
-        <text x="700" y="50">3</text>
+      <g
+        className="fill-foreground"
+        fontSize="20"
+        fontWeight="600"
+        textAnchor="middle"
+        dominantBaseline="central"
+      >
+        <text x="100" y="50">
+          1
+        </text>
+        <text x="400" y="50">
+          2
+        </text>
+        <text x="700" y="50">
+          3
+        </text>
       </g>
     </svg>
   );

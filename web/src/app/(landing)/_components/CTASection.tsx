@@ -11,10 +11,7 @@ export function CTASection() {
   return (
     <section className="w-full py-20 md:py-32">
       <div className="container px-4 md:px-6">
-        <div
-          ref={ref}
-          className="relative text-center"
-        >
+        <div ref={ref} className="relative text-center">
           {/* Accent glow behind headline */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[250px] bg-white/25 dark:bg-white/15 rounded-full blur-[150px] pointer-events-none" />
 
@@ -34,8 +31,8 @@ export function CTASection() {
               }`}
               style={{ animationDelay: "100ms", animationFillMode: "forwards" }}
             >
-              Start remembering what you watch.
-              Free to use. No credit card required.
+              Start remembering what you watch. Free to use. No credit card
+              required.
             </p>
 
             <div
@@ -44,11 +41,7 @@ export function CTASection() {
               }`}
               style={{ animationDelay: "200ms", animationFillMode: "forwards" }}
             >
-              <Button
-                asChild
-                size="lg"
-                className="font-medium group"
-              >
+              <Button asChild size="lg" className="font-medium group">
                 <Link href="/auth/sign-up">
                   Get Started Free
                   <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />

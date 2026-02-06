@@ -25,8 +25,7 @@ export class GetStudySetFoldersUseCase {
     }
 
     // Get all folders belonging to this user
-    const userFolders =
-      await this.folderRepository.findFoldersByUserId(userId);
+    const userFolders = await this.folderRepository.findFoldersByUserId(userId);
 
     // Filter to only folders that contain this study set (and belong to user)
     const folderIdsSet = new Set(folderIds);

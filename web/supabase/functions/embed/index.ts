@@ -1,7 +1,7 @@
 // Setup type definitions for built-in Supabase Runtime APIs
-import "jsr:@supabase/functions-js/edge-runtime.d.ts"
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
-const session = new Supabase.ai.Session('gte-small');
+const session = new Supabase.ai.Session("gte-small");
 
 Deno.serve(async (req) => {
   const { input } = await req.json();
@@ -11,10 +11,9 @@ Deno.serve(async (req) => {
     normalize: true,
   });
 
-  return new Response(
-    JSON.stringify({ embedding }),
-    { headers: { 'Content-Type': 'application/json' } }
-  );
+  return new Response(JSON.stringify({ embedding }), {
+    headers: { "Content-Type": "application/json" },
+  });
 });
 
 /* To invoke locally:

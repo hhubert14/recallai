@@ -1,5 +1,5 @@
 // import * as dotenv from 'dotenv';
-import { defineConfig } from 'drizzle-kit';
+import { defineConfig } from "drizzle-kit";
 
 // Explicitly load .env.local
 // dotenv.config({ path: '.env.local' });
@@ -9,9 +9,9 @@ if (!process.env.DATABASE_URL) {
 }
 
 export default defineConfig({
-  out: './src/drizzle/migrations',
-  schema: './src/drizzle/schema.ts',
-  dialect: 'postgresql',
+  out: "./src/drizzle/migrations",
+  schema: "./src/drizzle/schema.ts",
+  dialect: "postgresql",
   dbCredentials: {
     url: process.env.DATABASE_URL,
   },

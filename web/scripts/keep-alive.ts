@@ -1,7 +1,7 @@
-import postgres from 'postgres';
+import postgres from "postgres";
 
 if (!process.env.DATABASE_URL) {
-  console.error('ERROR: DATABASE_URL environment variable is required');
+  console.error("ERROR: DATABASE_URL environment variable is required");
   process.exit(1);
 }
 
@@ -17,13 +17,13 @@ async function keepAlive() {
     await client`SELECT 1 as ping`;
     const elapsed = Date.now() - start;
 
-    console.log('Keep-alive ping successful:', new Date().toISOString());
-    console.log('Query took:', elapsed, 'ms');
+    console.log("Keep-alive ping successful:", new Date().toISOString());
+    console.log("Query took:", elapsed, "ms");
 
     await client.end();
     process.exit(0);
   } catch (error) {
-    console.error('Keep-alive ping failed:', error);
+    console.error("Keep-alive ping failed:", error);
     process.exit(1);
   }
 }

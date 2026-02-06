@@ -38,7 +38,8 @@ export function Footer() {
               <span className="font-bold">Retenio</span>
             </Link>
             <p className="text-sm text-muted-foreground max-w-[200px]">
-              Transform video learning with AI-powered summaries and spaced repetition.
+              Transform video learning with AI-powered summaries and spaced
+              repetition.
             </p>
             <a
               href="https://saasgrow.app?ref=retenio.ai"

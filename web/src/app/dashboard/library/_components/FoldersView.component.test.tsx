@@ -101,9 +101,7 @@ describe("FoldersView", () => {
       const folders = [createMockFolder({ id: 42, name: "Click Me" })];
       const onFolderClick = vi.fn();
 
-      render(
-        <FoldersView folders={folders} onFolderClick={onFolderClick} />
-      );
+      render(<FoldersView folders={folders} onFolderClick={onFolderClick} />);
 
       await user.click(screen.getByRole("heading", { name: "Click Me" }));
 

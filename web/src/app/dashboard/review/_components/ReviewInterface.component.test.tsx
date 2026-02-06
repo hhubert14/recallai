@@ -63,9 +63,24 @@ function createMockQuestionItem(
       id: 10,
       questionText: "What is TypeScript?",
       options: [
-        { id: 1, optionText: "A programming language", isCorrect: true, explanation: "Correct!" },
-        { id: 2, optionText: "A database", isCorrect: false, explanation: null },
-        { id: 3, optionText: "A framework", isCorrect: false, explanation: null },
+        {
+          id: 1,
+          optionText: "A programming language",
+          isCorrect: true,
+          explanation: "Correct!",
+        },
+        {
+          id: 2,
+          optionText: "A database",
+          isCorrect: false,
+          explanation: null,
+        },
+        {
+          id: 3,
+          optionText: "A framework",
+          isCorrect: false,
+          explanation: null,
+        },
         { id: 4, optionText: "An OS", isCorrect: false, explanation: null },
       ],
     },
@@ -110,19 +125,21 @@ function createMockFlashcardItem(
 // Mock fetch helper
 function mockFetchSuccess(items: ReviewItemApiResponse[]) {
   return vi.fn().mockResolvedValue({
-    json: () => Promise.resolve({
-      status: "success",
-      data: { items },
-    }),
+    json: () =>
+      Promise.resolve({
+        status: "success",
+        data: { items },
+      }),
   });
 }
 
 function mockFetchError(errorMessage: string) {
   return vi.fn().mockResolvedValue({
-    json: () => Promise.resolve({
-      status: "fail",
-      data: { error: errorMessage },
-    }),
+    json: () =>
+      Promise.resolve({
+        status: "fail",
+        data: { error: errorMessage },
+      }),
   });
 }
 
@@ -130,18 +147,20 @@ function mockSubmitAnswerSuccess(boxLevel: number = 3) {
   return vi.fn().mockImplementation((url: string) => {
     if (url.includes("submit-answer")) {
       return Promise.resolve({
-        json: () => Promise.resolve({
-          status: "success",
-          data: { progress: { boxLevel } },
-        }),
+        json: () =>
+          Promise.resolve({
+            status: "success",
+            data: { progress: { boxLevel } },
+          }),
       });
     }
     // Default for fetch items
     return Promise.resolve({
-      json: () => Promise.resolve({
-        status: "success",
-        data: { items: [createMockQuestionItem()] },
-      }),
+      json: () =>
+        Promise.resolve({
+          status: "success",
+          data: { items: [createMockQuestionItem()] },
+        }),
     });
   });
 }
@@ -159,20 +178,30 @@ describe("ReviewInterface", () => {
     it("shows empty state when totalCount is 0", () => {
       render(
         <ReviewInterface
-          studyModeStats={createMockStudyModeStats({ dueCount: 0, newCount: 0, totalCount: 0 })}
+          studyModeStats={createMockStudyModeStats({
+            dueCount: 0,
+            newCount: 0,
+            totalCount: 0,
+          })}
           progressStats={createMockProgressStats()}
         />
       );
 
       expect(screen.getByText("No Items Yet")).toBeInTheDocument();
-      expect(screen.getByText(/Complete some video quizzes/)).toBeInTheDocument();
+      expect(
+        screen.getByText(/Complete some video quizzes/)
+      ).toBeInTheDocument();
       expect(screen.getByText("Go to Dashboard")).toBeInTheDocument();
     });
 
     it("navigates to dashboard when clicking Go to Dashboard", () => {
       render(
         <ReviewInterface
-          studyModeStats={createMockStudyModeStats({ dueCount: 0, newCount: 0, totalCount: 0 })}
+          studyModeStats={createMockStudyModeStats({
+            dueCount: 0,
+            newCount: 0,
+            totalCount: 0,
+          })}
           progressStats={createMockProgressStats()}
         />
       );
@@ -186,7 +215,11 @@ describe("ReviewInterface", () => {
     it("shows mode selector with stats", () => {
       render(
         <ReviewInterface
-          studyModeStats={createMockStudyModeStats({ dueCount: 5, newCount: 3, totalCount: 10 })}
+          studyModeStats={createMockStudyModeStats({
+            dueCount: 5,
+            newCount: 3,
+            totalCount: 10,
+          })}
           progressStats={createMockProgressStats()}
         />
       );
@@ -200,7 +233,11 @@ describe("ReviewInterface", () => {
     it("defaults to 'due' mode when dueCount > 0", () => {
       render(
         <ReviewInterface
-          studyModeStats={createMockStudyModeStats({ dueCount: 5, newCount: 3, totalCount: 10 })}
+          studyModeStats={createMockStudyModeStats({
+            dueCount: 5,
+            newCount: 3,
+            totalCount: 10,
+          })}
           progressStats={createMockProgressStats()}
         />
       );
@@ -212,7 +249,11 @@ describe("ReviewInterface", () => {
     it("defaults to 'new' mode when dueCount is 0 but newCount > 0", () => {
       render(
         <ReviewInterface
-          studyModeStats={createMockStudyModeStats({ dueCount: 0, newCount: 3, totalCount: 10 })}
+          studyModeStats={createMockStudyModeStats({
+            dueCount: 0,
+            newCount: 3,
+            totalCount: 10,
+          })}
           progressStats={createMockProgressStats()}
         />
       );
@@ -378,7 +419,9 @@ describe("ReviewInterface", () => {
       fireEvent.click(screen.getByText("What is React?"));
 
       await waitFor(() => {
-        expect(screen.getByText("A JavaScript library for building UIs")).toBeInTheDocument();
+        expect(
+          screen.getByText("A JavaScript library for building UIs")
+        ).toBeInTheDocument();
         expect(screen.getByText("Back")).toBeInTheDocument();
       });
     });
@@ -403,7 +446,9 @@ describe("ReviewInterface", () => {
       fireEvent.click(screen.getByText("What is React?"));
 
       await waitFor(() => {
-        expect(screen.getByText("Did you know the answer?")).toBeInTheDocument();
+        expect(
+          screen.getByText("Did you know the answer?")
+        ).toBeInTheDocument();
         expect(screen.getByText("Not Yet")).toBeInTheDocument();
         expect(screen.getByText("Got It!")).toBeInTheDocument();
       });
@@ -465,16 +510,21 @@ describe("ReviewInterface", () => {
   describe("random mode behavior", () => {
     it("does not call submit-answer API in random mode", async () => {
       const fetchMock = vi.fn().mockResolvedValue({
-        json: () => Promise.resolve({
-          status: "success",
-          data: { items: [createMockQuestionItem()] },
-        }),
+        json: () =>
+          Promise.resolve({
+            status: "success",
+            data: { items: [createMockQuestionItem()] },
+          }),
       });
       global.fetch = fetchMock;
 
       render(
         <ReviewInterface
-          studyModeStats={createMockStudyModeStats({ dueCount: 0, newCount: 0, totalCount: 5 })}
+          studyModeStats={createMockStudyModeStats({
+            dueCount: 0,
+            newCount: 0,
+            totalCount: 5,
+          })}
           progressStats={createMockProgressStats()}
         />
       );
@@ -496,8 +546,8 @@ describe("ReviewInterface", () => {
       });
 
       // Verify submit-answer was NOT called
-      const submitCalls = fetchMock.mock.calls.filter(
-        (call) => call[0]?.includes?.("submit-answer")
+      const submitCalls = fetchMock.mock.calls.filter((call) =>
+        call[0]?.includes?.("submit-answer")
       );
       expect(submitCalls.length).toBe(0);
     });

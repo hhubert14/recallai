@@ -3,7 +3,11 @@
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { QuizProgress } from "@/components/quiz";
-import { StudyModeSelector, StudyModeStats, ProgressStats } from "./StudyModeSelector";
+import {
+  StudyModeSelector,
+  StudyModeStats,
+  ProgressStats,
+} from "./StudyModeSelector";
 import { BookOpen, Video } from "lucide-react";
 import { TOUR_TARGETS } from "@/components/tour/tour-constants";
 import { ReviewModeSelectorTour } from "./ReviewModeSelectorTour";
@@ -123,8 +127,13 @@ export function ReviewInterface({
         <div className="text-center py-12">
           {fetchError ? (
             <>
-              <p className="text-red-600 dark:text-red-400 mb-4">{fetchError}</p>
-              <Button onClick={() => fetchItems(selectedMode)} variant="outline">
+              <p className="text-red-600 dark:text-red-400 mb-4">
+                {fetchError}
+              </p>
+              <Button
+                onClick={() => fetchItems(selectedMode)}
+                variant="outline"
+              >
                 Try Again
               </Button>
             </>
@@ -155,7 +164,9 @@ export function ReviewInterface({
         ) : (
           <BookOpen className="w-4 h-4" />
         )}
-        <span className="truncate hover:underline">{currentItem.studySet.name}</span>
+        <span className="truncate hover:underline">
+          {currentItem.studySet.name}
+        </span>
       </a>
 
       {/* Item type badge */}
@@ -204,7 +215,8 @@ export function ReviewInterface({
             onClick={handleSubmit}
             disabled={
               (currentItem.itemType === "question" && !selectedOptionId) ||
-              (currentItem.itemType === "flashcard" && selfAssessment === null) ||
+              (currentItem.itemType === "flashcard" &&
+                selfAssessment === null) ||
               isSubmitting
             }
             size="lg"
@@ -212,8 +224,8 @@ export function ReviewInterface({
             {isSubmitting
               ? "Checking..."
               : currentItem.itemType === "question"
-              ? "Check Answer"
-              : "Submit"}
+                ? "Check Answer"
+                : "Submit"}
           </Button>
         ) : (
           <>

@@ -34,7 +34,9 @@ export function StreakBadge({ userId }: StreakBadgeProps) {
     try {
       // Pass timezone as query parameter for accurate "is active" calculation
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      const response = await fetch(`/api/v1/streaks/${userId}?timezone=${encodeURIComponent(timezone)}`);
+      const response = await fetch(
+        `/api/v1/streaks/${userId}?timezone=${encodeURIComponent(timezone)}`
+      );
       if (response.ok) {
         const result = await response.json();
         if (result.status === "success") {

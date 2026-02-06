@@ -1,10 +1,20 @@
 "use client";
 
-import { useState, useCallback, useMemo, useEffect, createContext, useContext } from "react";
+import {
+  useState,
+  useCallback,
+  useMemo,
+  useEffect,
+  createContext,
+  useContext,
+} from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FoldersView } from "./FoldersView";
 import { CreateFolderModal } from "@/components/CreateFolderModal";
-import { CreateStudySetModal, StudySetData } from "@/components/CreateStudySetModal";
+import {
+  CreateStudySetModal,
+  StudySetData,
+} from "@/components/CreateStudySetModal";
 import { EditFolderModal } from "@/components/EditFolderModal";
 import { AddToFolderModal, FolderOption } from "@/components/AddToFolderModal";
 import { AddVideoModal } from "@/components/AddVideoModal";
@@ -28,9 +38,8 @@ export interface StudySetActionsContextType {
   onAddToFolder: (studySet: StudySetWithCounts) => void;
 }
 
-export const StudySetActionsContext = createContext<StudySetActionsContextType | null>(
-  null
-);
+export const StudySetActionsContext =
+  createContext<StudySetActionsContextType | null>(null);
 
 export function useStudySetActions() {
   return useContext(StudySetActionsContext);
@@ -52,7 +61,8 @@ export function LibraryClientWrapper({
   const folderId = searchParams.get("folder");
 
   // Real-time study set updates
-  const { studySets: realtimeStudySets, setInitialStudySets } = useStudySetList();
+  const { studySets: realtimeStudySets, setInitialStudySets } =
+    useStudySetList();
 
   // Initialize realtime provider with server-rendered data on mount
   useEffect(() => {
@@ -86,7 +96,8 @@ export function LibraryClientWrapper({
 
   const [folders, setFolders] = useState(initialFolders);
   const [isCreateFolderModalOpen, setIsCreateFolderModalOpen] = useState(false);
-  const [isCreateStudySetModalOpen, setIsCreateStudySetModalOpen] = useState(false);
+  const [isCreateStudySetModalOpen, setIsCreateStudySetModalOpen] =
+    useState(false);
   const [isAddVideoModalOpen, setIsAddVideoModalOpen] = useState(false);
   const [editingFolder, setEditingFolder] = useState<FolderData | null>(null);
 
@@ -104,7 +115,9 @@ export function LibraryClientWrapper({
     // Sort by selected option
     return [...filtered].sort((a, b) => {
       if (sortOption === "recent") {
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        return (
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
       }
       // alphabetical
       return a.name.localeCompare(b.name);
@@ -320,7 +333,9 @@ export function LibraryClientWrapper({
   );
 
   return (
-    <StudySetActionsContext.Provider value={{ onAddToFolder: handleAddToFolder }}>
+    <StudySetActionsContext.Provider
+      value={{ onAddToFolder: handleAddToFolder }}
+    >
       {!isViewingFolder && (
         <div className="mb-8">
           <FoldersView

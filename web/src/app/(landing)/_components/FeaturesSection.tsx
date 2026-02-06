@@ -39,13 +39,13 @@ export function FeaturesSection() {
   const { ref, isInView } = useInView<HTMLDivElement>({ threshold: 0.1 });
 
   return (
-    <section id="features" className="w-full py-20 md:py-32 bg-muted/30 dark:bg-white/[0.01]">
+    <section
+      id="features"
+      className="w-full py-20 md:py-32 bg-muted/30 dark:bg-white/[0.01]"
+    >
       <div className="container px-4 md:px-6">
         {/* Section header */}
-        <div
-          ref={ref}
-          className="text-center space-y-4 mb-16"
-        >
+        <div ref={ref} className="text-center space-y-4 mb-16">
           <span
             className={`inline-block text-sm font-medium text-muted-foreground uppercase tracking-wider opacity-0 ${
               isInView ? "animate-fade-up" : ""

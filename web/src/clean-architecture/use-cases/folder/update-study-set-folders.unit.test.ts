@@ -21,10 +21,7 @@ describe("UpdateStudySetFoldersUseCase", () => {
     );
   };
 
-  const createMockStudySet = (
-    id: number,
-    userId: string
-  ): StudySetEntity => {
+  const createMockStudySet = (id: number, userId: string): StudySetEntity => {
     return new StudySetEntity(
       id,
       `public-id-${id}`,
@@ -98,7 +95,9 @@ describe("UpdateStudySetFoldersUseCase", () => {
       2,
       101
     );
-    expect(mockFolderRepository.removeStudySetFromFolder).not.toHaveBeenCalled();
+    expect(
+      mockFolderRepository.removeStudySetFromFolder
+    ).not.toHaveBeenCalled();
   });
 
   it("removes study set from folders", async () => {
@@ -200,7 +199,9 @@ describe("UpdateStudySetFoldersUseCase", () => {
     });
 
     expect(mockFolderRepository.addStudySetToFolder).not.toHaveBeenCalled();
-    expect(mockFolderRepository.removeStudySetFromFolder).not.toHaveBeenCalled();
+    expect(
+      mockFolderRepository.removeStudySetFromFolder
+    ).not.toHaveBeenCalled();
   });
 
   it("throws error when study set does not exist", async () => {

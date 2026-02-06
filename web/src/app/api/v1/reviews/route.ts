@@ -62,8 +62,13 @@ export async function GET(request: NextRequest) {
     let studySetId: number | undefined;
     if (studySetPublicIdParam) {
       const studySetRepository = new DrizzleStudySetRepository();
-      const findStudySetUseCase = new FindStudySetByPublicIdUseCase(studySetRepository);
-      const studySet = await findStudySetUseCase.execute(studySetPublicIdParam, user.id);
+      const findStudySetUseCase = new FindStudySetByPublicIdUseCase(
+        studySetRepository
+      );
+      const studySet = await findStudySetUseCase.execute(
+        studySetPublicIdParam,
+        user.id
+      );
       if (!studySet) {
         return jsendFail({ error: "Study set not found" }, 404);
       }
@@ -81,7 +86,11 @@ export async function GET(request: NextRequest) {
 
     const items = await useCase.execute(
       user.id,
-      { mode: modeParam as StudyMode, itemType: typeParam as ItemTypeFilter, studySetId },
+      {
+        mode: modeParam as StudyMode,
+        itemType: typeParam as ItemTypeFilter,
+        studySetId,
+      },
       limit
     );
 

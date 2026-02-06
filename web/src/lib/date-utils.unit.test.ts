@@ -36,7 +36,9 @@ describe("getLocalDateString", () => {
     it("handles timezone behind UTC (America/Los_Angeles)", () => {
       // When it's midnight UTC on Jan 2nd, it's still Jan 1st in LA (UTC-8)
       const utcMidnight = new Date("2025-01-02T00:00:00Z");
-      expect(getLocalDateString(utcMidnight, "America/Los_Angeles")).toBe("2025-01-01");
+      expect(getLocalDateString(utcMidnight, "America/Los_Angeles")).toBe(
+        "2025-01-01"
+      );
     });
 
     it("handles timezone ahead of UTC (Asia/Tokyo)", () => {
@@ -48,7 +50,9 @@ describe("getLocalDateString", () => {
     it("falls back to local date for invalid timezone", () => {
       vi.setSystemTime(new Date("2025-03-15T10:30:00"));
       // Invalid timezone should fall back to original behavior
-      expect(getLocalDateString(new Date(), "Invalid/Timezone")).toBe("2025-03-15");
+      expect(getLocalDateString(new Date(), "Invalid/Timezone")).toBe(
+        "2025-03-15"
+      );
     });
 
     it("handles UTC timezone correctly", () => {
@@ -63,7 +67,9 @@ describe("getLocalDateString", () => {
 
       // When it's 7pm UTC on Jan 1st, it's 12:30am Jan 2nd in Kolkata
       const utcLaterEvening = new Date("2025-01-01T19:00:00Z");
-      expect(getLocalDateString(utcLaterEvening, "Asia/Kolkata")).toBe("2025-01-02");
+      expect(getLocalDateString(utcLaterEvening, "Asia/Kolkata")).toBe(
+        "2025-01-02"
+      );
     });
   });
 });

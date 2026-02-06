@@ -10,14 +10,17 @@ import { STORAGE_KEY as WELCOME_MODAL_STORAGE_KEY } from "./WelcomeModal/welcome
  * Auto-starts after welcome modal is completed
  */
 export function DashboardTour() {
-  const [welcomeCompleted, setWelcomeCompleted] = useState<boolean | null>(null);
+  const [welcomeCompleted, setWelcomeCompleted] = useState<boolean | null>(
+    null
+  );
   const hasStartedRef = useRef(false);
 
   // Check if welcome modal has been completed
   useEffect(() => {
     const checkWelcomeCompleted = () => {
       try {
-        const completed = localStorage.getItem(WELCOME_MODAL_STORAGE_KEY) === "true";
+        const completed =
+          localStorage.getItem(WELCOME_MODAL_STORAGE_KEY) === "true";
         setWelcomeCompleted(completed);
       } catch {
         // If localStorage unavailable, assume completed to avoid blocking
@@ -33,7 +36,10 @@ export function DashboardTour() {
 
     window.addEventListener("welcomeModalCompleted", handleWelcomeComplete);
     return () => {
-      window.removeEventListener("welcomeModalCompleted", handleWelcomeComplete);
+      window.removeEventListener(
+        "welcomeModalCompleted",
+        handleWelcomeComplete
+      );
     };
   }, []);
 

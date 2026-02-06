@@ -13,13 +13,7 @@ import { Button } from "@/components/ui/button";
 import { WELCOME_STEPS } from "./welcome-steps";
 import { AddVideoModal } from "@/components/AddVideoModal";
 import { CreateStudySetModal } from "@/components/CreateStudySetModal";
-import {
-  Sparkles,
-  Chrome,
-  Check,
-  Loader2,
-  ExternalLink,
-} from "lucide-react";
+import { Sparkles, Chrome, Check, Loader2, ExternalLink } from "lucide-react";
 
 type WelcomeModalProps = {
   open: boolean;
@@ -269,7 +263,11 @@ export function WelcomeModal({
                   Create Manually
                 </Button>
               </div>
-              <Button variant="ghost" onClick={handleComplete} className="text-sm">
+              <Button
+                variant="ghost"
+                onClick={handleComplete}
+                className="text-sm"
+              >
                 Skip for now
               </Button>
             </div>

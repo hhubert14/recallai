@@ -35,19 +35,87 @@ export function HeroIllustration({ className = "" }: HeroIllustrationProps) {
       {/* Neural network lines */}
       <g className="stroke-muted-foreground/30" strokeWidth="1">
         {/* Connection lines from video to brain */}
-        <path d="M80 200 Q140 180 160 200" className="animate-draw-line" style={{ strokeDasharray: 100, strokeDashoffset: 100 }} />
-        <path d="M80 200 Q140 220 160 200" className="animate-draw-line" style={{ strokeDasharray: 100, strokeDashoffset: 100, animationDelay: "200ms" }} />
+        <path
+          d="M80 200 Q140 180 160 200"
+          className="animate-draw-line"
+          style={{ strokeDasharray: 100, strokeDashoffset: 100 }}
+        />
+        <path
+          d="M80 200 Q140 220 160 200"
+          className="animate-draw-line"
+          style={{
+            strokeDasharray: 100,
+            strokeDashoffset: 100,
+            animationDelay: "200ms",
+          }}
+        />
 
         {/* Internal brain connections */}
-        <path d="M200 140 Q220 170 200 200" className="animate-draw-line" style={{ strokeDasharray: 80, strokeDashoffset: 80, animationDelay: "400ms" }} />
-        <path d="M200 200 Q180 230 200 260" className="animate-draw-line" style={{ strokeDasharray: 80, strokeDashoffset: 80, animationDelay: "500ms" }} />
-        <path d="M200 200 Q230 200 260 180" className="animate-draw-line" style={{ strokeDasharray: 80, strokeDashoffset: 80, animationDelay: "600ms" }} />
-        <path d="M200 200 Q230 200 260 220" className="animate-draw-line" style={{ strokeDasharray: 80, strokeDashoffset: 80, animationDelay: "700ms" }} />
+        <path
+          d="M200 140 Q220 170 200 200"
+          className="animate-draw-line"
+          style={{
+            strokeDasharray: 80,
+            strokeDashoffset: 80,
+            animationDelay: "400ms",
+          }}
+        />
+        <path
+          d="M200 200 Q180 230 200 260"
+          className="animate-draw-line"
+          style={{
+            strokeDasharray: 80,
+            strokeDashoffset: 80,
+            animationDelay: "500ms",
+          }}
+        />
+        <path
+          d="M200 200 Q230 200 260 180"
+          className="animate-draw-line"
+          style={{
+            strokeDasharray: 80,
+            strokeDashoffset: 80,
+            animationDelay: "600ms",
+          }}
+        />
+        <path
+          d="M200 200 Q230 200 260 220"
+          className="animate-draw-line"
+          style={{
+            strokeDasharray: 80,
+            strokeDashoffset: 80,
+            animationDelay: "700ms",
+          }}
+        />
 
         {/* Output connections */}
-        <path d="M240 200 Q280 180 320 180" className="animate-draw-line" style={{ strokeDasharray: 100, strokeDashoffset: 100, animationDelay: "800ms" }} />
-        <path d="M240 200 Q280 200 320 200" className="animate-draw-line" style={{ strokeDasharray: 100, strokeDashoffset: 100, animationDelay: "900ms" }} />
-        <path d="M240 200 Q280 220 320 220" className="animate-draw-line" style={{ strokeDasharray: 100, strokeDashoffset: 100, animationDelay: "1000ms" }} />
+        <path
+          d="M240 200 Q280 180 320 180"
+          className="animate-draw-line"
+          style={{
+            strokeDasharray: 100,
+            strokeDashoffset: 100,
+            animationDelay: "800ms",
+          }}
+        />
+        <path
+          d="M240 200 Q280 200 320 200"
+          className="animate-draw-line"
+          style={{
+            strokeDasharray: 100,
+            strokeDashoffset: 100,
+            animationDelay: "900ms",
+          }}
+        />
+        <path
+          d="M240 200 Q280 220 320 220"
+          className="animate-draw-line"
+          style={{
+            strokeDasharray: 100,
+            strokeDashoffset: 100,
+            animationDelay: "1000ms",
+          }}
+        />
       </g>
 
       {/* Video/Play icon (input) */}
@@ -61,15 +129,18 @@ export function HeroIllustration({ className = "" }: HeroIllustrationProps) {
           className="fill-muted-foreground/10 stroke-muted-foreground/30"
           strokeWidth="1"
         />
-        <path
-          d="M24 18 L44 30 L24 42 Z"
-          className="fill-foreground/60"
-        />
+        <path d="M24 18 L44 30 L24 42 Z" className="fill-foreground/60" />
       </g>
 
       {/* Central brain node */}
       <g transform="translate(160, 160)">
-        <circle cx="40" cy="40" r="40" className="fill-foreground/5 stroke-foreground/20" strokeWidth="2" />
+        <circle
+          cx="40"
+          cy="40"
+          r="40"
+          className="fill-foreground/5 stroke-foreground/20"
+          strokeWidth="2"
+        />
         <circle cx="40" cy="40" r="30" className="fill-foreground/10" />
         {/* Brain symbol */}
         <path
@@ -93,16 +164,40 @@ export function HeroIllustration({ className = "" }: HeroIllustrationProps) {
         <circle cx="260" cy="220" r="5" className="fill-foreground/40" />
 
         {/* Output nodes (knowledge) */}
-        <circle cx="320" cy="180" r="8" className="fill-foreground/20 stroke-foreground/40" strokeWidth="1" />
-        <circle cx="320" cy="200" r="8" className="fill-foreground/20 stroke-foreground/40" strokeWidth="1" />
-        <circle cx="320" cy="220" r="8" className="fill-foreground/20 stroke-foreground/40" strokeWidth="1" />
+        <circle
+          cx="320"
+          cy="180"
+          r="8"
+          className="fill-foreground/20 stroke-foreground/40"
+          strokeWidth="1"
+        />
+        <circle
+          cx="320"
+          cy="200"
+          r="8"
+          className="fill-foreground/20 stroke-foreground/40"
+          strokeWidth="1"
+        />
+        <circle
+          cx="320"
+          cy="220"
+          r="8"
+          className="fill-foreground/20 stroke-foreground/40"
+          strokeWidth="1"
+        />
       </g>
 
       {/* Output labels - Question marks becoming checkmarks */}
       <g className="fill-foreground/60" fontSize="10" fontWeight="500">
-        <text x="317" y="184">Q</text>
-        <text x="317" y="204">Q</text>
-        <text x="317" y="224">Q</text>
+        <text x="317" y="184">
+          Q
+        </text>
+        <text x="317" y="204">
+          Q
+        </text>
+        <text x="317" y="224">
+          Q
+        </text>
       </g>
 
       {/* Decorative dots */}

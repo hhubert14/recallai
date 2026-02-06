@@ -37,7 +37,9 @@ export default async function StudySetReviewPage({
 
   // Find the study set
   const studySetRepository = new DrizzleStudySetRepository();
-  const findStudySetUseCase = new FindStudySetByPublicIdUseCase(studySetRepository);
+  const findStudySetUseCase = new FindStudySetByPublicIdUseCase(
+    studySetRepository
+  );
   const studySet = await findStudySetUseCase.execute(publicId, user.id);
 
   if (!studySet) {

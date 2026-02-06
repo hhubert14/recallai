@@ -105,7 +105,8 @@
       "Bash(do echo \"=== ISSUE $issue ===\")",
       "Bash(wc:*)",
       "Bash(npx supabase start)",
-      "Bash(git mv:*)"
+      "Bash(git mv:*)",
+      "Bash(npx next lint:*)"
     ],
     "deny": [],
     "ask": []

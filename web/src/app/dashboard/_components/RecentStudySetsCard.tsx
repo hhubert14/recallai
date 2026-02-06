@@ -21,11 +21,14 @@ interface RecentStudySetsCardProps {
   studySets: StudySetData[];
 }
 
-export function RecentStudySetsCard({ studySets: initialStudySets }: RecentStudySetsCardProps) {
+export function RecentStudySetsCard({
+  studySets: initialStudySets,
+}: RecentStudySetsCardProps) {
   const { ref, isInView } = useInView<HTMLDivElement>({ threshold: 0.1 });
 
   // Real-time study set updates
-  const { studySets: realtimeStudySets, setInitialStudySets } = useStudySetList();
+  const { studySets: realtimeStudySets, setInitialStudySets } =
+    useStudySetList();
 
   // Initialize realtime provider with server-rendered data on mount
   useEffect(() => {
@@ -76,7 +79,7 @@ export function RecentStudySetsCard({ studySets: initialStudySets }: RecentStudy
               className={`group block rounded-lg border border-border p-4 hover:bg-muted/50 dark:hover:bg-white/[0.02] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-sm dark:hover:shadow-none dark:hover:border-foreground/20 opacity-0 ${isInView ? "animate-fade-up" : ""}`}
               style={{
                 animationDelay: `${600 + index * 75}ms`,
-                animationFillMode: "forwards"
+                animationFillMode: "forwards",
               }}
             >
               <div className="flex items-center gap-3">
@@ -107,8 +110,8 @@ export function RecentStudySetsCard({ studySets: initialStudySets }: RecentStudy
             <BookOpen className="w-6 h-6 text-primary" />
           </div>
           <p className="text-sm text-muted-foreground mb-4">
-            No study sets yet. Install the Chrome extension and start
-            watching YouTube to build your library.
+            No study sets yet. Install the Chrome extension and start watching
+            YouTube to build your library.
           </p>
           <Button asChild variant="outline" size="sm" className="group">
             <a

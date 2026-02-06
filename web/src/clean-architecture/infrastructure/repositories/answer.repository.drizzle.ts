@@ -14,7 +14,7 @@ function toMultipleChoiceAnswerEntity(
     record.questionId,
     record.selectedOptionId,
     record.isCorrect,
-    record.createdAt,
+    record.createdAt
   );
 }
 
@@ -40,7 +40,9 @@ export class DrizzleAnswerRepository implements IAnswerRepository {
     return toMultipleChoiceAnswerEntity(result);
   }
 
-  async findAnswersByUserId(userId: string): Promise<MultipleChoiceAnswerEntity[]> {
+  async findAnswersByUserId(
+    userId: string
+  ): Promise<MultipleChoiceAnswerEntity[]> {
     const results = await dbRetry(() =>
       db
         .select()
@@ -62,10 +64,7 @@ export class DrizzleAnswerRepository implements IAnswerRepository {
         .from(userAnswers)
         .innerJoin(questions, eq(questions.id, userAnswers.questionId))
         .where(
-          and(
-            eq(userAnswers.userId, userId),
-            eq(questions.videoId, videoId)
-          )
+          and(eq(userAnswers.userId, userId), eq(questions.videoId, videoId))
         )
     );
 

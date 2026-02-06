@@ -1,5 +1,11 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { users, videos, questions, flashcards, studySets } from "@/drizzle/schema";
+import {
+  users,
+  videos,
+  questions,
+  flashcards,
+  studySets,
+} from "@/drizzle/schema";
 import { DrizzleReviewableItemRepository } from "./reviewable-item.repository.drizzle";
 import {
   createTestContext,
@@ -127,7 +133,8 @@ describe("DrizzleReviewableItemRepository (integration)", () => {
         studySetId: testStudySetId,
       }));
 
-      const result = await repository.createReviewableItemsForQuestionsBatch(items);
+      const result =
+        await repository.createReviewableItemsForQuestionsBatch(items);
 
       expect(result).toHaveLength(2);
       expect(result[0].itemType).toBe("question");
@@ -139,7 +146,9 @@ describe("DrizzleReviewableItemRepository (integration)", () => {
     });
 
     it("returns empty array for empty input", async () => {
-      const result = await repository.createReviewableItemsForQuestionsBatch([]);
+      const result = await repository.createReviewableItemsForQuestionsBatch(
+        []
+      );
       expect(result).toHaveLength(0);
     });
   });
@@ -153,7 +162,8 @@ describe("DrizzleReviewableItemRepository (integration)", () => {
         studySetId: testStudySetId,
       }));
 
-      const result = await repository.createReviewableItemsForFlashcardsBatch(items);
+      const result =
+        await repository.createReviewableItemsForFlashcardsBatch(items);
 
       expect(result).toHaveLength(2);
       expect(result[0].itemType).toBe("flashcard");
@@ -169,22 +179,36 @@ describe("DrizzleReviewableItemRepository (integration)", () => {
     it("returns all reviewable items for a user", async () => {
       // Create some reviewable items
       await repository.createReviewableItemsForQuestionsBatch([
-        { userId: testUserId, questionId: testQuestionIds[0], videoId: testVideoId, studySetId: testStudySetId },
+        {
+          userId: testUserId,
+          questionId: testQuestionIds[0],
+          videoId: testVideoId,
+          studySetId: testStudySetId,
+        },
       ]);
       await repository.createReviewableItemsForFlashcardsBatch([
-        { userId: testUserId, flashcardId: testFlashcardIds[0], videoId: testVideoId, studySetId: testStudySetId },
+        {
+          userId: testUserId,
+          flashcardId: testFlashcardIds[0],
+          videoId: testVideoId,
+          studySetId: testStudySetId,
+        },
       ]);
 
       const result = await repository.findReviewableItemsByUserId(testUserId);
 
       expect(result).toHaveLength(2);
-      expect(result.map((r) => r.itemType).sort()).toEqual(["flashcard", "question"]);
+      expect(result.map((r) => r.itemType).sort()).toEqual([
+        "flashcard",
+        "question",
+      ]);
     });
 
     it("returns empty array for user with no items", async () => {
       // Use a valid UUID that doesn't exist in the database
       const nonExistentUserId = "00000000-0000-0000-0000-000000000000";
-      const result = await repository.findReviewableItemsByUserId(nonExistentUserId);
+      const result =
+        await repository.findReviewableItemsByUserId(nonExistentUserId);
       expect(result).toHaveLength(0);
     });
   });
@@ -215,7 +239,12 @@ describe("DrizzleReviewableItemRepository (integration)", () => {
 
       // Create items for both videos
       await repository.createReviewableItemsForQuestionsBatch([
-        { userId: testUserId, questionId: testQuestionIds[0], videoId: testVideoId, studySetId: testStudySetId },
+        {
+          userId: testUserId,
+          questionId: testQuestionIds[0],
+          videoId: testVideoId,
+          studySetId: testStudySetId,
+        },
       ]);
 
       const [q3] = await ctx.db
@@ -228,7 +257,12 @@ describe("DrizzleReviewableItemRepository (integration)", () => {
         .returning();
 
       await repository.createReviewableItemsForQuestionsBatch([
-        { userId: testUserId, questionId: q3.id, videoId: video2.id, studySetId: studySet2.id },
+        {
+          userId: testUserId,
+          questionId: q3.id,
+          videoId: video2.id,
+          studySetId: studySet2.id,
+        },
       ]);
 
       const result = await repository.findReviewableItemsByUserIdAndVideoId(
@@ -244,11 +278,22 @@ describe("DrizzleReviewableItemRepository (integration)", () => {
   describe("findReviewableItemsByStudySetId", () => {
     it("finds all reviewable items for a study set", async () => {
       await repository.createReviewableItemsForQuestionsBatch([
-        { userId: testUserId, questionId: testQuestionIds[0], videoId: testVideoId, studySetId: testStudySetId },
-        { userId: testUserId, questionId: testQuestionIds[1], videoId: testVideoId, studySetId: testStudySetId },
+        {
+          userId: testUserId,
+          questionId: testQuestionIds[0],
+          videoId: testVideoId,
+          studySetId: testStudySetId,
+        },
+        {
+          userId: testUserId,
+          questionId: testQuestionIds[1],
+          videoId: testVideoId,
+          studySetId: testStudySetId,
+        },
       ]);
 
-      const result = await repository.findReviewableItemsByStudySetId(testStudySetId);
+      const result =
+        await repository.findReviewableItemsByStudySetId(testStudySetId);
 
       expect(result).toHaveLength(2);
       expect(result.every((r) => r.studySetId === testStudySetId)).toBe(true);
@@ -263,10 +308,17 @@ describe("DrizzleReviewableItemRepository (integration)", () => {
   describe("findReviewableItemByQuestionId", () => {
     it("finds item by question ID", async () => {
       await repository.createReviewableItemsForQuestionsBatch([
-        { userId: testUserId, questionId: testQuestionIds[0], videoId: testVideoId, studySetId: testStudySetId },
+        {
+          userId: testUserId,
+          questionId: testQuestionIds[0],
+          videoId: testVideoId,
+          studySetId: testStudySetId,
+        },
       ]);
 
-      const result = await repository.findReviewableItemByQuestionId(testQuestionIds[0]);
+      const result = await repository.findReviewableItemByQuestionId(
+        testQuestionIds[0]
+      );
 
       expect(result).not.toBeNull();
       expect(result!.questionId).toBe(testQuestionIds[0]);
@@ -281,10 +333,17 @@ describe("DrizzleReviewableItemRepository (integration)", () => {
   describe("findReviewableItemByFlashcardId", () => {
     it("finds item by flashcard ID", async () => {
       await repository.createReviewableItemsForFlashcardsBatch([
-        { userId: testUserId, flashcardId: testFlashcardIds[0], videoId: testVideoId, studySetId: testStudySetId },
+        {
+          userId: testUserId,
+          flashcardId: testFlashcardIds[0],
+          videoId: testVideoId,
+          studySetId: testStudySetId,
+        },
       ]);
 
-      const result = await repository.findReviewableItemByFlashcardId(testFlashcardIds[0]);
+      const result = await repository.findReviewableItemByFlashcardId(
+        testFlashcardIds[0]
+      );
 
       expect(result).not.toBeNull();
       expect(result!.flashcardId).toBe(testFlashcardIds[0]);
@@ -293,9 +352,16 @@ describe("DrizzleReviewableItemRepository (integration)", () => {
 
   describe("findReviewableItemById", () => {
     it("finds item by ID", async () => {
-      const [created] = await repository.createReviewableItemsForQuestionsBatch([
-        { userId: testUserId, questionId: testQuestionIds[0], videoId: testVideoId, studySetId: testStudySetId },
-      ]);
+      const [created] = await repository.createReviewableItemsForQuestionsBatch(
+        [
+          {
+            userId: testUserId,
+            questionId: testQuestionIds[0],
+            videoId: testVideoId,
+            studySetId: testStudySetId,
+          },
+        ]
+      );
 
       const result = await repository.findReviewableItemById(created.id);
 
@@ -331,11 +397,26 @@ describe("DrizzleReviewableItemRepository (integration)", () => {
     it("returns correct count for study set with items", async () => {
       // Create 3 items: 2 questions, 1 flashcard
       await repository.createReviewableItemsForQuestionsBatch([
-        { userId: testUserId, questionId: testQuestionIds[0], videoId: testVideoId, studySetId: testStudySetId },
-        { userId: testUserId, questionId: testQuestionIds[1], videoId: testVideoId, studySetId: testStudySetId },
+        {
+          userId: testUserId,
+          questionId: testQuestionIds[0],
+          videoId: testVideoId,
+          studySetId: testStudySetId,
+        },
+        {
+          userId: testUserId,
+          questionId: testQuestionIds[1],
+          videoId: testVideoId,
+          studySetId: testStudySetId,
+        },
       ]);
       await repository.createReviewableItemsForFlashcardsBatch([
-        { userId: testUserId, flashcardId: testFlashcardIds[0], videoId: testVideoId, studySetId: testStudySetId },
+        {
+          userId: testUserId,
+          flashcardId: testFlashcardIds[0],
+          videoId: testVideoId,
+          studySetId: testStudySetId,
+        },
       ]);
 
       const count = await repository.countItemsByStudySetId(testStudySetId);
@@ -378,10 +459,20 @@ describe("DrizzleReviewableItemRepository (integration)", () => {
 
       // Add items to both study sets
       await repository.createReviewableItemsForQuestionsBatch([
-        { userId: testUserId, questionId: testQuestionIds[0], videoId: testVideoId, studySetId: testStudySetId },
+        {
+          userId: testUserId,
+          questionId: testQuestionIds[0],
+          videoId: testVideoId,
+          studySetId: testStudySetId,
+        },
       ]);
       await repository.createReviewableItemsForFlashcardsBatch([
-        { userId: testUserId, flashcardId: flashcard3.id, videoId: null, studySetId: studySet2.id },
+        {
+          userId: testUserId,
+          flashcardId: flashcard3.id,
+          videoId: null,
+          studySetId: studySet2.id,
+        },
       ]);
 
       const count1 = await repository.countItemsByStudySetId(testStudySetId);
@@ -418,15 +509,38 @@ describe("DrizzleReviewableItemRepository (integration)", () => {
 
       // Add items: 2 questions + 1 flashcard to studySet1, 1 flashcard to studySet2
       await repository.createReviewableItemsForQuestionsBatch([
-        { userId: testUserId, questionId: testQuestionIds[0], videoId: testVideoId, studySetId: testStudySetId },
-        { userId: testUserId, questionId: testQuestionIds[1], videoId: testVideoId, studySetId: testStudySetId },
+        {
+          userId: testUserId,
+          questionId: testQuestionIds[0],
+          videoId: testVideoId,
+          studySetId: testStudySetId,
+        },
+        {
+          userId: testUserId,
+          questionId: testQuestionIds[1],
+          videoId: testVideoId,
+          studySetId: testStudySetId,
+        },
       ]);
       await repository.createReviewableItemsForFlashcardsBatch([
-        { userId: testUserId, flashcardId: testFlashcardIds[0], videoId: testVideoId, studySetId: testStudySetId },
-        { userId: testUserId, flashcardId: flashcard3.id, videoId: null, studySetId: studySet2.id },
+        {
+          userId: testUserId,
+          flashcardId: testFlashcardIds[0],
+          videoId: testVideoId,
+          studySetId: testStudySetId,
+        },
+        {
+          userId: testUserId,
+          flashcardId: flashcard3.id,
+          videoId: null,
+          studySetId: studySet2.id,
+        },
       ]);
 
-      const result = await repository.countItemsByStudySetIdsBatch([testStudySetId, studySet2.id]);
+      const result = await repository.countItemsByStudySetIdsBatch([
+        testStudySetId,
+        studySet2.id,
+      ]);
 
       expect(result[testStudySetId]).toEqual({ questions: 2, flashcards: 1 });
       expect(result[studySet2.id]).toEqual({ questions: 0, flashcards: 1 });
@@ -444,7 +558,10 @@ describe("DrizzleReviewableItemRepository (integration)", () => {
         })
         .returning();
 
-      const result = await repository.countItemsByStudySetIdsBatch([testStudySetId, emptyStudySet.id]);
+      const result = await repository.countItemsByStudySetIdsBatch([
+        testStudySetId,
+        emptyStudySet.id,
+      ]);
 
       expect(result[testStudySetId]).toEqual({ questions: 0, flashcards: 0 });
       expect(result[emptyStudySet.id]).toEqual({ questions: 0, flashcards: 0 });
@@ -471,33 +588,75 @@ describe("DrizzleReviewableItemRepository (integration)", () => {
       const manualFlashcards = await ctx.db
         .insert(flashcards)
         .values([
-          { videoId: null, userId: testUserId, front: "Manual 1", back: "Back 1" },
-          { videoId: null, userId: testUserId, front: "Manual 2", back: "Back 2" },
+          {
+            videoId: null,
+            userId: testUserId,
+            front: "Manual 1",
+            back: "Back 1",
+          },
+          {
+            videoId: null,
+            userId: testUserId,
+            front: "Manual 2",
+            back: "Back 2",
+          },
         ])
         .returning();
 
       // Add flashcards to manual study set
       await repository.createReviewableItemsForFlashcardsBatch([
-        { userId: testUserId, flashcardId: manualFlashcards[0].id, videoId: null, studySetId: manualStudySet.id },
-        { userId: testUserId, flashcardId: manualFlashcards[1].id, videoId: null, studySetId: manualStudySet.id },
+        {
+          userId: testUserId,
+          flashcardId: manualFlashcards[0].id,
+          videoId: null,
+          studySetId: manualStudySet.id,
+        },
+        {
+          userId: testUserId,
+          flashcardId: manualFlashcards[1].id,
+          videoId: null,
+          studySetId: manualStudySet.id,
+        },
       ]);
 
-      const result = await repository.countItemsByStudySetIdsBatch([manualStudySet.id]);
+      const result = await repository.countItemsByStudySetIdsBatch([
+        manualStudySet.id,
+      ]);
 
-      expect(result[manualStudySet.id]).toEqual({ questions: 0, flashcards: 2 });
+      expect(result[manualStudySet.id]).toEqual({
+        questions: 0,
+        flashcards: 2,
+      });
     });
   });
 
   describe("studySetId constraint", () => {
     it("all created reviewable items have non-null studySetId", async () => {
       // Create items for both questions and flashcards
-      const questionItems = await repository.createReviewableItemsForQuestionsBatch([
-        { userId: testUserId, questionId: testQuestionIds[0], videoId: testVideoId, studySetId: testStudySetId },
-        { userId: testUserId, questionId: testQuestionIds[1], videoId: testVideoId, studySetId: testStudySetId },
-      ]);
-      const flashcardItems = await repository.createReviewableItemsForFlashcardsBatch([
-        { userId: testUserId, flashcardId: testFlashcardIds[0], videoId: testVideoId, studySetId: testStudySetId },
-      ]);
+      const questionItems =
+        await repository.createReviewableItemsForQuestionsBatch([
+          {
+            userId: testUserId,
+            questionId: testQuestionIds[0],
+            videoId: testVideoId,
+            studySetId: testStudySetId,
+          },
+          {
+            userId: testUserId,
+            questionId: testQuestionIds[1],
+            videoId: testVideoId,
+            studySetId: testStudySetId,
+          },
+        ]);
+      const flashcardItems =
+        await repository.createReviewableItemsForFlashcardsBatch([
+          {
+            userId: testUserId,
+            flashcardId: testFlashcardIds[0],
+            videoId: testVideoId,
+            studySetId: testStudySetId,
+          },
+        ]);
 
       // Verify all items have non-null studySetId
       const allItems = [...questionItems, ...flashcardItems];
@@ -509,7 +668,12 @@ describe("DrizzleReviewableItemRepository (integration)", () => {
 
     it("items retrieved by userId have non-null studySetId", async () => {
       await repository.createReviewableItemsForQuestionsBatch([
-        { userId: testUserId, questionId: testQuestionIds[0], videoId: testVideoId, studySetId: testStudySetId },
+        {
+          userId: testUserId,
+          questionId: testQuestionIds[0],
+          videoId: testVideoId,
+          studySetId: testStudySetId,
+        },
       ]);
 
       const items = await repository.findReviewableItemsByUserId(testUserId);
@@ -520,10 +684,16 @@ describe("DrizzleReviewableItemRepository (integration)", () => {
 
     it("items retrieved by studySetId have correct studySetId", async () => {
       await repository.createReviewableItemsForQuestionsBatch([
-        { userId: testUserId, questionId: testQuestionIds[0], videoId: testVideoId, studySetId: testStudySetId },
+        {
+          userId: testUserId,
+          questionId: testQuestionIds[0],
+          videoId: testVideoId,
+          studySetId: testStudySetId,
+        },
       ]);
 
-      const items = await repository.findReviewableItemsByStudySetId(testStudySetId);
+      const items =
+        await repository.findReviewableItemsByStudySetId(testStudySetId);
 
       expect(items).toHaveLength(1);
       expect(items[0].studySetId).toBe(testStudySetId);

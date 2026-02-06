@@ -35,7 +35,10 @@ describe("withRetry", () => {
   });
 
   it("retries on transient error and succeeds on second attempt", async () => {
-    const transientError = { code: "CONNECT_TIMEOUT", message: "Connection timed out" };
+    const transientError = {
+      code: "CONNECT_TIMEOUT",
+      message: "Connection timed out",
+    };
     const operation = vi
       .fn()
       .mockRejectedValueOnce(transientError)
@@ -50,7 +53,10 @@ describe("withRetry", () => {
   });
 
   it("retries multiple times before succeeding", async () => {
-    const transientError = { code: "ECONNREFUSED", message: "Connection refused" };
+    const transientError = {
+      code: "ECONNREFUSED",
+      message: "Connection refused",
+    };
     const operation = vi
       .fn()
       .mockRejectedValueOnce(transientError)
@@ -91,12 +97,15 @@ describe("withRetry", () => {
   });
 
   it("throws after max retries exceeded", async () => {
-    const transientError = { code: "CONNECT_TIMEOUT", message: "Connection timed out" };
+    const transientError = {
+      code: "CONNECT_TIMEOUT",
+      message: "Connection timed out",
+    };
     const operation = vi.fn().mockRejectedValue(transientError);
 
-    const resultPromise = withRetry(operation, "TestOperation", { maxRetries: 3 }).catch(
-      (e) => e
-    );
+    const resultPromise = withRetry(operation, "TestOperation", {
+      maxRetries: 3,
+    }).catch((e) => e);
     await vi.runAllTimersAsync();
     const error = await resultPromise;
 
@@ -108,9 +117,9 @@ describe("withRetry", () => {
     const transientError = { code: "ECONNRESET", message: "Connection reset" };
     const operation = vi.fn().mockRejectedValue(transientError);
 
-    const resultPromise = withRetry(operation, "TestOperation", { maxRetries: 5 }).catch(
-      (e) => e
-    );
+    const resultPromise = withRetry(operation, "TestOperation", {
+      maxRetries: 5,
+    }).catch((e) => e);
     await vi.runAllTimersAsync();
     const error = await resultPromise;
 
@@ -120,7 +129,10 @@ describe("withRetry", () => {
 
   it("logs retry attempts", async () => {
     const { logger } = await import("@/lib/logger");
-    const transientError = { code: "CONNECT_TIMEOUT", message: "Connection timed out" };
+    const transientError = {
+      code: "CONNECT_TIMEOUT",
+      message: "Connection timed out",
+    };
     const operation = vi
       .fn()
       .mockRejectedValueOnce(transientError)
@@ -138,12 +150,15 @@ describe("withRetry", () => {
 
   it("logs when max retries exceeded", async () => {
     const { logger } = await import("@/lib/logger");
-    const transientError = { code: "CONNECT_TIMEOUT", message: "Connection timed out" };
+    const transientError = {
+      code: "CONNECT_TIMEOUT",
+      message: "Connection timed out",
+    };
     const operation = vi.fn().mockRejectedValue(transientError);
 
-    const resultPromise = withRetry(operation, "TestOperation", { maxRetries: 2 }).catch(
-      (e) => e
-    );
+    const resultPromise = withRetry(operation, "TestOperation", {
+      maxRetries: 2,
+    }).catch((e) => e);
     await vi.runAllTimersAsync();
     const error = await resultPromise;
 
@@ -168,7 +183,10 @@ describe("withRetry", () => {
   });
 
   it("waits between retries with exponential backoff", async () => {
-    const transientError = { code: "CONNECT_TIMEOUT", message: "Connection timed out" };
+    const transientError = {
+      code: "CONNECT_TIMEOUT",
+      message: "Connection timed out",
+    };
 
     const operation = vi.fn().mockImplementation(() => {
       return Promise.reject(transientError);
@@ -199,7 +217,11 @@ describe("withRetry", () => {
 
 describe("calculateDelay", () => {
   it("returns base delay for first retry (attempt 1)", () => {
-    const delay = calculateDelay(1, { baseDelayMs: 100, maxDelayMs: 5000, jitterFactor: 0 });
+    const delay = calculateDelay(1, {
+      baseDelayMs: 100,
+      maxDelayMs: 5000,
+      jitterFactor: 0,
+    });
     expect(delay).toBe(100);
   });
 
@@ -213,7 +235,11 @@ describe("calculateDelay", () => {
   });
 
   it("caps delay at maxDelayMs", () => {
-    const delay = calculateDelay(10, { baseDelayMs: 100, maxDelayMs: 1000, jitterFactor: 0 });
+    const delay = calculateDelay(10, {
+      baseDelayMs: 100,
+      maxDelayMs: 1000,
+      jitterFactor: 0,
+    });
     expect(delay).toBe(1000);
   });
 

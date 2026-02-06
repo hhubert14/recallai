@@ -7,7 +7,10 @@ export class UpdateStreakUseCase {
 
   async execute(userId: string, timezone?: string): Promise<StreakEntity> {
     const today = getLocalDateString(new Date(), timezone);
-    const yesterday = getLocalDateString(new Date(Date.now() - 86400000), timezone);
+    const yesterday = getLocalDateString(
+      new Date(Date.now() - 86400000),
+      timezone
+    );
 
     const existing = await this.streakRepository.findStreakByUserId(userId);
 
@@ -23,9 +26,7 @@ export class UpdateStreakUseCase {
 
     // Continue streak (yesterday) or reset (older)
     const newCurrent =
-      existing.lastActivityDate === yesterday
-        ? existing.currentStreak + 1
-        : 1;
+      existing.lastActivityDate === yesterday ? existing.currentStreak + 1 : 1;
     const newLongest = Math.max(existing.longestStreak, newCurrent);
 
     return this.streakRepository.upsertStreak(

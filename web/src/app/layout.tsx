@@ -9,44 +9,44 @@ import { Analytics } from "@vercel/analytics/next";
 import { StrictMode } from "react";
 
 const geistSans = Geist({
-    variable: "--font-geist-sans",
-    subsets: ["latin"],
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
 });
 
 const geistMono = Geist_Mono({
-    variable: "--font-geist-mono",
-    subsets: ["latin"],
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-    title: "Retenio - AI-Powered Video Summaries",
-    description:
-        "Transform video learning with AI-powered summaries and active recall questions, helping you retain knowledge better.",
+  title: "Retenio - AI-Powered Video Summaries",
+  description:
+    "Transform video learning with AI-powered summaries and active recall questions, helping you retain knowledge better.",
 };
 
 export default function RootLayout({
-    children,
+  children,
 }: Readonly<{
-    children: React.ReactNode;
+  children: React.ReactNode;
 }>) {
-    return (
-        <html lang="en" suppressHydrationWarning>
-            <body
-                className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-            >
-                <StrictMode>
-                    <ThemeProvider>
-                        <AuthProviderWrapper>
-                            <StudySetListProvider>
-                                <QuizCompletionProvider>
-                                    {children}
-                                    <Analytics />
-                                </QuizCompletionProvider>
-                            </StudySetListProvider>
-                        </AuthProviderWrapper>
-                    </ThemeProvider>
-                </StrictMode>
-            </body>
-        </html>
-    );
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
+        <StrictMode>
+          <ThemeProvider>
+            <AuthProviderWrapper>
+              <StudySetListProvider>
+                <QuizCompletionProvider>
+                  {children}
+                  <Analytics />
+                </QuizCompletionProvider>
+              </StudySetListProvider>
+            </AuthProviderWrapper>
+          </ThemeProvider>
+        </StrictMode>
+      </body>
+    </html>
+  );
 }

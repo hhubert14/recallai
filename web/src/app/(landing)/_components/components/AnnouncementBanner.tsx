@@ -3,7 +3,10 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { X, Sparkles, Wrench, Bug, ArrowRight } from "lucide-react";
-import { updates, UpdateCategory } from "@/app/updates/_components/updates-data";
+import {
+  updates,
+  UpdateCategory,
+} from "@/app/updates/_components/updates-data";
 
 const categoryIcons: Record<UpdateCategory, typeof Sparkles> = {
   "New Feature": Sparkles,
@@ -67,15 +70,17 @@ export function AnnouncementBanner() {
   const bgColor = categoryBgColors[latestUpdate.category];
 
   return (
-    <div className="fixed top-20 right-4 z-50 animate-fade-up" style={{ animationFillMode: "forwards" }}>
+    <div
+      className="fixed top-20 right-4 z-50 animate-fade-up"
+      style={{ animationFillMode: "forwards" }}
+    >
       <div className="relative group w-72 rounded-xl border border-border bg-background/95 backdrop-blur-sm shadow-lg hover:shadow-xl hover:border-foreground/20 transition-all duration-300">
-        <Link
-          href="/updates"
-          className="flex flex-col gap-2 p-4"
-        >
+        <Link href="/updates" className="flex flex-col gap-2 p-4">
           {/* Header with icon */}
           <div className="flex items-center">
-            <div className={`flex items-center gap-2 px-2 py-1 rounded-full ${bgColor}`}>
+            <div
+              className={`flex items-center gap-2 px-2 py-1 rounded-full ${bgColor}`}
+            >
               <Icon className={`h-3.5 w-3.5 ${iconColor}`} />
               <span className={`text-xs font-medium ${iconColor}`}>
                 {latestUpdate.category}

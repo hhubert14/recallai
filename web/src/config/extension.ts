@@ -18,7 +18,8 @@ export function getExtensionId(): string {
   // Check if we're in development (localhost)
   const isDevelopment =
     typeof window !== "undefined" &&
-    (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
+    (window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1");
 
   return isDevelopment ? EXTENSION_IDS.development : EXTENSION_IDS.production;
 }

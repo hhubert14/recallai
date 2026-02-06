@@ -30,15 +30,13 @@ export const WELCOME_STEPS = [
   {
     id: "extension-demo",
     title: "See It In Action",
-    description:
-      "Watch how to create a study set from any YouTube video.",
+    description: "Watch how to create a study set from any YouTube video.",
     icon: null,
   },
   {
     id: "create-first-study-set",
     title: "Create Your First Study Set",
-    description:
-      "Choose how you'd like to get started.",
+    description: "Choose how you'd like to get started.",
     icon: "Sparkles" as const,
   },
 ] as const;

@@ -1,6 +1,9 @@
 import { IReviewProgressRepository } from "@/clean-architecture/domain/repositories/review-progress.repository.interface";
 import { ReviewProgressEntity } from "@/clean-architecture/domain/entities/review-progress.entity";
-import { calculateProgressUpdate, getNextReviewDate } from "./spaced-repetition";
+import {
+  calculateProgressUpdate,
+  getNextReviewDate,
+} from "./spaced-repetition";
 
 export class ProcessReviewAnswerUseCase {
   constructor(private reviewProgressRepository: IReviewProgressRepository) {}
@@ -53,9 +56,11 @@ export class ProcessReviewAnswerUseCase {
             lastReviewedAt: now,
           },
         ]);
-      
+
       if (!createdProgress) {
-        throw new Error(`Failed to create review progress for reviewableItemId: ${reviewableItemId}`);
+        throw new Error(
+          `Failed to create review progress for reviewableItemId: ${reviewableItemId}`
+        );
       }
 
       return createdProgress;

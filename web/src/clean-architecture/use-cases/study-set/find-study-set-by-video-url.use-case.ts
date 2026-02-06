@@ -38,7 +38,10 @@ export class FindStudySetByVideoUrlUseCase {
     private readonly flashcardRepository: IFlashcardRepository
   ) {}
 
-  async execute(userId: string, videoUrl: string): Promise<StudySetContentResult> {
+  async execute(
+    userId: string,
+    videoUrl: string
+  ): Promise<StudySetContentResult> {
     // Find the video by user ID and URL
     const video = await this.videoRepository.findVideoByUserIdAndUrl(
       userId,
