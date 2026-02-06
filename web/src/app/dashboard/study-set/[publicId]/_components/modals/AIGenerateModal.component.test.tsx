@@ -3,7 +3,7 @@ import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { AIGenerateModal } from "./AIGenerateModal";
 import type { Suggestion } from "@/clean-architecture/domain/services/suggestion-generator.interface";
-import { STUDY_SET_ITEM_LIMIT } from "./types";
+import { STUDY_SET_ITEM_LIMIT } from "@/lib/constants/study-set";
 
 // Helper to create mock suggestions
 const createMockFlashcardSuggestion = (id: string, front: string, back: string): Suggestion => ({

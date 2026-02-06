@@ -1,6 +1,6 @@
 "use client";
 
-import { useVideoPlayer } from "./VideoPlayerContext";
+import { useVideoPlayer } from "../VideoPlayerContext";
 
 interface VideoPlayerProps {
     videoId: string | null;

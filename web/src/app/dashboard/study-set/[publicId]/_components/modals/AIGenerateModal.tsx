@@ -23,7 +23,8 @@ import type {
     QuestionSuggestion,
     QuestionOptionSuggestion,
 } from "@/clean-architecture/domain/services/suggestion-generator.interface";
-import { CHARACTER_LIMITS, STUDY_SET_ITEM_LIMIT } from "./types";
+import { CHARACTER_LIMITS } from "../types";
+import { STUDY_SET_ITEM_LIMIT } from "@/lib/constants/study-set";
 
 // Type for edited suggestion content - either flashcard or question fields
 type EditedSuggestionContent = {

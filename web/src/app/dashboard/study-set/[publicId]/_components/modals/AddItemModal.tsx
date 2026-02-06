@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { CharacterCount } from "@/components/ui/character-count";
-import { CHARACTER_LIMITS } from "./types";
+import { CHARACTER_LIMITS } from "../types";
 
 type ItemType = "flashcard" | "question";
 

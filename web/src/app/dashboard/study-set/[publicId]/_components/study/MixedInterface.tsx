@@ -5,7 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AIContent } from "@/components/ui/ai-content";
 import { QuizProgress, QuizQuestion, QuizResult, QuizSummary } from "@/components/quiz";
-import type { Term } from "./types";
+import type { Term } from "../types";
 
 interface MixedInterfaceProps {
     items: Term[];

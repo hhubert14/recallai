@@ -2,8 +2,8 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { StudySession } from "./StudySession";
-import type { Term } from "./types";
-import { VideoPlayerProvider } from "./VideoPlayerContext";
+import type { Term } from "../types";
+import { VideoPlayerProvider } from "../VideoPlayerContext";
 import { QuizCompletionProvider } from "@/components/providers/QuizCompletionProvider";
 
 // Mock fetch for API calls

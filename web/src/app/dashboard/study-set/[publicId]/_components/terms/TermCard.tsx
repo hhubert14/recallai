@@ -18,8 +18,8 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import type { TermWithMastery, MasteryStatus, TermFlashcard, TermQuestion, EditedTermContent } from "./types";
-import { CHARACTER_LIMITS } from "./types";
+import type { TermWithMastery, MasteryStatus, TermFlashcard, TermQuestion, EditedTermContent } from "../types";
+import { CHARACTER_LIMITS } from "../types";
 
 interface TermCardProps {
     term: TermWithMastery;

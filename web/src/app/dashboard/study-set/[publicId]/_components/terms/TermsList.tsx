@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { TermCard } from "./TermCard";
 import { StudyDropdown } from "./StudyDropdown";
 import { ProgressOverview } from "./ProgressOverview";
-import type { TermWithMastery, StudyMode, StudySetProgress, TermFlashcard, TermQuestion, EditedTermContent } from "./types";
+import type { TermWithMastery, StudyMode, StudySetProgress, TermFlashcard, TermQuestion, EditedTermContent } from "../types";
 
 interface TermsListProps {
     terms: TermWithMastery[];

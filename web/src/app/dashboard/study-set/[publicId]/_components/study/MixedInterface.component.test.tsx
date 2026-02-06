@@ -2,7 +2,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { MixedInterface } from "./MixedInterface";
-import type { Term } from "./types";
+import type { Term } from "../types";
 
 // Mock fetch for API calls
 global.fetch = vi.fn(() =>

@@ -1,5 +1,5 @@
 import { CheckCircle2, Circle, CircleDot } from "lucide-react";
-import type { StudySetProgress } from "./types";
+import type { StudySetProgress } from "../types";
 
 interface ProgressOverviewProps {
     progress: StudySetProgress;

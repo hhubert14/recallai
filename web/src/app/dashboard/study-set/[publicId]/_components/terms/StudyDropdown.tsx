@@ -13,7 +13,7 @@ import {
     TooltipContent,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
-import type { StudyMode } from "./types";
+import type { StudyMode } from "../types";
 
 interface StudyDropdownProps {
     onSelect: (mode: StudyMode) => void;

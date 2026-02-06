@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi } from "vitest";
 import { TermCard } from "./TermCard";
-import type { TermWithMastery, EditedTermContent } from "./types";
+import type { TermWithMastery, EditedTermContent } from "../types";
 
 describe("TermCard", () => {
     describe("flashcard term", () => {

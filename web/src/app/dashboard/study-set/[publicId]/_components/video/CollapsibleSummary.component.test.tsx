@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect } from "vitest";
 import { CollapsibleSummary } from "./CollapsibleSummary";
-import { VideoPlayerProvider } from "./VideoPlayerContext";
+import { VideoPlayerProvider } from "../VideoPlayerContext";
 
 // Wrap component with VideoPlayerProvider since MarkdownWithTimestamps uses it
 function renderWithProvider(ui: React.ReactNode) {

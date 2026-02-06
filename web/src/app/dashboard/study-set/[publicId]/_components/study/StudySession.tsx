@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { FlashcardInterface } from "./FlashcardInterface";
 import { QuizInterface } from "./QuizInterface";
 import { MixedInterface } from "./MixedInterface";
-import type { Term, StudyMode } from "./types";
+import type { Term, StudyMode } from "../types";
 
 const MAX_SESSION_ITEMS = 10;
 

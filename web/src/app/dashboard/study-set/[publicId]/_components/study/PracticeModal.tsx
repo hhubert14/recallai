@@ -14,7 +14,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { AIContent } from "@/components/ui/ai-content";
 import { usePracticeChat } from "@/hooks/usePracticeChat";
-import { ChatMessage } from "./ChatMessage";
+import { ChatMessage } from "../chat/ChatMessage";
 import type { ConceptGroup } from "@/clean-architecture/domain/services/concept-grouper.interface";
 import type { ConceptInput } from "@/clean-architecture/use-cases/practice/build-practice-context.use-case";
 import type { ConversationMessage } from "@/clean-architecture/domain/services/feedback-generator.interface";

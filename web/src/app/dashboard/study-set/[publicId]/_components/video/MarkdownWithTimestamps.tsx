@@ -2,7 +2,7 @@
 
 import React from "react";
 import ReactMarkdown from "react-markdown";
-import { useVideoPlayer } from "./VideoPlayerContext";
+import { useVideoPlayer } from "../VideoPlayerContext";
 import { parseTimestamp } from "@/lib/format-timestamp";
 
 interface MarkdownWithTimestampsProps {

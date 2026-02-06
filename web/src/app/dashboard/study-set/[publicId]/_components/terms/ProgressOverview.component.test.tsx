@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
 import { ProgressOverview } from "./ProgressOverview";
-import type { StudySetProgress } from "./types";
+import type { StudySetProgress } from "../types";
 
 describe("ProgressOverview", () => {
     it("renders mastered count", () => {

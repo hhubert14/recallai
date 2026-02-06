@@ -2,7 +2,7 @@ import { IStudySetRepository } from "@/clean-architecture/domain/repositories/st
 import { IFlashcardRepository } from "@/clean-architecture/domain/repositories/flashcard.repository.interface";
 import { IReviewableItemRepository } from "@/clean-architecture/domain/repositories/reviewable-item.repository.interface";
 import { FlashcardEntity } from "@/clean-architecture/domain/entities/flashcard.entity";
-import { STUDY_SET_ITEM_LIMIT } from "@/app/dashboard/study-set/[publicId]/types";
+import { STUDY_SET_ITEM_LIMIT } from "@/lib/constants/study-set";
 
 export interface AddFlashcardInput {
     userId: string;

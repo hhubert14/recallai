@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi } from "vitest";
 import { StudyDropdown } from "./StudyDropdown";
-import type { StudyMode } from "./types";
+import type { StudyMode } from "../types";
 
 describe("StudyDropdown", () => {
     it("renders a Study button", () => {
