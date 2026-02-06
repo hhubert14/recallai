@@ -39,7 +39,9 @@ export async function GET(
       return jsendFail({ error: "Study set not found" }, 404);
     }
 
-    const useCase = new GetStudySetFoldersUseCase(new DrizzleFolderRepository());
+    const useCase = new GetStudySetFoldersUseCase(
+      new DrizzleFolderRepository()
+    );
     const folders = await useCase.execute({
       studySetId: studySet.id,
       userId: user.id,

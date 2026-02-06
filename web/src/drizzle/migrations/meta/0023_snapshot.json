@@ -85,12 +85,8 @@
           "name": "chat_messages_video_id_fkey",
           "tableFrom": "chat_messages",
           "tableTo": "videos",
-          "columnsFrom": [
-            "video_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["video_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -98,12 +94,8 @@
           "name": "chat_messages_user_id_fkey",
           "tableFrom": "chat_messages",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -180,12 +172,8 @@
           "name": "flashcards_video_id_fkey",
           "tableFrom": "flashcards",
           "tableTo": "videos",
-          "columnsFrom": [
-            "video_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["video_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -193,12 +181,8 @@
           "name": "flashcards_user_id_fkey",
           "tableFrom": "flashcards",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -287,12 +271,8 @@
           "name": "folder_study_sets_folder_id_fkey",
           "tableFrom": "folder_study_sets",
           "tableTo": "folders",
-          "columnsFrom": [
-            "folder_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["folder_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -300,12 +280,8 @@
           "name": "folder_study_sets_study_set_id_fkey",
           "tableFrom": "folder_study_sets",
           "tableTo": "study_sets",
-          "columnsFrom": [
-            "study_set_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["study_set_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -315,10 +291,7 @@
         "folder_study_sets_folder_study_set_key": {
           "name": "folder_study_sets_folder_study_set_key",
           "nullsNotDistinct": false,
-          "columns": [
-            "folder_id",
-            "study_set_id"
-          ]
+          "columns": ["folder_id", "study_set_id"]
         }
       },
       "policies": {},
@@ -401,12 +374,8 @@
           "name": "folders_user_id_fkey",
           "tableFrom": "folders",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -454,12 +423,8 @@
           "name": "onboarding_surveys_user_id_fkey",
           "tableFrom": "onboarding_surveys",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -469,9 +434,7 @@
         "onboarding_surveys_user_id_key": {
           "name": "onboarding_surveys_user_id_key",
           "nullsNotDistinct": false,
-          "columns": [
-            "user_id"
-          ]
+          "columns": ["user_id"]
         }
       },
       "policies": {},
@@ -537,12 +500,8 @@
           "name": "question_options_question_id_fkey",
           "tableFrom": "question_options",
           "tableTo": "questions",
-          "columnsFrom": [
-            "question_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["question_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -625,12 +584,8 @@
           "name": "questions_video_id_fkey",
           "tableFrom": "questions",
           "tableTo": "videos",
-          "columnsFrom": [
-            "video_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["video_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -759,12 +714,8 @@
           "name": "review_progress_user_id_fkey",
           "tableFrom": "review_progress",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -772,12 +723,8 @@
           "name": "review_progress_reviewable_item_id_fkey",
           "tableFrom": "review_progress",
           "tableTo": "reviewable_items",
-          "columnsFrom": [
-            "reviewable_item_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["reviewable_item_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -787,10 +734,7 @@
         "review_progress_user_reviewable_item_key": {
           "name": "review_progress_user_reviewable_item_key",
           "nullsNotDistinct": false,
-          "columns": [
-            "user_id",
-            "reviewable_item_id"
-          ]
+          "columns": ["user_id", "reviewable_item_id"]
         }
       },
       "policies": {},
@@ -914,12 +858,8 @@
           "name": "reviewable_items_user_id_fkey",
           "tableFrom": "reviewable_items",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -927,12 +867,8 @@
           "name": "reviewable_items_question_id_fkey",
           "tableFrom": "reviewable_items",
           "tableTo": "questions",
-          "columnsFrom": [
-            "question_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["question_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -940,12 +876,8 @@
           "name": "reviewable_items_flashcard_id_fkey",
           "tableFrom": "reviewable_items",
           "tableTo": "flashcards",
-          "columnsFrom": [
-            "flashcard_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["flashcard_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -953,12 +885,8 @@
           "name": "reviewable_items_video_id_fkey",
           "tableFrom": "reviewable_items",
           "tableTo": "videos",
-          "columnsFrom": [
-            "video_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["video_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -966,12 +894,8 @@
           "name": "reviewable_items_study_set_id_fkey",
           "tableFrom": "reviewable_items",
           "tableTo": "study_sets",
-          "columnsFrom": [
-            "study_set_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["study_set_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -981,16 +905,12 @@
         "reviewable_items_question_id_key": {
           "name": "reviewable_items_question_id_key",
           "nullsNotDistinct": false,
-          "columns": [
-            "question_id"
-          ]
+          "columns": ["question_id"]
         },
         "reviewable_items_flashcard_id_key": {
           "name": "reviewable_items_flashcard_id_key",
           "nullsNotDistinct": false,
-          "columns": [
-            "flashcard_id"
-          ]
+          "columns": ["flashcard_id"]
         }
       },
       "policies": {},
@@ -1107,12 +1027,8 @@
           "name": "study_sets_user_id_fkey",
           "tableFrom": "study_sets",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -1120,12 +1036,8 @@
           "name": "study_sets_video_id_fkey",
           "tableFrom": "study_sets",
           "tableTo": "videos",
-          "columnsFrom": [
-            "video_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["video_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "cascade"
         }
@@ -1135,9 +1047,7 @@
         "study_sets_public_id_key": {
           "name": "study_sets_public_id_key",
           "nullsNotDistinct": false,
-          "columns": [
-            "public_id"
-          ]
+          "columns": ["public_id"]
         }
       },
       "policies": {},
@@ -1203,12 +1113,8 @@
           "name": "summaries_video_id_fkey",
           "tableFrom": "summaries",
           "tableTo": "videos",
-          "columnsFrom": [
-            "video_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["video_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -1306,12 +1212,8 @@
           "name": "transcript_windows_video_id_fkey",
           "tableFrom": "transcript_windows",
           "tableTo": "videos",
-          "columnsFrom": [
-            "video_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["video_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -1321,10 +1223,7 @@
         "transcript_windows_video_id_window_index_key": {
           "name": "transcript_windows_video_id_window_index_key",
           "nullsNotDistinct": false,
-          "columns": [
-            "video_id",
-            "window_index"
-          ]
+          "columns": ["video_id", "window_index"]
         }
       },
       "policies": {},
@@ -1390,12 +1289,8 @@
           "name": "user_answers_question_id_fkey",
           "tableFrom": "user_answers",
           "tableTo": "questions",
-          "columnsFrom": [
-            "question_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["question_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -1403,12 +1298,8 @@
           "name": "user_answers_selected_option_id_fkey",
           "tableFrom": "user_answers",
           "tableTo": "question_options",
-          "columnsFrom": [
-            "selected_option_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["selected_option_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -1416,12 +1307,8 @@
           "name": "user_answers_user_id_fkey",
           "tableFrom": "user_answers",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -1516,12 +1403,8 @@
           "name": "user_streaks_user_id_fkey",
           "tableFrom": "user_streaks",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -1531,9 +1414,7 @@
         "user_streaks_user_id_key": {
           "name": "user_streaks_user_id_key",
           "nullsNotDistinct": false,
-          "columns": [
-            "user_id"
-          ]
+          "columns": ["user_id"]
         }
       },
       "policies": {},
@@ -1641,12 +1522,8 @@
           "name": "video_transcripts_video_id_fkey",
           "tableFrom": "video_transcripts",
           "tableTo": "videos",
-          "columnsFrom": [
-            "video_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["video_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -1656,9 +1533,7 @@
         "video_transcripts_video_id_key": {
           "name": "video_transcripts_video_id_key",
           "nullsNotDistinct": false,
-          "columns": [
-            "video_id"
-          ]
+          "columns": ["video_id"]
         }
       },
       "policies": {},
@@ -1731,12 +1606,8 @@
           "name": "videos_user_id_fkey",
           "tableFrom": "videos",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }

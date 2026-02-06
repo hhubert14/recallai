@@ -1,8 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { StudyMode, ReviewItemApiResponse } from "@/clean-architecture/use-cases/review/types";
-import { StudyModeStats } from "@/app/dashboard/review/StudyModeSelector";
+import {
+  StudyMode,
+  ReviewItemApiResponse,
+} from "@/clean-architecture/use-cases/review/types";
+import { StudyModeStats } from "@/app/dashboard/review/_components/StudyModeSelector";
 
 export interface SessionResults {
   correct: number;
@@ -222,7 +225,9 @@ export function useReviewSession({
         setSubmitError(data.data?.error || "Failed to save your answer");
       }
     } catch {
-      setSubmitError("Failed to save your answer. Your progress may not be recorded.");
+      setSubmitError(
+        "Failed to save your answer. Your progress may not be recorded."
+      );
     }
 
     setShowResult(true);

@@ -1,14 +1,13 @@
 import { Metadata } from "next";
 import { Sparkles } from "lucide-react";
-import { Header } from "@/app/(landing)/Header";
-import { Footer } from "@/app/(landing)/Footer";
-import { updates } from "./updates-data";
-import { UpdateCard } from "./UpdateCard";
+import { Header } from "@/app/(landing)/_components/Header";
+import { Footer } from "@/app/(landing)/_components/Footer";
+import { updates } from "./_components/updates-data";
+import { UpdateCard } from "./_components/UpdateCard";
 
 export const metadata: Metadata = {
   title: "What's New - Retenio",
-  description:
-    "See the latest features, improvements, and updates to Retenio.",
+  description: "See the latest features, improvements, and updates to Retenio.",
 };
 
 export default function UpdatesPage() {
@@ -40,7 +39,11 @@ export default function UpdatesPage() {
           <div className="container px-4 md:px-6 max-w-3xl">
             <div className="space-y-6">
               {updates.map((update, index) => (
-                <UpdateCard key={update.id} update={update} delay={index * 100} />
+                <UpdateCard
+                  key={update.id}
+                  update={update}
+                  delay={index * 100}
+                />
               ))}
             </div>
 

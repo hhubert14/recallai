@@ -6,9 +6,7 @@ import { StreakEntity } from "@/clean-architecture/domain/entities/streak.entity
 import { eq } from "drizzle-orm";
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
-function toStreakEntity(
-  record: typeof userStreaks.$inferSelect
-): StreakEntity {
+function toStreakEntity(record: typeof userStreaks.$inferSelect): StreakEntity {
   return new StreakEntity(
     record.id,
     record.userId,

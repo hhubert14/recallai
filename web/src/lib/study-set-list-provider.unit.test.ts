@@ -197,7 +197,9 @@ describe("StudySetListProvider", () => {
 
   describe("INSERT event handling", () => {
     it("adds new study set to the beginning of the list", async () => {
-      let insertCallback: ((payload: { new: Record<string, unknown> }) => void) | null = null;
+      let insertCallback:
+        | ((payload: { new: Record<string, unknown> }) => void)
+        | null = null;
 
       mockChannel.on.mockImplementation(
         (
@@ -266,7 +268,9 @@ describe("StudySetListProvider", () => {
     });
 
     it("prevents duplicate study sets on INSERT", async () => {
-      let insertCallback: ((payload: { new: Record<string, unknown> }) => void) | null = null;
+      let insertCallback:
+        | ((payload: { new: Record<string, unknown> }) => void)
+        | null = null;
 
       mockChannel.on.mockImplementation(
         (
@@ -330,7 +334,9 @@ describe("StudySetListProvider", () => {
 
   describe("UPDATE event handling", () => {
     it("updates existing study set in place", async () => {
-      let updateCallback: ((payload: { new: Record<string, unknown> }) => void) | null = null;
+      let updateCallback:
+        | ((payload: { new: Record<string, unknown> }) => void)
+        | null = null;
 
       mockChannel.on.mockImplementation(
         (
@@ -409,7 +415,9 @@ describe("StudySetListProvider", () => {
     });
 
     it("preserves questionCount and flashcardCount on UPDATE", async () => {
-      let updateCallback: ((payload: { new: Record<string, unknown> }) => void) | null = null;
+      let updateCallback:
+        | ((payload: { new: Record<string, unknown> }) => void)
+        | null = null;
 
       mockChannel.on.mockImplementation(
         (
@@ -502,10 +510,12 @@ describe("StudySetListProvider", () => {
     it("sets isConnected to true on SUBSCRIBED status", async () => {
       let subscribeCallback: ((status: string) => void) | null = null;
 
-      mockChannel.subscribe.mockImplementation((callback: (status: string) => void) => {
-        subscribeCallback = callback;
-        return mockChannel;
-      });
+      mockChannel.subscribe.mockImplementation(
+        (callback: (status: string) => void) => {
+          subscribeCallback = callback;
+          return mockChannel;
+        }
+      );
 
       const wrapper = ({ children }: { children: React.ReactNode }) =>
         React.createElement(StudySetListProvider, null, children);
@@ -530,10 +540,12 @@ describe("StudySetListProvider", () => {
     it("sets isConnected to false on error status", async () => {
       let subscribeCallback: ((status: string) => void) | null = null;
 
-      mockChannel.subscribe.mockImplementation((callback: (status: string) => void) => {
-        subscribeCallback = callback;
-        return mockChannel;
-      });
+      mockChannel.subscribe.mockImplementation(
+        (callback: (status: string) => void) => {
+          subscribeCallback = callback;
+          return mockChannel;
+        }
+      );
 
       const wrapper = ({ children }: { children: React.ReactNode }) =>
         React.createElement(StudySetListProvider, null, children);

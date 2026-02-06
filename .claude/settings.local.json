@@ -103,8 +103,15 @@
       "Bash(sort:*)",
       "Bash(for:*)",
       "Bash(do echo \"=== ISSUE $issue ===\")",
+<<<<<<< HEAD
       "Bash(BASE=\"web/src/app/dashboard/study-set/[publicId]\")",
       "Bash(git mv:*)"
+=======
+      "Bash(wc:*)",
+      "Bash(npx supabase start)",
+      "Bash(git mv:*)",
+      "Bash(npx next lint:*)"
+>>>>>>> main
     ],
     "deny": [],
     "ask": []

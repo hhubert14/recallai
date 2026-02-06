@@ -97,14 +97,21 @@ describe("DrizzleFolderRepository (integration)", () => {
     });
 
     it("creates a folder with null description", async () => {
-      const result = await repository.createFolder(testUserId, "No Description", null);
+      const result = await repository.createFolder(
+        testUserId,
+        "No Description",
+        null
+      );
 
       expect(result.name).toBe("No Description");
       expect(result.description).toBeNull();
     });
 
     it("creates a folder with undefined description (defaults to null)", async () => {
-      const result = await repository.createFolder(testUserId, "No Description");
+      const result = await repository.createFolder(
+        testUserId,
+        "No Description"
+      );
 
       expect(result.name).toBe("No Description");
       expect(result.description).toBeNull();
@@ -266,7 +273,11 @@ describe("DrizzleFolderRepository (integration)", () => {
 
   describe("deleteFolder", () => {
     it("deletes a folder", async () => {
-      const created = await repository.createFolder(testUserId, "To Delete", null);
+      const created = await repository.createFolder(
+        testUserId,
+        "To Delete",
+        null
+      );
 
       await repository.deleteFolder(created.id);
 
@@ -280,7 +291,11 @@ describe("DrizzleFolderRepository (integration)", () => {
 
     it("cascades to folder_study_sets but not study sets", async () => {
       // Create folder and add study set to it
-      const folder = await repository.createFolder(testUserId, "Test Folder", null);
+      const folder = await repository.createFolder(
+        testUserId,
+        "Test Folder",
+        null
+      );
       await repository.addStudySetToFolder(folder.id, testStudySetId);
 
       // Verify study set is in folder
@@ -305,7 +320,11 @@ describe("DrizzleFolderRepository (integration)", () => {
 
   describe("addStudySetToFolder", () => {
     it("adds a study set to a folder", async () => {
-      const folder = await repository.createFolder(testUserId, "Test Folder", null);
+      const folder = await repository.createFolder(
+        testUserId,
+        "Test Folder",
+        null
+      );
 
       await repository.addStudySetToFolder(folder.id, testStudySetId);
 
@@ -314,7 +333,11 @@ describe("DrizzleFolderRepository (integration)", () => {
     });
 
     it("allows adding multiple study sets to one folder", async () => {
-      const folder = await repository.createFolder(testUserId, "Test Folder", null);
+      const folder = await repository.createFolder(
+        testUserId,
+        "Test Folder",
+        null
+      );
 
       await repository.addStudySetToFolder(folder.id, testStudySetId);
       await repository.addStudySetToFolder(folder.id, testStudySetId2);
@@ -326,20 +349,33 @@ describe("DrizzleFolderRepository (integration)", () => {
     });
 
     it("allows adding same study set to multiple folders", async () => {
-      const folder1 = await repository.createFolder(testUserId, "Folder 1", null);
-      const folder2 = await repository.createFolder(testUserId, "Folder 2", null);
+      const folder1 = await repository.createFolder(
+        testUserId,
+        "Folder 1",
+        null
+      );
+      const folder2 = await repository.createFolder(
+        testUserId,
+        "Folder 2",
+        null
+      );
 
       await repository.addStudySetToFolder(folder1.id, testStudySetId);
       await repository.addStudySetToFolder(folder2.id, testStudySetId);
 
-      const folderIds = await repository.findFolderIdsByStudySetId(testStudySetId);
+      const folderIds =
+        await repository.findFolderIdsByStudySetId(testStudySetId);
       expect(folderIds).toHaveLength(2);
       expect(folderIds).toContain(folder1.id);
       expect(folderIds).toContain(folder2.id);
     });
 
     it("throws when adding duplicate study set to same folder", async () => {
-      const folder = await repository.createFolder(testUserId, "Test Folder", null);
+      const folder = await repository.createFolder(
+        testUserId,
+        "Test Folder",
+        null
+      );
 
       await repository.addStudySetToFolder(folder.id, testStudySetId);
 
@@ -351,7 +387,11 @@ describe("DrizzleFolderRepository (integration)", () => {
 
   describe("removeStudySetFromFolder", () => {
     it("removes a study set from a folder", async () => {
-      const folder = await repository.createFolder(testUserId, "Test Folder", null);
+      const folder = await repository.createFolder(
+        testUserId,
+        "Test Folder",
+        null
+      );
       await repository.addStudySetToFolder(folder.id, testStudySetId);
 
       await repository.removeStudySetFromFolder(folder.id, testStudySetId);
@@ -361,7 +401,11 @@ describe("DrizzleFolderRepository (integration)", () => {
     });
 
     it("does not throw when removing non-existent association", async () => {
-      const folder = await repository.createFolder(testUserId, "Test Folder", null);
+      const folder = await repository.createFolder(
+        testUserId,
+        "Test Folder",
+        null
+      );
 
       await expect(
         repository.removeStudySetFromFolder(folder.id, testStudySetId)
@@ -369,15 +413,27 @@ describe("DrizzleFolderRepository (integration)", () => {
     });
 
     it("does not remove study set from other folders", async () => {
-      const folder1 = await repository.createFolder(testUserId, "Folder 1", null);
-      const folder2 = await repository.createFolder(testUserId, "Folder 2", null);
+      const folder1 = await repository.createFolder(
+        testUserId,
+        "Folder 1",
+        null
+      );
+      const folder2 = await repository.createFolder(
+        testUserId,
+        "Folder 2",
+        null
+      );
       await repository.addStudySetToFolder(folder1.id, testStudySetId);
       await repository.addStudySetToFolder(folder2.id, testStudySetId);
 
       await repository.removeStudySetFromFolder(folder1.id, testStudySetId);
 
-      const folder1StudySets = await repository.findStudySetIdsByFolderId(folder1.id);
-      const folder2StudySets = await repository.findStudySetIdsByFolderId(folder2.id);
+      const folder1StudySets = await repository.findStudySetIdsByFolderId(
+        folder1.id
+      );
+      const folder2StudySets = await repository.findStudySetIdsByFolderId(
+        folder2.id
+      );
       expect(folder1StudySets).not.toContain(testStudySetId);
       expect(folder2StudySets).toContain(testStudySetId);
     });
@@ -385,7 +441,11 @@ describe("DrizzleFolderRepository (integration)", () => {
 
   describe("findStudySetIdsByFolderId", () => {
     it("returns all study set IDs in a folder", async () => {
-      const folder = await repository.createFolder(testUserId, "Test Folder", null);
+      const folder = await repository.createFolder(
+        testUserId,
+        "Test Folder",
+        null
+      );
       await repository.addStudySetToFolder(folder.id, testStudySetId);
       await repository.addStudySetToFolder(folder.id, testStudySetId2);
 
@@ -397,7 +457,11 @@ describe("DrizzleFolderRepository (integration)", () => {
     });
 
     it("returns empty array for folder with no study sets", async () => {
-      const folder = await repository.createFolder(testUserId, "Empty Folder", null);
+      const folder = await repository.createFolder(
+        testUserId,
+        "Empty Folder",
+        null
+      );
 
       const result = await repository.findStudySetIdsByFolderId(folder.id);
 
@@ -412,8 +476,16 @@ describe("DrizzleFolderRepository (integration)", () => {
 
   describe("findFolderIdsByStudySetId", () => {
     it("returns all folder IDs containing a study set", async () => {
-      const folder1 = await repository.createFolder(testUserId, "Folder 1", null);
-      const folder2 = await repository.createFolder(testUserId, "Folder 2", null);
+      const folder1 = await repository.createFolder(
+        testUserId,
+        "Folder 1",
+        null
+      );
+      const folder2 = await repository.createFolder(
+        testUserId,
+        "Folder 2",
+        null
+      );
       await repository.addStudySetToFolder(folder1.id, testStudySetId);
       await repository.addStudySetToFolder(folder2.id, testStudySetId);
 

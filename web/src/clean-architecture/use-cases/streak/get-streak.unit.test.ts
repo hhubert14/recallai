@@ -44,7 +44,9 @@ describe("GetStreakUseCase", () => {
         longestStreak: 10,
         lastActivityDate: "2025-01-28",
       });
-      vi.mocked(mockStreakRepo.findStreakByUserId).mockResolvedValue(existingStreak);
+      vi.mocked(mockStreakRepo.findStreakByUserId).mockResolvedValue(
+        existingStreak
+      );
 
       const result = await useCase.execute("user-123");
 
@@ -82,7 +84,9 @@ describe("GetStreakUseCase", () => {
         longestStreak: 15,
         lastActivityDate: "2025-01-20",
       });
-      vi.mocked(mockStreakRepo.findStreakByUserId).mockResolvedValue(brokenStreak);
+      vi.mocked(mockStreakRepo.findStreakByUserId).mockResolvedValue(
+        brokenStreak
+      );
 
       const result = await useCase.execute("user-123");
 
@@ -108,7 +112,9 @@ describe("GetStreakUseCase", () => {
         longestStreak: 10,
         lastActivityDate: "2025-01-30", // 2 days ago
       });
-      vi.mocked(mockStreakRepo.findStreakByUserId).mockResolvedValue(brokenStreak);
+      vi.mocked(mockStreakRepo.findStreakByUserId).mockResolvedValue(
+        brokenStreak
+      );
 
       const result = await useCase.execute("user-123");
 
@@ -123,7 +129,9 @@ describe("GetStreakUseCase", () => {
         longestStreak: 100,
         lastActivityDate: "2024-12-01", // 2 months ago
       });
-      vi.mocked(mockStreakRepo.findStreakByUserId).mockResolvedValue(veryOldStreak);
+      vi.mocked(mockStreakRepo.findStreakByUserId).mockResolvedValue(
+        veryOldStreak
+      );
 
       const result = await useCase.execute("user-123");
 
@@ -148,7 +156,9 @@ describe("GetStreakUseCase", () => {
         longestStreak: 10,
         lastActivityDate: "2025-02-01", // today
       });
-      vi.mocked(mockStreakRepo.findStreakByUserId).mockResolvedValue(activeStreak);
+      vi.mocked(mockStreakRepo.findStreakByUserId).mockResolvedValue(
+        activeStreak
+      );
 
       const result = await useCase.execute("user-123");
 
@@ -161,7 +171,9 @@ describe("GetStreakUseCase", () => {
         longestStreak: 10,
         lastActivityDate: "2025-01-31", // yesterday
       });
-      vi.mocked(mockStreakRepo.findStreakByUserId).mockResolvedValue(activeStreak);
+      vi.mocked(mockStreakRepo.findStreakByUserId).mockResolvedValue(
+        activeStreak
+      );
 
       const result = await useCase.execute("user-123");
 

@@ -4,64 +4,66 @@ import { ChatOpenAI } from "@langchain/openai";
 import { z } from "zod";
 import { logger } from "@/lib/logger";
 import {
-    IVideoSummarizerService,
-    GeneratedSummaryDto,
-    TranscriptWithTimestamps,
+  IVideoSummarizerService,
+  GeneratedSummaryDto,
+  TranscriptWithTimestamps,
 } from "@/clean-architecture/domain/services/video-summarizer.interface";
 import { TranscriptSegment } from "@/clean-architecture/domain/entities/transcript.entity";
 import { formatTimestamp } from "@/lib/format-timestamp";
 
 const VideoSummarySchema = z.object({
-    summary: z
-        .string()
-        .describe(
-            "A comprehensive summary of the video content in markdown format with section headings, bullet points, and timestamp references"
-        ),
+  summary: z
+    .string()
+    .describe(
+      "A comprehensive summary of the video content in markdown format with section headings, bullet points, and timestamp references"
+    ),
 });
 
 function formatTranscriptWithTimestamps(segments: TranscriptSegment[]): string {
-    return segments
-        .map((s) => `[${formatTimestamp(s.startTime)}] ${s.text}`)
-        .join("\n");
+  return segments
+    .map((s) => `[${formatTimestamp(s.startTime)}] ${s.text}`)
+    .join("\n");
 }
 
-export class LangChainVideoSummarizerService implements IVideoSummarizerService {
-    async generate(
-        title: string,
-        description: string,
-        transcript: TranscriptWithTimestamps
-    ): Promise<GeneratedSummaryDto | undefined> {
-        if (!title || !transcript.fullText) {
-            logger.video.error(
-                "Missing required parameters for video summary",
-                undefined,
-                {
-                    missingTitle: !title,
-                    missingTranscript: !transcript.fullText,
-                }
-            );
-            return undefined;
+export class LangChainVideoSummarizerService
+  implements IVideoSummarizerService
+{
+  async generate(
+    title: string,
+    description: string,
+    transcript: TranscriptWithTimestamps
+  ): Promise<GeneratedSummaryDto | undefined> {
+    if (!title || !transcript.fullText) {
+      logger.video.error(
+        "Missing required parameters for video summary",
+        undefined,
+        {
+          missingTitle: !title,
+          missingTranscript: !transcript.fullText,
         }
+      );
+      return undefined;
+    }
 
-        // Use fallback if description is empty
-        const videoDescription = description || "No description provided";
+    // Use fallback if description is empty
+    const videoDescription = description || "No description provided";
 
-        const llm = new ChatOpenAI({
-            model: "gpt-4o-mini",
-            temperature: 0,
-        });
+    const llm = new ChatOpenAI({
+      model: "gpt-4o-mini",
+      temperature: 0,
+    });
 
-        const structuredLlm = llm.withStructuredOutput(VideoSummarySchema);
+    const structuredLlm = llm.withStructuredOutput(VideoSummarySchema);
 
-        const formattedTranscript = formatTranscriptWithTimestamps(
-            transcript.segments
-        );
+    const formattedTranscript = formatTranscriptWithTimestamps(
+      transcript.segments
+    );
 
-        try {
-            const result = await structuredLlm.invoke([
-                {
-                    role: "user",
-                    content: `Analyze the following video and provide a structured summary in markdown format.
+    try {
+      const result = await structuredLlm.invoke([
+        {
+          role: "user",
+          content: `Analyze the following video and provide a structured summary in markdown format.
 
 Title: ${title}
 
@@ -85,15 +87,15 @@ Please provide a comprehensive summary following these guidelines:
 4. **Takeaways** - Key lessons or actionable insights from the video
 
 Be thorough but concise. Focus on the most valuable information for someone who wants to learn from this video.`,
-                },
-            ]);
+        },
+      ]);
 
-            return result;
-        } catch (error) {
-            logger.video.error("Error generating video summary", error, {
-                title: title.substring(0, 50),
-            });
-            return undefined;
-        }
+      return result;
+    } catch (error) {
+      logger.video.error("Error generating video summary", error, {
+        title: title.substring(0, 50),
+      });
+      return undefined;
     }
+  }
 }

@@ -51,13 +51,21 @@ export async function POST(request: NextRequest) {
       new DrizzleReviewProgressRepository()
     );
 
-    const progress = await useCase.execute(user.id, reviewableItemId, isCorrect);
+    const progress = await useCase.execute(
+      user.id,
+      reviewableItemId,
+      isCorrect
+    );
 
     // Update streak (non-blocking, but guaranteed to complete in serverless)
     after(() => {
       new UpdateStreakUseCase(new DrizzleStreakRepository())
         .execute(user.id)
-        .catch((error) => logger.streak.error("Failed to update streak", error, { userId: user.id }));
+        .catch((error) =>
+          logger.streak.error("Failed to update streak", error, {
+            userId: user.id,
+          })
+        );
     });
 
     return jsendSuccess({

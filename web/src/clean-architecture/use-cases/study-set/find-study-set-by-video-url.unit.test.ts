@@ -68,8 +68,22 @@ describe("FindStudySetByVideoUrlUseCase", () => {
   ];
 
   const flashcards = [
-    new FlashcardEntity(1, 1, userId, "Front 1", "Back 1", "2025-01-20T10:00:00Z"),
-    new FlashcardEntity(2, 1, userId, "Front 2", "Back 2", "2025-01-20T10:00:00Z"),
+    new FlashcardEntity(
+      1,
+      1,
+      userId,
+      "Front 1",
+      "Back 1",
+      "2025-01-20T10:00:00Z"
+    ),
+    new FlashcardEntity(
+      2,
+      1,
+      userId,
+      "Front 2",
+      "Back 2",
+      "2025-01-20T10:00:00Z"
+    ),
   ];
 
   beforeEach(() => {
@@ -127,11 +141,21 @@ describe("FindStudySetByVideoUrlUseCase", () => {
 
   describe("when video exists with all content", () => {
     beforeEach(() => {
-      vi.mocked(mockVideoRepository.findVideoByUserIdAndUrl).mockResolvedValue(video);
-      vi.mocked(mockStudySetRepository.findStudySetByVideoId).mockResolvedValue(studySet);
-      vi.mocked(mockSummaryRepository.findSummaryByVideoId).mockResolvedValue(summary);
-      vi.mocked(mockQuestionRepository.findQuestionsByVideoId).mockResolvedValue(questions);
-      vi.mocked(mockFlashcardRepository.findFlashcardsByVideoId).mockResolvedValue(flashcards);
+      vi.mocked(mockVideoRepository.findVideoByUserIdAndUrl).mockResolvedValue(
+        video
+      );
+      vi.mocked(mockStudySetRepository.findStudySetByVideoId).mockResolvedValue(
+        studySet
+      );
+      vi.mocked(mockSummaryRepository.findSummaryByVideoId).mockResolvedValue(
+        summary
+      );
+      vi.mocked(
+        mockQuestionRepository.findQuestionsByVideoId
+      ).mockResolvedValue(questions);
+      vi.mocked(
+        mockFlashcardRepository.findFlashcardsByVideoId
+      ).mockResolvedValue(flashcards);
     });
 
     it("returns exists: true with all content", async () => {
@@ -165,15 +189,23 @@ describe("FindStudySetByVideoUrlUseCase", () => {
     it("queries content by video ID", async () => {
       await useCase.execute(userId, videoUrl);
 
-      expect(mockSummaryRepository.findSummaryByVideoId).toHaveBeenCalledWith(video.id);
-      expect(mockQuestionRepository.findQuestionsByVideoId).toHaveBeenCalledWith(video.id);
-      expect(mockFlashcardRepository.findFlashcardsByVideoId).toHaveBeenCalledWith(video.id);
+      expect(mockSummaryRepository.findSummaryByVideoId).toHaveBeenCalledWith(
+        video.id
+      );
+      expect(
+        mockQuestionRepository.findQuestionsByVideoId
+      ).toHaveBeenCalledWith(video.id);
+      expect(
+        mockFlashcardRepository.findFlashcardsByVideoId
+      ).toHaveBeenCalledWith(video.id);
     });
   });
 
   describe("when video does not exist", () => {
     beforeEach(() => {
-      vi.mocked(mockVideoRepository.findVideoByUserIdAndUrl).mockResolvedValue(null);
+      vi.mocked(mockVideoRepository.findVideoByUserIdAndUrl).mockResolvedValue(
+        null
+      );
     });
 
     it("returns exists: false with null content", async () => {
@@ -190,20 +222,36 @@ describe("FindStudySetByVideoUrlUseCase", () => {
     it("does not query for content", async () => {
       await useCase.execute(userId, videoUrl);
 
-      expect(mockStudySetRepository.findStudySetByVideoId).not.toHaveBeenCalled();
+      expect(
+        mockStudySetRepository.findStudySetByVideoId
+      ).not.toHaveBeenCalled();
       expect(mockSummaryRepository.findSummaryByVideoId).not.toHaveBeenCalled();
-      expect(mockQuestionRepository.findQuestionsByVideoId).not.toHaveBeenCalled();
-      expect(mockFlashcardRepository.findFlashcardsByVideoId).not.toHaveBeenCalled();
+      expect(
+        mockQuestionRepository.findQuestionsByVideoId
+      ).not.toHaveBeenCalled();
+      expect(
+        mockFlashcardRepository.findFlashcardsByVideoId
+      ).not.toHaveBeenCalled();
     });
   });
 
   describe("when video exists but study set is missing", () => {
     beforeEach(() => {
-      vi.mocked(mockVideoRepository.findVideoByUserIdAndUrl).mockResolvedValue(video);
-      vi.mocked(mockStudySetRepository.findStudySetByVideoId).mockResolvedValue(null);
-      vi.mocked(mockSummaryRepository.findSummaryByVideoId).mockResolvedValue(summary);
-      vi.mocked(mockQuestionRepository.findQuestionsByVideoId).mockResolvedValue(questions);
-      vi.mocked(mockFlashcardRepository.findFlashcardsByVideoId).mockResolvedValue(flashcards);
+      vi.mocked(mockVideoRepository.findVideoByUserIdAndUrl).mockResolvedValue(
+        video
+      );
+      vi.mocked(mockStudySetRepository.findStudySetByVideoId).mockResolvedValue(
+        null
+      );
+      vi.mocked(mockSummaryRepository.findSummaryByVideoId).mockResolvedValue(
+        summary
+      );
+      vi.mocked(
+        mockQuestionRepository.findQuestionsByVideoId
+      ).mockResolvedValue(questions);
+      vi.mocked(
+        mockFlashcardRepository.findFlashcardsByVideoId
+      ).mockResolvedValue(flashcards);
     });
 
     it("returns exists: true with null study set but other content", async () => {
@@ -220,11 +268,21 @@ describe("FindStudySetByVideoUrlUseCase", () => {
 
   describe("when video exists but summary is missing", () => {
     beforeEach(() => {
-      vi.mocked(mockVideoRepository.findVideoByUserIdAndUrl).mockResolvedValue(video);
-      vi.mocked(mockStudySetRepository.findStudySetByVideoId).mockResolvedValue(studySet);
-      vi.mocked(mockSummaryRepository.findSummaryByVideoId).mockResolvedValue(null);
-      vi.mocked(mockQuestionRepository.findQuestionsByVideoId).mockResolvedValue(questions);
-      vi.mocked(mockFlashcardRepository.findFlashcardsByVideoId).mockResolvedValue(flashcards);
+      vi.mocked(mockVideoRepository.findVideoByUserIdAndUrl).mockResolvedValue(
+        video
+      );
+      vi.mocked(mockStudySetRepository.findStudySetByVideoId).mockResolvedValue(
+        studySet
+      );
+      vi.mocked(mockSummaryRepository.findSummaryByVideoId).mockResolvedValue(
+        null
+      );
+      vi.mocked(
+        mockQuestionRepository.findQuestionsByVideoId
+      ).mockResolvedValue(questions);
+      vi.mocked(
+        mockFlashcardRepository.findFlashcardsByVideoId
+      ).mockResolvedValue(flashcards);
     });
 
     it("returns exists: true with null summary", async () => {
@@ -239,11 +297,21 @@ describe("FindStudySetByVideoUrlUseCase", () => {
 
   describe("when video exists but has no questions or flashcards", () => {
     beforeEach(() => {
-      vi.mocked(mockVideoRepository.findVideoByUserIdAndUrl).mockResolvedValue(video);
-      vi.mocked(mockStudySetRepository.findStudySetByVideoId).mockResolvedValue(studySet);
-      vi.mocked(mockSummaryRepository.findSummaryByVideoId).mockResolvedValue(summary);
-      vi.mocked(mockQuestionRepository.findQuestionsByVideoId).mockResolvedValue([]);
-      vi.mocked(mockFlashcardRepository.findFlashcardsByVideoId).mockResolvedValue([]);
+      vi.mocked(mockVideoRepository.findVideoByUserIdAndUrl).mockResolvedValue(
+        video
+      );
+      vi.mocked(mockStudySetRepository.findStudySetByVideoId).mockResolvedValue(
+        studySet
+      );
+      vi.mocked(mockSummaryRepository.findSummaryByVideoId).mockResolvedValue(
+        summary
+      );
+      vi.mocked(
+        mockQuestionRepository.findQuestionsByVideoId
+      ).mockResolvedValue([]);
+      vi.mocked(
+        mockFlashcardRepository.findFlashcardsByVideoId
+      ).mockResolvedValue([]);
     });
 
     it("returns exists: true with empty arrays", async () => {

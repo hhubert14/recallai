@@ -42,8 +42,18 @@ function createMockQuestionItem(
           isCorrect: true,
           explanation: "Correct!",
         },
-        { id: 2, optionText: "A database", isCorrect: false, explanation: null },
-        { id: 3, optionText: "A framework", isCorrect: false, explanation: null },
+        {
+          id: 2,
+          optionText: "A database",
+          isCorrect: false,
+          explanation: null,
+        },
+        {
+          id: 3,
+          optionText: "A framework",
+          isCorrect: false,
+          explanation: null,
+        },
         { id: 4, optionText: "An OS", isCorrect: false, explanation: null },
       ],
     },
@@ -143,7 +153,10 @@ describe("useReviewSession", () => {
     it("defaults to 'due' mode when dueCount > 0", () => {
       const { result } = renderHook(() =>
         useReviewSession({
-          studyModeStats: createMockStudyModeStats({ dueCount: 5, newCount: 3 }),
+          studyModeStats: createMockStudyModeStats({
+            dueCount: 5,
+            newCount: 3,
+          }),
           onRefresh: mockOnRefresh,
         })
       );
@@ -154,7 +167,10 @@ describe("useReviewSession", () => {
     it("defaults to 'new' mode when dueCount is 0 but newCount > 0", () => {
       const { result } = renderHook(() =>
         useReviewSession({
-          studyModeStats: createMockStudyModeStats({ dueCount: 0, newCount: 3 }),
+          studyModeStats: createMockStudyModeStats({
+            dueCount: 0,
+            newCount: 3,
+          }),
           onRefresh: mockOnRefresh,
         })
       );
@@ -165,7 +181,10 @@ describe("useReviewSession", () => {
     it("defaults to 'random' mode when both dueCount and newCount are 0", () => {
       const { result } = renderHook(() =>
         useReviewSession({
-          studyModeStats: createMockStudyModeStats({ dueCount: 0, newCount: 0 }),
+          studyModeStats: createMockStudyModeStats({
+            dueCount: 0,
+            newCount: 0,
+          }),
           onRefresh: mockOnRefresh,
         })
       );
@@ -403,7 +422,10 @@ describe("useReviewSession", () => {
 
       const { result } = renderHook(() =>
         useReviewSession({
-          studyModeStats: createMockStudyModeStats({ dueCount: 0, newCount: 0 }),
+          studyModeStats: createMockStudyModeStats({
+            dueCount: 0,
+            newCount: 0,
+          }),
           onRefresh: mockOnRefresh,
         })
       );

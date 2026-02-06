@@ -30,11 +30,7 @@ export class DrizzleFolderRepository implements IFolderRepository {
 
   async findFolderById(id: number): Promise<FolderEntity | null> {
     const [data] = await dbRetry(() =>
-      this.db
-        .select()
-        .from(folders)
-        .where(eq(folders.id, id))
-        .limit(1)
+      this.db.select().from(folders).where(eq(folders.id, id)).limit(1)
     );
 
     if (!data) return null;
@@ -88,12 +84,13 @@ export class DrizzleFolderRepository implements IFolderRepository {
   }
 
   async deleteFolder(id: number): Promise<void> {
-    await dbRetry(() =>
-      this.db.delete(folders).where(eq(folders.id, id))
-    );
+    await dbRetry(() => this.db.delete(folders).where(eq(folders.id, id)));
   }
 
-  async addStudySetToFolder(folderId: number, studySetId: number): Promise<void> {
+  async addStudySetToFolder(
+    folderId: number,
+    studySetId: number
+  ): Promise<void> {
     await dbRetry(() =>
       this.db.insert(folderStudySets).values({
         folderId,
@@ -102,7 +99,10 @@ export class DrizzleFolderRepository implements IFolderRepository {
     );
   }
 
-  async removeStudySetFromFolder(folderId: number, studySetId: number): Promise<void> {
+  async removeStudySetFromFolder(
+    folderId: number,
+    studySetId: number
+  ): Promise<void> {
     await dbRetry(() =>
       this.db
         .delete(folderStudySets)

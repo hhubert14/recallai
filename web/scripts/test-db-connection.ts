@@ -1,12 +1,12 @@
-import postgres from 'postgres';
+import postgres from "postgres";
 
 if (!process.env.DATABASE_URL) {
-  console.error('ERROR: DATABASE_URL environment variable is required');
+  console.error("ERROR: DATABASE_URL environment variable is required");
   process.exit(1);
 }
 
-console.log('Testing database connection...');
-console.log('URL:', process.env.DATABASE_URL.replace(/:[^:@]+@/, ':****@'));
+console.log("Testing database connection...");
+console.log("URL:", process.env.DATABASE_URL.replace(/:[^:@]+@/, ":****@"));
 
 const client = postgres(process.env.DATABASE_URL, {
   prepare: false,
@@ -20,14 +20,14 @@ async function test() {
     const result = await client`SELECT NOW() as current_time`;
     const elapsed = Date.now() - start;
 
-    console.log('✓ Connection successful!');
-    console.log('Current time:', result[0].current_time);
-    console.log('Query took:', elapsed, 'ms');
+    console.log("✓ Connection successful!");
+    console.log("Current time:", result[0].current_time);
+    console.log("Query took:", elapsed, "ms");
 
     await client.end();
     process.exit(0);
   } catch (error) {
-    console.error('✗ Connection failed:', error);
+    console.error("✗ Connection failed:", error);
     process.exit(1);
   }
 }

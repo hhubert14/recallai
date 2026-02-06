@@ -52,7 +52,10 @@ Keep it positive, specific, and actionable. Avoid generic praise.`;
         typeof response.content === "string"
           ? response.content
           : response.content
-              .filter((part): part is { type: "text"; text: string } => part.type === "text")
+              .filter(
+                (part): part is { type: "text"; text: string } =>
+                  part.type === "text"
+              )
               .map((part) => part.text)
               .join("");
 

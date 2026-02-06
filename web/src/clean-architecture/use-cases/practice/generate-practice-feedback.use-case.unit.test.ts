@@ -113,7 +113,8 @@ describe("GeneratePracticeFeedbackUseCase", () => {
         },
         {
           role: "user" as const,
-          content: "Sure! let x = 5; creates a variable called x that stores the number 5.",
+          content:
+            "Sure! let x = 5; creates a variable called x that stores the number 5.",
         },
       ];
 

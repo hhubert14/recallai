@@ -38,9 +38,9 @@ describe("toReviewItemApiResponse", () => {
       100,
       "user-1",
       "question",
-      10,  // questionId
+      10, // questionId
       null, // flashcardId
-      1,    // videoId
+      1, // videoId
       1, // studySetId
       "2025-01-01T00:00:00Z"
     );
@@ -84,9 +84,24 @@ describe("toReviewItemApiResponse", () => {
         id: 10,
         questionText: "What is TypeScript?",
         options: [
-          { id: 1, optionText: "A language", isCorrect: true, explanation: "Correct!" },
-          { id: 2, optionText: "A framework", isCorrect: false, explanation: null },
-          { id: 3, optionText: "A library", isCorrect: false, explanation: null },
+          {
+            id: 1,
+            optionText: "A language",
+            isCorrect: true,
+            explanation: "Correct!",
+          },
+          {
+            id: 2,
+            optionText: "A framework",
+            isCorrect: false,
+            explanation: null,
+          },
+          {
+            id: 3,
+            optionText: "A library",
+            isCorrect: false,
+            explanation: null,
+          },
           { id: 4, optionText: "A tool", isCorrect: false, explanation: null },
         ],
       });
@@ -127,8 +142,8 @@ describe("toReviewItemApiResponse", () => {
       "user-1",
       "flashcard",
       null, // questionId
-      20,   // flashcardId
-      1,    // videoId
+      20, // flashcardId
+      1, // videoId
       1, // studySetId
       "2025-01-01T00:00:00Z"
     );
@@ -211,8 +226,8 @@ describe("toReviewItemApiResponse", () => {
         "user-1",
         "flashcard",
         null, // questionId
-        20,   // flashcardId
-        1,    // videoId
+        20, // flashcardId
+        1, // videoId
         1, // studySetId
         "2025-01-01T00:00:00Z"
       );

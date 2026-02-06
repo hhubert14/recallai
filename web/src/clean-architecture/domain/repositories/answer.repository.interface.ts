@@ -11,5 +11,8 @@ export interface IAnswerRepository {
   findAnswersByUserId(userId: string): Promise<MultipleChoiceAnswerEntity[]>;
 
   // REVIEW: It's kinda confusing what number[] means. Should this return one of the entities?
-  findAnsweredQuestionIdsByVideoId(userId: string, videoId: number): Promise<number[]>;
+  findAnsweredQuestionIdsByVideoId(
+    userId: string,
+    videoId: number
+  ): Promise<number[]>;
 }

@@ -82,11 +82,7 @@ function extractErrorCode(error: unknown, maxDepth = 5): string | undefined {
     }
 
     // Traverse to cause
-    if (
-      typeof current === "object" &&
-      current !== null &&
-      "cause" in current
-    ) {
+    if (typeof current === "object" && current !== null && "cause" in current) {
       current = (current as { cause: unknown }).cause;
       depth++;
     } else {

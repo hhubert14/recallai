@@ -6,7 +6,7 @@ import { DrizzleReviewableItemRepository } from "@/clean-architecture/infrastruc
 import { DrizzleReviewProgressRepository } from "@/clean-architecture/infrastructure/repositories/review-progress.repository.drizzle";
 import { DrizzleStudySetRepository } from "@/clean-architecture/infrastructure/repositories/study-set.repository.drizzle";
 import { FindStudySetByPublicIdUseCase } from "@/clean-architecture/use-cases/study-set/find-study-set-by-public-id.use-case";
-import { ReviewInterface } from "@/app/dashboard/review/ReviewInterface";
+import { ReviewInterface } from "@/app/dashboard/review/_components/ReviewInterface";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
@@ -37,7 +37,9 @@ export default async function StudySetReviewPage({
 
   // Find the study set
   const studySetRepository = new DrizzleStudySetRepository();
-  const findStudySetUseCase = new FindStudySetByPublicIdUseCase(studySetRepository);
+  const findStudySetUseCase = new FindStudySetByPublicIdUseCase(
+    studySetRepository
+  );
   const studySet = await findStudySetUseCase.execute(publicId, user.id);
 
   if (!studySet) {

@@ -82,9 +82,21 @@ describe("DrizzleReviewProgressRepository (integration)", () => {
     const questionResults = await ctx.db
       .insert(questions)
       .values([
-        { videoId: testVideoId, questionText: "Q1?", questionType: "multiple_choice" },
-        { videoId: testVideoId, questionText: "Q2?", questionType: "multiple_choice" },
-        { videoId: testVideoId, questionText: "Q3?", questionType: "multiple_choice" },
+        {
+          videoId: testVideoId,
+          questionText: "Q1?",
+          questionType: "multiple_choice",
+        },
+        {
+          videoId: testVideoId,
+          questionText: "Q2?",
+          questionType: "multiple_choice",
+        },
+        {
+          videoId: testVideoId,
+          questionText: "Q3?",
+          questionType: "multiple_choice",
+        },
       ])
       .returning();
     testQuestionIds = questionResults.map((q) => q.id);
@@ -156,10 +168,11 @@ describe("DrizzleReviewProgressRepository (integration)", () => {
         },
       ]);
 
-      const result = await progressRepo.findReviewProgressByUserIdAndReviewableItemId(
-        testUserId,
-        testReviewableItemIds[0]
-      );
+      const result =
+        await progressRepo.findReviewProgressByUserIdAndReviewableItemId(
+          testUserId,
+          testReviewableItemIds[0]
+        );
 
       expect(result).not.toBeNull();
       expect(result!.boxLevel).toBe(3);
@@ -167,10 +180,11 @@ describe("DrizzleReviewProgressRepository (integration)", () => {
     });
 
     it("returns null for non-existent progress", async () => {
-      const result = await progressRepo.findReviewProgressByUserIdAndReviewableItemId(
-        testUserId,
-        99999
-      );
+      const result =
+        await progressRepo.findReviewProgressByUserIdAndReviewableItemId(
+          testUserId,
+          99999
+        );
       expect(result).toBeNull();
     });
   });
@@ -201,7 +215,8 @@ describe("DrizzleReviewProgressRepository (integration)", () => {
         },
       ]);
 
-      const result = await progressRepo.findReviewProgressDueForReview(testUserId);
+      const result =
+        await progressRepo.findReviewProgressDueForReview(testUserId);
 
       expect(result).toHaveLength(1);
       expect(result[0].reviewableItemId).toBe(testReviewableItemIds[0]);
@@ -222,7 +237,8 @@ describe("DrizzleReviewProgressRepository (integration)", () => {
         },
       ]);
 
-      const result = await progressRepo.findReviewProgressDueForReview(testUserId);
+      const result =
+        await progressRepo.findReviewProgressDueForReview(testUserId);
 
       expect(result).toHaveLength(1);
     });
@@ -314,7 +330,9 @@ describe("DrizzleReviewProgressRepository (integration)", () => {
       expect(result.nextReviewDate).toBe("2025-01-23");
       expect(result.timesCorrect).toBe(1);
       // Compare timestamps by parsing - DB returns different format than ISO
-      expect(new Date(result.lastReviewedAt!).getTime()).toBe(new Date(now).getTime());
+      expect(new Date(result.lastReviewedAt!).getTime()).toBe(
+        new Date(now).getTime()
+      );
     });
   });
 

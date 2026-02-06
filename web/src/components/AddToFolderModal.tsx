@@ -79,7 +79,8 @@ export function AddToFolderModal({
         <DialogHeader>
           <DialogTitle>Add to Folder</DialogTitle>
           <DialogDescription>
-            Select folders for <span className="font-medium">{studySetName}</span>
+            Select folders for{" "}
+            <span className="font-medium">{studySetName}</span>
           </DialogDescription>
         </DialogHeader>
 
@@ -88,7 +89,9 @@ export function AddToFolderModal({
             <div className="text-center text-muted-foreground py-8">
               <Folder className="mx-auto h-12 w-12 mb-4 opacity-50" />
               <p>No folders available.</p>
-              <p className="text-sm mt-1">Create a folder first to organize your study sets.</p>
+              <p className="text-sm mt-1">
+                Create a folder first to organize your study sets.
+              </p>
             </div>
           ) : (
             <div className="space-y-2 max-h-64 overflow-y-auto">

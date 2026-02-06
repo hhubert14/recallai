@@ -7,7 +7,9 @@ import type { NextRequest } from "next/server";
 
 vi.mock("@/lib/auth-helpers");
 vi.mock("@/clean-architecture/use-cases/study-set/create-study-set.use-case");
-vi.mock("@/clean-architecture/infrastructure/repositories/study-set.repository.drizzle");
+vi.mock(
+  "@/clean-architecture/infrastructure/repositories/study-set.repository.drizzle"
+);
 vi.mock("@/drizzle", () => ({
   db: {},
 }));
@@ -50,7 +52,9 @@ describe("POST /api/v1/study-sets", () => {
   });
 
   it("returns 400 if name is missing", async () => {
-    vi.mocked(getAuthenticatedUser).mockResolvedValue(mockAuthenticatedUser("user-123"));
+    vi.mocked(getAuthenticatedUser).mockResolvedValue(
+      mockAuthenticatedUser("user-123")
+    );
 
     const request = createMockRequest({});
 
@@ -63,7 +67,9 @@ describe("POST /api/v1/study-sets", () => {
   });
 
   it("returns 400 if name is not a string", async () => {
-    vi.mocked(getAuthenticatedUser).mockResolvedValue(mockAuthenticatedUser("user-123"));
+    vi.mocked(getAuthenticatedUser).mockResolvedValue(
+      mockAuthenticatedUser("user-123")
+    );
 
     const request = createMockRequest({ name: 123 });
 
@@ -76,7 +82,9 @@ describe("POST /api/v1/study-sets", () => {
   });
 
   it("creates a manual study set and returns 201", async () => {
-    vi.mocked(getAuthenticatedUser).mockResolvedValue(mockAuthenticatedUser("user-123"));
+    vi.mocked(getAuthenticatedUser).mockResolvedValue(
+      mockAuthenticatedUser("user-123")
+    );
 
     const mockStudySet = new StudySetEntity(
       1,
@@ -91,11 +99,17 @@ describe("POST /api/v1/study-sets", () => {
     );
 
     const mockExecute = vi.fn().mockResolvedValue(mockStudySet);
-    vi.mocked(CreateStudySetUseCase).mockImplementation(() => ({
-      execute: mockExecute,
-    }) as unknown as CreateStudySetUseCase);
+    vi.mocked(CreateStudySetUseCase).mockImplementation(
+      () =>
+        ({
+          execute: mockExecute,
+        }) as unknown as CreateStudySetUseCase
+    );
 
-    const request = createMockRequest({ name: "My Study Set", description: "A description" });
+    const request = createMockRequest({
+      name: "My Study Set",
+      description: "A description",
+    });
 
     const response = await POST(request);
     const data = await response.json();
@@ -123,7 +137,9 @@ describe("POST /api/v1/study-sets", () => {
   });
 
   it("creates study set with null description when not provided", async () => {
-    vi.mocked(getAuthenticatedUser).mockResolvedValue(mockAuthenticatedUser("user-123"));
+    vi.mocked(getAuthenticatedUser).mockResolvedValue(
+      mockAuthenticatedUser("user-123")
+    );
 
     const mockStudySet = new StudySetEntity(
       2,
@@ -138,11 +154,16 @@ describe("POST /api/v1/study-sets", () => {
     );
 
     const mockExecute = vi.fn().mockResolvedValue(mockStudySet);
-    vi.mocked(CreateStudySetUseCase).mockImplementation(() => ({
-      execute: mockExecute,
-    }) as unknown as CreateStudySetUseCase);
+    vi.mocked(CreateStudySetUseCase).mockImplementation(
+      () =>
+        ({
+          execute: mockExecute,
+        }) as unknown as CreateStudySetUseCase
+    );
 
-    const request = createMockRequest({ name: "Study Set Without Description" });
+    const request = createMockRequest({
+      name: "Study Set Without Description",
+    });
 
     const response = await POST(request);
     const data = await response.json();
@@ -160,7 +181,9 @@ describe("POST /api/v1/study-sets", () => {
   });
 
   it("trims whitespace from name", async () => {
-    vi.mocked(getAuthenticatedUser).mockResolvedValue(mockAuthenticatedUser("user-123"));
+    vi.mocked(getAuthenticatedUser).mockResolvedValue(
+      mockAuthenticatedUser("user-123")
+    );
 
     const mockStudySet = new StudySetEntity(
       3,
@@ -175,9 +198,12 @@ describe("POST /api/v1/study-sets", () => {
     );
 
     const mockExecute = vi.fn().mockResolvedValue(mockStudySet);
-    vi.mocked(CreateStudySetUseCase).mockImplementation(() => ({
-      execute: mockExecute,
-    }) as unknown as CreateStudySetUseCase);
+    vi.mocked(CreateStudySetUseCase).mockImplementation(
+      () =>
+        ({
+          execute: mockExecute,
+        }) as unknown as CreateStudySetUseCase
+    );
 
     const request = createMockRequest({ name: "  Trimmed Name  " });
 
@@ -189,12 +215,17 @@ describe("POST /api/v1/study-sets", () => {
   });
 
   it("returns 500 when use case throws an error", async () => {
-    vi.mocked(getAuthenticatedUser).mockResolvedValue(mockAuthenticatedUser("user-123"));
+    vi.mocked(getAuthenticatedUser).mockResolvedValue(
+      mockAuthenticatedUser("user-123")
+    );
 
     const mockExecute = vi.fn().mockRejectedValue(new Error("Database error"));
-    vi.mocked(CreateStudySetUseCase).mockImplementation(() => ({
-      execute: mockExecute,
-    }) as unknown as CreateStudySetUseCase);
+    vi.mocked(CreateStudySetUseCase).mockImplementation(
+      () =>
+        ({
+          execute: mockExecute,
+        }) as unknown as CreateStudySetUseCase
+    );
 
     const request = createMockRequest({ name: "My Study Set" });
 

@@ -91,9 +91,9 @@ describe("GetStudySetFoldersUseCase", () => {
   });
 
   it("returns empty array when user has no folders", async () => {
-    vi.mocked(mockFolderRepository.findFolderIdsByStudySetId).mockResolvedValue([
-      1, 2,
-    ]);
+    vi.mocked(mockFolderRepository.findFolderIdsByStudySetId).mockResolvedValue(
+      [1, 2]
+    );
     vi.mocked(mockFolderRepository.findFoldersByUserId).mockResolvedValue([]);
 
     const result = await useCase.execute({

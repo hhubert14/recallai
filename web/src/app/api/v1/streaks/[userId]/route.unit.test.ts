@@ -6,7 +6,9 @@ import type { NextRequest } from "next/server";
 
 vi.mock("@/lib/auth-helpers");
 vi.mock("@/clean-architecture/use-cases/streak/get-streak.use-case");
-vi.mock("@/clean-architecture/infrastructure/repositories/streak.repository.drizzle");
+vi.mock(
+  "@/clean-architecture/infrastructure/repositories/streak.repository.drizzle"
+);
 vi.mock("@/drizzle", () => ({
   db: {},
 }));
@@ -36,7 +38,9 @@ describe("GET /api/v1/streaks/[userId]", () => {
       error: "Not authenticated",
     });
 
-    const request = createMockRequest("http://localhost/api/v1/streaks/user-123");
+    const request = createMockRequest(
+      "http://localhost/api/v1/streaks/user-123"
+    );
     const params = Promise.resolve({ userId: "user-123" });
 
     const response = await GET(request, { params });
@@ -53,7 +57,9 @@ describe("GET /api/v1/streaks/[userId]", () => {
       error: "Unauthorized",
     });
 
-    const request = createMockRequest("http://localhost/api/v1/streaks/user-123");
+    const request = createMockRequest(
+      "http://localhost/api/v1/streaks/user-123"
+    );
     const params = Promise.resolve({ userId: "user-123" });
 
     const response = await GET(request, { params });
@@ -65,9 +71,13 @@ describe("GET /api/v1/streaks/[userId]", () => {
   });
 
   it("returns 403 when authenticated user.id !== requested userId", async () => {
-    vi.mocked(getAuthenticatedUser).mockResolvedValue(mockAuthenticatedUser("user-123"));
+    vi.mocked(getAuthenticatedUser).mockResolvedValue(
+      mockAuthenticatedUser("user-123")
+    );
 
-    const request = createMockRequest("http://localhost/api/v1/streaks/user-456");
+    const request = createMockRequest(
+      "http://localhost/api/v1/streaks/user-456"
+    );
     const params = Promise.resolve({ userId: "user-456" });
 
     const response = await GET(request, { params });
@@ -79,7 +89,9 @@ describe("GET /api/v1/streaks/[userId]", () => {
   });
 
   it("returns 200 with streak data when authenticated user matches requested userId", async () => {
-    vi.mocked(getAuthenticatedUser).mockResolvedValue(mockAuthenticatedUser("user-123"));
+    vi.mocked(getAuthenticatedUser).mockResolvedValue(
+      mockAuthenticatedUser("user-123")
+    );
 
     const mockStreak = {
       currentStreak: 5,
@@ -88,11 +100,16 @@ describe("GET /api/v1/streaks/[userId]", () => {
     };
 
     const mockExecute = vi.fn().mockResolvedValue(mockStreak);
-    vi.mocked(GetStreakUseCase).mockImplementation(() => ({
-      execute: mockExecute,
-    }) as unknown as GetStreakUseCase);
+    vi.mocked(GetStreakUseCase).mockImplementation(
+      () =>
+        ({
+          execute: mockExecute,
+        }) as unknown as GetStreakUseCase
+    );
 
-    const request = createMockRequest("http://localhost/api/v1/streaks/user-123");
+    const request = createMockRequest(
+      "http://localhost/api/v1/streaks/user-123"
+    );
     const params = Promise.resolve({ userId: "user-123" });
 
     const response = await GET(request, { params });
@@ -107,7 +124,9 @@ describe("GET /api/v1/streaks/[userId]", () => {
   });
 
   it("passes timezone query parameter to GetStreakUseCase.execute()", async () => {
-    vi.mocked(getAuthenticatedUser).mockResolvedValue(mockAuthenticatedUser("user-123"));
+    vi.mocked(getAuthenticatedUser).mockResolvedValue(
+      mockAuthenticatedUser("user-123")
+    );
 
     const mockStreak = {
       currentStreak: 3,
@@ -116,11 +135,16 @@ describe("GET /api/v1/streaks/[userId]", () => {
     };
 
     const mockExecute = vi.fn().mockResolvedValue(mockStreak);
-    vi.mocked(GetStreakUseCase).mockImplementation(() => ({
-      execute: mockExecute,
-    }) as unknown as GetStreakUseCase);
+    vi.mocked(GetStreakUseCase).mockImplementation(
+      () =>
+        ({
+          execute: mockExecute,
+        }) as unknown as GetStreakUseCase
+    );
 
-    const request = createMockRequest("http://localhost/api/v1/streaks/user-123?timezone=America/New_York");
+    const request = createMockRequest(
+      "http://localhost/api/v1/streaks/user-123?timezone=America/New_York"
+    );
     const params = Promise.resolve({ userId: "user-123" });
 
     const response = await GET(request, { params });
@@ -134,14 +158,21 @@ describe("GET /api/v1/streaks/[userId]", () => {
   });
 
   it("returns 500 when use case throws an error", async () => {
-    vi.mocked(getAuthenticatedUser).mockResolvedValue(mockAuthenticatedUser("user-123"));
+    vi.mocked(getAuthenticatedUser).mockResolvedValue(
+      mockAuthenticatedUser("user-123")
+    );
 
     const mockExecute = vi.fn().mockRejectedValue(new Error("Database error"));
-    vi.mocked(GetStreakUseCase).mockImplementation(() => ({
-      execute: mockExecute,
-    }) as unknown as GetStreakUseCase);
+    vi.mocked(GetStreakUseCase).mockImplementation(
+      () =>
+        ({
+          execute: mockExecute,
+        }) as unknown as GetStreakUseCase
+    );
 
-    const request = createMockRequest("http://localhost/api/v1/streaks/user-123");
+    const request = createMockRequest(
+      "http://localhost/api/v1/streaks/user-123"
+    );
     const params = Promise.resolve({ userId: "user-123" });
 
     const response = await GET(request, { params });

@@ -13,7 +13,10 @@ export function getNextReviewDate(boxLevel: number): string {
   return nextDate.toISOString().split("T")[0];
 }
 
-export function getNextBoxLevel(currentBox: number, isCorrect: boolean): number {
+export function getNextBoxLevel(
+  currentBox: number,
+  isCorrect: boolean
+): number {
   if (isCorrect) {
     return Math.min(currentBox + 1, 5);
   } else {
@@ -34,7 +37,9 @@ export function calculateProgressUpdate(
     boxLevel: newBoxLevel,
     nextReviewDate: nextReviewDate,
     timesCorrect: isCorrect ? currentCorrectCount + 1 : currentCorrectCount,
-    timesIncorrect: isCorrect ? currentIncorrectCount : currentIncorrectCount + 1,
+    timesIncorrect: isCorrect
+      ? currentIncorrectCount
+      : currentIncorrectCount + 1,
     lastReviewedAt: new Date().toISOString(),
   };
 }

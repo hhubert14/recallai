@@ -75,9 +75,12 @@ export function StudySetListProvider({ children }: { children: ReactNode }) {
   const supabase = useMemo(() => createClient(), []);
 
   // Set initial study sets (called by pages with server-rendered data)
-  const setInitialStudySets = useCallback((initialStudySets: StudySetListItem[]) => {
-    setStudySets(initialStudySets);
-  }, []);
+  const setInitialStudySets = useCallback(
+    (initialStudySets: StudySetListItem[]) => {
+      setStudySets(initialStudySets);
+    },
+    []
+  );
 
   // Handle INSERT event
   const handleInsert = useCallback(

@@ -3,7 +3,10 @@
  * If timezone is provided, returns the date in that timezone.
  * Otherwise, returns the date in local (server) timezone.
  */
-export function getLocalDateString(date: Date = new Date(), timezone?: string): string {
+export function getLocalDateString(
+  date: Date = new Date(),
+  timezone?: string
+): string {
   if (!timezone) {
     // Original behavior - use local (server) timezone
     const year = date.getFullYear();

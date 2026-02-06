@@ -59,7 +59,9 @@ export class InitializeReviewProgressUseCase {
     private reviewableItemRepository: IReviewableItemRepository
   ) {}
 
-  async execute(params: InitializeProgressParams): Promise<InitializeProgressResult> {
+  async execute(
+    params: InitializeProgressParams
+  ): Promise<InitializeProgressResult> {
     const { userId, isCorrect } = params;
 
     const reviewableItemId = await this.resolveReviewableItemId(params);

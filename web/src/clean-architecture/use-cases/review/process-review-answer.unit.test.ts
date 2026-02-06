@@ -61,10 +61,12 @@ describe("ProcessReviewAnswerUseCase", () => {
         timesIncorrect: 1,
       });
 
-      vi.mocked(mockProgressRepo.findReviewProgressByUserIdAndReviewableItemId).mockResolvedValue(
-        existingProgress
+      vi.mocked(
+        mockProgressRepo.findReviewProgressByUserIdAndReviewableItemId
+      ).mockResolvedValue(existingProgress);
+      vi.mocked(mockProgressRepo.updateReviewProgress).mockResolvedValue(
+        updatedProgress
       );
-      vi.mocked(mockProgressRepo.updateReviewProgress).mockResolvedValue(updatedProgress);
 
       const result = await useCase.execute("user-1", 1, true);
 
@@ -93,10 +95,12 @@ describe("ProcessReviewAnswerUseCase", () => {
         timesIncorrect: 1,
       });
 
-      vi.mocked(mockProgressRepo.findReviewProgressByUserIdAndReviewableItemId).mockResolvedValue(
-        existingProgress
+      vi.mocked(
+        mockProgressRepo.findReviewProgressByUserIdAndReviewableItemId
+      ).mockResolvedValue(existingProgress);
+      vi.mocked(mockProgressRepo.updateReviewProgress).mockResolvedValue(
+        updatedProgress
       );
-      vi.mocked(mockProgressRepo.updateReviewProgress).mockResolvedValue(updatedProgress);
 
       const result = await useCase.execute("user-1", 1, false);
 
@@ -124,10 +128,12 @@ describe("ProcessReviewAnswerUseCase", () => {
         timesIncorrect: 0,
       });
 
-      vi.mocked(mockProgressRepo.findReviewProgressByUserIdAndReviewableItemId).mockResolvedValue(
-        existingProgress
+      vi.mocked(
+        mockProgressRepo.findReviewProgressByUserIdAndReviewableItemId
+      ).mockResolvedValue(existingProgress);
+      vi.mocked(mockProgressRepo.updateReviewProgress).mockResolvedValue(
+        updatedProgress
       );
-      vi.mocked(mockProgressRepo.updateReviewProgress).mockResolvedValue(updatedProgress);
 
       const result = await useCase.execute("user-1", 1, true);
 
@@ -152,10 +158,12 @@ describe("ProcessReviewAnswerUseCase", () => {
         timesIncorrect: 0,
       });
 
-      vi.mocked(mockProgressRepo.findReviewProgressByUserIdAndReviewableItemId).mockResolvedValue(
-        null
-      );
-      vi.mocked(mockProgressRepo.createReviewProgressBatch).mockResolvedValue([createdProgress]);
+      vi.mocked(
+        mockProgressRepo.findReviewProgressByUserIdAndReviewableItemId
+      ).mockResolvedValue(null);
+      vi.mocked(mockProgressRepo.createReviewProgressBatch).mockResolvedValue([
+        createdProgress,
+      ]);
 
       const result = await useCase.execute("user-1", 1, true);
 
@@ -182,10 +190,12 @@ describe("ProcessReviewAnswerUseCase", () => {
         timesIncorrect: 1,
       });
 
-      vi.mocked(mockProgressRepo.findReviewProgressByUserIdAndReviewableItemId).mockResolvedValue(
-        null
-      );
-      vi.mocked(mockProgressRepo.createReviewProgressBatch).mockResolvedValue([createdProgress]);
+      vi.mocked(
+        mockProgressRepo.findReviewProgressByUserIdAndReviewableItemId
+      ).mockResolvedValue(null);
+      vi.mocked(mockProgressRepo.createReviewProgressBatch).mockResolvedValue([
+        createdProgress,
+      ]);
 
       const result = await useCase.execute("user-1", 1, false);
 
@@ -219,10 +229,12 @@ describe("ProcessReviewAnswerUseCase", () => {
         nextReviewDate: "2026-01-27", // 7 days from now
       });
 
-      vi.mocked(mockProgressRepo.findReviewProgressByUserIdAndReviewableItemId).mockResolvedValue(
-        existingProgress
+      vi.mocked(
+        mockProgressRepo.findReviewProgressByUserIdAndReviewableItemId
+      ).mockResolvedValue(existingProgress);
+      vi.mocked(mockProgressRepo.updateReviewProgress).mockResolvedValue(
+        updatedProgress
       );
-      vi.mocked(mockProgressRepo.updateReviewProgress).mockResolvedValue(updatedProgress);
 
       await useCase.execute("user-1", 1, true);
 

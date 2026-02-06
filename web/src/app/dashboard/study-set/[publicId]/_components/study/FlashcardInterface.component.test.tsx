@@ -6,7 +6,12 @@ import { FlashcardInterface } from "./FlashcardInterface";
 const mockFlashcards = [
   { id: 1, videoId: 1, front: "What is React?", back: "A JavaScript library" },
   { id: 2, videoId: 1, front: "What is Next.js?", back: "A React framework" },
-  { id: 3, videoId: 1, front: "What is TypeScript?", back: "A typed superset of JavaScript" },
+  {
+    id: 3,
+    videoId: 1,
+    front: "What is TypeScript?",
+    back: "A typed superset of JavaScript",
+  },
 ];
 
 describe("FlashcardInterface", () => {
@@ -15,7 +20,10 @@ describe("FlashcardInterface", () => {
   beforeEach(() => {
     mockFetch.mockResolvedValue({
       ok: true,
-      json: async () => ({ status: "success", data: { progress: {}, created: true } }),
+      json: async () => ({
+        status: "success",
+        data: { progress: {}, created: true },
+      }),
     } as Response);
     vi.stubGlobal("fetch", mockFetch);
   });
@@ -39,7 +47,9 @@ describe("FlashcardInterface", () => {
 
     it("does not show self-assessment buttons before flip", () => {
       render(<FlashcardInterface flashcards={mockFlashcards} />);
-      expect(screen.queryByText("Did you know the answer?")).not.toBeInTheDocument();
+      expect(
+        screen.queryByText("Did you know the answer?")
+      ).not.toBeInTheDocument();
       expect(screen.queryByText("Got It!")).not.toBeInTheDocument();
       expect(screen.queryByText("Not Yet")).not.toBeInTheDocument();
     });
@@ -63,8 +73,12 @@ describe("FlashcardInterface", () => {
       await user.click(screen.getByText("What is React?"));
 
       expect(screen.getByText("Did you know the answer?")).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: "Got It!" })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: "Not Yet" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Got It!" })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Not Yet" })
+      ).toBeInTheDocument();
     });
   });
 
@@ -80,7 +94,9 @@ describe("FlashcardInterface", () => {
       await user.click(screen.getByRole("button", { name: "Got It!" }));
 
       // Check Answer button should be enabled
-      expect(screen.getByRole("button", { name: "Check Answer" })).not.toBeDisabled();
+      expect(
+        screen.getByRole("button", { name: "Check Answer" })
+      ).not.toBeDisabled();
     });
 
     it("enables Check Answer button only after selecting an option", async () => {
@@ -91,13 +107,17 @@ describe("FlashcardInterface", () => {
       await user.click(screen.getByText("What is React?"));
 
       // Check Answer should be disabled initially
-      expect(screen.getByRole("button", { name: "Check Answer" })).toBeDisabled();
+      expect(
+        screen.getByRole("button", { name: "Check Answer" })
+      ).toBeDisabled();
 
       // Select an option
       await user.click(screen.getByRole("button", { name: "Not Yet" }));
 
       // Now it should be enabled
-      expect(screen.getByRole("button", { name: "Check Answer" })).not.toBeDisabled();
+      expect(
+        screen.getByRole("button", { name: "Check Answer" })
+      ).not.toBeDisabled();
     });
   });
 
@@ -164,7 +184,9 @@ describe("FlashcardInterface", () => {
       await user.click(screen.getByRole("button", { name: "Check Answer" }));
 
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: /Next Card/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole("button", { name: /Next Card/i })
+        ).toBeInTheDocument();
       });
     });
 
@@ -196,7 +218,9 @@ describe("FlashcardInterface", () => {
       await user.click(screen.getByRole("button", { name: "Check Answer" }));
 
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: /Next Card/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole("button", { name: /Next Card/i })
+        ).toBeInTheDocument();
       });
 
       // Go to next card
@@ -205,7 +229,9 @@ describe("FlashcardInterface", () => {
       // Should show second card front (not flipped)
       expect(screen.getByText("What is Next.js?")).toBeInTheDocument();
       expect(screen.getByText("2 of 3")).toBeInTheDocument();
-      expect(screen.queryByText("Did you know the answer?")).not.toBeInTheDocument();
+      expect(
+        screen.queryByText("Did you know the answer?")
+      ).not.toBeInTheDocument();
     });
 
     it("shows Finish button on last card", async () => {
@@ -228,7 +254,9 @@ describe("FlashcardInterface", () => {
       }
 
       // On last card, should show Finish instead of Next Card
-      expect(screen.getByRole("button", { name: /Finish/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /Finish/i })
+      ).toBeInTheDocument();
     });
   });
 
@@ -279,7 +307,9 @@ describe("FlashcardInterface", () => {
 
       await waitFor(() => {
         expect(screen.getByText("Correct!")).toBeInTheDocument();
-        expect(screen.getByRole("button", { name: /Next Card/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole("button", { name: /Next Card/i })
+        ).toBeInTheDocument();
       });
     });
 
@@ -300,13 +330,18 @@ describe("FlashcardInterface", () => {
       // Reset mock to succeed for next card
       mockFetch.mockResolvedValue({
         ok: true,
-        json: async () => ({ status: "success", data: { progress: {}, created: true } }),
+        json: async () => ({
+          status: "success",
+          data: { progress: {}, created: true },
+        }),
       } as Response);
 
       await user.click(screen.getByRole("button", { name: /Next Card/i }));
 
       // Error should be cleared
-      expect(screen.queryByText(/Failed to save progress/)).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(/Failed to save progress/)
+      ).not.toBeInTheDocument();
     });
   });
 
@@ -347,21 +382,27 @@ describe("FlashcardInterface", () => {
       await user.click(screen.getByText(/(Click to reveal answer)/));
       await user.click(screen.getByRole("button", { name: "Got It!" }));
       await user.click(screen.getByRole("button", { name: "Check Answer" }));
-      await waitFor(() => expect(screen.getByText("Correct!")).toBeInTheDocument());
+      await waitFor(() =>
+        expect(screen.getByText("Correct!")).toBeInTheDocument()
+      );
       await user.click(screen.getByRole("button", { name: /Next Card/i }));
 
       // Second card: Not Yet (incorrect)
       await user.click(screen.getByText(/(Click to reveal answer)/));
       await user.click(screen.getByRole("button", { name: "Not Yet" }));
       await user.click(screen.getByRole("button", { name: "Check Answer" }));
-      await waitFor(() => expect(screen.getByText("Incorrect")).toBeInTheDocument());
+      await waitFor(() =>
+        expect(screen.getByText("Incorrect")).toBeInTheDocument()
+      );
       await user.click(screen.getByRole("button", { name: /Next Card/i }));
 
       // Third card: Got It! (correct)
       await user.click(screen.getByText(/(Click to reveal answer)/));
       await user.click(screen.getByRole("button", { name: "Got It!" }));
       await user.click(screen.getByRole("button", { name: "Check Answer" }));
-      await waitFor(() => expect(screen.getByText("Correct!")).toBeInTheDocument());
+      await waitFor(() =>
+        expect(screen.getByText("Correct!")).toBeInTheDocument()
+      );
       await user.click(screen.getByRole("button", { name: /Finish/i }));
 
       // Summary should show 2/3
@@ -379,7 +420,9 @@ describe("FlashcardInterface", () => {
         await user.click(screen.getByText(/(Click to reveal answer)/));
         await user.click(screen.getByRole("button", { name: "Got It!" }));
         await user.click(screen.getByRole("button", { name: "Check Answer" }));
-        await waitFor(() => expect(screen.getByText("Correct!")).toBeInTheDocument());
+        await waitFor(() =>
+          expect(screen.getByText("Correct!")).toBeInTheDocument()
+        );
 
         if (i < 2) {
           await user.click(screen.getByRole("button", { name: /Next Card/i }));
@@ -388,7 +431,9 @@ describe("FlashcardInterface", () => {
         }
       }
 
-      await waitFor(() => expect(screen.getByText("Session Complete!")).toBeInTheDocument());
+      await waitFor(() =>
+        expect(screen.getByText("Session Complete!")).toBeInTheDocument()
+      );
 
       // Click Try Again
       await user.click(screen.getByRole("button", { name: "Try Again" }));
