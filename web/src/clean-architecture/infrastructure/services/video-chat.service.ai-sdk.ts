@@ -20,7 +20,7 @@ export class AiSdkVideoChatService implements IVideoChatService {
     }));
 
     const result = streamText({
-      model: openai("gpt-4o-mini"),
+      model: openai("gpt-4.1-mini"),
       system: systemPrompt,
       messages: formattedMessages,
     });
