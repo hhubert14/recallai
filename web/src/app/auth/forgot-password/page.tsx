@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
-import { ForgotPasswordForm } from "@/app/auth/forgot-password/ForgotPasswordForm";
+import { ForgotPasswordForm } from "@/app/auth/forgot-password/_components/ForgotPasswordForm";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 export const metadata: Metadata = {

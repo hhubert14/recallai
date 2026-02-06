@@ -8,15 +8,15 @@ import { DrizzleStudySetRepository } from "@/clean-architecture/infrastructure/r
 import { DrizzleReviewableItemRepository } from "@/clean-architecture/infrastructure/repositories/reviewable-item.repository.drizzle";
 import { DrizzleReviewProgressRepository } from "@/clean-architecture/infrastructure/repositories/review-progress.repository.drizzle";
 import { FindStudySetsByUserIdUseCase } from "@/clean-architecture/use-cases/study-set/find-study-sets-by-user-id.use-case";
-import { OnboardingSurveyWrapper } from "./OnboardingSurvey/OnboardingSurveyWrapper";
-import { WelcomeModalWrapper } from "./WelcomeModal/WelcomeModalWrapper";
+import { OnboardingSurveyWrapper } from "./_components/OnboardingSurvey/OnboardingSurveyWrapper";
+import { WelcomeModalWrapper } from "./_components/WelcomeModal/WelcomeModalWrapper";
 import { GetUserStatsUseCase } from "@/clean-architecture/use-cases/user-stats/get-user-stats.use-case";
 import { GetReviewStatsUseCase } from "@/clean-architecture/use-cases/review/get-review-stats.use-case";
-import { ReviewHeroCard } from "./ReviewHeroCard";
-import { QuickStatsRow } from "./QuickStatsRow";
-import { WhatsNewCard } from "./WhatsNewCard";
-import { RecentStudySetsCard } from "./RecentStudySetsCard";
-import { DashboardTour } from "./DashboardTour";
+import { ReviewHeroCard } from "./_components/ReviewHeroCard";
+import { QuickStatsRow } from "./_components/QuickStatsRow";
+import { WhatsNewCard } from "./_components/WhatsNewCard";
+import { RecentStudySetsCard } from "./_components/RecentStudySetsCard";
+import { DashboardTour } from "./_components/DashboardTour";
 
 export const metadata: Metadata = {
   title: "Dashboard | Retenio",

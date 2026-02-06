@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { StudyMode, ReviewItemApiResponse } from "@/clean-architecture/use-cases/review/types";
-import { StudyModeStats } from "@/app/dashboard/review/StudyModeSelector";
+import { StudyModeStats } from "@/app/dashboard/review/_components/StudyModeSelector";
 
 export interface SessionResults {
   correct: number;

@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { GetReviewStatsUseCase } from "@/clean-architecture/use-cases/review/get-review-stats.use-case";
 import { DrizzleReviewableItemRepository } from "@/clean-architecture/infrastructure/repositories/reviewable-item.repository.drizzle";
 import { DrizzleReviewProgressRepository } from "@/clean-architecture/infrastructure/repositories/review-progress.repository.drizzle";
-import { ReviewInterface } from "@/app/dashboard/review/ReviewInterface";
+import { ReviewInterface } from "@/app/dashboard/review/_components/ReviewInterface";
 import { DashboardHeader } from "@/components/DashboardHeader";
 
 export const metadata: Metadata = {

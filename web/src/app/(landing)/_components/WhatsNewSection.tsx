@@ -7,7 +7,7 @@ import {
   updates,
   categoryColors,
   formatUpdateDate,
-} from "@/app/updates/updates-data";
+} from "@/app/updates/_components/updates-data";
 
 export function WhatsNewSection() {
   const { ref, isInView } = useInView<HTMLDivElement>({ threshold: 0.1 });

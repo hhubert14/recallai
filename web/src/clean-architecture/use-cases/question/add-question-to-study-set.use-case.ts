@@ -2,7 +2,7 @@ import { IStudySetRepository } from "@/clean-architecture/domain/repositories/st
 import { IQuestionRepository } from "@/clean-architecture/domain/repositories/question.repository.interface";
 import { IReviewableItemRepository } from "@/clean-architecture/domain/repositories/reviewable-item.repository.interface";
 import { MultipleChoiceQuestionEntity } from "@/clean-architecture/domain/entities/question.entity";
-import { STUDY_SET_ITEM_LIMIT } from "@/app/dashboard/study-set/[publicId]/types";
+import { STUDY_SET_ITEM_LIMIT } from "@/app/dashboard/study-set/[publicId]/_components/types";
 
 export interface AddQuestionOption {
     optionText: string;

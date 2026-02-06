@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
-import { UpdatePasswordForm } from "@/app/auth/update-password/UpdatePasswordForm";
+import { UpdatePasswordForm } from "@/app/auth/update-password/_components/UpdatePasswordForm";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 export const metadata: Metadata = {

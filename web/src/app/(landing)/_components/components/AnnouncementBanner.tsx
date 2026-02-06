@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { X, Sparkles, Wrench, Bug, ArrowRight } from "lucide-react";
-import { updates, UpdateCategory } from "@/app/updates/updates-data";
+import { updates, UpdateCategory } from "@/app/updates/_components/updates-data";
 
 const categoryIcons: Record<UpdateCategory, typeof Sparkles> = {
   "New Feature": Sparkles,

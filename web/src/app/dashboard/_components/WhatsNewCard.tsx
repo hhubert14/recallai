@@ -6,7 +6,7 @@ import {
   updates,
   categoryColors,
   formatUpdateDate,
-} from "@/app/updates/updates-data";
+} from "@/app/updates/_components/updates-data";
 import { useInView } from "@/hooks/useInView";
 import { TOUR_TARGETS } from "@/components/tour/tour-constants";
 

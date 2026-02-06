@@ -1,11 +1,11 @@
-import { Header } from "./(landing)/Header";
-import { HeroSection } from "./(landing)/HeroSection";
-import { HowItWorksSection } from "./(landing)/HowItWorksSection";
-import { FeaturesSection } from "./(landing)/FeaturesSection";
-import { WhatsNewSection } from "./(landing)/WhatsNewSection";
-import { CTASection } from "./(landing)/CTASection";
-import { Footer } from "./(landing)/Footer";
-import { AnnouncementBanner } from "./(landing)/components/AnnouncementBanner";
+import { Header } from "./(landing)/_components/Header";
+import { HeroSection } from "./(landing)/_components/HeroSection";
+import { HowItWorksSection } from "./(landing)/_components/HowItWorksSection";
+import { FeaturesSection } from "./(landing)/_components/FeaturesSection";
+import { WhatsNewSection } from "./(landing)/_components/WhatsNewSection";
+import { CTASection } from "./(landing)/_components/CTASection";
+import { Footer } from "./(landing)/_components/Footer";
+import { AnnouncementBanner } from "./(landing)/_components/components/AnnouncementBanner";
 
 export default function Home() {
   return (

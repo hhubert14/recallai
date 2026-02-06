@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { TextRefreshButton } from "../TextRefreshButton";
+import { TextRefreshButton } from "../_components/TextRefreshButton";
 import { DrizzleStudySetRepository } from "@/clean-architecture/infrastructure/repositories/study-set.repository.drizzle";
 import { DrizzleFolderRepository } from "@/clean-architecture/infrastructure/repositories/folder.repository.drizzle";
 import { DrizzleReviewableItemRepository } from "@/clean-architecture/infrastructure/repositories/reviewable-item.repository.drizzle";
@@ -10,8 +10,8 @@ import { FindStudySetsByUserIdUseCase } from "@/clean-architecture/use-cases/stu
 import { GetFoldersByUserIdUseCase } from "@/clean-architecture/use-cases/folder/get-folders-by-user-id.use-case";
 import { GetFolderWithStudySetsUseCase } from "@/clean-architecture/use-cases/folder/get-folder-with-study-sets.use-case";
 import { DashboardHeader } from "@/components/DashboardHeader";
-import { LibraryClientWrapper } from "./LibraryClientWrapper";
-import { StudySetWithCounts } from "./ClientStudySetList";
+import { LibraryClientWrapper } from "./_components/LibraryClientWrapper";
+import { StudySetWithCounts } from "./_components/ClientStudySetList";
 import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
