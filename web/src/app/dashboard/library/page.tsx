@@ -117,8 +117,8 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
       <DashboardHeader />
 
       <main className="flex-1 container py-12 px-6 md:px-8 max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
-          <div>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8">
+          <div className="min-w-0">
             {currentFolder ? (
               <>
                 <Button
@@ -132,7 +132,7 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
                     Back to Library
                   </Link>
                 </Button>
-                <h1 className="text-4xl font-bold tracking-tight text-foreground mb-3">
+                <h1 className="text-2xl sm:text-4xl font-bold tracking-tight text-foreground mb-3">
                   {currentFolder.name}
                 </h1>
                 {currentFolder.description && (
@@ -143,7 +143,7 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
               </>
             ) : (
               <>
-                <h1 className="text-4xl font-bold tracking-tight text-foreground mb-3">
+                <h1 className="text-2xl sm:text-4xl font-bold tracking-tight text-foreground mb-3">
                   My Library
                 </h1>
                 <p className="text-lg text-muted-foreground">
@@ -152,10 +152,8 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
               </>
             )}
           </div>
-          <div className="flex items-center gap-3">
-            <div className="flex flex-col items-end gap-3">
-              <TextRefreshButton />
-            </div>
+          <div className="flex items-center gap-3 shrink-0">
+            <TextRefreshButton />
           </div>
         </div>
 
