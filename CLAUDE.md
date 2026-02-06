@@ -457,6 +457,12 @@ function MyComponent({ props }) {
 
 Utility functions that don't depend on component state/props go **outside** the component.
 
+**Don't use `useCallback`/`useMemo` by default.** Only add them when there's a proven need:
+- Passing a callback as a prop to a `React.memo`-wrapped child component
+- A function is in the dependency array of a `useEffect` that would otherwise loop
+
+Plain functions in hooks and components are fine — they recreate each render and that's cheap. Premature `useCallback` adds cognitive load with no benefit.
+
 ### 5. Database Queries (Drizzle)
 
 ```typescript

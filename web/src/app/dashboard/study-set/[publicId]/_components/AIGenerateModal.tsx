@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { Loader2, Check, X, Pencil, RefreshCw } from "lucide-react";
 import {
     DialogContent,
@@ -21,17 +21,9 @@ import type {
     SuggestionItemType,
     FlashcardSuggestion,
     QuestionSuggestion,
-    QuestionOptionSuggestion,
 } from "@/clean-architecture/domain/services/suggestion-generator.interface";
-import { CHARACTER_LIMITS, STUDY_SET_ITEM_LIMIT } from "./types";
-
-// Type for edited suggestion content - either flashcard or question fields
-type EditedSuggestionContent = {
-    front?: string;
-    back?: string;
-    questionText?: string;
-    options?: QuestionOptionSuggestion[];
-};
+import { useAISuggestionReview, type EditedSuggestionContent } from "@/hooks/useAISuggestionReview";
+import { CHARACTER_LIMITS } from "./types";
 
 const DEFAULT_COUNT = 5;
 const MIN_COUNT = 1;
@@ -90,16 +82,15 @@ export function AIGenerateModal({
     const [count, setCount] = useState(DEFAULT_COUNT);
     const [itemType, setItemType] = useState<SuggestionItemType>("mix");
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-
-    // Review phase state
+    const [generateError, setGenerateError] = useState<string | null>(null);
     const [phase, setPhase] = useState<ModalPhase>("generate");
-    const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
-    const [initialSuggestionCount, setInitialSuggestionCount] = useState(0);
-    const [editingSuggestionId, setEditingSuggestionId] = useState<string | null>(null);
-    const [editedContent, setEditedContent] = useState<EditedSuggestionContent>({});
-    const [acceptingIds, setAcceptingIds] = useState<Set<string>>(new Set());
-    const [acceptError, setAcceptError] = useState<string | null>(null);
+
+    // Review phase state (delegated to hook)
+    const review = useAISuggestionReview({
+        studySetPublicId,
+        onFlashcardAdded,
+        onQuestionAdded,
+    });
 
     // Reset form when modal opens/closes
     useEffect(() => {
@@ -107,29 +98,25 @@ export function AIGenerateModal({
             setPrompt("");
             setCount(DEFAULT_COUNT);
             setItemType("mix");
-            setError(null);
+            setGenerateError(null);
             setIsLoading(false);
             setPhase("generate");
-            setSuggestions([]);
-            setInitialSuggestionCount(0);
-            setEditingSuggestionId(null);
-            setEditedContent({});
-            setAcceptingIds(new Set());
-            setAcceptError(null);
+            review.reset();
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isOpen]);
 
     // Auto-close when all suggestions have been reviewed in review phase
     useEffect(() => {
-        if (phase === "review" && suggestions.length === 0 && initialSuggestionCount > 0) {
+        if (phase === "review" && review.suggestions.length === 0 && review.initialCount > 0) {
             onClose();
         }
-    }, [phase, suggestions.length, initialSuggestionCount, onClose]);
+    }, [phase, review.suggestions.length, review.initialCount, onClose]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
-        setError(null);
+        setGenerateError(null);
 
         try {
             const response = await fetch(
@@ -150,18 +137,17 @@ export function AIGenerateModal({
             const data = await response.json();
 
             if (!response.ok || data.status === "fail") {
-                setError(data.data?.error || "Failed to generate suggestions");
+                setGenerateError(data.data?.error || "Failed to generate suggestions");
                 setIsLoading(false);
                 return;
             }
 
             const generatedSuggestions = data.data.suggestions as Suggestion[];
-            setSuggestions(generatedSuggestions);
-            setInitialSuggestionCount(generatedSuggestions.length);
+            review.startReview(generatedSuggestions);
             setPhase("review");
             setIsLoading(false);
         } catch {
-            setError("An error occurred. Please try again.");
+            setGenerateError("An error occurred. Please try again.");
             setIsLoading(false);
         }
     };
@@ -177,174 +163,17 @@ export function AIGenerateModal({
         }
     };
 
-    const handleAccept = useCallback(async (suggestion: Suggestion) => {
-        setAcceptingIds((prev) => new Set([...prev, suggestion.tempId]));
-        setAcceptError(null);
-
-        try {
-            if (suggestion.itemType === "flashcard") {
-                const response = await fetch(
-                    `/api/v1/study-sets/${studySetPublicId}/flashcards`,
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                            front: suggestion.front,
-                            back: suggestion.back,
-                        }),
-                    }
-                );
-
-                const data = await response.json();
-                if (response.ok && data.status === "success") {
-                    onFlashcardAdded(data.data.flashcard);
-                    setSuggestions((prev) => prev.filter((s) => s.tempId !== suggestion.tempId));
-                } else {
-                    setAcceptError(data.data?.error || "Failed to add flashcard. Please try again.");
-                }
-            } else {
-                const response = await fetch(
-                    `/api/v1/study-sets/${studySetPublicId}/questions`,
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                            questionText: suggestion.questionText,
-                            options: suggestion.options,
-                        }),
-                    }
-                );
-
-                const data = await response.json();
-                if (response.ok && data.status === "success") {
-                    onQuestionAdded(data.data.question);
-                    setSuggestions((prev) => prev.filter((s) => s.tempId !== suggestion.tempId));
-                } else {
-                    setAcceptError(data.data?.error || "Failed to add question. Please try again.");
-                }
-            }
-        } catch {
-            setAcceptError("An error occurred. Please try again.");
-        } finally {
-            setAcceptingIds((prev) => {
-                const next = new Set(prev);
-                next.delete(suggestion.tempId);
-                return next;
-            });
-        }
-    }, [studySetPublicId, onFlashcardAdded, onQuestionAdded]);
-
-    const handleReject = (tempId: string) => {
-        setSuggestions((prev) => prev.filter((s) => s.tempId !== tempId));
-    };
-
-    const handleEdit = (suggestion: Suggestion) => {
-        setEditingSuggestionId(suggestion.tempId);
-        if (suggestion.itemType === "flashcard") {
-            setEditedContent({
-                front: suggestion.front,
-                back: suggestion.back,
-            });
-        } else {
-            setEditedContent({
-                questionText: suggestion.questionText,
-                options: suggestion.options,
-            });
-        }
-    };
-
-    const handleSaveEdit = () => {
-        if (!editingSuggestionId) return;
-
-        setSuggestions((prev) =>
-            prev.map((s) => {
-                if (s.tempId !== editingSuggestionId) return s;
-
-                if (s.itemType === "flashcard") {
-                    return {
-                        ...s,
-                        front: editedContent.front || s.front,
-                        back: editedContent.back || s.back,
-                    };
-                } else {
-                    return {
-                        ...s,
-                        questionText: editedContent.questionText || s.questionText,
-                        options: editedContent.options || s.options,
-                    };
-                }
-            })
-        );
-
-        setEditingSuggestionId(null);
-        setEditedContent({});
-    };
-
-    const handleCancelEdit = () => {
-        setEditingSuggestionId(null);
-        setEditedContent({});
-    };
-
-    const handleAcceptAll = async () => {
-        // Filter out suggestions that are already being processed
-        const suggestionsToAccept = suggestions.filter(
-            (s) => !acceptingIds.has(s.tempId)
-        );
-
-        if (suggestionsToAccept.length === 0) return;
-
-        setAcceptError(null);
-
-        try {
-            // Pre-check capacity by fetching current count
-            const countResponse = await fetch(`/api/v1/study-sets/${studySetPublicId}/count`);
-            const countData = await countResponse.json();
-
-            if (!countResponse.ok || countData.status !== "success") {
-                setAcceptError("Failed to check study set capacity. Please try again.");
-                return;
-            }
-
-            const currentCount = countData.data.count;
-            const remaining = STUDY_SET_ITEM_LIMIT - currentCount;
-
-            if (remaining <= 0) {
-                setAcceptError(`Study set has reached the maximum limit of ${STUDY_SET_ITEM_LIMIT} items. Remove some items to add more.`);
-                return;
-            }
-
-            // Only accept up to remaining capacity
-            const toAccept = suggestionsToAccept.slice(0, remaining);
-            const cannotAccept = suggestionsToAccept.length - toAccept.length;
-
-            // Accept in parallel (safe - we know we're under limit)
-            await Promise.all(toAccept.map((suggestion) => handleAccept(suggestion)));
-
-            if (cannotAccept > 0) {
-                setAcceptError(`Added ${toAccept.length} items. ${cannotAccept} could not be added (limit of ${STUDY_SET_ITEM_LIMIT} reached).`);
-            }
-        } catch {
-            setAcceptError("An error occurred while checking capacity. Please try again.");
-        }
-    };
-
     const handleRejectAll = () => {
-        setSuggestions([]);
+        review.rejectAll();
         onClose();
     };
 
     const handleRegenerate = () => {
-        setSuggestions([]);
-        setInitialSuggestionCount(0);
+        review.reset();
         setPhase("generate");
     };
 
     const canSubmit = prompt.trim().length > 0 && count >= MIN_COUNT && count <= MAX_COUNT;
-    const reviewedCount = initialSuggestionCount - suggestions.length;
 
     // Render generation phase
     if (phase === "generate") {
@@ -442,9 +271,9 @@ export function AIGenerateModal({
                                 </p>
                             </div>
 
-                            {error && (
+                            {generateError && (
                                 <p className="text-sm text-destructive" role="alert">
-                                    {error}
+                                    {generateError}
                                 </p>
                             )}
                         </div>
@@ -476,40 +305,41 @@ export function AIGenerateModal({
     }
 
     // Render review phase
+    const isAnyAccepting = review.suggestions.some((s) => review.isAccepting(s.tempId));
     return (
         <LoadingAwareDialog
             open={isOpen}
-            isLoading={acceptingIds.size > 0}
+            isLoading={isAnyAccepting}
             onOpenChange={(open) => !open && onClose()}
         >
             <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col">
                 <DialogHeader>
                     <DialogTitle>Review Suggestions</DialogTitle>
                     <DialogDescription>
-                        {reviewedCount} of {initialSuggestionCount} reviewed
+                        {review.reviewedCount} of {review.initialCount} reviewed
                     </DialogDescription>
                 </DialogHeader>
 
-                {acceptError && (
+                {review.error && (
                     <p className="text-sm text-destructive px-1" role="alert">
-                        {acceptError}
+                        {review.error}
                     </p>
                 )}
 
                 <div className="flex-1 overflow-y-auto space-y-4 py-4">
-                    {suggestions.map((suggestion) => (
+                    {review.suggestions.map((suggestion) => (
                         <SuggestionCard
                             key={suggestion.tempId}
                             suggestion={suggestion}
-                            isEditing={editingSuggestionId === suggestion.tempId}
-                            isAccepting={acceptingIds.has(suggestion.tempId)}
-                            editedContent={editingSuggestionId === suggestion.tempId ? editedContent : {}}
-                            onAccept={() => handleAccept(suggestion)}
-                            onReject={() => handleReject(suggestion.tempId)}
-                            onEdit={() => handleEdit(suggestion)}
-                            onSaveEdit={handleSaveEdit}
-                            onCancelEdit={handleCancelEdit}
-                            onEditedContentChange={setEditedContent}
+                            isEditing={review.editState.tempId === suggestion.tempId}
+                            isAccepting={review.isAccepting(suggestion.tempId)}
+                            editedContent={review.editState.tempId === suggestion.tempId ? review.editState.content : {}}
+                            onAccept={() => review.accept(suggestion)}
+                            onReject={() => review.reject(suggestion.tempId)}
+                            onEdit={() => review.startEdit(suggestion)}
+                            onSaveEdit={review.saveEdit}
+                            onCancelEdit={review.cancelEdit}
+                            onEditedContentChange={review.editState.setContent}
                         />
                     ))}
                 </div>
@@ -520,6 +350,7 @@ export function AIGenerateModal({
                             type="button"
                             variant="outline"
                             onClick={handleRegenerate}
+                            disabled={isAnyAccepting}
                         >
                             <RefreshCw className="h-4 w-4" />
                             Regenerate
@@ -529,12 +360,14 @@ export function AIGenerateModal({
                                 type="button"
                                 variant="outline"
                                 onClick={handleRejectAll}
+                                disabled={isAnyAccepting}
                             >
                                 Reject All
                             </Button>
                             <Button
                                 type="button"
-                                onClick={handleAcceptAll}
+                                onClick={review.acceptAll}
+                                disabled={isAnyAccepting}
                             >
                                 Accept All
                             </Button>
