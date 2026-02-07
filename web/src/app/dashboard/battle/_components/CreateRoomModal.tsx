@@ -130,7 +130,10 @@ export function CreateRoomModal({
   }
 
   const canSubmit =
-    selectedStudySetPublicId && roomName.trim().length > 0 && !isLoading;
+    selectedStudySetPublicId &&
+    roomName.trim().length > 0 &&
+    (visibility === "public" || password.trim().length > 0) &&
+    !isLoading;
 
   return (
     <LoadingAwareDialog
