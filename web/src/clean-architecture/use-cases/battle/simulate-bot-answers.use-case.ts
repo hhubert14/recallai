@@ -41,19 +41,24 @@ export class SimulateBotAnswersUseCase {
       throw new Error("Only the host can simulate bot answers");
     if (!room.isInGame()) throw new Error("Battle room is not in game");
     if (room.currentQuestionIndex === null) throw new Error("No active question");
+    if (!room.questionIds) throw new Error("No questions assigned to room");
+    if (!room.currentQuestionStartedAt) throw new Error("No active question");
 
     // 2. Parallel: get slots + question
-    const questionId = room.questionIds![room.currentQuestionIndex];
+    const currentQuestionIndex = room.currentQuestionIndex;
+    const questionId = room.questionIds[currentQuestionIndex];
     const [slots, question] = await Promise.all([
       this.battleRoomSlotRepository.findSlotsByRoomId(room.id),
       this.questionRepository.findQuestionById(questionId),
     ]);
 
+    if (!question) throw new Error("Question not found");
+
     // 3. Filter to bots and simulate answers
     const botSlots = slots.filter((slot) => slot.isBot());
     if (botSlots.length === 0) return { botAnswers: [] };
 
-    const optionsForBot = question!.options.map((opt) => ({
+    const optionsForBot = question.options.map((opt) => ({
       id: opt.id,
       isCorrect: opt.isCorrect,
     }));
@@ -61,6 +66,7 @@ export class SimulateBotAnswersUseCase {
     const botAnswers: BotAnswerResult[] = [];
 
     // Parallelize bot answer inserts
+    const questionStartedAt = new Date(room.currentQuestionStartedAt);
     const results = await Promise.allSettled(
       botSlots.map(async (botSlot) => {
         const botAnswer = simulateBotAnswer(
@@ -69,7 +75,6 @@ export class SimulateBotAnswersUseCase {
         );
 
         // Bot's answeredAt = questionStartedAt + delayMs
-        const questionStartedAt = new Date(room.currentQuestionStartedAt!);
         const answeredAt = new Date(
           questionStartedAt.getTime() + botAnswer.delayMs
         ).toISOString();
@@ -85,7 +90,7 @@ export class SimulateBotAnswersUseCase {
           roomId: room.id,
           slotId: botSlot.id,
           questionId,
-          questionIndex: room.currentQuestionIndex!,
+          questionIndex: currentQuestionIndex,
           selectedOptionId: botAnswer.selectedOptionId,
           isCorrect: botAnswer.isCorrect,
           answeredAt,

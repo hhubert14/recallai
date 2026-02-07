@@ -30,16 +30,19 @@ export class AdvanceQuestionUseCase {
       throw new Error("Only the host can advance questions");
     if (!room.isInGame()) throw new Error("Battle room is not in game");
 
+    if (!room.questionIds) throw new Error("No questions assigned to room");
+
     const nextIndex =
       room.currentQuestionIndex === null ? 0 : room.currentQuestionIndex + 1;
 
-    if (nextIndex >= room.questionIds!.length) {
+    if (nextIndex >= room.questionIds.length) {
       throw new Error("No more questions");
     }
 
-    const questionId = room.questionIds![nextIndex];
+    const questionId = room.questionIds[nextIndex];
     const question =
       await this.questionRepository.findQuestionById(questionId);
+    if (!question) throw new Error("Question not found");
 
     const currentQuestionStartedAt = new Date().toISOString();
 
@@ -50,9 +53,9 @@ export class AdvanceQuestionUseCase {
 
     return {
       questionIndex: nextIndex,
-      questionId: question!.id,
-      questionText: question!.questionText,
-      options: question!.options.map((opt) => ({
+      questionId: question.id,
+      questionText: question.questionText,
+      options: question.options.map((opt) => ({
         id: opt.id,
         optionText: opt.optionText,
       })),

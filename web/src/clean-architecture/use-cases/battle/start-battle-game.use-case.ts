@@ -52,7 +52,7 @@ export class StartBattleGameUseCase {
     const shuffled = [...questionItems].sort(() => Math.random() - 0.5);
     const selectedIds = shuffled
       .slice(0, room.questionCount)
-      .map((item) => item.questionId!);
+      .map((item) => item.questionId) as number[];
 
     // 3. Update room to in_game
     const updatedRoom = await this.battleRoomRepository.updateBattleRoom(
@@ -64,7 +64,8 @@ export class StartBattleGameUseCase {
         currentQuestionStartedAt: null,
       }
     );
+    if (!updatedRoom) throw new Error("Failed to update battle room");
 
-    return { room: updatedRoom! };
+    return { room: updatedRoom };
   }
 }

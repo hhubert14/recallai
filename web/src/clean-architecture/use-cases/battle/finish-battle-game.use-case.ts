@@ -29,7 +29,8 @@ export class FinishBattleGameUseCase {
         currentQuestionStartedAt: null,
       }
     );
+    if (!updatedRoom) throw new Error("Failed to update battle room");
 
-    return updatedRoom!;
+    return updatedRoom;
   }
 }

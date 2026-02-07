@@ -39,13 +39,16 @@ export class SubmitBattleAnswerUseCase {
     if (!slot || slot.roomId !== room.id)
       throw new Error("User is not a participant in this battle");
     if (room.currentQuestionIndex === null) throw new Error("No active question");
+    if (!room.questionIds) throw new Error("No questions assigned to room");
+    if (!room.currentQuestionStartedAt) throw new Error("No active question");
 
     // 2. Fetch question
-    const questionId = room.questionIds![room.currentQuestionIndex];
+    const questionId = room.questionIds[room.currentQuestionIndex];
     const question =
       await this.questionRepository.findQuestionById(questionId);
+    if (!question) throw new Error("Question not found");
 
-    const selectedOption = question!.options.find(
+    const selectedOption = question.options.find(
       (opt) => opt.id === selectedOptionId
     );
     if (!selectedOption) throw new Error("Invalid option");
@@ -55,7 +58,7 @@ export class SubmitBattleAnswerUseCase {
     const isCorrect = selectedOption.isCorrect;
     const score = calculateAnswerScore(
       isCorrect,
-      new Date(room.currentQuestionStartedAt!),
+      new Date(room.currentQuestionStartedAt),
       new Date(answeredAt),
       room.timeLimitSeconds
     );
