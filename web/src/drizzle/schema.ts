@@ -2,6 +2,7 @@ import {
   pgTable,
   foreignKey,
   unique,
+  uniqueIndex,
   uuid,
   text,
   timestamp,
@@ -711,6 +712,188 @@ export const userStreaks = pgTable(
     index("idx_user_streaks_user_id").using(
       "btree",
       table.userId.asc().nullsLast()
+    ),
+  ]
+);
+
+export const battleRooms = pgTable(
+  "battle_rooms",
+  {
+    id: bigint({ mode: "number" })
+      .primaryKey()
+      .generatedByDefaultAsIdentity({
+        name: "battle_rooms_id_seq",
+        startWith: 1,
+        increment: 1,
+        minValue: 1,
+        cache: 1,
+      }),
+    publicId: uuid("public_id").defaultRandom().notNull(),
+    hostUserId: uuid("host_user_id").notNull(),
+    studySetId: bigint("study_set_id", { mode: "number" }).notNull(),
+    name: text().notNull(),
+    visibility: text().notNull(), // 'public' | 'private'
+    passwordHash: text("password_hash"), // nullable, only for private rooms
+    status: text().default("waiting").notNull(), // 'waiting' | 'in_game' | 'finished'
+    timeLimitSeconds: integer("time_limit_seconds").notNull(),
+    questionCount: integer("question_count").notNull(),
+    currentQuestionIndex: integer("current_question_index"), // active question during game
+    currentQuestionStartedAt: timestamp("current_question_started_at", {
+      withTimezone: true,
+      mode: "string",
+    }), // server-authoritative timer start
+    questionIds: integer("question_ids").array(), // ordered array of selected question IDs
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.hostUserId],
+      foreignColumns: [users.id],
+      name: "battle_rooms_host_user_id_fkey",
+    })
+      .onUpdate("cascade")
+      .onDelete("cascade"),
+    foreignKey({
+      columns: [table.studySetId],
+      foreignColumns: [studySets.id],
+      name: "battle_rooms_study_set_id_fkey",
+    })
+      .onUpdate("cascade")
+      .onDelete("cascade"),
+    unique("battle_rooms_public_id_key").on(table.publicId),
+    check(
+      "battle_rooms_visibility_check",
+      sql`visibility IN ('public', 'private')`
+    ),
+    check(
+      "battle_rooms_status_check",
+      sql`status IN ('waiting', 'in_game', 'finished')`
+    ),
+    index("idx_battle_rooms_host_user_id").using(
+      "btree",
+      table.hostUserId.asc().nullsLast()
+    ),
+    index("idx_battle_rooms_status").using(
+      "btree",
+      table.status.asc().nullsLast()
+    ),
+  ]
+);
+
+export const battleRoomSlots = pgTable(
+  "battle_room_slots",
+  {
+    id: bigint({ mode: "number" })
+      .primaryKey()
+      .generatedByDefaultAsIdentity({
+        name: "battle_room_slots_id_seq",
+        startWith: 1,
+        increment: 1,
+        minValue: 1,
+        cache: 1,
+      }),
+    roomId: bigint("room_id", { mode: "number" }).notNull(),
+    slotIndex: integer("slot_index").notNull(), // 0-3
+    slotType: text("slot_type").default("empty").notNull(), // 'empty' | 'player' | 'bot' | 'locked'
+    userId: uuid("user_id"), // nullable
+    botName: text("bot_name"), // nullable
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.roomId],
+      foreignColumns: [battleRooms.id],
+      name: "battle_room_slots_room_id_fkey",
+    })
+      .onUpdate("cascade")
+      .onDelete("cascade"),
+    foreignKey({
+      columns: [table.userId],
+      foreignColumns: [users.id],
+      name: "battle_room_slots_user_id_fkey",
+    })
+      .onUpdate("cascade")
+      .onDelete("set null"),
+    unique("battle_room_slots_room_id_slot_index_key").on(
+      table.roomId,
+      table.slotIndex
+    ),
+    check(
+      "battle_room_slots_slot_type_check",
+      sql`slot_type IN ('empty', 'player', 'bot', 'locked')`
+    ),
+    // Partial unique: one room per user (enforced at DB level)
+    uniqueIndex("battle_room_slots_user_id_unique")
+      .on(table.userId)
+      .where(sql`user_id IS NOT NULL`),
+  ]
+);
+
+export const battleGameAnswers = pgTable(
+  "battle_game_answers",
+  {
+    id: bigint({ mode: "number" })
+      .primaryKey()
+      .generatedByDefaultAsIdentity({
+        name: "battle_game_answers_id_seq",
+        startWith: 1,
+        increment: 1,
+        minValue: 1,
+        cache: 1,
+      }),
+    roomId: bigint("room_id", { mode: "number" }).notNull(),
+    slotId: bigint("slot_id", { mode: "number" }).notNull(),
+    questionId: bigint("question_id", { mode: "number" }).notNull(),
+    questionIndex: integer("question_index").notNull(), // 0-based position in the game
+    selectedOptionId: bigint("selected_option_id", { mode: "number" }), // nullable = timeout
+    isCorrect: boolean("is_correct").notNull(),
+    answeredAt: timestamp("answered_at", {
+      withTimezone: true,
+      mode: "string",
+    }).notNull(), // server-recorded timestamp
+    score: integer().notNull(), // server-computed, 0 if wrong
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.roomId],
+      foreignColumns: [battleRooms.id],
+      name: "battle_game_answers_room_id_fkey",
+    })
+      .onUpdate("cascade")
+      .onDelete("cascade"),
+    foreignKey({
+      columns: [table.slotId],
+      foreignColumns: [battleRoomSlots.id],
+      name: "battle_game_answers_slot_id_fkey",
+    })
+      .onUpdate("cascade")
+      .onDelete("cascade"),
+    foreignKey({
+      columns: [table.questionId],
+      foreignColumns: [questions.id],
+      name: "battle_game_answers_question_id_fkey",
+    })
+      .onUpdate("cascade")
+      .onDelete("cascade"),
+    foreignKey({
+      columns: [table.selectedOptionId],
+      foreignColumns: [questionOptions.id],
+      name: "battle_game_answers_selected_option_id_fkey",
+    })
+      .onUpdate("cascade")
+      .onDelete("cascade"),
+    // Prevents double answers
+    unique("battle_game_answers_slot_room_question_key").on(
+      table.slotId,
+      table.roomId,
+      table.questionIndex
     ),
   ]
 );
