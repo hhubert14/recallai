@@ -75,11 +75,11 @@ describe("JoinBattleRoomUseCase", () => {
     const result = await useCase.execute({ userId, roomPublicId });
 
     expect(result).toEqual(updatedSlot);
-    expect(mockSlotRepo.updateSlot).toHaveBeenCalledWith(2, {
-      slotType: "player",
-      userId,
-      botName: null,
-    });
+    expect(mockSlotRepo.updateSlot).toHaveBeenCalledWith(
+      2,
+      { slotType: "player", userId, botName: null },
+      "empty"
+    );
   });
 
   it("joins a private room with correct password", async () => {
@@ -171,6 +171,23 @@ describe("JoinBattleRoomUseCase", () => {
 
     await expect(
       useCase.execute({ userId, roomPublicId: "pub-456" })
+    ).rejects.toThrow("Incorrect password");
+
+    expect(mockSlotRepo.updateSlot).not.toHaveBeenCalled();
+  });
+
+  it("throws error when private room has null passwordHash", async () => {
+    const misconfiguredRoom = new BattleRoomEntity(
+      3, "pub-789", "host-user", 10, "Broken Room", "private", null,
+      "waiting", 15, 10, null, null, null,
+      "2025-01-01T00:00:00Z", "2025-01-01T00:00:00Z"
+    );
+
+    vi.mocked(mockRoomRepo.findBattleRoomByPublicId).mockResolvedValue(misconfiguredRoom);
+    vi.mocked(mockSlotRepo.findSlotByUserId).mockResolvedValue(null);
+
+    await expect(
+      useCase.execute({ userId, roomPublicId: "pub-789", password: "any-password" })
     ).rejects.toThrow("Incorrect password");
 
     expect(mockSlotRepo.updateSlot).not.toHaveBeenCalled();

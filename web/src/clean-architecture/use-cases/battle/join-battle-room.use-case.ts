@@ -38,8 +38,8 @@ export class JoinBattleRoomUseCase {
     }
 
     // Check password if private
-    if (room.visibility === "private" && room.passwordHash) {
-      if (!password) {
+    if (room.visibility === "private") {
+      if (!password || !room.passwordHash) {
         throw new Error("Incorrect password");
       }
       const valid = await verifyPassword(password, room.passwordHash);
@@ -57,10 +57,11 @@ export class JoinBattleRoomUseCase {
       throw new Error("Battle room is full");
     }
 
-    // Update the slot to player
+    // Update the slot to player (optimistic concurrency: only if still empty)
     const updatedSlot = await this.battleRoomSlotRepository.updateSlot(
       emptySlot.id,
-      { slotType: "player", userId, botName: null }
+      { slotType: "player", userId, botName: null },
+      "empty"
     );
     if (!updatedSlot) {
       throw new Error("Failed to update slot");
