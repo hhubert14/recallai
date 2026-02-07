@@ -77,7 +77,10 @@ export class UpdateBattleRoomSlotUseCase {
       targetSlot.id,
       updateParams
     );
+    if (!updatedSlot) {
+      throw new Error("Failed to update slot");
+    }
 
-    return updatedSlot!;
+    return updatedSlot;
   }
 }

@@ -7,6 +7,7 @@ import { DrizzleBattleRoomRepository } from "@/clean-architecture/infrastructure
 import { DrizzleBattleRoomSlotRepository } from "@/clean-architecture/infrastructure/repositories/battle-room-slot.repository.drizzle";
 import { DrizzleStudySetRepository } from "@/clean-architecture/infrastructure/repositories/study-set.repository.drizzle";
 import { DrizzleReviewableItemRepository } from "@/clean-architecture/infrastructure/repositories/reviewable-item.repository.drizzle";
+import { db } from "@/drizzle";
 
 /**
  * POST /api/v1/battle/rooms
@@ -41,21 +42,23 @@ export async function POST(request: NextRequest) {
       return jsendFail({ error: "Visibility must be 'public' or 'private'" }, 400);
     }
 
-    const useCase = new CreateBattleRoomUseCase(
-      new DrizzleBattleRoomRepository(),
-      new DrizzleBattleRoomSlotRepository(),
-      new DrizzleStudySetRepository(),
-      new DrizzleReviewableItemRepository()
-    );
+    const { room, slots } = await db.transaction(async (tx) => {
+      const useCase = new CreateBattleRoomUseCase(
+        new DrizzleBattleRoomRepository(tx),
+        new DrizzleBattleRoomSlotRepository(tx),
+        new DrizzleStudySetRepository(tx),
+        new DrizzleReviewableItemRepository(tx)
+      );
 
-    const { room, slots } = await useCase.execute({
-      userId: user.id,
-      studySetPublicId,
-      name,
-      visibility,
-      password,
-      timeLimitSeconds,
-      questionCount,
+      return useCase.execute({
+        userId: user.id,
+        studySetPublicId,
+        name,
+        visibility,
+        password,
+        timeLimitSeconds,
+        questionCount,
+      });
     });
 
     return jsendSuccess(

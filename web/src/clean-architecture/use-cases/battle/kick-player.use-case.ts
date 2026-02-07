@@ -63,7 +63,10 @@ export class KickPlayerUseCase {
       targetSlot.id,
       { slotType: "empty", userId: null, botName: null }
     );
+    if (!updatedSlot) {
+      throw new Error("Failed to update slot");
+    }
 
-    return updatedSlot!;
+    return updatedSlot;
   }
 }

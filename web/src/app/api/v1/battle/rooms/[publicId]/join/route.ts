@@ -4,6 +4,7 @@ import { jsendSuccess, jsendFail, jsendError } from "@/lib/jsend";
 import { JoinBattleRoomUseCase } from "@/clean-architecture/use-cases/battle/join-battle-room.use-case";
 import { DrizzleBattleRoomRepository } from "@/clean-architecture/infrastructure/repositories/battle-room.repository.drizzle";
 import { DrizzleBattleRoomSlotRepository } from "@/clean-architecture/infrastructure/repositories/battle-room-slot.repository.drizzle";
+import { db } from "@/drizzle";
 
 /**
  * POST /api/v1/battle/rooms/[publicId]/join
@@ -23,15 +24,17 @@ export async function POST(
     const body = await request.json().catch(() => ({}));
     const { password } = body;
 
-    const useCase = new JoinBattleRoomUseCase(
-      new DrizzleBattleRoomRepository(),
-      new DrizzleBattleRoomSlotRepository()
-    );
+    const slot = await db.transaction(async (tx) => {
+      const useCase = new JoinBattleRoomUseCase(
+        new DrizzleBattleRoomRepository(tx),
+        new DrizzleBattleRoomSlotRepository(tx)
+      );
 
-    const slot = await useCase.execute({
-      userId: user.id,
-      roomPublicId: publicId,
-      password,
+      return useCase.execute({
+        userId: user.id,
+        roomPublicId: publicId,
+        password,
+      });
     });
 
     return jsendSuccess({

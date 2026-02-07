@@ -62,7 +62,10 @@ export class JoinBattleRoomUseCase {
       emptySlot.id,
       { slotType: "player", userId, botName: null }
     );
+    if (!updatedSlot) {
+      throw new Error("Failed to update slot");
+    }
 
-    return updatedSlot!;
+    return updatedSlot;
   }
 }

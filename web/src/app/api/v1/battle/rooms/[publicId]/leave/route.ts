@@ -4,6 +4,7 @@ import { jsendSuccess, jsendFail, jsendError } from "@/lib/jsend";
 import { LeaveBattleRoomUseCase } from "@/clean-architecture/use-cases/battle/leave-battle-room.use-case";
 import { DrizzleBattleRoomRepository } from "@/clean-architecture/infrastructure/repositories/battle-room.repository.drizzle";
 import { DrizzleBattleRoomSlotRepository } from "@/clean-architecture/infrastructure/repositories/battle-room-slot.repository.drizzle";
+import { db } from "@/drizzle";
 
 /**
  * POST /api/v1/battle/rooms/[publicId]/leave
@@ -21,14 +22,16 @@ export async function POST(
 
     const { publicId } = await params;
 
-    const useCase = new LeaveBattleRoomUseCase(
-      new DrizzleBattleRoomRepository(),
-      new DrizzleBattleRoomSlotRepository()
-    );
+    await db.transaction(async (tx) => {
+      const useCase = new LeaveBattleRoomUseCase(
+        new DrizzleBattleRoomRepository(tx),
+        new DrizzleBattleRoomSlotRepository(tx)
+      );
 
-    await useCase.execute({
-      userId: user.id,
-      roomPublicId: publicId,
+      await useCase.execute({
+        userId: user.id,
+        roomPublicId: publicId,
+      });
     });
 
     return jsendSuccess({ message: "Left the battle room" });
