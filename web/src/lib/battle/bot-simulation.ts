@@ -26,7 +26,8 @@ export function simulateBotAnswer(
     selectedOption = wrongOptions[Math.floor(Math.random() * wrongOptions.length)];
   }
 
-  const maxDelay = Math.min(MAX_DELAY_MS, timeLimitSeconds * 1000 - 500);
+  const candidateMax = timeLimitSeconds * 1000 - 500;
+  const maxDelay = Math.max(MIN_DELAY_MS, Math.min(MAX_DELAY_MS, candidateMax));
   const delayMs = Math.floor(
     MIN_DELAY_MS + Math.random() * (maxDelay - MIN_DELAY_MS)
   );

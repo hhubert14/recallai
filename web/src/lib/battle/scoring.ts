@@ -25,46 +25,30 @@ export interface RankedResult {
 }
 
 export function rankGameResults(
-  answers: BattleGameAnswerEntity[],
-  questionStartedAts: Map<number, string>
+  answers: BattleGameAnswerEntity[]
 ): RankedResult[] {
   if (answers.length === 0) return [];
 
   // Group answers by slotId
   const bySlot = new Map<
     number,
-    { totalScore: number; totalElapsedMs: number; correctCount: number; totalQuestions: number }
+    { totalScore: number; correctCount: number; totalQuestions: number }
   >();
 
   for (const answer of answers) {
-    if (!bySlot.has(answer.slotId)) {
-      bySlot.set(answer.slotId, {
-        totalScore: 0,
-        totalElapsedMs: 0,
-        correctCount: 0,
-        totalQuestions: 0,
-      });
+    let slot = bySlot.get(answer.slotId);
+    if (!slot) {
+      slot = { totalScore: 0, correctCount: 0, totalQuestions: 0 };
+      bySlot.set(answer.slotId, slot);
     }
-    const slot = bySlot.get(answer.slotId)!;
     slot.totalScore += answer.score;
     slot.totalQuestions += 1;
     if (answer.isCorrect) slot.correctCount += 1;
-
-    const startedAt = questionStartedAts.get(answer.questionIndex);
-    if (startedAt) {
-      const elapsed =
-        new Date(answer.answeredAt).getTime() - new Date(startedAt).getTime();
-      slot.totalElapsedMs += Math.max(0, elapsed);
-    } else {
-      // Fallback: use raw answeredAt timestamp for relative ordering
-      slot.totalElapsedMs += new Date(answer.answeredAt).getTime();
-    }
   }
 
-  // Sort: total score DESC, total elapsed time ASC (tie-break)
+  // Sort: total score DESC
   const sorted = [...bySlot.entries()].sort(([, a], [, b]) => {
-    if (b.totalScore !== a.totalScore) return b.totalScore - a.totalScore;
-    return a.totalElapsedMs - b.totalElapsedMs;
+    return b.totalScore - a.totalScore;
   });
 
   return sorted.map(([slotId, data], index) => ({

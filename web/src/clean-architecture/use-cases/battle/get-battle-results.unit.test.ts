@@ -105,31 +105,6 @@ describe("GetBattleResultsUseCase", () => {
     });
   });
 
-  it("handles tie-breaking by elapsed time", async () => {
-    const slots = [
-      new BattleRoomSlotEntity(1, 1, 0, "player", hostUserId, null, "2025-01-01T00:00:00Z"),
-      new BattleRoomSlotEntity(2, 1, 1, "player", "player-2", null, "2025-01-01T00:00:00Z"),
-    ];
-
-    const answers = [
-      // Both have same score but player-2 answered faster
-      new BattleGameAnswerEntity(1, 1, 1, 10, 0, 1, true, "2025-01-01T00:00:05.000Z", 500),
-      new BattleGameAnswerEntity(2, 1, 2, 10, 0, 2, true, "2025-01-01T00:00:03.000Z", 500),
-    ];
-
-    vi.mocked(mockRoomRepo.findBattleRoomByPublicId).mockResolvedValue(finishedRoom);
-    vi.mocked(mockSlotRepo.findSlotsByRoomId).mockResolvedValue(slots);
-    vi.mocked(mockAnswerRepo.findAnswersByRoomId).mockResolvedValue(answers);
-
-    const result = await useCase.execute({ roomPublicId });
-
-    // Player-2 ranks higher (faster)
-    expect(result.results[0].userId).toBe("player-2");
-    expect(result.results[0].rank).toBe(1);
-    expect(result.results[1].userId).toBe(hostUserId);
-    expect(result.results[1].rank).toBe(2);
-  });
-
   it("handles single player results", async () => {
     const slots = [
       new BattleRoomSlotEntity(1, 1, 0, "player", hostUserId, null, "2025-01-01T00:00:00Z"),

@@ -52,12 +52,12 @@ describe("simulateBotAnswer", () => {
     }
   });
 
-  it("caps delay at timeLimitSeconds * 1000 - 500 for short time limits", () => {
-    const shortTimeLimit = 2; // 2 seconds → cap at 1500ms
+  it("clamps delay to MIN_DELAY_MS for very short time limits", () => {
+    const shortTimeLimit = 2; // 2 seconds → candidateMax 1500 ≤ MIN_DELAY_MS
 
     for (let i = 0; i < 20; i++) {
       const result = simulateBotAnswer(options, shortTimeLimit);
-      expect(result.delayMs).toBeLessThanOrEqual(shortTimeLimit * 1000 - 500);
+      expect(result.delayMs).toBe(1500);
     }
   });
 

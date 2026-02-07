@@ -72,8 +72,6 @@ describe("calculateAnswerScore", () => {
 });
 
 describe("rankGameResults", () => {
-  const startedAt = "2025-01-01T00:00:00.000Z";
-
   function makeAnswer(
     slotId: number,
     questionIndex: number,
@@ -95,11 +93,6 @@ describe("rankGameResults", () => {
   }
 
   it("ranks players by total score descending", () => {
-    const questionStartedAts = new Map([
-      [0, startedAt],
-      [1, startedAt],
-    ]);
-
     const answers = [
       makeAnswer(1, 0, true, 800, "2025-01-01T00:00:02.000Z"),
       makeAnswer(1, 1, true, 600, "2025-01-01T00:00:04.000Z"),
@@ -107,7 +100,7 @@ describe("rankGameResults", () => {
       makeAnswer(2, 1, true, 400, "2025-01-01T00:00:06.000Z"),
     ];
 
-    const results = rankGameResults(answers, questionStartedAts);
+    const results = rankGameResults(answers);
 
     expect(results).toEqual([
       { slotId: 1, rank: 1, totalScore: 1400, correctCount: 2, totalQuestions: 2 },
@@ -115,30 +108,24 @@ describe("rankGameResults", () => {
     ]);
   });
 
-  it("breaks ties by total elapsed time (faster wins)", () => {
-    const questionStartedAts = new Map([
-      [0, "2025-01-01T00:00:00.000Z"],
-    ]);
-
+  it("assigns same rank order for tied scores", () => {
     const answers = [
-      // Same score but slot 2 answered faster
-      makeAnswer(1, 0, true, 500, "2025-01-01T00:00:05.000Z"), // 5s elapsed
-      makeAnswer(2, 0, true, 500, "2025-01-01T00:00:03.000Z"), // 3s elapsed
+      makeAnswer(1, 0, true, 500, "2025-01-01T00:00:05.000Z"),
+      makeAnswer(2, 0, true, 500, "2025-01-01T00:00:03.000Z"),
     ];
 
-    const results = rankGameResults(answers, questionStartedAts);
+    const results = rankGameResults(answers);
 
-    expect(results[0].slotId).toBe(2); // faster player ranks higher
-    expect(results[0].rank).toBe(1);
-    expect(results[1].slotId).toBe(1);
-    expect(results[1].rank).toBe(2);
+    expect(results).toHaveLength(2);
+    // Both have score 500 — order is stable but both get sequential ranks
+    expect(results[0].totalScore).toBe(500);
+    expect(results[1].totalScore).toBe(500);
   });
 
   it("handles single player", () => {
-    const questionStartedAts = new Map([[0, startedAt]]);
     const answers = [makeAnswer(1, 0, true, 700, "2025-01-01T00:00:03.000Z")];
 
-    const results = rankGameResults(answers, questionStartedAts);
+    const results = rankGameResults(answers);
 
     expect(results).toEqual([
       { slotId: 1, rank: 1, totalScore: 700, correctCount: 1, totalQuestions: 1 },
@@ -146,35 +133,26 @@ describe("rankGameResults", () => {
   });
 
   it("handles all zero scores", () => {
-    const questionStartedAts = new Map([[0, startedAt]]);
     const answers = [
       makeAnswer(1, 0, false, 0, "2025-01-01T00:00:05.000Z"),
       makeAnswer(2, 0, false, 0, "2025-01-01T00:00:03.000Z"),
     ];
 
-    const results = rankGameResults(answers, questionStartedAts);
+    const results = rankGameResults(answers);
 
-    // Both have 0 score; slot 2 answered faster so ranks higher
-    expect(results[0].slotId).toBe(2);
-    expect(results[0].rank).toBe(1);
-    expect(results[1].slotId).toBe(1);
-    expect(results[1].rank).toBe(2);
+    expect(results).toHaveLength(2);
+    expect(results[0].totalScore).toBe(0);
+    expect(results[1].totalScore).toBe(0);
   });
 
   it("counts correct answers accurately", () => {
-    const questionStartedAts = new Map([
-      [0, startedAt],
-      [1, startedAt],
-      [2, startedAt],
-    ]);
-
     const answers = [
       makeAnswer(1, 0, true, 800, "2025-01-01T00:00:02.000Z"),
       makeAnswer(1, 1, false, 0, "2025-01-01T00:00:05.000Z"),
       makeAnswer(1, 2, true, 600, "2025-01-01T00:00:04.000Z"),
     ];
 
-    const results = rankGameResults(answers, questionStartedAts);
+    const results = rankGameResults(answers);
 
     expect(results[0]).toEqual(
       expect.objectContaining({ correctCount: 2, totalQuestions: 3 })
@@ -182,7 +160,7 @@ describe("rankGameResults", () => {
   });
 
   it("returns empty array for no answers", () => {
-    const results = rankGameResults([], new Map());
+    const results = rankGameResults([]);
     expect(results).toEqual([]);
   });
 });

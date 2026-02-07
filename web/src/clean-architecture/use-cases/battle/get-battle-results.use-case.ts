@@ -46,16 +46,7 @@ export class GetBattleResultsUseCase {
       this.battleGameAnswerRepository.findAnswersByRoomId(room.id),
     ]);
 
-    // Build questionStartedAts map — we don't have per-question timestamps stored,
-    // so use a dummy start for ranking (elapsed times are already in answeredAt)
-    // For ranking, we only need relative elapsed times between players for the same question.
-    // Since all players answered the same question with the same startedAt, we use
-    // questionIndex 0 as base. The actual start times aren't stored per-question,
-    // but the ranking function computes elapsed from answeredAt - startedAt.
-    // We pass an empty map since elapsed is computed from answer timestamps directly.
-    const questionStartedAts = new Map<number, string>();
-
-    const ranked = rankGameResults(answers, questionStartedAts);
+    const ranked = rankGameResults(answers);
 
     // Build slot lookup
     const slotMap = new Map(slots.map((s) => [s.id, s]));
