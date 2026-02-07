@@ -17,9 +17,12 @@ export function simulateBotAnswer(
   let selectedOption: { id: number; isCorrect: boolean };
 
   if (picksCorrect) {
-    selectedOption = options.find((o) => o.isCorrect)!;
+    const correctOption = options.find((o) => o.isCorrect);
+    if (!correctOption) throw new Error("No correct option found");
+    selectedOption = correctOption;
   } else {
     const wrongOptions = options.filter((o) => !o.isCorrect);
+    if (wrongOptions.length === 0) throw new Error("No incorrect options found");
     selectedOption = wrongOptions[Math.floor(Math.random() * wrongOptions.length)];
   }
 
