@@ -1,0 +1,1 @@
+ALTER TABLE "battle_rooms" ALTER COLUMN "question_ids" SET DATA TYPE bigint[];

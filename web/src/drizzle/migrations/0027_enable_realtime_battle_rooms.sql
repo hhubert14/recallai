@@ -1,5 +1,5 @@
 -- =============================================================================
--- Enable Supabase Realtime for study_sets table
+-- Enable Supabase Realtime for battle_rooms table
 -- This allows clients to subscribe to INSERT, UPDATE, and DELETE events
 -- =============================================================================
 DO $$
@@ -10,8 +10,8 @@ BEGIN
          FROM pg_publication_tables
         WHERE pubname = 'supabase_realtime'
           AND schemaname = 'public'
-          AND tablename = 'study_sets'
+          AND tablename = 'battle_rooms'
      ) THEN
-    ALTER PUBLICATION supabase_realtime ADD TABLE public.study_sets;
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.battle_rooms;
   END IF;
 END $$;
