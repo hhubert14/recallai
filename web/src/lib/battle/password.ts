@@ -34,5 +34,9 @@ export async function verifyPassword(
       else resolve(derivedKey);
     });
   });
-  return timingSafeEqual(derivedKey, Buffer.from(hash, "hex"));
+  const hashBuffer = Buffer.from(hash, "hex");
+  if (derivedKey.length !== hashBuffer.length) {
+    return false;
+  }
+  return timingSafeEqual(derivedKey, hashBuffer);
 }

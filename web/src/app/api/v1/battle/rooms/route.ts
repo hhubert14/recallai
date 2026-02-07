@@ -20,7 +20,10 @@ export async function POST(request: NextRequest) {
       return jsendFail({ error: "Unauthorized" }, 401);
     }
 
-    const body = await request.json();
+    const body = await request.json().catch(() => null);
+    if (!body) {
+      return jsendFail({ error: "Invalid JSON body" }, 400);
+    }
     const {
       studySetPublicId,
       name,
