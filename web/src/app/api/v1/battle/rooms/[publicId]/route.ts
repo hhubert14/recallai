@@ -28,6 +28,14 @@ export async function GET(
 
     const { room, slots } = await useCase.execute(publicId);
 
+    const isMember =
+      room.hostUserId === user.id ||
+      slots.some((s) => s.slotType === "player" && s.userId === user.id);
+
+    if (!isMember) {
+      return jsendFail({ error: "Forbidden" }, 403);
+    }
+
     return jsendSuccess({
       room: {
         publicId: room.publicId,

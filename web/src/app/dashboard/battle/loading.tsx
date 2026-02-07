@@ -44,19 +44,19 @@ export default function Loading() {
           {[...Array(4)].map((_, i) => (
             <div
               key={i}
-              className="rounded-lg border border-border bg-card p-4 space-y-3"
+              className="rounded-lg border border-border bg-card p-4 space-y-3 animate-pulse"
               style={{ animationDelay: `${i * 80}ms` }}
             >
               <div className="space-y-2">
-                <div className="h-5 w-32 rounded bg-muted animate-pulse" />
-                <div className="h-4 w-24 rounded bg-muted animate-pulse" />
+                <div className="h-5 w-32 rounded bg-muted" />
+                <div className="h-4 w-24 rounded bg-muted" />
               </div>
               <div className="flex gap-4">
-                <div className="h-4 w-12 rounded bg-muted animate-pulse" />
-                <div className="h-4 w-10 rounded bg-muted animate-pulse" />
-                <div className="h-4 w-14 rounded bg-muted animate-pulse" />
+                <div className="h-4 w-12 rounded bg-muted" />
+                <div className="h-4 w-10 rounded bg-muted" />
+                <div className="h-4 w-14 rounded bg-muted" />
               </div>
-              <div className="h-8 w-16 rounded bg-muted animate-pulse self-end ml-auto" />
+              <div className="h-8 w-16 rounded bg-muted self-end ml-auto" />
             </div>
           ))}
         </div>

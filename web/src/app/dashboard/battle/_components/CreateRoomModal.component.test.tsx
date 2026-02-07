@@ -62,7 +62,7 @@ describe("CreateRoomModal", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("only shows study sets with 5+ questions", () => {
+  it("renders the study set select trigger", () => {
     render(
       <CreateRoomModal
         isOpen={true}
@@ -72,7 +72,6 @@ describe("CreateRoomModal", () => {
       />
     );
 
-    // Open the study set select
     const trigger = screen.getByRole("combobox", { name: /study set/i });
     expect(trigger).toBeInTheDocument();
   });

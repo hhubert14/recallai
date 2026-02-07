@@ -132,7 +132,10 @@ describe("useBattleLobby", () => {
       expect(result.current.isLoading).toBe(true);
 
       await act(async () => {
-        resolveRequest!({
+        if (!resolveRequest) {
+          throw new Error("resolveRequest not initialized in test");
+        }
+        resolveRequest({
           ok: true,
           json: () =>
             Promise.resolve({
@@ -148,7 +151,7 @@ describe("useBattleLobby", () => {
   });
 
   describe("joinRoom", () => {
-    it("posts to join endpoint and returns slot on success", async () => {
+    it("posts to join endpoint and returns true on success", async () => {
       global.fetch = vi.fn().mockResolvedValue({
         ok: true,
         json: () =>

@@ -39,8 +39,6 @@ export function CreateRoomModal({
   onSuccess,
   studySets,
 }: CreateRoomModalProps) {
-  const { createRoom, isLoading, error } = useBattleLobby();
-
   const [selectedStudySetPublicId, setSelectedStudySetPublicId] = useState("");
   const [roomName, setRoomName] = useState("");
   const [visibility, setVisibility] = useState<"public" | "private">("public");
@@ -48,6 +46,8 @@ export function CreateRoomModal({
   const [timeLimitSeconds, setTimeLimitSeconds] = useState("15");
   const [questionCount, setQuestionCount] = useState("10");
   const [formError, setFormError] = useState<string | null>(null);
+
+  const { createRoom, isLoading, error } = useBattleLobby();
 
   const eligibleStudySets = studySets.filter((s) => s.questionCount >= 5);
   const selectedStudySet = eligibleStudySets.find(

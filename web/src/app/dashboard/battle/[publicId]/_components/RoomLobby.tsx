@@ -28,7 +28,6 @@ export function RoomLobby({
     useBattleLobby();
 
   const [slots, setSlots] = useState<BattleSlot[]>(initialSlots);
-  const [startError, setStartError] = useState<string | null>(null);
 
   async function handleLeave() {
     const success = await leaveRoom(room.publicId);
@@ -59,12 +58,9 @@ export function RoomLobby({
   }
 
   async function handleStartGame() {
-    setStartError(null);
     const success = await startGame(room.publicId);
     if (success) {
       router.push(`/dashboard/battle/${room.publicId}/play`);
-    } else {
-      setStartError(error);
     }
   }
 
@@ -123,7 +119,7 @@ export function RoomLobby({
           onStartGame={handleStartGame}
           isStarting={false}
           disabled={isLoading}
-          startError={startError}
+          startError={error}
         />
       )}
     </div>

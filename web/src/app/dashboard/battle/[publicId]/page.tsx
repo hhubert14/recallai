@@ -38,8 +38,12 @@ export default async function BattleRoomPage({ params }: RoomPageProps) {
   let result;
   try {
     result = await useCase.execute(publicId);
-  } catch {
-    notFound();
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    if (message === "Battle room not found") {
+      notFound();
+    }
+    throw error;
   }
 
   const { room, slots } = result;

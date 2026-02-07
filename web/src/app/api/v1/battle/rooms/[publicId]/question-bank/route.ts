@@ -30,7 +30,15 @@ export async function GET(
       new DrizzleBattleRoomSlotRepository()
     );
 
-    const { room } = await getRoomUseCase.execute(publicId);
+    const { room, slots } = await getRoomUseCase.execute(publicId);
+
+    const isMember =
+      room.hostUserId === user.id ||
+      slots.some((s) => s.slotType === "player" && s.userId === user.id);
+
+    if (!isMember) {
+      return jsendFail({ error: "Forbidden" }, 403);
+    }
 
     const getItemsUseCase = new GetStudySetItemsUseCase(
       new DrizzleReviewableItemRepository(),
