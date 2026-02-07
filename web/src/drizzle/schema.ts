@@ -742,7 +742,7 @@ export const battleRooms = pgTable(
       withTimezone: true,
       mode: "string",
     }), // server-authoritative timer start
-    questionIds: integer("question_ids").array(), // ordered array of selected question IDs
+    questionIds: bigint("question_ids", { mode: "number" }).array(), // ordered array of selected question IDs
     createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
       .defaultNow()
       .notNull(),
