@@ -63,6 +63,10 @@ export class UpdateBattleRoomSlotUseCase {
     }
 
     // Build update params
+    const existingBotNames = slots
+      .filter((s) => s.slotType === "bot" && s.botName)
+      .map((s) => s.botName as string);
+
     const updateParams: {
       slotType: BattleRoomSlotType;
       userId: string | null;
@@ -70,7 +74,7 @@ export class UpdateBattleRoomSlotUseCase {
     } = {
       slotType,
       userId: null,
-      botName: slotType === "bot" ? generateBotName() : null,
+      botName: slotType === "bot" ? generateBotName(existingBotNames) : null,
     };
 
     const updatedSlot = await this.battleRoomSlotRepository.updateSlot(

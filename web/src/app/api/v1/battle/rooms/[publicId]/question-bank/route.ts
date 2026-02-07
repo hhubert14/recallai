@@ -2,12 +2,16 @@ import { NextRequest } from "next/server";
 import { getAuthenticatedUser } from "@/lib/auth-helpers";
 import { jsendSuccess, jsendFail, jsendError } from "@/lib/jsend";
 import { GetBattleRoomUseCase } from "@/clean-architecture/use-cases/battle/get-battle-room.use-case";
+import { GetStudySetItemsUseCase } from "@/clean-architecture/use-cases/study-set/get-study-set-items.use-case";
 import { DrizzleBattleRoomRepository } from "@/clean-architecture/infrastructure/repositories/battle-room.repository.drizzle";
 import { DrizzleBattleRoomSlotRepository } from "@/clean-architecture/infrastructure/repositories/battle-room-slot.repository.drizzle";
+import { DrizzleReviewableItemRepository } from "@/clean-architecture/infrastructure/repositories/reviewable-item.repository.drizzle";
+import { DrizzleFlashcardRepository } from "@/clean-architecture/infrastructure/repositories/flashcard.repository.drizzle";
+import { DrizzleQuestionRepository } from "@/clean-architecture/infrastructure/repositories/question.repository.drizzle";
 
 /**
- * GET /api/v1/battle/rooms/[publicId]
- * Get a battle room with its slots
+ * GET /api/v1/battle/rooms/[publicId]/question-bank
+ * Returns question texts (no answers) for the room's study set
  */
 export async function GET(
   _request: NextRequest,
@@ -21,12 +25,12 @@ export async function GET(
 
     const { publicId } = await params;
 
-    const useCase = new GetBattleRoomUseCase(
+    const getRoomUseCase = new GetBattleRoomUseCase(
       new DrizzleBattleRoomRepository(),
       new DrizzleBattleRoomSlotRepository()
     );
 
-    const { room, slots } = await useCase.execute(publicId);
+    const { room, slots } = await getRoomUseCase.execute(publicId);
 
     const isMember =
       room.hostUserId === user.id ||
@@ -36,24 +40,22 @@ export async function GET(
       return jsendFail({ error: "Forbidden" }, 403);
     }
 
-    return jsendSuccess({
-      room: {
-        publicId: room.publicId,
-        hostUserId: room.hostUserId,
-        name: room.name,
-        visibility: room.visibility,
-        status: room.status,
-        timeLimitSeconds: room.timeLimitSeconds,
-        questionCount: room.questionCount,
-        createdAt: room.createdAt,
-      },
-      slots: slots.map((s) => ({
-        slotIndex: s.slotIndex,
-        slotType: s.slotType,
-        userId: s.userId,
-        botName: s.botName,
-      })),
-    });
+    const getItemsUseCase = new GetStudySetItemsUseCase(
+      new DrizzleReviewableItemRepository(),
+      new DrizzleFlashcardRepository(),
+      new DrizzleQuestionRepository()
+    );
+
+    const { items } = await getItemsUseCase.execute(room.studySetId);
+
+    const questions = items
+      .filter((item) => item.itemType === "question")
+      .map((item) => ({
+        questionText: item.question.questionText,
+        options: item.question.options.map((o) => o.optionText),
+      }));
+
+    return jsendSuccess({ questions });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
 
@@ -61,7 +63,10 @@ export async function GET(
       return jsendFail({ error: message }, 404);
     }
 
-    console.error("GET /api/v1/battle/rooms/[publicId] error:", error);
+    console.error(
+      "GET /api/v1/battle/rooms/[publicId]/question-bank error:",
+      error
+    );
     return jsendError("Internal server error");
   }
 }

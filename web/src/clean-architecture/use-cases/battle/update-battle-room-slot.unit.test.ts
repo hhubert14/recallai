@@ -5,6 +5,8 @@ import { IBattleRoomSlotRepository } from "@/clean-architecture/domain/repositor
 import { BattleRoomEntity } from "@/clean-architecture/domain/entities/battle-room.entity";
 import { BattleRoomSlotEntity } from "@/clean-architecture/domain/entities/battle-room-slot.entity";
 
+import { generateBotName } from "@/lib/battle/bot-names";
+
 vi.mock("@/lib/battle/bot-names", () => ({
   generateBotName: vi.fn().mockReturnValue("Luna Bot"),
 }));
@@ -203,6 +205,26 @@ describe("UpdateBattleRoomSlotUseCase", () => {
     ).rejects.toThrow("Cannot modify the host slot");
 
     expect(mockSlotRepo.updateSlot).not.toHaveBeenCalled();
+  });
+
+  it("passes existing bot names to generateBotName for exclusion", async () => {
+    const updatedSlot = new BattleRoomSlotEntity(
+      2, 1, 1, "bot", null, "Luna Bot", "2025-01-01T00:00:00Z"
+    );
+
+    vi.mocked(mockRoomRepo.findBattleRoomByPublicId).mockResolvedValue(room);
+    vi.mocked(mockSlotRepo.findSlotsByRoomId).mockResolvedValue(slots);
+    vi.mocked(mockSlotRepo.updateSlot).mockResolvedValue(updatedSlot);
+
+    await useCase.execute({
+      userId: hostUserId,
+      roomPublicId,
+      slotIndex: 1,
+      slotType: "bot",
+    });
+
+    // slots[3] is a bot with "Alex Bot" — should be excluded
+    expect(generateBotName).toHaveBeenCalledWith(["Alex Bot"]);
   });
 
   it("throws error when trying to modify a slot occupied by a player", async () => {
