@@ -108,7 +108,8 @@ export async function POST(request: NextRequest) {
       return jsendFail({ error: message }, 400);
     }
 
-    return jsendError(message);
+    console.error("POST /api/v1/battle/rooms error:", error);
+    return jsendError("Internal server error");
   }
 }
 
@@ -143,7 +144,7 @@ export async function GET() {
       })),
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    return jsendError(message);
+    console.error("GET /api/v1/battle/rooms error:", error);
+    return jsendError("Internal server error");
   }
 }

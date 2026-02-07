@@ -53,6 +53,7 @@ export async function GET(
       return jsendFail({ error: message }, 404);
     }
 
-    return jsendError(message);
+    console.error("GET /api/v1/battle/rooms/[publicId] error:", error);
+    return jsendError("Internal server error");
   }
 }

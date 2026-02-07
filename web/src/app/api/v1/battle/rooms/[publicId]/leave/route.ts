@@ -45,6 +45,7 @@ export async function POST(
       return jsendFail({ error: message }, 400);
     }
 
-    return jsendError(message);
+    console.error("POST /api/v1/battle/rooms/[publicId]/leave error:", error);
+    return jsendError("Internal server error");
   }
 }

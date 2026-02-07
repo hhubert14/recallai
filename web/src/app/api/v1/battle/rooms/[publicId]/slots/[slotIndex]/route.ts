@@ -116,6 +116,7 @@ export async function PATCH(
       return jsendFail({ error: message }, 400);
     }
 
-    return jsendError(message);
+    console.error("PATCH /api/v1/battle/rooms/[publicId]/slots/[slotIndex] error:", error);
+    return jsendError("Internal server error");
   }
 }
