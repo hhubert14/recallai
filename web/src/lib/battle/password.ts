@@ -23,7 +23,11 @@ export async function verifyPassword(
   password: string,
   storedHash: string
 ): Promise<boolean> {
-  const [salt, hash] = storedHash.split(":");
+  const parts = storedHash.split(":");
+  if (parts.length !== 2) {
+    return false;
+  }
+  const [salt, hash] = parts;
   const derivedKey = await new Promise<Buffer>((resolve, reject) => {
     scrypt(password, salt, 64, (err, derivedKey) => {
       if (err) reject(err);
