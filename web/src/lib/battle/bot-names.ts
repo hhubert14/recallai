@@ -12,8 +12,10 @@ const BOT_NAMES = [
 ];
 
 /**
- * Generate a random bot name from a preset list.
+ * Generate a random bot name from a preset list, excluding names already in use.
  */
-export function generateBotName(): string {
-  return BOT_NAMES[Math.floor(Math.random() * BOT_NAMES.length)];
+export function generateBotName(exclude: string[] = []): string {
+  const available = BOT_NAMES.filter((name) => !exclude.includes(name));
+  const pool = available.length > 0 ? available : BOT_NAMES;
+  return pool[Math.floor(Math.random() * pool.length)];
 }

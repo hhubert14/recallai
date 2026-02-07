@@ -24,6 +24,7 @@ const navLinks = [
   { href: "/dashboard", label: "Dashboard", exact: true },
   { href: "/dashboard/library", label: "My Library" },
   { href: "/dashboard/review", label: "Review" },
+  { href: "/dashboard/battle", label: "Battle" },
 ];
 
 export function DashboardHeader() {

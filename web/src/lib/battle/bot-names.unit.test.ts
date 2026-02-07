@@ -29,4 +29,19 @@ describe("generateBotName", () => {
       expect(KNOWN_BOT_NAMES).toContain(name);
     }
   });
+
+  it("excludes names already in use", () => {
+    const exclude = ["Alex Bot", "Luna Bot", "Max Bot"];
+    for (let i = 0; i < 30; i++) {
+      const name = generateBotName(exclude);
+      expect(exclude).not.toContain(name);
+      expect(KNOWN_BOT_NAMES).toContain(name);
+    }
+  });
+
+  it("still returns a name when all names are excluded", () => {
+    const name = generateBotName(KNOWN_BOT_NAMES);
+    expect(typeof name).toBe("string");
+    expect(name).toMatch(/^\w+ Bot$/);
+  });
 });

@@ -109,7 +109,10 @@
       "Bash(git mv:*)",
       "Bash(npx next lint:*)",
       "WebFetch(domain:*)",
-      "Bash(node --version:*)"
+      "Bash(node --version:*)",
+      "mcp__chrome-devtools__click",
+      "mcp__chrome-devtools__take_screenshot",
+      "mcp__chrome-devtools__evaluate_script"
     ],
     "deny": [],
     "ask": []

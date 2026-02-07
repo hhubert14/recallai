@@ -326,8 +326,10 @@ npm run db:studio:test   # Open Drizzle Studio for test DB (port 4984)
 ### Dev Account Credentials
 
 For local development, use these credentials to sign in:
-- **Email:** `test@test.com`
-- **Password:** `password`
+- **Account 1:** `test@test.com` / `password`
+- **Account 2:** `test2@test.com` / `password`
+
+**Multi-account testing:** Use an Incognito window (`Ctrl+Shift+N`) for the second account, since localhost shares cookies across tabs.
 
 ### Local Services
 
