@@ -37,7 +37,8 @@ export interface IBattleRoomSlotRepository {
       slotType?: BattleRoomSlotType;
       userId?: string | null;
       botName?: string | null;
-    }
+    },
+    expectedSlotType?: BattleRoomSlotType
   ): Promise<BattleRoomSlotEntity | null>;
 
   /**

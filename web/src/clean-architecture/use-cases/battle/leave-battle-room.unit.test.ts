@@ -1,0 +1,95 @@
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { LeaveBattleRoomUseCase } from "./leave-battle-room.use-case";
+import { IBattleRoomRepository } from "@/clean-architecture/domain/repositories/battle-room.repository.interface";
+import { IBattleRoomSlotRepository } from "@/clean-architecture/domain/repositories/battle-room-slot.repository.interface";
+import { BattleRoomEntity } from "@/clean-architecture/domain/entities/battle-room.entity";
+import { BattleRoomSlotEntity } from "@/clean-architecture/domain/entities/battle-room-slot.entity";
+
+describe("LeaveBattleRoomUseCase", () => {
+  let useCase: LeaveBattleRoomUseCase;
+  let mockRoomRepo: IBattleRoomRepository;
+  let mockSlotRepo: IBattleRoomSlotRepository;
+
+  const hostUserId = "host-user";
+  const playerUserId = "player-user";
+  const roomPublicId = "pub-123";
+
+  const room = new BattleRoomEntity(
+    1, roomPublicId, hostUserId, 10, "My Room", "public", null,
+    "waiting", 15, 10, null, null, null,
+    "2025-01-01T00:00:00Z", "2025-01-01T00:00:00Z"
+  );
+
+  const slots = [
+    new BattleRoomSlotEntity(1, 1, 0, "player", hostUserId, null, "2025-01-01T00:00:00Z"),
+    new BattleRoomSlotEntity(2, 1, 1, "player", playerUserId, null, "2025-01-01T00:00:00Z"),
+    new BattleRoomSlotEntity(3, 1, 2, "empty", null, null, "2025-01-01T00:00:00Z"),
+    new BattleRoomSlotEntity(4, 1, 3, "bot", null, "Alex Bot", "2025-01-01T00:00:00Z"),
+  ];
+
+  beforeEach(() => {
+    mockRoomRepo = {
+      createBattleRoom: vi.fn(),
+      findBattleRoomById: vi.fn(),
+      findBattleRoomByPublicId: vi.fn(),
+      findBattleRoomsByStatus: vi.fn(),
+      findBattleRoomsByHostUserId: vi.fn(),
+      updateBattleRoom: vi.fn(),
+      deleteBattleRoom: vi.fn(),
+    };
+
+    mockSlotRepo = {
+      createBattleRoomSlotsBatch: vi.fn(),
+      findSlotsByRoomId: vi.fn(),
+      findSlotByUserId: vi.fn(),
+      updateSlot: vi.fn(),
+      deleteSlotsByRoomId: vi.fn(),
+    };
+
+    useCase = new LeaveBattleRoomUseCase(mockRoomRepo, mockSlotRepo);
+  });
+
+  it("deletes the room when the host leaves", async () => {
+    vi.mocked(mockRoomRepo.findBattleRoomByPublicId).mockResolvedValue(room);
+    vi.mocked(mockSlotRepo.findSlotsByRoomId).mockResolvedValue(slots);
+
+    await useCase.execute({ userId: hostUserId, roomPublicId });
+
+    expect(mockRoomRepo.deleteBattleRoom).toHaveBeenCalledWith(1);
+    expect(mockSlotRepo.updateSlot).not.toHaveBeenCalled();
+  });
+
+  it("clears the slot when a non-host player leaves", async () => {
+    vi.mocked(mockRoomRepo.findBattleRoomByPublicId).mockResolvedValue(room);
+    vi.mocked(mockSlotRepo.findSlotsByRoomId).mockResolvedValue(slots);
+
+    await useCase.execute({ userId: playerUserId, roomPublicId });
+
+    expect(mockSlotRepo.updateSlot).toHaveBeenCalledWith(2, {
+      slotType: "empty",
+      userId: null,
+      botName: null,
+    });
+    expect(mockRoomRepo.deleteBattleRoom).not.toHaveBeenCalled();
+  });
+
+  it("throws error when room is not found", async () => {
+    vi.mocked(mockRoomRepo.findBattleRoomByPublicId).mockResolvedValue(null);
+
+    await expect(
+      useCase.execute({ userId: hostUserId, roomPublicId })
+    ).rejects.toThrow("Battle room not found");
+  });
+
+  it("throws error when user is not in the room", async () => {
+    vi.mocked(mockRoomRepo.findBattleRoomByPublicId).mockResolvedValue(room);
+    vi.mocked(mockSlotRepo.findSlotsByRoomId).mockResolvedValue(slots);
+
+    await expect(
+      useCase.execute({ userId: "stranger-user", roomPublicId })
+    ).rejects.toThrow("User is not in this battle room");
+
+    expect(mockRoomRepo.deleteBattleRoom).not.toHaveBeenCalled();
+    expect(mockSlotRepo.updateSlot).not.toHaveBeenCalled();
+  });
+});

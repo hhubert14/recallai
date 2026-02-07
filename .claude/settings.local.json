@@ -108,7 +108,8 @@
       "Bash(npx supabase start)",
       "Bash(git mv:*)",
       "Bash(npx next lint:*)",
-      "WebFetch(domain:*)"
+      "WebFetch(domain:*)",
+      "Bash(node --version:*)"
     ],
     "deny": [],
     "ask": []

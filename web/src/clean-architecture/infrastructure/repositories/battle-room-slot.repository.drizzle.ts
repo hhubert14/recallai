@@ -6,7 +6,7 @@ import {
 import { db as defaultDb } from "@/drizzle";
 import { dbRetry } from "@/lib/db";
 import { battleRoomSlots } from "@/drizzle/schema";
-import { eq, asc } from "drizzle-orm";
+import { eq, asc, and } from "drizzle-orm";
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 export class DrizzleBattleRoomSlotRepository
@@ -69,7 +69,8 @@ export class DrizzleBattleRoomSlotRepository
       slotType?: BattleRoomSlotType;
       userId?: string | null;
       botName?: string | null;
-    }
+    },
+    expectedSlotType?: BattleRoomSlotType
   ): Promise<BattleRoomSlotEntity | null> {
     const updateData: Partial<typeof battleRoomSlots.$inferInsert> = {};
 
@@ -95,11 +96,16 @@ export class DrizzleBattleRoomSlotRepository
       return this.toEntity(data);
     }
 
+    const conditions = [eq(battleRoomSlots.id, id)];
+    if (expectedSlotType) {
+      conditions.push(eq(battleRoomSlots.slotType, expectedSlotType));
+    }
+
     const [data] = await dbRetry(() =>
       this.db
         .update(battleRoomSlots)
         .set(updateData)
-        .where(eq(battleRoomSlots.id, id))
+        .where(and(...conditions))
         .returning()
     );
 
