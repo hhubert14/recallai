@@ -513,6 +513,7 @@ return jsendError("Internal server error");      // Server error (500-599)
 - Use Drizzle-inferred types: `typeof tableName.$inferSelect`
 - Export types from `src/drizzle/schema.ts`
 - Prefer type-safe queries over raw SQL
+- **Never use non-null assertions (`!`).** Add an explicit guard (`if (!value) throw new Error(...)`) instead. This applies to nullable return values (e.g., `findById` → null check), nullable entity fields accessed after a logical check (e.g., guard `room.questionIds` before indexing), and repository update/create results.
 
 ### 8. Git Branch Naming
 
