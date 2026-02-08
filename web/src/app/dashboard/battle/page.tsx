@@ -9,6 +9,7 @@ import { DrizzleReviewableItemRepository } from "@/clean-architecture/infrastruc
 import { ListBattleRoomsUseCase } from "@/clean-architecture/use-cases/battle/list-battle-rooms.use-case";
 import { FindStudySetsByUserIdUseCase } from "@/clean-architecture/use-cases/study-set/find-study-sets-by-user-id.use-case";
 import { BattleLobbyClient } from "./_components/BattleLobbyClient";
+import { BattleRoomsRealtimeProvider } from "@/lib/battle-rooms-realtime-provider";
 import type { BattleRoomSummary, StudySetForBattle } from "./_components/types";
 
 export const metadata: Metadata = {
@@ -91,7 +92,9 @@ export default async function BattleLobbyPage() {
           </p>
         </div>
 
-        <BattleLobbyClient rooms={rooms} studySets={studySets} />
+        <BattleRoomsRealtimeProvider>
+          <BattleLobbyClient initialRooms={rooms} studySets={studySets} />
+        </BattleRoomsRealtimeProvider>
       </main>
     </div>
   );

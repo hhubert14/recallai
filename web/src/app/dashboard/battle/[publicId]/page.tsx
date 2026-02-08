@@ -9,6 +9,8 @@ import { GetBattleRoomUseCase } from "@/clean-architecture/use-cases/battle/get-
 import { RoomLobby } from "./_components/RoomLobby";
 import type { BattleRoomDetail, BattleSlot } from "../_components/types";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Battle Room | Retenio",
   description: "Battle room lobby",
