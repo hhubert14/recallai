@@ -1,29 +1,35 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, Shuffle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useBattleLobby } from "@/hooks/useBattleLobby";
+import { useBattleRoomsList } from "@/lib/battle-rooms-realtime-provider";
 import { RoomList } from "./RoomList";
 import { CreateRoomModal } from "./CreateRoomModal";
 import { PasswordDialog } from "./PasswordDialog";
 import type { BattleRoomSummary, StudySetForBattle } from "./types";
 
 interface BattleLobbyClientProps {
-  rooms: BattleRoomSummary[];
+  initialRooms: BattleRoomSummary[];
   studySets: StudySetForBattle[];
 }
 
 export function BattleLobbyClient({
-  rooms,
+  initialRooms,
   studySets,
 }: BattleLobbyClientProps) {
   const router = useRouter();
   const { joinRoom, isLoading, error } = useBattleLobby();
+  const { rooms, setInitialRooms } = useBattleRoomsList();
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [passwordRoom, setPasswordRoom] = useState<string | null>(null);
+
+  useEffect(() => {
+    setInitialRooms(initialRooms);
+  }, [initialRooms, setInitialRooms]);
 
   function handleJoinRoom(publicId: string) {
     const room = rooms.find((r) => r.publicId === publicId);

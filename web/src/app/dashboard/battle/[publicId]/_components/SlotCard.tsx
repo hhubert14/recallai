@@ -6,6 +6,7 @@ interface SlotCardProps {
   isHost: boolean;
   isCurrentUser: boolean;
   isSlotHost?: boolean;
+  isOnline?: boolean;
   onUpdateSlot?: (slotIndex: number, slotType: "bot" | "empty" | "locked") => void;
   onKickPlayer?: (slotIndex: number) => void;
 }
@@ -21,6 +22,7 @@ export function SlotCard({
   isHost,
   isCurrentUser,
   isSlotHost,
+  isOnline,
   onUpdateSlot,
   onKickPlayer,
 }: SlotCardProps) {
@@ -49,7 +51,12 @@ export function SlotCard({
 
       {slot.slotType === "player" && (
         <>
-          <User className="size-8 text-foreground" />
+          <div className="relative">
+            <User className="size-8 text-foreground" />
+            {isOnline && (
+              <span className="absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full bg-green-500 ring-2 ring-card" />
+            )}
+          </div>
           <div className="flex items-center gap-2">
             {isCurrentUser && (
               <span className="text-xs font-medium bg-primary text-primary-foreground px-2 py-0.5 rounded-full">
