@@ -326,6 +326,64 @@ describe("useBattleLobby", () => {
     });
   });
 
+  describe("closeRoom", () => {
+    it("posts to close endpoint and returns true on success", async () => {
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: () =>
+          Promise.resolve({ status: "success", data: {} }),
+      });
+
+      const { result } = renderHook(() => useBattleLobby());
+
+      let success: boolean = false;
+      await act(async () => {
+        success = await result.current.closeRoom("room-abc");
+      });
+
+      expect(success).toBe(true);
+      expect(global.fetch).toHaveBeenCalledWith(
+        "/api/v1/battle/rooms/room-abc/close",
+        { method: "POST" }
+      );
+    });
+
+    it("returns false and sets error on failure", async () => {
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: false,
+        json: () =>
+          Promise.resolve({
+            status: "fail",
+            data: { error: "Battle room not found" },
+          }),
+      });
+
+      const { result } = renderHook(() => useBattleLobby());
+
+      let success: boolean = true;
+      await act(async () => {
+        success = await result.current.closeRoom("room-abc");
+      });
+
+      expect(success).toBe(false);
+      expect(result.current.error).toBe("Battle room not found");
+    });
+
+    it("sets generic error when fetch throws", async () => {
+      global.fetch = vi.fn().mockRejectedValue(new Error("Network error"));
+
+      const { result } = renderHook(() => useBattleLobby());
+
+      let success: boolean = true;
+      await act(async () => {
+        success = await result.current.closeRoom("room-abc");
+      });
+
+      expect(success).toBe(false);
+      expect(result.current.error).toBe("An error occurred. Please try again.");
+    });
+  });
+
   describe("startGame", () => {
     it("posts to start endpoint and returns true on success", async () => {
       global.fetch = vi.fn().mockResolvedValue({

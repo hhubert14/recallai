@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useBattleLobby } from "@/hooks/useBattleLobby";
 import { useBattleRoomPresence } from "@/hooks/useBattleRoomPresence";
 import { useBattleRoomEvents } from "@/hooks/useBattleRoomEvents";
+import { useLobbyPresenceCleanup } from "@/hooks/useLobbyPresenceCleanup";
 import {
   createBattleRoomChannel,
   LOBBY_SLOT_UPDATES_CHANNEL,
@@ -46,7 +47,7 @@ export function RoomLobby({
   isHost,
 }: RoomLobbyProps) {
   const router = useRouter();
-  const { leaveRoom, updateSlot, kickPlayer, startGame, isLoading, error } =
+  const { leaveRoom, closeRoom, updateSlot, kickPlayer, startGame, isLoading, error } =
     useBattleLobby();
 
   const [slots, setSlots] = useState<BattleSlot[]>(initialSlots);
@@ -55,6 +56,13 @@ export function RoomLobby({
   useEffect(() => {
     setSlots(initialSlots);
   }, [initialSlots]);
+
+  // Force fresh server data on mount — back/forward navigation can serve
+  // stale Router Cache despite force-dynamic on the page
+  useEffect(() => {
+    router.refresh();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only on mount
+  }, []);
 
   const supabase = useMemo(() => createClient(), []);
   const [channel, setChannel] = useState<ReturnType<
@@ -147,6 +155,47 @@ export function RoomLobby({
       if (!isHost) {
         router.push(`/dashboard/battle/${room.publicId}/play`);
       }
+    },
+  });
+
+  // Auto-cleanup disconnected players
+  useLobbyPresenceCleanup({
+    onlineUsers,
+    slots,
+    hostUserId: room.hostUserId,
+    userId,
+    isHost,
+    publicId: room.publicId,
+    kickPlayer: (pubId, slotIndex) => kickPlayer(pubId, slotIndex),
+    closeRoom: (pubId) => closeRoom(pubId),
+    onPlayerKicked: async (slotIndex) => {
+      const clearedSlot: BattleSlot = {
+        slotIndex,
+        slotType: "empty",
+        userId: null,
+        botName: null,
+      };
+      const newSlots = slots.map((s) =>
+        s.slotIndex === slotIndex ? clearedSlot : s
+      );
+      setSlots(newSlots);
+      await sendEvent("slot_updated", clearedSlot);
+      await lobbyChannel?.send({
+        type: "broadcast",
+        event: "slot_summary_updated",
+        payload: {
+          publicId: room.publicId,
+          slotSummary: calculateSlotSummary(newSlots),
+        },
+      });
+    },
+    onRoomClosed: async () => {
+      await lobbyChannel?.send({
+        type: "broadcast",
+        event: "room_closed",
+        payload: { publicId: room.publicId },
+      });
+      router.push("/dashboard/battle");
     },
   });
 

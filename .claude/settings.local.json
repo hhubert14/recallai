@@ -112,7 +112,8 @@
       "Bash(node --version:*)",
       "mcp__chrome-devtools__click",
       "mcp__chrome-devtools__take_screenshot",
-      "mcp__chrome-devtools__evaluate_script"
+      "mcp__chrome-devtools__evaluate_script",
+      "Bash(FILEPATH=\"C:\\\\Users\\\\huang\\\\.claude\\\\projects\\\\C--Users-huang-repos-Personal-recallai\\\\dfc2e9dd-3e35-45a7-bb6a-a0538bf8ef04\\\\tool-results\\\\mcp-github-issue_read-1770580030440.txt\")"
     ],
     "deny": [],
     "ask": []
