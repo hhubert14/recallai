@@ -113,7 +113,7 @@ export function RoomLobby({
   }, [supabase]);
 
   // Presence tracking
-  const { onlineUsers } = useBattleRoomPresence(channel, userId);
+  const { onlineUsers } = useBattleRoomPresence(channel);
 
   // Broadcast event handlers
   const { sendEvent } = useBattleRoomEvents(channel, {

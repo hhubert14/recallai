@@ -11,8 +11,7 @@ function extractOnlineUsers(
 }
 
 export function useBattleRoomPresence(
-  channel: RealtimeChannel | null,
-  _userId: string
+  channel: RealtimeChannel | null
 ) {
   const [onlineUsers, setOnlineUsers] = useState<BattleRoomPresenceState[]>([]);
 

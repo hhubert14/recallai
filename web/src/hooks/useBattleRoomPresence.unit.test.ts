@@ -19,7 +19,7 @@ describe("useBattleRoomPresence", () => {
 
   it("returns empty onlineUsers when channel is null", () => {
     const { result } = renderHook(() =>
-      useBattleRoomPresence(null, "user-123")
+      useBattleRoomPresence(null)
     );
 
     expect(result.current.onlineUsers).toEqual([]);
@@ -27,7 +27,7 @@ describe("useBattleRoomPresence", () => {
 
   it("registers presence sync, join, and leave listeners", () => {
     renderHook(() =>
-      useBattleRoomPresence(mockChannel as never, "user-123")
+      useBattleRoomPresence(mockChannel as never)
     );
 
     expect(mockChannel.on).toHaveBeenCalledWith(
@@ -67,7 +67,7 @@ describe("useBattleRoomPresence", () => {
     );
 
     const { result } = renderHook(() =>
-      useBattleRoomPresence(mockChannel as never, "user-1")
+      useBattleRoomPresence(mockChannel as never)
     );
 
     expect(syncCallback).not.toBeNull();
@@ -90,16 +90,14 @@ describe("useBattleRoomPresence", () => {
   it("cleans up listeners when channel changes to null", () => {
     type HookProps = {
       channel: Parameters<typeof useBattleRoomPresence>[0];
-      userId: string;
     };
 
     const { rerender } = renderHook(
-      ({ channel, userId }: HookProps) =>
-        useBattleRoomPresence(channel, userId),
+      ({ channel }: HookProps) =>
+        useBattleRoomPresence(channel),
       {
         initialProps: {
           channel: mockChannel as unknown as HookProps["channel"],
-          userId: "user-123",
         },
       }
     );
@@ -108,7 +106,7 @@ describe("useBattleRoomPresence", () => {
     expect(mockChannel.on).toHaveBeenCalledTimes(3);
 
     // Change to null channel
-    rerender({ channel: null, userId: "user-123" });
+    rerender({ channel: null });
 
     // No crash, no additional registrations on null
   });
@@ -122,7 +120,7 @@ describe("useBattleRoomPresence", () => {
     mockChannel.presenceState.mockReturnValue(presenceState);
 
     const { result } = renderHook(() =>
-      useBattleRoomPresence(mockChannel as never, "user-1")
+      useBattleRoomPresence(mockChannel as never)
     );
 
     // Should have users immediately without needing a sync event
@@ -152,7 +150,7 @@ describe("useBattleRoomPresence", () => {
     );
 
     const { result } = renderHook(() =>
-      useBattleRoomPresence(mockChannel as never, "user-1")
+      useBattleRoomPresence(mockChannel as never)
     );
 
     act(() => {
