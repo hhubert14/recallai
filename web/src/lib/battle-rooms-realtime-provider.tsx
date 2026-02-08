@@ -13,6 +13,7 @@ import { createClient } from "./supabase/client";
 import {
   LOBBY_SLOT_UPDATES_CHANNEL,
   type LobbySlotSummaryPayload,
+  type LobbyRoomClosedPayload,
 } from "./battle-room-channel";
 import type { BattleRoomSummary } from "@/app/dashboard/battle/_components/types";
 
@@ -139,6 +140,14 @@ export function BattleRoomsRealtimeProvider({
     []
   );
 
+  const handleRoomClosed = useCallback(
+    (payload: { payload: LobbyRoomClosedPayload }) => {
+      const { publicId } = payload.payload;
+      setRooms((prev) => prev.filter((r) => r.publicId !== publicId));
+    },
+    []
+  );
+
   useEffect(() => {
     const channel = supabase
       .channel("battle_rooms_changes")
@@ -180,13 +189,14 @@ export function BattleRoomsRealtimeProvider({
     const lobbyChannel = supabase
       .channel(LOBBY_SLOT_UPDATES_CHANNEL)
       .on("broadcast", { event: "slot_summary_updated" }, handleSlotSummaryBroadcast)
+      .on("broadcast", { event: "room_closed" }, handleRoomClosed)
       .subscribe();
 
     return () => {
       supabase.removeChannel(channel);
       supabase.removeChannel(lobbyChannel);
     };
-  }, [supabase, handleInsert, handleUpdate, handleDelete, handleSlotSummaryBroadcast]);
+  }, [supabase, handleInsert, handleUpdate, handleDelete, handleSlotSummaryBroadcast, handleRoomClosed]);
 
   const value: BattleRoomsRealtimeContextType = {
     rooms,

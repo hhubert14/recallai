@@ -74,6 +74,10 @@ export interface LobbySlotSummaryPayload {
   };
 }
 
+export interface LobbyRoomClosedPayload {
+  publicId: string;
+}
+
 // --- Channel Factory ---
 
 export function createBattleRoomChannel(

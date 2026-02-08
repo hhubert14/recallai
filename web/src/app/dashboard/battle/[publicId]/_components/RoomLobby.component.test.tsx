@@ -6,9 +6,11 @@ import type { BattleRoomDetail, BattleSlot } from "../../_components/types";
 
 // Mock next/navigation
 const mockPush = vi.fn();
+const mockRefresh = vi.fn();
 vi.mock("next/navigation", () => ({
   useRouter: () => ({
     push: mockPush,
+    refresh: mockRefresh,
   }),
 }));
 
@@ -28,9 +30,12 @@ const mockKickPlayer = vi.fn().mockResolvedValue({
 });
 const mockStartGame = vi.fn().mockResolvedValue(true);
 
+const mockCloseRoom = vi.fn().mockResolvedValue(true);
+
 vi.mock("@/hooks/useBattleLobby", () => ({
   useBattleLobby: () => ({
     leaveRoom: mockLeaveRoom,
+    closeRoom: mockCloseRoom,
     updateSlot: mockUpdateSlot,
     kickPlayer: mockKickPlayer,
     startGame: mockStartGame,

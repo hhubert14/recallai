@@ -731,10 +731,12 @@ describe("BattleRoomsRealtimeProvider", () => {
         on: vi.fn().mockImplementation(
           (
             _type: string,
-            _filter: { event: string },
+            filter: { event: string },
             callback: (payload: { payload: Record<string, unknown> }) => void
           ) => {
-            broadcastCallback = callback;
+            if (filter.event === "slot_summary_updated") {
+              broadcastCallback = callback;
+            }
             return lobbyChannel;
           }
         ),
@@ -797,10 +799,12 @@ describe("BattleRoomsRealtimeProvider", () => {
         on: vi.fn().mockImplementation(
           (
             _type: string,
-            _filter: { event: string },
+            filter: { event: string },
             callback: (payload: { payload: Record<string, unknown> }) => void
           ) => {
-            broadcastCallback = callback;
+            if (filter.event === "slot_summary_updated") {
+              broadcastCallback = callback;
+            }
             return lobbyChannel;
           }
         ),

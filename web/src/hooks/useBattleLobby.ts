@@ -176,6 +176,32 @@ export function useBattleLobby() {
     }
   }
 
+  async function closeRoom(publicId: string): Promise<boolean> {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(
+        `/api/v1/battle/rooms/${publicId}/close`,
+        { method: "POST" }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok || data.status === "fail") {
+        setError(data.data?.error || "Failed to close room");
+        return false;
+      }
+
+      return true;
+    } catch {
+      setError("An error occurred. Please try again.");
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   async function startGame(publicId: string): Promise<boolean> {
     setIsLoading(true);
     setError(null);
@@ -208,6 +234,7 @@ export function useBattleLobby() {
     createRoom,
     joinRoom,
     leaveRoom,
+    closeRoom,
     updateSlot,
     kickPlayer,
     startGame,

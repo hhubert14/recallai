@@ -12,6 +12,8 @@ import { BattleLobbyClient } from "./_components/BattleLobbyClient";
 import { BattleRoomsRealtimeProvider } from "@/lib/battle-rooms-realtime-provider";
 import type { BattleRoomSummary, StudySetForBattle } from "./_components/types";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Battle | Retenio",
   description: "Compete with others in real-time quiz battles",
