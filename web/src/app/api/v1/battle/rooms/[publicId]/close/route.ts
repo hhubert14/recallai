@@ -8,8 +8,8 @@ import { db } from "@/drizzle";
 
 /**
  * POST /api/v1/battle/rooms/[publicId]/close
- * Close (delete) a battle room — used when the host disconnects and
- * a remaining player needs to clean up the room.
+ * Close (delete) a battle room — any player in the room can close it
+ * while the room is in waiting status.
  */
 export async function POST(
   _request: NextRequest,
