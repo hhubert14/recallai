@@ -92,6 +92,8 @@ export function useBattleGame({
   const currentQuestionIndexRef = useRef(
     initialQuestion ? initialQuestion.index : -1
   );
+  const scoresRef = useRef<Map<number, number>>(scores);
+  const revealingRef = useRef(false);
 
   // Find current user's slot index
   const mySlotIndex = slots.findIndex(
@@ -229,6 +231,7 @@ export function useBattleGame({
       startedAt: data.startedAt,
     });
     currentQuestionIndexRef.current = data.questionIndex;
+    revealingRef.current = false;
     setSelectedOptionId(null);
     setPlayersAnswered(new Set());
     setRevealData(null);
@@ -248,6 +251,7 @@ export function useBattleGame({
         const current = next.get(r.slotIndex) ?? 0;
         next.set(r.slotIndex, current + r.pointsAwarded);
       }
+      scoresRef.current = next;
       return next;
     });
   }
@@ -291,6 +295,9 @@ export function useBattleGame({
   }
 
   async function hostRevealAndMaybeAdvance() {
+    if (revealingRef.current) return;
+    revealingRef.current = true;
+
     const results = await callQuestionResults();
     if (!results) return;
 
@@ -324,13 +331,14 @@ export function useBattleGame({
   }
 
   function buildFinalStandings(): FinalResult[] {
-    // Get current scores (including the reveal we just processed)
-    const scoreEntries = [...scores.entries()];
+    // Read from scoresRef to avoid stale closure over scores state
+    const currentScores = scoresRef.current;
+    const scoreEntries = [...currentScores.entries()];
     // Also include any slots without scores (0 points)
     for (const slot of slots) {
       if (
         (slot.slotType === "player" || slot.slotType === "bot") &&
-        !scores.has(slot.slotIndex)
+        !currentScores.has(slot.slotIndex)
       ) {
         scoreEntries.push([slot.slotIndex, 0]);
       }
@@ -389,7 +397,7 @@ export function useBattleGame({
 
   // --- Host: auto-reveal when timer expires ---
   useEffect(() => {
-    if (!isHost || gamePhase !== "question_active" && gamePhase !== "answer_submitted") return;
+    if (!isHost || (gamePhase !== "question_active" && gamePhase !== "answer_submitted")) return;
 
     if (timeRemaining <= 0) {
       hostRevealAndMaybeAdvance();
@@ -480,6 +488,7 @@ export function useBattleGame({
   }
 
   function handleAnswerSubmitted(event: AnswerSubmittedEvent) {
+    if (event.questionIndex !== currentQuestionIndexRef.current) return;
     setPlayersAnswered((prev) => new Set([...prev, event.slotIndex]));
   }
 

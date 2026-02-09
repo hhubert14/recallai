@@ -200,6 +200,43 @@ describe("GetQuestionResultsUseCase", () => {
     ).rejects.toThrow("User is not a participant in this battle");
   });
 
+  it("throws when question index is out of bounds", async () => {
+    // Room has questionIds [10, 20, 30] but currentQuestionIndex is 5
+    const outOfBoundsRoom = new BattleRoomEntity(
+      1, roomPublicId, hostUserId, 1, "Test Room", "public", null,
+      "in_game", 15, 3, 5, startedAt, questionIds,
+      "2025-01-01T00:00:00Z", "2025-01-01T00:00:00Z"
+    );
+
+    vi.mocked(mockRoomRepo.findBattleRoomByPublicId).mockResolvedValue(outOfBoundsRoom);
+    vi.mocked(mockSlotRepo.findSlotByUserId).mockResolvedValue(slots[0]);
+
+    await expect(
+      useCase.execute({ userId: hostUserId, roomPublicId })
+    ).rejects.toThrow("Question index out of bounds");
+  });
+
+  it("skips answers with missing slots", async () => {
+    // Answer with slotId 999 doesn't match any slot
+    const answers = [
+      new BattleGameAnswerEntity(1, 1, 1, 10, 0, 2, true, "2025-01-01T00:00:03.000Z", 800),
+      new BattleGameAnswerEntity(2, 1, 999, 10, 0, 1, false, "2025-01-01T00:00:05.000Z", 0),
+    ];
+
+    vi.mocked(mockRoomRepo.findBattleRoomByPublicId).mockResolvedValue(inGameRoom);
+    vi.mocked(mockSlotRepo.findSlotByUserId).mockResolvedValue(slots[0]);
+    vi.mocked(mockSlotRepo.findSlotsByRoomId).mockResolvedValue(slots);
+    vi.mocked(mockQuestionRepo.findQuestionById).mockResolvedValue(question);
+    vi.mocked(mockAnswerRepo.findAnswersByRoomIdAndQuestionIndex).mockResolvedValue(answers);
+
+    const result = await useCase.execute({ userId: hostUserId, roomPublicId });
+
+    // Only the answer with a matching slot should be included
+    expect(result.results).toHaveLength(1);
+    expect(result.results[0].slotIndex).toBe(0);
+    expect(result.results[0].score).toBe(800);
+  });
+
   it("throws when no active question", async () => {
     const roomNoQuestion = new BattleRoomEntity(
       1, roomPublicId, hostUserId, 1, "Test Room", "public", null,

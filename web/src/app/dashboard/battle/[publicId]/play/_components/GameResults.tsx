@@ -77,7 +77,7 @@ export function GameResults({
                   rankStyle?.bg ?? "bg-muted border-muted"
                 )}
               >
-                <span className="text-lg font-bold">{result.totalPoints}</span>
+                <span className="text-lg font-bold">{result.totalPoints} pts</span>
               </div>
             </div>
           );

@@ -49,6 +49,8 @@ export class GetQuestionResultsUseCase {
       throw new Error("User is not a participant in this battle");
 
     const questionIndex = room.currentQuestionIndex;
+    if (questionIndex >= room.questionIds.length)
+      throw new Error("Question index out of bounds");
     const questionId = room.questionIds[questionIndex];
 
     // Parallel: get question, slots, and answers
@@ -69,17 +71,20 @@ export class GetQuestionResultsUseCase {
     // Build slot lookup by slotId
     const slotMap = new Map(slots.map((s) => [s.id, s]));
 
-    const results: QuestionResult[] = answers.map((answer) => {
-      const answerSlot = slotMap.get(answer.slotId);
-      return {
-        slotIndex: answerSlot?.slotIndex ?? 0,
-        userId: answerSlot?.userId ?? null,
-        botName: answerSlot?.botName ?? null,
-        selectedOptionId: answer.selectedOptionId,
-        isCorrect: answer.isCorrect,
-        score: answer.score,
-      };
-    });
+    const results: QuestionResult[] = answers
+      .map((answer) => {
+        const answerSlot = slotMap.get(answer.slotId);
+        if (!answerSlot) return null;
+        return {
+          slotIndex: answerSlot.slotIndex,
+          userId: answerSlot.userId ?? null,
+          botName: answerSlot.botName ?? null,
+          selectedOptionId: answer.selectedOptionId,
+          isCorrect: answer.isCorrect,
+          score: answer.score,
+        };
+      })
+      .filter((r): r is QuestionResult => r !== null);
 
     return {
       questionIndex,

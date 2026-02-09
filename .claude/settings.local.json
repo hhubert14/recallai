@@ -121,7 +121,9 @@
       "mcp__chrome-devtools__new_page",
       "mcp__chrome-devtools__close_page",
       "mcp__playwright__browser_network_requests",
-      "Bash(DOTENV_CONFIG_PATH=.env.local node:*)"
+      "Bash(DOTENV_CONFIG_PATH=.env.local node:*)",
+      "mcp__chrome-devtools__select_page",
+      "Bash(nslookup:*)"
     ],
     "deny": [],
     "ask": []

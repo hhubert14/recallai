@@ -50,8 +50,16 @@ export async function GET(
       return jsendFail({ error: message }, 403);
     }
     if (
+      message === "Question not found" ||
+      message === "Question index out of bounds"
+    ) {
+      return jsendFail({ error: message }, 404);
+    }
+    if (
       message === "Battle room is not in game" ||
-      message === "No active question"
+      message === "No active question" ||
+      message === "No correct option found" ||
+      message === "No questions assigned to room"
     ) {
       return jsendFail({ error: message }, 400);
     }
