@@ -299,7 +299,10 @@ export function useBattleGame({
     revealingRef.current = true;
 
     const results = await callQuestionResults();
-    if (!results) return;
+    if (!results) {
+      revealingRef.current = false;
+      return;
+    }
 
     transitionToReveal(results);
 
