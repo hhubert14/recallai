@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { Trophy, Medal, Bot, User, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -26,8 +25,6 @@ export function GameResults({
   userId,
   roomName,
 }: GameResultsProps) {
-  const router = useRouter();
-
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -137,8 +134,7 @@ export function GameResults({
       <div className="flex justify-center">
         <Button
           onClick={() => {
-            router.push("/dashboard/battle");
-            router.refresh();
+            window.location.href = "/dashboard/battle";
           }}
           variant="outline"
           size="lg"
