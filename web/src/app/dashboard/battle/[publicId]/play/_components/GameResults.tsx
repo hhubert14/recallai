@@ -136,7 +136,10 @@ export function GameResults({
       {/* Return to lobby */}
       <div className="flex justify-center">
         <Button
-          onClick={() => router.push("/dashboard/battle")}
+          onClick={() => {
+            router.push("/dashboard/battle");
+            router.refresh();
+          }}
           variant="outline"
           size="lg"
         >
