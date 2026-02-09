@@ -29,12 +29,14 @@ interface ClientStudySetListProps {
   studySets: StudySetWithCounts[];
   isViewingFolder?: boolean;
   onCreateStudySet?: () => void;
+  onAddVideo?: () => void;
 }
 
 export function ClientStudySetList({
   studySets,
   isViewingFolder = false,
   onCreateStudySet,
+  onAddVideo,
 }: ClientStudySetListProps) {
   const { ref, isInView } = useInView<HTMLDivElement>({ threshold: 0.1 });
   const router = useRouter();
@@ -76,6 +78,12 @@ export function ClientStudySetList({
                 <Button size="sm" onClick={onCreateStudySet}>
                   <Plus className="mr-1 h-4 w-4" />
                   Create Study Set
+                </Button>
+              )}
+              {onAddVideo && (
+                <Button variant="outline" size="sm" onClick={onAddVideo}>
+                  <Plus className="mr-1 h-4 w-4" />
+                  Add Video
                 </Button>
               )}
               <Button asChild variant="outline" size="sm" className="group">

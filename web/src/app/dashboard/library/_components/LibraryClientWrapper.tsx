@@ -395,6 +395,7 @@ export function LibraryClientWrapper({
             studySets={filteredAndSortedStudySets}
             isViewingFolder={isViewingFolder}
             onCreateStudySet={() => setIsCreateStudySetModalOpen(true)}
+            onAddVideo={() => setIsAddVideoModalOpen(true)}
           />
         )}
       </div>

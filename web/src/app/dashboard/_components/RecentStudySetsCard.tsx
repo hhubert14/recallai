@@ -110,19 +110,27 @@ export function RecentStudySetsCard({
             <BookOpen className="w-6 h-6 text-primary" />
           </div>
           <p className="text-sm text-muted-foreground mb-4">
-            No study sets yet. Install the Chrome extension and start watching
-            YouTube to build your library.
+            No study sets yet. Create your own or install the Chrome extension
+            to generate study sets from YouTube videos.
           </p>
-          <Button asChild variant="outline" size="sm" className="group">
-            <a
-              href="https://chromewebstore.google.com/detail/recallai/dciecdpjkhhagindacahojeiaeecblaa"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Get Chrome Extension
-              <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </a>
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-2 justify-center">
+            <Button asChild size="sm">
+              <Link href="/dashboard/library">
+                <Library className="mr-1 h-4 w-4" />
+                Go to Library
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="sm" className="group">
+              <a
+                href="https://chromewebstore.google.com/detail/recallai/dciecdpjkhhagindacahojeiaeecblaa"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Get Chrome Extension
+                <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </a>
+            </Button>
+          </div>
         </div>
       )}
 
