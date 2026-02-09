@@ -92,6 +92,9 @@ export default async function BattleLobbyPage() {
           <p className="text-lg text-muted-foreground">
             Compete with others in real-time quiz battles.
           </p>
+          <p className="text-sm text-muted-foreground mt-1">
+            Only multiple choice questions are supported right now.
+          </p>
         </div>
 
         <BattleRoomsRealtimeProvider>
