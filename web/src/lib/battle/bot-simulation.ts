@@ -5,8 +5,8 @@ export interface BotAnswer {
 }
 
 const BOT_ACCURACY = 0.78;
-const MIN_DELAY_MS = 1500;
-const MAX_DELAY_MS = 4000;
+const MIN_DELAY_MS = 2500;
+const MAX_DELAY_MS = 7500;
 
 export function simulateBotAnswer(
   options: { id: number; isCorrect: boolean }[],

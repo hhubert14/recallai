@@ -44,20 +44,20 @@ describe("simulateBotAnswer", () => {
     expect(result.isCorrect).toBe(false);
   });
 
-  it("returns delay within 1500-4000ms range", () => {
+  it("returns delay within 2500-7500ms range", () => {
     for (let i = 0; i < 20; i++) {
       const result = simulateBotAnswer(options, timeLimitSeconds);
-      expect(result.delayMs).toBeGreaterThanOrEqual(1500);
-      expect(result.delayMs).toBeLessThanOrEqual(4000);
+      expect(result.delayMs).toBeGreaterThanOrEqual(2500);
+      expect(result.delayMs).toBeLessThanOrEqual(7500);
     }
   });
 
   it("clamps delay to MIN_DELAY_MS for very short time limits", () => {
-    const shortTimeLimit = 2; // 2 seconds → candidateMax 1500 ≤ MIN_DELAY_MS
+    const shortTimeLimit = 3; // 3 seconds → candidateMax 2500 ≤ MIN_DELAY_MS
 
     for (let i = 0; i < 20; i++) {
       const result = simulateBotAnswer(options, shortTimeLimit);
-      expect(result.delayMs).toBe(1500);
+      expect(result.delayMs).toBe(2500);
     }
   });
 
