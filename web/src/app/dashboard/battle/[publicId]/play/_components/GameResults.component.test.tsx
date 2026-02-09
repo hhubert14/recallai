@@ -103,8 +103,9 @@ describe("GameResults", () => {
       />
     );
 
-    expect(screen.getByText("1600 pts")).toBeInTheDocument();
-    expect(screen.getByText("800 pts")).toBeInTheDocument();
-    expect(screen.getByText("200 pts")).toBeInTheDocument();
+    // Scores appear in both podium and rankings
+    expect(screen.getAllByText("1600 pts")).toHaveLength(2);
+    expect(screen.getAllByText("800 pts")).toHaveLength(2);
+    expect(screen.getAllByText("200 pts")).toHaveLength(2);
   });
 });
