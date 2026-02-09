@@ -59,12 +59,12 @@ export default async function DashboardPage() {
           {/* Review Hero Card */}
           <ReviewHeroCard itemsDue={reviewStats.dueCount} />
 
-          {/* Quick Stats Row */}
-          <QuickStatsRow
+          {/* Quick Stats Row - commented out until stats are meaningful */}
+          {/* <QuickStatsRow
             totalVideos={userStats.totalVideos}
             itemsMastered={reviewStats.boxDistribution[4] ?? 0}
             quizAccuracy={userStats.quizAccuracy}
-          />
+          /> */}
 
           {/* What's New + Recent Study Sets */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
