@@ -3,11 +3,12 @@ import { getAuthenticatedUser } from "@/lib/auth-helpers";
 import { jsendSuccess, jsendFail, jsendError } from "@/lib/jsend";
 import { FinishBattleGameUseCase } from "@/clean-architecture/use-cases/battle/finish-battle-game.use-case";
 import { DrizzleBattleRoomRepository } from "@/clean-architecture/infrastructure/repositories/battle-room.repository.drizzle";
+import { DrizzleBattleRoomSlotRepository } from "@/clean-architecture/infrastructure/repositories/battle-room-slot.repository.drizzle";
 import { db } from "@/drizzle";
 
 /**
  * POST /api/v1/battle/rooms/[publicId]/finish
- * Finish a battle game (host only)
+ * Finish a battle game (any participant)
  */
 export async function POST(
   _request: NextRequest,
@@ -23,7 +24,8 @@ export async function POST(
 
     const room = await db.transaction(async (tx) => {
       const useCase = new FinishBattleGameUseCase(
-        new DrizzleBattleRoomRepository(tx)
+        new DrizzleBattleRoomRepository(tx),
+        new DrizzleBattleRoomSlotRepository(tx)
       );
 
       return useCase.execute({
@@ -44,7 +46,7 @@ export async function POST(
     if (message === "Battle room not found") {
       return jsendFail({ error: message }, 404);
     }
-    if (message === "Only the host can finish the game") {
+    if (message === "User is not a participant in this battle") {
       return jsendFail({ error: message }, 403);
     }
     if (message === "Battle room is not in game") {

@@ -10,7 +10,7 @@ import { db } from "@/drizzle";
 
 /**
  * POST /api/v1/battle/rooms/[publicId]/bot-answers
- * Simulate bot answers for the current question (host only)
+ * Simulate bot answers for the current question (any participant)
  */
 export async function POST(
   _request: NextRequest,
@@ -47,7 +47,7 @@ export async function POST(
     if (message === "Battle room not found") {
       return jsendFail({ error: message }, 404);
     }
-    if (message === "Only the host can simulate bot answers") {
+    if (message === "User is not a participant in this battle") {
       return jsendFail({ error: message }, 403);
     }
     if (

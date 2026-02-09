@@ -202,29 +202,38 @@ export function RoomLobby({
   async function handleLeave() {
     const success = await leaveRoom(room.publicId);
     if (success) {
-      // Broadcast the slot change so other clients see the player left
-      const mySlot = slots.find((s) => s.userId === userId);
-      if (mySlot) {
-        await sendEvent("slot_updated", {
-          slotIndex: mySlot.slotIndex,
-          slotType: "empty",
-          userId: null,
-          botName: null,
-        });
+      if (isHost) {
+        // Host leaving deletes the room — notify lobby to remove the card
         await lobbyChannel?.send({
           type: "broadcast",
-          event: "slot_summary_updated",
-          payload: {
-            publicId: room.publicId,
-            slotSummary: calculateSlotSummary(
-              slots.map((s) =>
-                s.slotIndex === mySlot.slotIndex
-                  ? { ...s, slotType: "empty" as const, userId: null, botName: null }
-                  : s
-              )
-            ),
-          },
+          event: "room_closed",
+          payload: { publicId: room.publicId },
         });
+      } else {
+        // Non-host leaving — broadcast slot change so other clients update
+        const mySlot = slots.find((s) => s.userId === userId);
+        if (mySlot) {
+          await sendEvent("slot_updated", {
+            slotIndex: mySlot.slotIndex,
+            slotType: "empty",
+            userId: null,
+            botName: null,
+          });
+          await lobbyChannel?.send({
+            type: "broadcast",
+            event: "slot_summary_updated",
+            payload: {
+              publicId: room.publicId,
+              slotSummary: calculateSlotSummary(
+                slots.map((s) =>
+                  s.slotIndex === mySlot.slotIndex
+                    ? { ...s, slotType: "empty" as const, userId: null, botName: null }
+                    : s
+                )
+              ),
+            },
+          });
+        }
       }
       router.push("/dashboard/battle");
     }

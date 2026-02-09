@@ -29,6 +29,14 @@ export interface IBattleGameAnswerRepository {
   ): Promise<BattleGameAnswerEntity[]>;
 
   /**
+   * Find all answers for a specific question in a room, ordered by slotId.
+   */
+  findAnswersByRoomIdAndQuestionIndex(
+    roomId: number,
+    questionIndex: number
+  ): Promise<BattleGameAnswerEntity[]>;
+
+  /**
    * Count how many answers have been submitted for a specific question in a room.
    */
   countAnswersByRoomIdAndQuestionIndex(

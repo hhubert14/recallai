@@ -88,20 +88,20 @@ describe("battle-room-channel", () => {
 
     it("AnswerSubmittedEvent has correct shape", () => {
       const event: AnswerSubmittedEvent = {
-        userId: "user-123",
+        slotIndex: 0,
         questionIndex: 0,
       };
-      expect(event.userId).toBe("user-123");
+      expect(event.slotIndex).toBe(0);
     });
 
     it("QuestionRevealEvent has correct shape", () => {
       const event: QuestionRevealEvent = {
         questionIndex: 0,
-        correctOptionIndex: 2,
+        correctOptionId: 2,
         results: [
           {
-            userId: "user-123",
-            selectedOptionIndex: 2,
+            slotIndex: 0,
+            selectedOptionId: 2,
             isCorrect: true,
             pointsAwarded: 100,
           },
@@ -113,7 +113,7 @@ describe("battle-room-channel", () => {
     it("GameFinishedEvent has correct shape", () => {
       const event: GameFinishedEvent = {
         finalStandings: [
-          { userId: "user-123", totalPoints: 500, rank: 1 },
+          { slotIndex: 0, totalPoints: 500, rank: 1 },
         ],
       };
       expect(event.finalStandings).toHaveLength(1);

@@ -24,6 +24,10 @@ describe("SimulateBotAnswersUseCase", () => {
   const questionIds = [10, 20, 30];
   const startedAt = "2025-01-01T00:00:00.000Z";
 
+  const hostSlot = new BattleRoomSlotEntity(
+    1, 1, 0, "player", hostUserId, null, "2025-01-01T00:00:00Z"
+  );
+
   const inGameRoom = new BattleRoomEntity(
     1, roomPublicId, hostUserId, 1, "Test Room", "public", null,
     "in_game", 15, 3, 0, startedAt, questionIds,
@@ -62,6 +66,7 @@ describe("SimulateBotAnswersUseCase", () => {
       createBattleGameAnswer: vi.fn(),
       findAnswersByRoomId: vi.fn(),
       findAnswersBySlotIdAndRoomId: vi.fn(),
+      findAnswersByRoomIdAndQuestionIndex: vi.fn(),
       countAnswersByRoomIdAndQuestionIndex: vi.fn(),
     };
 
@@ -96,6 +101,7 @@ describe("SimulateBotAnswersUseCase", () => {
     );
 
     vi.mocked(mockRoomRepo.findBattleRoomByPublicId).mockResolvedValue(inGameRoom);
+    vi.mocked(mockSlotRepo.findSlotByUserId).mockResolvedValue(hostSlot);
     vi.mocked(mockSlotRepo.findSlotsByRoomId).mockResolvedValue(slots);
     vi.mocked(mockQuestionRepo.findQuestionById).mockResolvedValue(question);
     vi.mocked(mockAnswerRepo.createBattleGameAnswer).mockResolvedValue(answer);
@@ -120,6 +126,7 @@ describe("SimulateBotAnswersUseCase", () => {
     );
 
     vi.mocked(mockRoomRepo.findBattleRoomByPublicId).mockResolvedValue(inGameRoom);
+    vi.mocked(mockSlotRepo.findSlotByUserId).mockResolvedValue(hostSlot);
     vi.mocked(mockSlotRepo.findSlotsByRoomId).mockResolvedValue(slots);
     vi.mocked(mockQuestionRepo.findQuestionById).mockResolvedValue(question);
     vi.mocked(mockAnswerRepo.createBattleGameAnswer).mockResolvedValue(answer);
@@ -139,6 +146,7 @@ describe("SimulateBotAnswersUseCase", () => {
     ];
 
     vi.mocked(mockRoomRepo.findBattleRoomByPublicId).mockResolvedValue(inGameRoom);
+    vi.mocked(mockSlotRepo.findSlotByUserId).mockResolvedValue(hostSlot);
     vi.mocked(mockSlotRepo.findSlotsByRoomId).mockResolvedValue(slots);
     vi.mocked(mockQuestionRepo.findQuestionById).mockResolvedValue(question);
 
@@ -155,6 +163,7 @@ describe("SimulateBotAnswersUseCase", () => {
     ];
 
     vi.mocked(mockRoomRepo.findBattleRoomByPublicId).mockResolvedValue(inGameRoom);
+    vi.mocked(mockSlotRepo.findSlotByUserId).mockResolvedValue(hostSlot);
     vi.mocked(mockSlotRepo.findSlotsByRoomId).mockResolvedValue(slots);
     vi.mocked(mockQuestionRepo.findQuestionById).mockResolvedValue(question);
     vi.mocked(mockAnswerRepo.createBattleGameAnswer).mockRejectedValue(
@@ -167,12 +176,13 @@ describe("SimulateBotAnswersUseCase", () => {
     expect(result.botAnswers).toEqual([]);
   });
 
-  it("throws error when user is not the host", async () => {
+  it("throws error when user is not a participant", async () => {
     vi.mocked(mockRoomRepo.findBattleRoomByPublicId).mockResolvedValue(inGameRoom);
+    vi.mocked(mockSlotRepo.findSlotByUserId).mockResolvedValue(null);
 
     await expect(
       useCase.execute({ userId: "other-user", roomPublicId })
-    ).rejects.toThrow("Only the host can simulate bot answers");
+    ).rejects.toThrow("User is not a participant in this battle");
   });
 
   it("throws error when room is not found", async () => {
@@ -205,6 +215,7 @@ describe("SimulateBotAnswersUseCase", () => {
     );
 
     vi.mocked(mockRoomRepo.findBattleRoomByPublicId).mockResolvedValue(roomNoQuestion);
+    vi.mocked(mockSlotRepo.findSlotByUserId).mockResolvedValue(hostSlot);
 
     await expect(
       useCase.execute({ userId: hostUserId, roomPublicId })

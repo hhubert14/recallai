@@ -48,6 +48,7 @@ describe("GetBattleResultsUseCase", () => {
       createBattleGameAnswer: vi.fn(),
       findAnswersByRoomId: vi.fn(),
       findAnswersBySlotIdAndRoomId: vi.fn(),
+      findAnswersByRoomIdAndQuestionIndex: vi.fn(),
       countAnswersByRoomIdAndQuestionIndex: vi.fn(),
     };
 

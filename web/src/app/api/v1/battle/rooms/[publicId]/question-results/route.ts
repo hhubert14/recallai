@@ -1,17 +1,17 @@
 import { NextRequest } from "next/server";
 import { getAuthenticatedUser } from "@/lib/auth-helpers";
 import { jsendSuccess, jsendFail, jsendError } from "@/lib/jsend";
-import { AdvanceQuestionUseCase } from "@/clean-architecture/use-cases/battle/advance-question.use-case";
+import { GetQuestionResultsUseCase } from "@/clean-architecture/use-cases/battle/get-question-results.use-case";
 import { DrizzleBattleRoomRepository } from "@/clean-architecture/infrastructure/repositories/battle-room.repository.drizzle";
 import { DrizzleBattleRoomSlotRepository } from "@/clean-architecture/infrastructure/repositories/battle-room-slot.repository.drizzle";
+import { DrizzleBattleGameAnswerRepository } from "@/clean-architecture/infrastructure/repositories/battle-game-answer.repository.drizzle";
 import { DrizzleQuestionRepository } from "@/clean-architecture/infrastructure/repositories/question.repository.drizzle";
-import { db } from "@/drizzle";
 
 /**
- * POST /api/v1/battle/rooms/[publicId]/advance
- * Advance to the next question (any participant)
+ * GET /api/v1/battle/rooms/[publicId]/question-results
+ * Get results for the current question (any participant)
  */
-export async function POST(
+export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ publicId: string }> }
 ) {
@@ -23,25 +23,22 @@ export async function POST(
 
     const { publicId } = await params;
 
-    const result = await db.transaction(async (tx) => {
-      const useCase = new AdvanceQuestionUseCase(
-        new DrizzleBattleRoomRepository(tx),
-        new DrizzleBattleRoomSlotRepository(tx),
-        new DrizzleQuestionRepository(tx)
-      );
+    const useCase = new GetQuestionResultsUseCase(
+      new DrizzleBattleRoomRepository(),
+      new DrizzleBattleRoomSlotRepository(),
+      new DrizzleBattleGameAnswerRepository(),
+      new DrizzleQuestionRepository()
+    );
 
-      return useCase.execute({
-        userId: user.id,
-        roomPublicId: publicId,
-      });
+    const result = await useCase.execute({
+      userId: user.id,
+      roomPublicId: publicId,
     });
 
     return jsendSuccess({
       questionIndex: result.questionIndex,
-      questionId: result.questionId,
-      questionText: result.questionText,
-      options: result.options,
-      currentQuestionStartedAt: result.currentQuestionStartedAt,
+      correctOptionId: result.correctOptionId,
+      results: result.results,
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
@@ -54,12 +51,15 @@ export async function POST(
     }
     if (
       message === "Battle room is not in game" ||
-      message === "No more questions"
+      message === "No active question"
     ) {
       return jsendFail({ error: message }, 400);
     }
 
-    console.error("POST /api/v1/battle/rooms/[publicId]/advance error:", error);
+    console.error(
+      "GET /api/v1/battle/rooms/[publicId]/question-results error:",
+      error
+    );
     return jsendError("Internal server error");
   }
 }
