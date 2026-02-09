@@ -73,6 +73,26 @@ export class DrizzleBattleGameAnswerRepository
     return data.map((answer) => this.toEntity(answer));
   }
 
+  async findAnswersByRoomIdAndQuestionIndex(
+    roomId: number,
+    questionIndex: number
+  ): Promise<BattleGameAnswerEntity[]> {
+    const data = await dbRetry(() =>
+      this.db
+        .select()
+        .from(battleGameAnswers)
+        .where(
+          and(
+            eq(battleGameAnswers.roomId, roomId),
+            eq(battleGameAnswers.questionIndex, questionIndex)
+          )
+        )
+        .orderBy(asc(battleGameAnswers.slotId))
+    );
+
+    return data.map((answer) => this.toEntity(answer));
+  }
+
   async countAnswersByRoomIdAndQuestionIndex(
     roomId: number,
     questionIndex: number

@@ -53,6 +53,13 @@ export type {
 export { FinishBattleGameUseCase } from "./finish-battle-game.use-case";
 export type { FinishBattleGameInput } from "./finish-battle-game.use-case";
 
+export { GetQuestionResultsUseCase } from "./get-question-results.use-case";
+export type {
+  GetQuestionResultsInput,
+  QuestionResult,
+  GetQuestionResultsResult,
+} from "./get-question-results.use-case";
+
 export { GetBattleResultsUseCase } from "./get-battle-results.use-case";
 export type {
   GetBattleResultsInput,

@@ -202,16 +202,95 @@ describe("CreateBattleRoomUseCase", () => {
     expect(mockRoomRepo.createBattleRoom).not.toHaveBeenCalled();
   });
 
-  it("throws error when user is already in a battle room", async () => {
-    vi.mocked(mockSlotRepo.findSlotByUserId).mockResolvedValue(
-      new BattleRoomSlotEntity(1, 1, 0, "player", userId, null, "2025-01-01T00:00:00Z")
+  it("throws error when user is already in an active battle room", async () => {
+    const activeRoom = new BattleRoomEntity(
+      5, "pub-active", "host-user", 1, "Active Room", "public", null,
+      "waiting", 15, 10, null, null, null,
+      "2025-01-01T00:00:00Z", "2025-01-01T00:00:00Z"
     );
+
+    vi.mocked(mockSlotRepo.findSlotByUserId).mockResolvedValue(
+      new BattleRoomSlotEntity(1, 5, 0, "player", userId, null, "2025-01-01T00:00:00Z")
+    );
+    vi.mocked(mockRoomRepo.findBattleRoomById).mockResolvedValue(activeRoom);
 
     await expect(useCase.execute(validInput)).rejects.toThrow(
       "User is already in a battle room"
     );
 
     expect(mockRoomRepo.createBattleRoom).not.toHaveBeenCalled();
+  });
+
+  it("cleans up stale slot from a finished room and proceeds", async () => {
+    const finishedRoom = new BattleRoomEntity(
+      5, "pub-old", userId, 1, "Old Room", "public", null,
+      "finished", 15, 10, null, null, null,
+      "2025-01-01T00:00:00Z", "2025-01-01T00:00:00Z"
+    );
+
+    const staleSlot = new BattleRoomSlotEntity(
+      10, 5, 0, "player", userId, null, "2025-01-01T00:00:00Z"
+    );
+
+    const newRoom = new BattleRoomEntity(
+      6, "pub-new", userId, 1, "My Battle Room", "public", null,
+      "waiting", 15, 10, null, null, null,
+      "2025-01-01T00:00:00Z", "2025-01-01T00:00:00Z"
+    );
+
+    const newSlots = [
+      new BattleRoomSlotEntity(11, 6, 0, "player", userId, null, "2025-01-01T00:00:00Z"),
+      new BattleRoomSlotEntity(12, 6, 1, "locked", null, null, "2025-01-01T00:00:00Z"),
+      new BattleRoomSlotEntity(13, 6, 2, "locked", null, null, "2025-01-01T00:00:00Z"),
+      new BattleRoomSlotEntity(14, 6, 3, "locked", null, null, "2025-01-01T00:00:00Z"),
+    ];
+
+    vi.mocked(mockSlotRepo.findSlotByUserId).mockResolvedValue(staleSlot);
+    vi.mocked(mockRoomRepo.findBattleRoomById).mockResolvedValue(finishedRoom);
+    vi.mocked(mockStudySetRepo.findStudySetByPublicId).mockResolvedValue(studySet);
+    vi.mocked(mockReviewableItemRepo.countItemsByStudySetIdsBatch).mockResolvedValue({
+      1: { questions: 15, flashcards: 0 },
+    });
+    vi.mocked(mockRoomRepo.createBattleRoom).mockResolvedValue(newRoom);
+    vi.mocked(mockSlotRepo.createBattleRoomSlotsBatch).mockResolvedValue(newSlots);
+
+    const result = await useCase.execute(validInput);
+
+    expect(mockRoomRepo.deleteBattleRoom).toHaveBeenCalledWith(5);
+    expect(result.room).toEqual(newRoom);
+  });
+
+  it("cleans up orphaned slot when room no longer exists", async () => {
+    const orphanedSlot = new BattleRoomSlotEntity(
+      10, 99, 0, "player", userId, null, "2025-01-01T00:00:00Z"
+    );
+
+    const newRoom = new BattleRoomEntity(
+      6, "pub-new", userId, 1, "My Battle Room", "public", null,
+      "waiting", 15, 10, null, null, null,
+      "2025-01-01T00:00:00Z", "2025-01-01T00:00:00Z"
+    );
+
+    const newSlots = [
+      new BattleRoomSlotEntity(11, 6, 0, "player", userId, null, "2025-01-01T00:00:00Z"),
+      new BattleRoomSlotEntity(12, 6, 1, "locked", null, null, "2025-01-01T00:00:00Z"),
+      new BattleRoomSlotEntity(13, 6, 2, "locked", null, null, "2025-01-01T00:00:00Z"),
+      new BattleRoomSlotEntity(14, 6, 3, "locked", null, null, "2025-01-01T00:00:00Z"),
+    ];
+
+    vi.mocked(mockSlotRepo.findSlotByUserId).mockResolvedValue(orphanedSlot);
+    vi.mocked(mockRoomRepo.findBattleRoomById).mockResolvedValue(null);
+    vi.mocked(mockStudySetRepo.findStudySetByPublicId).mockResolvedValue(studySet);
+    vi.mocked(mockReviewableItemRepo.countItemsByStudySetIdsBatch).mockResolvedValue({
+      1: { questions: 15, flashcards: 0 },
+    });
+    vi.mocked(mockRoomRepo.createBattleRoom).mockResolvedValue(newRoom);
+    vi.mocked(mockSlotRepo.createBattleRoomSlotsBatch).mockResolvedValue(newSlots);
+
+    const result = await useCase.execute(validInput);
+
+    expect(mockSlotRepo.deleteSlotsByRoomId).toHaveBeenCalledWith(99);
+    expect(result.room).toEqual(newRoom);
   });
 
   it("throws error when study set is not found", async () => {

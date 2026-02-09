@@ -136,17 +136,72 @@ describe("JoinBattleRoomUseCase", () => {
     expect(mockSlotRepo.updateSlot).not.toHaveBeenCalled();
   });
 
-  it("throws error when user is already in a battle room", async () => {
+  it("throws error when user is already in an active battle room", async () => {
+    const activeRoom = new BattleRoomEntity(
+      5, "pub-active", "host-user", 10, "Active Room", "public", null,
+      "waiting", 15, 10, null, null, null,
+      "2025-01-01T00:00:00Z", "2025-01-01T00:00:00Z"
+    );
+
     vi.mocked(mockRoomRepo.findBattleRoomByPublicId).mockResolvedValue(publicRoom);
     vi.mocked(mockSlotRepo.findSlotByUserId).mockResolvedValue(
       new BattleRoomSlotEntity(99, 5, 0, "player", userId, null, "2025-01-01T00:00:00Z")
     );
+    vi.mocked(mockRoomRepo.findBattleRoomById).mockResolvedValue(activeRoom);
 
     await expect(
       useCase.execute({ userId, roomPublicId })
     ).rejects.toThrow("User is already in a battle room");
 
     expect(mockSlotRepo.updateSlot).not.toHaveBeenCalled();
+  });
+
+  it("cleans up stale slot from a finished room and proceeds to join", async () => {
+    const finishedRoom = new BattleRoomEntity(
+      5, "pub-old", "host-user", 10, "Old Room", "public", null,
+      "finished", 15, 10, null, null, null,
+      "2025-01-01T00:00:00Z", "2025-01-01T00:00:00Z"
+    );
+
+    const staleSlot = new BattleRoomSlotEntity(
+      99, 5, 0, "player", userId, null, "2025-01-01T00:00:00Z"
+    );
+
+    const updatedSlot = new BattleRoomSlotEntity(
+      2, 1, 1, "player", userId, null, "2025-01-01T00:00:00Z"
+    );
+
+    vi.mocked(mockRoomRepo.findBattleRoomByPublicId).mockResolvedValue(publicRoom);
+    vi.mocked(mockSlotRepo.findSlotByUserId).mockResolvedValue(staleSlot);
+    vi.mocked(mockRoomRepo.findBattleRoomById).mockResolvedValue(finishedRoom);
+    vi.mocked(mockSlotRepo.findSlotsByRoomId).mockResolvedValue(slotsWithEmpty);
+    vi.mocked(mockSlotRepo.updateSlot).mockResolvedValue(updatedSlot);
+
+    const result = await useCase.execute({ userId, roomPublicId });
+
+    expect(mockRoomRepo.deleteBattleRoom).toHaveBeenCalledWith(5);
+    expect(result).toEqual(updatedSlot);
+  });
+
+  it("cleans up orphaned slot when room no longer exists and proceeds to join", async () => {
+    const orphanedSlot = new BattleRoomSlotEntity(
+      99, 88, 0, "player", userId, null, "2025-01-01T00:00:00Z"
+    );
+
+    const updatedSlot = new BattleRoomSlotEntity(
+      2, 1, 1, "player", userId, null, "2025-01-01T00:00:00Z"
+    );
+
+    vi.mocked(mockRoomRepo.findBattleRoomByPublicId).mockResolvedValue(publicRoom);
+    vi.mocked(mockSlotRepo.findSlotByUserId).mockResolvedValue(orphanedSlot);
+    vi.mocked(mockRoomRepo.findBattleRoomById).mockResolvedValue(null);
+    vi.mocked(mockSlotRepo.findSlotsByRoomId).mockResolvedValue(slotsWithEmpty);
+    vi.mocked(mockSlotRepo.updateSlot).mockResolvedValue(updatedSlot);
+
+    const result = await useCase.execute({ userId, roomPublicId });
+
+    expect(mockSlotRepo.deleteSlotsByRoomId).toHaveBeenCalledWith(88);
+    expect(result).toEqual(updatedSlot);
   });
 
   it("throws error when password is incorrect for private room", async () => {

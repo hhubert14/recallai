@@ -20,16 +20,16 @@ export interface QuestionStartEvent {
 }
 
 export interface AnswerSubmittedEvent {
-  userId: string;
+  slotIndex: number;
   questionIndex: number;
 }
 
 export interface QuestionRevealEvent {
   questionIndex: number;
-  correctOptionIndex: number;
+  correctOptionId: number;
   results: Array<{
-    userId: string;
-    selectedOptionIndex: number;
+    slotIndex: number;
+    selectedOptionId: number | null;
     isCorrect: boolean;
     pointsAwarded: number;
   }>;
@@ -37,7 +37,7 @@ export interface QuestionRevealEvent {
 
 export interface GameFinishedEvent {
   finalStandings: Array<{
-    userId: string;
+    slotIndex: number;
     totalPoints: number;
     rank: number;
   }>;

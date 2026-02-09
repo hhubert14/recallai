@@ -1,8 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { AdvanceQuestionUseCase } from "./advance-question.use-case";
 import { IBattleRoomRepository } from "@/clean-architecture/domain/repositories/battle-room.repository.interface";
+import { IBattleRoomSlotRepository } from "@/clean-architecture/domain/repositories/battle-room-slot.repository.interface";
 import { IQuestionRepository } from "@/clean-architecture/domain/repositories/question.repository.interface";
 import { BattleRoomEntity } from "@/clean-architecture/domain/entities/battle-room.entity";
+import { BattleRoomSlotEntity } from "@/clean-architecture/domain/entities/battle-room-slot.entity";
 import {
   MultipleChoiceQuestionEntity,
   MultipleChoiceOption,
@@ -11,11 +13,16 @@ import {
 describe("AdvanceQuestionUseCase", () => {
   let useCase: AdvanceQuestionUseCase;
   let mockRoomRepo: IBattleRoomRepository;
+  let mockSlotRepo: IBattleRoomSlotRepository;
   let mockQuestionRepo: IQuestionRepository;
 
   const hostUserId = "host-user-123";
   const roomPublicId = "room-pub-123";
   const questionIds = [10, 20, 30];
+
+  const hostSlot = new BattleRoomSlotEntity(
+    1, 1, 0, "player", hostUserId, null, "2025-01-01T00:00:00Z"
+  );
 
   const inGameRoom = new BattleRoomEntity(
     1, roomPublicId, hostUserId, 1, "Test Room", "public", null,
@@ -43,6 +50,14 @@ describe("AdvanceQuestionUseCase", () => {
       deleteBattleRoom: vi.fn(),
     };
 
+    mockSlotRepo = {
+      createBattleRoomSlotsBatch: vi.fn(),
+      findSlotsByRoomId: vi.fn(),
+      findSlotByUserId: vi.fn(),
+      updateSlot: vi.fn(),
+      deleteSlotsByRoomId: vi.fn(),
+    };
+
     mockQuestionRepo = {
       createMultipleChoiceQuestion: vi.fn(),
       findQuestionById: vi.fn(),
@@ -53,7 +68,7 @@ describe("AdvanceQuestionUseCase", () => {
       deleteQuestion: vi.fn(),
     };
 
-    useCase = new AdvanceQuestionUseCase(mockRoomRepo, mockQuestionRepo);
+    useCase = new AdvanceQuestionUseCase(mockRoomRepo, mockSlotRepo, mockQuestionRepo);
   });
 
   it("advances from null to first question (index 0)", async () => {
@@ -64,6 +79,7 @@ describe("AdvanceQuestionUseCase", () => {
     );
 
     vi.mocked(mockRoomRepo.findBattleRoomByPublicId).mockResolvedValue(inGameRoom);
+    vi.mocked(mockSlotRepo.findSlotByUserId).mockResolvedValue(hostSlot);
     vi.mocked(mockQuestionRepo.findQuestionById).mockResolvedValue(question);
     vi.mocked(mockRoomRepo.updateBattleRoom).mockResolvedValue(updatedRoom);
 
@@ -101,6 +117,7 @@ describe("AdvanceQuestionUseCase", () => {
     );
 
     vi.mocked(mockRoomRepo.findBattleRoomByPublicId).mockResolvedValue(roomAtQ0);
+    vi.mocked(mockSlotRepo.findSlotByUserId).mockResolvedValue(hostSlot);
     vi.mocked(mockQuestionRepo.findQuestionById).mockResolvedValue(question2);
     vi.mocked(mockRoomRepo.updateBattleRoom).mockResolvedValue(updatedRoom);
 
@@ -119,6 +136,7 @@ describe("AdvanceQuestionUseCase", () => {
     );
 
     vi.mocked(mockRoomRepo.findBattleRoomByPublicId).mockResolvedValue(roomAtLastQ);
+    vi.mocked(mockSlotRepo.findSlotByUserId).mockResolvedValue(hostSlot);
 
     await expect(
       useCase.execute({ userId: hostUserId, roomPublicId })
@@ -133,12 +151,13 @@ describe("AdvanceQuestionUseCase", () => {
     ).rejects.toThrow("Battle room not found");
   });
 
-  it("throws error when user is not the host", async () => {
+  it("throws error when user is not a participant", async () => {
     vi.mocked(mockRoomRepo.findBattleRoomByPublicId).mockResolvedValue(inGameRoom);
+    vi.mocked(mockSlotRepo.findSlotByUserId).mockResolvedValue(null);
 
     await expect(
       useCase.execute({ userId: "other-user", roomPublicId })
-    ).rejects.toThrow("Only the host can advance questions");
+    ).rejects.toThrow("User is not a participant in this battle");
   });
 
   it("throws error when room is not in game", async () => {

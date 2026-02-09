@@ -67,7 +67,20 @@ export class CreateBattleRoomUseCase {
     const existingSlot =
       await this.battleRoomSlotRepository.findSlotByUserId(userId);
     if (existingSlot) {
-      throw new Error("User is already in a battle room");
+      const existingRoom =
+        await this.battleRoomRepository.findBattleRoomById(existingSlot.roomId);
+      if (!existingRoom || existingRoom.isFinished()) {
+        // Stale slot from a finished/deleted game — clean up
+        if (existingRoom) {
+          await this.battleRoomRepository.deleteBattleRoom(existingRoom.id);
+        } else {
+          await this.battleRoomSlotRepository.deleteSlotsByRoomId(
+            existingSlot.roomId
+          );
+        }
+      } else {
+        throw new Error("User is already in a battle room");
+      }
     }
 
     // Verify study set exists

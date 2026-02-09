@@ -113,7 +113,18 @@
       "mcp__chrome-devtools__click",
       "mcp__chrome-devtools__take_screenshot",
       "mcp__chrome-devtools__evaluate_script",
-      "Bash(FILEPATH=\"C:\\\\Users\\\\huang\\\\.claude\\\\projects\\\\C--Users-huang-repos-Personal-recallai\\\\dfc2e9dd-3e35-45a7-bb6a-a0538bf8ef04\\\\tool-results\\\\mcp-github-issue_read-1770580030440.txt\")"
+      "Bash(curl:*)",
+      "mcp__chrome-devtools__fill_form",
+      "mcp__chrome-devtools__wait_for",
+      "mcp__chrome-devtools__list_console_messages",
+      "mcp__chrome-devtools__list_network_requests",
+      "mcp__chrome-devtools__new_page",
+      "mcp__chrome-devtools__close_page",
+      "mcp__playwright__browser_network_requests",
+      "Bash(DOTENV_CONFIG_PATH=.env.local node:*)",
+      "mcp__chrome-devtools__select_page",
+      "Bash(nslookup:*)",
+      "WebFetch(domain:vercel.com)"
     ],
     "deny": [],
     "ask": []

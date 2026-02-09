@@ -37,9 +37,14 @@ export class SimulateBotAnswersUseCase {
     const room =
       await this.battleRoomRepository.findBattleRoomByPublicId(roomPublicId);
     if (!room) throw new Error("Battle room not found");
-    if (!room.isHost(userId))
-      throw new Error("Only the host can simulate bot answers");
     if (!room.isInGame()) throw new Error("Battle room is not in game");
+
+    // Any participant can simulate bot answers (supports host-disconnect fallback)
+    const userSlot =
+      await this.battleRoomSlotRepository.findSlotByUserId(userId);
+    if (!userSlot || userSlot.roomId !== room.id)
+      throw new Error("User is not a participant in this battle");
+
     if (room.currentQuestionIndex === null) throw new Error("No active question");
     if (!room.questionIds) throw new Error("No questions assigned to room");
     if (!room.currentQuestionStartedAt) throw new Error("No active question");

@@ -1,4 +1,5 @@
 import { IBattleRoomRepository } from "@/clean-architecture/domain/repositories/battle-room.repository.interface";
+import { IBattleRoomSlotRepository } from "@/clean-architecture/domain/repositories/battle-room-slot.repository.interface";
 import { IQuestionRepository } from "@/clean-architecture/domain/repositories/question.repository.interface";
 
 export interface AdvanceQuestionInput {
@@ -17,6 +18,7 @@ export interface AdvanceQuestionResult {
 export class AdvanceQuestionUseCase {
   constructor(
     private readonly battleRoomRepository: IBattleRoomRepository,
+    private readonly battleRoomSlotRepository: IBattleRoomSlotRepository,
     private readonly questionRepository: IQuestionRepository
   ) {}
 
@@ -26,9 +28,12 @@ export class AdvanceQuestionUseCase {
     const room =
       await this.battleRoomRepository.findBattleRoomByPublicId(roomPublicId);
     if (!room) throw new Error("Battle room not found");
-    if (!room.isHost(userId))
-      throw new Error("Only the host can advance questions");
     if (!room.isInGame()) throw new Error("Battle room is not in game");
+
+    // Any participant can advance questions (supports host-disconnect fallback)
+    const slot = await this.battleRoomSlotRepository.findSlotByUserId(userId);
+    if (!slot || slot.roomId !== room.id)
+      throw new Error("User is not a participant in this battle");
 
     if (!room.questionIds) throw new Error("No questions assigned to room");
 

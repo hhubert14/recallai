@@ -1,15 +1,22 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { FinishBattleGameUseCase } from "./finish-battle-game.use-case";
 import { IBattleRoomRepository } from "@/clean-architecture/domain/repositories/battle-room.repository.interface";
+import { IBattleRoomSlotRepository } from "@/clean-architecture/domain/repositories/battle-room-slot.repository.interface";
 import { BattleRoomEntity } from "@/clean-architecture/domain/entities/battle-room.entity";
+import { BattleRoomSlotEntity } from "@/clean-architecture/domain/entities/battle-room-slot.entity";
 
 describe("FinishBattleGameUseCase", () => {
   let useCase: FinishBattleGameUseCase;
   let mockRoomRepo: IBattleRoomRepository;
+  let mockSlotRepo: IBattleRoomSlotRepository;
 
   const hostUserId = "host-user-123";
   const roomPublicId = "room-pub-123";
   const questionIds = [10, 20, 30];
+
+  const hostSlot = new BattleRoomSlotEntity(
+    1, 1, 0, "player", hostUserId, null, "2025-01-01T00:00:00Z"
+  );
 
   const inGameRoom = new BattleRoomEntity(
     1, roomPublicId, hostUserId, 1, "Test Room", "public", null,
@@ -30,7 +37,15 @@ describe("FinishBattleGameUseCase", () => {
       deleteBattleRoom: vi.fn(),
     };
 
-    useCase = new FinishBattleGameUseCase(mockRoomRepo);
+    mockSlotRepo = {
+      createBattleRoomSlotsBatch: vi.fn(),
+      findSlotsByRoomId: vi.fn(),
+      findSlotByUserId: vi.fn(),
+      updateSlot: vi.fn(),
+      deleteSlotsByRoomId: vi.fn(),
+    };
+
+    useCase = new FinishBattleGameUseCase(mockRoomRepo, mockSlotRepo);
   });
 
   it("finishes an in-game battle", async () => {
@@ -41,6 +56,7 @@ describe("FinishBattleGameUseCase", () => {
     );
 
     vi.mocked(mockRoomRepo.findBattleRoomByPublicId).mockResolvedValue(inGameRoom);
+    vi.mocked(mockSlotRepo.findSlotByUserId).mockResolvedValue(hostSlot);
     vi.mocked(mockRoomRepo.updateBattleRoom).mockResolvedValue(finishedRoom);
 
     const result = await useCase.execute({ userId: hostUserId, roomPublicId });
@@ -51,6 +67,7 @@ describe("FinishBattleGameUseCase", () => {
       currentQuestionIndex: null,
       currentQuestionStartedAt: null,
     });
+    expect(mockRoomRepo.deleteBattleRoom).toHaveBeenCalledWith(1);
   });
 
   it("throws error when room is not found", async () => {
@@ -61,12 +78,13 @@ describe("FinishBattleGameUseCase", () => {
     ).rejects.toThrow("Battle room not found");
   });
 
-  it("throws error when user is not the host", async () => {
+  it("throws error when user is not a participant", async () => {
     vi.mocked(mockRoomRepo.findBattleRoomByPublicId).mockResolvedValue(inGameRoom);
+    vi.mocked(mockSlotRepo.findSlotByUserId).mockResolvedValue(null);
 
     await expect(
       useCase.execute({ userId: "other-user", roomPublicId })
-    ).rejects.toThrow("Only the host can finish the game");
+    ).rejects.toThrow("User is not a participant in this battle");
   });
 
   it("throws error when room is not in game", async () => {
